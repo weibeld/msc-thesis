@@ -1,0 +1,23 @@
+// dw-14.03.2014
+// Compile with
+// dot -Tpdf fsm.dot > fsm.pdf
+// (or instead of dot: neato, fdp, twopi, circo)
+
+digraph fsm {
+	// Graph attributes
+	rankdir=LR;
+
+	// Node attributes
+	start [shape=plaintext];
+	1 [shape=doublecircle];
+	0 [label="¬p\n¬q"];
+	node [shape=circle];
+
+	// Edges and edge attributes
+	start -> 0;
+	0 -> 0 [label = "a,b"];
+	0 -> 1 [label = "b"];
+	1 -> 1 [label = "b"];
+	1 -> 2 [label = "a"];
+	2 -> 2 [label = "a,b"];
+}

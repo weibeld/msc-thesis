@@ -1,0 +1,25 @@
+This file explains some details about developing the libefa C library.
+
+Building from git
+-----------------
+
+  Besides the usual build tools (gcc, autoconf, automake etc.) you need the
+  following tools and libraries to build libefa:
+
+    * libxml2-devel
+
+  At its simplest, you build libefa from git by running the following
+  commands in the toplevel directory of your libefa checkout:
+
+    autoreconf
+    ./configure
+    make
+    make install
+
+  It is recommended though to turn on a few development features when
+  building; in particular, stricter compiler warnings and some debug
+  logging. You can pass these options to configure.
+
+Running efa
+---------------
+

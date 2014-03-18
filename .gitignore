@@ -1,0 +1,8 @@
+*.aux
+*.bbl
+*.blg
+*.log
+*.dbj
+*.out
+*.toc
+.DS_Store
