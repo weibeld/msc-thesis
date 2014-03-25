@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<faxml version="0.3">
+  <automaton name="symbol5" class="non-deterministic" minimal="true" type="buechi" >
+	 <alphabet>abcde</alphabet>
+	 <states>
+		<state initial="true" name="0">
+		  <transitions>
+			 <transition label="abcde" to="0" />
+			 <transition label="a" to="1" />
+			 <transition label="b" to="3" />
+			 <transition label="c" to="5" />
+			 <transition label="d" to="7" />
+			 <transition label="e" to="9" />
+		  </transitions>
+		</state>
+		<state accepting="true" name="1">
+		  <transitions>
+			 <transition label="a" to="1" />
+			 <transition label="bcde" to="2" />
+		  </transitions>
+		</state>
+		<state name="2">
+		  <transitions>
+			 <transition label="abcde" to="2" />
+		  </transitions>
+		</state>
+		<state accepting="true" name="3">
+		  <transitions>
+			 <transition label="b" to="3" />
+			 <transition label="acde" to="4" />
+		  </transitions>
+		</state>
+		<state name="4">
+		  <transitions>
+			 <transition label="abcde" to="4" />
+		  </transitions>
+		</state>
+		<state accepting="true" name="5">
+		  <transitions>
+			 <transition label="c" to="5" />
+			 <transition label="abde" to="6" />
+		  </transitions>
+		</state>
+		<state name="6">
+		  <transitions>
+			 <transition label="abcde" to="6" />
+		  </transitions>
+		</state>
+		<state accepting="true" name="7">
+		  <transitions>
+			 <transition label="d" to="7" />
+			 <transition label="abce" to="8" />
+		  </transitions>
+		</state>
+		<state name="8">
+		  <transitions>
+			 <transition label="abcde" to="8" />
+		  </transitions>
+		</state>
+		<state accepting="true" name="9">
+		  <transitions>
+			 <transition label="e" to="9" />
+			 <transition label="abcd" to="10" />
+		  </transitions>
+		</state>
+		<state name="10">
+		  <transitions>
+			 <transition label="abcde" to="10" />
+		  </transitions>
+		</state>
+	 </states>
+  </automaton>
+</faxml>

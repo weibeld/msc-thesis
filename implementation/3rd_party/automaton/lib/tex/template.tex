@@ -1,0 +1,24 @@
+\documentclass{report}
+
+\usepackage{vaucanson-g}
+
+\begin{document}
+\begin{VCPicture}{(0,0)(10, 10)}
+  
+  % states
+  %\State[p]{(0,0)}{A} \State{(3,0)}{B} \State[r]{(6,0.5)}{C}
+  <%= @states.join("\n")%>
+ 
+  % initial--final
+  % \Initial{A}
+  <%= @initial %>
+  
+  % \Final{C}
+  <%= @finals.join("\n")%>
+
+  % transitions
+  %\EdgeL{B}{A}{a} \EdgeL{B}{C}{b}
+  <%= @transitions.join("\n") %>
+  
+\end{VCPicture}
+\end{document}
