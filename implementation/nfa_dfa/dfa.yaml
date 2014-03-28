@@ -9,9 +9,9 @@ states:
 alphabet:
   - "0"
   - "1"
-startstate:
+start_state:
   A
-acceptstates:
+accept_states:
   - C
 transitions:
   A:
