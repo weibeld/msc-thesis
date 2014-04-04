@@ -132,13 +132,13 @@ def visualize_automaton(automaton, filename)
     automaton.transitions.each do |a, transitions|
         hh = {}
         transitions.each do |symbol, b|
-            #if not bs.respond_to? :each then bs = Array[bs] end
-            #s.each do |b|
+            if not b.respond_to? :each then b = Array[b] end
+            b.each do |b|
             if hh[b] == nil
                 (hh[b] = g.add_edge(h[a], h[b])).label = symbol
             else
                 hh[b].label = hh[b][:label].to_s.tr('"','') << ",#{symbol}"
-            #end
+            end
             end
         end
     end
