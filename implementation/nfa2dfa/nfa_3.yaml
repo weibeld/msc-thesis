@@ -1,0 +1,27 @@
+states:
+  - "0"
+  - "1"
+  - "2"
+alphabet:
+  - a
+  - b
+start_state:
+  "0"
+accept_states:
+  - "1"
+  - "2"
+transitions:
+  "0":
+    a:
+      - "2"
+    b:
+      - "1"
+      - "2"
+  "1":
+    b:
+      - "1"
+  "2":
+    a:
+      - "0"
+    b:
+      - "0"
