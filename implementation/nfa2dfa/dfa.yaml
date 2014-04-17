@@ -1,28 +1,28 @@
-# Specification of a DFA.
-# Accepts strings starting with 00
-
+---
 states:
-  - A
-  - B
-  - C
-  - D
+- '{q1}'
+- '{q2,q3}'
+- '{q2}'
+- '{q4}'
+- '{q3}'
 alphabet:
-  - "0"
-  - "1"
-start_state:
-  A
+- a
+- b
+start_state: '{q1}'
 accept_states:
-  - C
+- '{q1}'
+- '{q2,q3}'
+- '{q2}'
+- '{q4}'
 transitions:
-  A:
-    "0": B
-    "1": D
-  B:
-    "0": C
-    "1": D
-  C:
-    "0": C
-    "1": C
-  D:
-    "0": D
-    "1": D
+  '{q1}':
+    a: '{q2,q3}'
+  '{q2,q3}':
+    a: '{q2}'
+    b: '{q4}'
+  '{q2}':
+    a: '{q2}'
+  '{q4}':
+    a: '{q3}'
+  '{q3}':
+    b: '{q4}'
