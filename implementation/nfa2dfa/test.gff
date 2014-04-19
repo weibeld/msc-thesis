@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Structure label-on="Transition" type="FiniteStateAutomaton">
+  <Alphabet type="Classical">
+    <Symbol>a</Symbol>
+    <Symbol>b</Symbol>
+  </Alphabet>
+  <StateSet>
+    <State sid="0"/>
+    <State sid="1"/>
+    <State sid="2"/>
+    <State sid="3"/>
+    <State sid="4"/>
+  </StateSet>
+  <InitiaState>
+    <StateID>0</StateID>
+  </InitiaState>
+</Structure>

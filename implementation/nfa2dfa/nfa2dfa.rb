@@ -1,4 +1,5 @@
 require 'yaml'
+require 'nokogiri'
 require 'set'
 require 'graphviz' # Requires installation of gem ruby-graphviz and of Graphviz
 
@@ -10,7 +11,7 @@ class DFA
         yaml = YAML::load_file(file)
         @states = yaml['states']
         @alphabet = yaml['alphabet']
-        @transitions = yaml['transitions']
+        @transitions = format_transitions(yaml['transitions'])
         @start_state = yaml['start_state']
         @accept_states = yaml['accept_states']
     end
@@ -45,7 +46,7 @@ class NFA
         yaml = YAML::load_file(file)
         @states = yaml['states']
         @alphabet = yaml['alphabet']
-        @transitions = yaml['transitions']
+        @transitions = format_transitions(yaml['transitions'])
         @start_state = yaml['start_state']
         @accept_states = yaml['accept_states']
     end          
@@ -99,12 +100,14 @@ class NFA
         visualize_automaton self, filename
     end
 
-    private
-
     def transition_function(state, symbol)
-        if @transitions[state] == nil then return Set.new
-        elsif @transitions[state][symbol] == nil then return Set.new
-        else return @transitions[state][symbol].to_set end
+        s = Set.new
+        if @transitions[state]
+            @transitions[state].each do |successor, symbols|
+                if symbols.include? symbol then s.add successor end
+            end
+        end
+        s
     end
 end
 
@@ -114,6 +117,33 @@ class Set
         self.each { |e| s << "#{e}," }
         s = s.chomp(",") << "}"
     end
+end
+
+# Transform
+#   ["p -> q: a,b",
+#    "p -> r: a",
+#    "q -> r: b"]
+# into
+#   {"p" => {"q" => Set{"a","b"}, "r" => Set{"a"}},
+#    "q" => {"r" => Set{"b"}}}
+def format_transitions(array)
+    transitions = {}
+    array.each do |edge|
+        states = edge.split(":")[0].split("->")
+        from = states[0].strip
+        to = states[1].strip
+        symbols = edge.split(":")[1].split(",").each { |sym| sym.strip! }.to_set
+        if transitions[from]
+            if transitions[from][to]
+                transitions[from][to].merge symbols
+            else
+                transitions[from][to] = symbols
+            end
+        else
+            transitions[from] = {to => symbols}
+        end
+    end
+    transitions
 end
 
 def visualize_automaton(automaton, filename)
@@ -143,4 +173,30 @@ def visualize_automaton(automaton, filename)
         end
     end
     g.output :pdf => filename
+end
+
+def yaml_to_goal(yaml_file, goal_file)
+    yaml = YAML::load_file(yaml_file)
+    builder = Nokogiri::XML::Builder.new do |xml|
+        xml.Structure(:'label-on' => "Transition", :type => "FiniteStateAutomaton") {
+            xml.Alphabet(:type => "Classical") {
+                yaml['alphabet'].each do |symbol|
+                    xml.Symbol symbol.to_s
+                end
+            }
+            xml.StateSet {
+                yaml['states'].each_with_index do |state, index|
+                    xml.State(:sid => index)
+                end
+            }
+            xml.InitiaStateSet {
+                xml.StateID yaml['states'].index(yaml['start_state'])
+            }
+            xml.TransitionSet(:complete => "false") {
+                
+            }
+        }
+    end
+    File.open(goal_file, 'w') { |file| file.write builder.to_xml }
+    puts builder.to_xml
 end
