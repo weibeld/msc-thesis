@@ -1,0 +1,46 @@
+Ruby on Rails "Hello World"
+===========================
+
+dw-20.04.2014
+
+--------
+
+Check recommended Ruby version for current Rails release on http://rubyonrails.org/download
+
+--------
+
+Update Ruby to this version with RVM (Ruby Version Manager)
+Install RVM: 			\curl -sSL https://get.rvm.io | bash
+Install desired Ruby version: 	rvm install 2.1.0
+
+--------
+
+Install Ruby on Rails:
+sudo gem install rails
+
+--------
+
+Install Rails plugin for Vim (optional, if using Vim for editing source files):
+Google for rails.vim. Installation: 1) download zip file, 2) put contained directories and files in ~/.vim/
+
+--------
+
+Install PostgreSQL
+Note: if the app uses a database, a database must be installed on the local machine for development mode. Typically used databases are SQLite, MySQL, and PostgreSQL. SQLite is the only one that seems to be installed by default on Mac.
+
+Heroku, the production server, uses PostgreSQL by default. It is advisable to use the same database for development and production. Therefore, if the app is to be deployed to Heroku, it's recommended to install PostgreSQL on the local machine and use it as the development database.
+
+Install Postgres.app:
+	http://postgresapp.com/
+
+Add bin/ folder of Postgres.app to PATH. In ~/.bash_profile or the like, add:
+	PATH="/Applications/Postgres.app/Contents/Versions/9.3/bin:${PATH}"
+
+PostgreSQL is now installed and can be accessed through the user programs in
+/Applications/Postgres.app/Contents/Versions/9.3/bin/. The most important one is psql, the interactive shell to PostgreSQL.
+
+PostgreSQL itself is launched by double-clicking Postgres.app in /Applications/.
+
+--------
+
+

@@ -16,12 +16,12 @@ accept_states:
   - s0
   - s1
 transitions:
-  - "s0-> s1: a  ,  b"
+  - "s0 -> s1: a,b"
   - "s0 -> s2: a"
   - "s1 -> s2: b"
-  - "s2->s4: a,b"
+  - "s2 -> s4: a,b"
   - "s2 -> s0: b"
-  - "s3 -> s2:a"
-  - "s4   ->    s1  :   a"
+  - "s3 -> s2: a"
+  - "s4 -> s1: a"
   - "s0 -> s3: a,b"
-  - "s0->s2:a,b"
+  - "s0 -> s2: a,b"
