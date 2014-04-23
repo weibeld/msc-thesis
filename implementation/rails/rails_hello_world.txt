@@ -16,10 +16,18 @@ Check recommended Ruby version for current Rails release on http://rubyonrails.o
 
 --------
 
-Update Ruby to this version with RVM (Ruby Version Manager)
+Update Ruby to this version with rbenv
 
-Install RVM: 			\curl -sSL https://get.rvm.io | bash
-Install desired Ruby version: 	rvm install 2.1.0
+(Install Homebrew:		http://brew.sh)
+Install rbenv: 			brew install rbenv ruby-build
+List available Ruby versions:	rbenv install -l
+Install desired Ruby version: 	rbenv install 2.1.0
+
+Note: a widely used alternative to rbenv is RVM. However, RVM is more complicated to use and can mess up gem dependendies:
+Install RVM:			\curl -sSL https://get.rvm.io | bash -s stable
+Add to ~/.bash_profile:		source ~/.rvm/scripts/rvm
+List available Ruby versions:	rvm list remote
+Install desired Ruby version:	rvm install 2.1.0
 
 --------
 
