@@ -1,0 +1,4 @@
+BUILD_DIR: /tmp/build_d4a3d089-e3d8-48b9-922f-6cdaebaf5dcf
+CACHE_DIR: /app/tmp/cache
+ENV_DIR: /tmp/d20140424-391-1aiejsi
+pwd: /tmp/buildpacka8OJ0
