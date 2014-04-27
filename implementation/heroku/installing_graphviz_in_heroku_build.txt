@@ -1,0 +1,25 @@
+# Installing Graphviz from source in vendor/graphviz/
+#####################################################
+
+BUILD_DIR=$1
+
+cd $BUILD_DIR
+curl -O http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.38.0.tar.gz
+tar -xzf graphviz-2.38.0.tar.gz
+rm graphviz-2.38.0.tar.gz
+mkdir $BUILD_DIR/vendor/graphviz
+cd graphviz-2.38.0
+./configure --prefix=$BUILD_DIR/vendor/graphviz
+make
+make install
+cd ..
+rm -rf graphviz-2.38.0
+
+mkdir -p .profile.d
+# $HOME refers to the home in the production dyno, not the home of
+# the current slug compiler user.
+echo 'PATH=$HOME/vendor/graphviz/bin:$PATH' > .profile.d/graphviz_path.sh
+
+
+# Installing Graphviz with the Debian packaging system
+#######################################################
