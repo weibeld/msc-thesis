@@ -64,11 +64,17 @@ PostgreSQL itself is launched by double-clicking Postgres.app in /Applications/.
 
 PostgreSQL basics
 
-psql
-dw=# select * from pg_roles;	Display all PostgreSQL users and their privi-
+psql				Start PostgreSQL shell
+db=# select * from pg_roles;	Display all PostgreSQL users and their privi-
 ....				leges. In database.yml, the user in development
 ....				mode must be one of these.
-dw=# \q				Exit psql shell
+db=# \list			List all databases
+db=# drop database db_name;	Delete a specific database (db_name)
+db=# \c db_name			Connect to a specific database (db_name)
+db=# \dt			List all tables in current database
+db=# \q				Exit PostgreSQL shell
+
+Note: enclose db_name or any other name in quotes (" ") if syntax erros occur.
 
 --------
 

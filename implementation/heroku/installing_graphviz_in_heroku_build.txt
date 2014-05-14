@@ -23,3 +23,43 @@ echo 'PATH=$HOME/vendor/graphviz/bin:$PATH' > .profile.d/graphviz_path.sh
 
 # Installing Graphviz with the Debian packaging system
 #######################################################
+
+# Caveat of this method: Graphviz version in the Graphviz Debian package is version 2.20 from 2008 (see http://www.graphviz.org/pub/graphviz/stable/SOURCES/)
+
+BUILD_DIR=$1
+
+# Setting up ephemeral apt environment (not in persistent build cache, i.e.
+# CACHE_DIR, because installing Graphviz is already quite fast, and it may
+# be more worth to keep the build cache slim than to speed up the Graphviz
+# installation by some few seconds).
+APT=$HOME/apt
+
+mkdir -p $APT/cache/archives/partial
+mkdir -p $APT/state/lists/partial
+
+# apt-get options required by our restricted environment
+OPTIONS="-o debug::nolocking=true -o dir::cache=$APT/cache -o dir::state=$APT/state"
+
+# The mandatory apt update (/etc/apt/sources.list exists)
+apt-get $OPTIONS update >/dev/null 2>&1
+
+# Download graphviz package and all its dependencies. Download only,
+# because we will have to do the installation manually. The packages are
+# downloaded to $APT/cache/archives.
+apt-get $OPTIONS --download-only --assume-yes install graphviz >/dev/null 2>&1
+
+# Location we want to install the Graphviz package
+INSTALL_DIR=-vendor/graphviz
+mkdir -p $INSTALL_DIR
+
+# Manual installation of the Graphviz package and its dependencies. This means
+# merely extracting all the packages to our custom installation location.
+cd $APT/cache/archives
+for PKG in $(ls *.deb); do
+	dpkg -x $PKG $BUILD_DIR/$INSTALL_DIR
+done
+
+cd $BUILD_DIR
+mkdir -p .profile.d
+echo "PATH=\$HOME/$INSTALL_DIR/usr/bin:\$PATH" >.profile.d/graphviz_path.sh
+

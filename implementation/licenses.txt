@@ -1,0 +1,25 @@
+Licenses
+========
+
+dw-02.05.2014
+
+Graphviz
+--------
+Eclipse Public License - v 1.0
+
+http://www.eclipse.org/legal/epl-v10.html
+http://en.wikipedia.org/wiki/Eclipse_Public_License
+
+Can be used in any form.
+
+
+GOAL
+----
+Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported
+
+http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+Terms:
+	- Credit to creator
+	- Must be non-commercial
+	- Derivated work must use same license
