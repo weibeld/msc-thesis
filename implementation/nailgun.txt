@@ -36,12 +36,12 @@ goal_loc = `dirname $(which goal)`		# /app/vendor/goal
 nailgun_loc = `dirname $(dirname $(which ng))`  # /app/vendor/nailgun
 # From anywhere:
 `java \
--DapplicationRoot="#{goal_loc}" \
--Dorg.java.plugin.boot.pluginsRepositories="#{goal_loc}/plugins" \
--Djpf.boot.config="#{goal_loc}/boot.properties" \
+-DapplicationRoot="$GOAL" \
+-Dorg.java.plugin.boot.pluginsRepositories="$GOAL/plugins" \
+-Djpf.boot.config="$GOAL/boot.properties" \
 -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog \
 -Dorg.apache.commons.logging.simplelog.log.org.java.plugin=fatal \
--classpath #{nailgun_loc}/nailgun-server-0.9.2-SNAPSHOT.jar:#{goal_loc}/lib/jpf-boot.jar \
+-classpath $NAILGUN/nailgun-server-0.9.2-SNAPSHOT.jar:$GOAL/lib/jpf-boot.jar \
 com.martiansoftware.nailgun.NGServer &
 # com.martiansoftware.nailgun.NGServer is the main class of the JAR file
 # nailgun-server-0.9.2-SNAPSHOT.jar. This class is found because we add the
