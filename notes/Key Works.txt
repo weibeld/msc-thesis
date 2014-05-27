@@ -1,0 +1,25 @@
+Büchi Automata
+--------------
+Weak second order arithmetic and finite automata
+Büchi
+1960
+Not accessible
+
+On a decision method in restricted second order arithmetics
+Büchi
+1962
+Not accessible
+
+Muller Automata
+---------------
+Infinite Sequences and Finite Machines
+Muller
+1963
+Have it
+
+Subset-Construction
+-------------------
+Finite automata and their decision problems
+Rabin, Scott
+1959
+Have it

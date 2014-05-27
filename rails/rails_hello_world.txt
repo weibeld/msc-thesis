@@ -1,0 +1,199 @@
+Ruby on Rails "Hello World"
+===========================
+
+
+dw-21.04.2014
+
+
+Steps for installing and setting up Ruby on Rails, generating an example Rails app, and putting it in production mode on Heroku. The assumed operating system is Mac OS X (tested on OS X 10.9.1).
+
+Some of the following steps wouldn't be really necessary for such a simple hello world app, however, the aim is to show all the basic important steps for creating and deploying serious apps.
+
+
+--------
+
+Check recommended Ruby version for current Rails release on http://rubyonrails.org/download
+
+--------
+
+Update Ruby to this version with rbenv
+
+(Install Homebrew:		http://brew.sh)
+Install rbenv: 			brew install rbenv ruby-build
+List available Ruby versions:	rbenv install -l
+Install desired Ruby version: 	rbenv install 2.1.0
+
+Note: a widely used alternative to rbenv is RVM. However, RVM is more complicated to use and can mess up gem dependendies:
+Install RVM:			\curl -sSL https://get.rvm.io | bash -s stable
+Add to ~/.bash_profile:		source ~/.rvm/scripts/rvm
+List available Ruby versions:	rvm list remote
+Install desired Ruby version:	rvm install 2.1.0
+
+--------
+
+Install Ruby on Rails
+
+sudo gem install rails
+
+--------
+
+Install Rails plugin for Vim (optional, if using Vim for editing source files)
+
+Google for rails.vim. Installation: 1) download zip file, 2) put contained directories and files in ~/.vim/
+
+--------
+
+Install PostgreSQL
+
+Note: if the app uses a database, a database must be installed on the local machine for development mode. Typically used databases are SQLite, MySQL, and PostgreSQL. SQLite is the only one that seems to be installed by default on Mac.
+
+Heroku, the production server, uses PostgreSQL by default. It is advisable to use the same database for development and production. Therefore, if the app is to be deployed to Heroku, it's recommended to install PostgreSQL on the local machine and use it as the development database.
+
+Install Postgres.app:
+	http://postgresapp.com/
+
+Add bin/ folder of Postgres.app to PATH. In ~/.bash_profile or the like, add:
+	PATH="/Applications/Postgres.app/Contents/Versions/9.3/bin:${PATH}"
+
+PostgreSQL is now installed and can be accessed through the user programs in
+/Applications/Postgres.app/Contents/Versions/9.3/bin/. The most important one is psql, the interactive shell to PostgreSQL.
+
+PostgreSQL itself is launched by double-clicking Postgres.app in /Applications/.
+
+--------
+
+PostgreSQL basics
+
+psql				Start PostgreSQL shell
+db=# select * from pg_roles;	Display all PostgreSQL users and their privi-
+....				leges. In database.yml, the user in development
+....				mode must be one of these.
+db=# \list			List all databases
+db=# drop database db_name;	Delete a specific database (db_name)
+db=# \c db_name			Connect to a specific database (db_name)
+db=# \dt			List all tables in current database
+db=# \q				Exit PostgreSQL shell
+
+Note: enclose db_name or any other name in quotes (" ") if syntax erros occur.
+
+--------
+
+Generate a starter app from the RailsApps project
+
+Note: the RailsApps project (https://github.com/RailsApps) provides barebones Rails apps that can be used as a starting point for building own apps. The starter apps can be installed and set up interactively with the Rails Composer from the same project. To generate a starter app with Rails Composer, type:
+
+rails new hello_world -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb
+
+Rails Composer asks a couple of questions. Choose (for example):
+Build a starter application?	Build a RailsApps example application
+Starter apps for Rails 4.1.	rails-devise
+Web server for development?	Thin
+Web server for production?	Thin
+Database used in development?	PostgreSQL
+Template engine?		ERB
+Continuous testing?		None
+Front-end framework?		Bootstrap 3.0
+Add support for sending email?	Gmail
+Devise modules?			Devise with default modules
+Use a form builder gem?		SimpleForm
+
+The following questions are important because we use PostgreSQL as the development database:
+
+Username for PostgreSQL?(leave blank to use the app name)
+	Choose your UNIX username. The reason is that PostgreSQL has by default
+	a user with all the needed privileges with that name.
+Host for PostgreSQL in database.yml? (leave blank to use default socket conn.)	
+	Leave blank
+Password for PostgreSQL user dw? 
+	Choose what you want
+
+--------
+
+Run app in development mode
+
+Start server:	rails server (from within project directory)
+Access app:	http://localhost:3000/
+Stop server:	Control-C
+
+If the example app contains a login, the existing users and their credentials are in config/secrets.yml.
+
+--------
+
+Going over to production: set up Heroku account
+
+Create a Heroku account:	https://heroku.com
+Install the Heroku Toolbelt:	https://toolbelt.heroku.com/
+Create SSH keys:		ssh-keygen -t rsa
+Add public key to Heroku:	heroku keys:add
+
+--------
+
+Create app container on Heroku
+
+heroku create hello_world
+
+Note: http://railsapps.github.io/rails-heroku-tutorial.html contains most of the following information about deploying to Heroku.
+
+--------
+
+Precompile assets
+
+Note: Rails compresses (compiles) CSS and JavaScript files (assets) before sending them to the browser. The below command makes sure that this is done at the time of deployment and not at the time of every single request.
+
+rake assets:precompile
+
+-------
+
+Add gem rails_12factor for production mode
+
+Note: this seems to be missing from the example app. It makes sure that the assets are rendered correctly by Heroku.
+
+In Gemfile, add:
+gem 'rails_12factor', group: :production
+
+--------
+
+Adapt config/secrets.yml and Heroku environment vars
+
+All the values in secrets.yml must evaluate to meaningful strings. They can be pure strings, or they can be of the form ENV["VARIABLE"], in which case they evaluate to the value of the UNIX environment variable VARIABLE.
+
+Set environment vars on Heroku:		heroku config:set VAR=value
+Display all Heroku environment vars:	heroku config
+
+--------
+
+Add Procfile for Heroku
+
+Note: this sets to use the Thin application server on Heroku instead of the less robust WEBrick.
+
+Create file Procfile in root of project directory with content:
+web: bundle exec rails server thin -p $PORT -e $RACK_ENV
+
+--------
+
+Make a Git commit
+
+Note: the Git repository has been created by Rails Composer.
+
+--------
+
+Push app to Heroku
+
+Note: this pushes the head of the master branch of the git repository to Heroku. After every local change, a git commit is necessary before executing below command again.
+
+git push heroku master
+
+--------
+
+Set up database on Heroku
+
+heroku run rake db:migrate
+heroku run rake db:seed
+
+--------
+
+Open app in default web browser
+
+heroku open
+
+--------

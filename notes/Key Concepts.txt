@@ -1,0 +1,37 @@
+Büchi Automata
+--------------
+Nondeterministic (main interest)
+Deterministic Büchi automata are less expressive than nondeterministic ones
+Source: Safra, 1988 (2), p. 2
+
+Muller Automata
+---------------
+Deterministic (main interest)
+Source: Safra, 1988 (2), p. 2
+
+Acceptance Conditions of Omega-Automata
+---------------------------------------
+- Büchi: at least one accepting state in the set of infinitely visited states
+- Muller: whole set of infinitely visited states must be one of the designated sets
+- Rabin: for at least one pair of sets of states, on state in the first set is visited infinitely, and none in the second set is visited infinitely often
+- Streett: for all sets of pairs, if at least one state of the first set is visited infinitely often, then at least one state of the second set must be visited infinitely often
+Source: Safra, 1988 (2), p. 4
+
+McNaughton's Theorem
+--------------------
+Languages accepted by det. Muller == Languages accepted by nondet. Büchi automata
+== regular w-languages
+Source: Safra, 1988 (2), p. 2
+
+w-Regular Languages
+-------------------
+All the languages accepted by:
+Nondeterministic.
+- Büchi automata
+Deterministic and nondeterministic:
+- Muller automata
+- Rabin automata
+- Streett automata
+- Parity automata
+Source: http://en.wikipedia.org/wiki/Omega_automaton
+The class of w-languages recognised by deterministic Büchi automata is weaker, i.e. there are languages that can be recognised by a nondeterministic Büchi automaton, but not by a deterministic one.
