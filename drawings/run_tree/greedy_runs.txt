@@ -1,0 +1,5 @@
+A = there exists an accepting run from state q0 to state qn on word x
+B = the rightmost run from q0 to qn on x in the run tree is accepting
+
+A  -> B
+¬B -> ¬A
