@@ -15,37 +15,41 @@
 #     classes/
 #         ch/unifr/goal/myplugin/<.class files>   (after compilation)
 #
-# Usage: ./plugin_build.sh <directory>
+# Usage: ./plugin_build.sh <directory> [compileonly]
 
 
 # Exit if any command returns a non-zero status (i.e. error)
 set -e
 
-if [ $# -ne 1 ]; then
+if [ "$1" = "-h" ] || [ "$1" = "help" ] || [ $# -lt 1 ] || [ $# -gt 2 ]; then
   echo "Usage:"
-  echo "    $(basename $0) <directory>"
-  echo "Notes:"
-  echo "    <directory> is the directory of the GOAL plugin to be compiled and"
-  echo "    installed."
+  echo "    $(basename $0) <directory> [compileonly]"
+  echo "Arguments:"
+  echo -e "    <directory>\t\tRoot directory of the plugin"
+  echo -e "    [compileonly]\tOPTIONAL: if present, just compiles the source code,"
+  echo -e "    \t\t\tbut doesn't install the plugin"
+  echo "Description:"
+  echo "    Compiles the GOAL plugin located in <directory> and installs it in the"
+  echo "    GOAL system folder. The next execution of GOAL will include the plugin."
+  echo "    For removing all custom plugins from GOAL, use plugin_clear.sh."
   exit 0
 fi
 
 if [ "$(which goal)" == "" ]; then
-  echo "Error: you must add the GOAL folder (containing plugins/) to your PATH."
-  echo "Aborting"
-  exit 0
+  echo "ERROR: make sure 'which goal' points to the GOAL launching script by, for"
+  echo "example, adding the GOAL system folder to the PATH"
+  exit 1
 fi
 
 PLUGIN_DIR=$1
-cd $PLUGIN_DIR
 
 # Get path to the directory containing the source files, relative to the plugin
 # directory. The plugin directory is per convention the package name of the
 # plugin code. I.e. the plugin in directory ch.unifr.example has its source
-# files in sources/ch/unifr/example (relative to ch.unifr.example).
-PLUGIN_NAME=$(basename $(pwd))
+# files in ch.unifr.example/sources/ch/unifr/example.
+PLUGIN_NAME=$(basename $PLUGIN_DIR)
 IFS='.' read -a ARRAY <<< $PLUGIN_NAME
-SOURCE_PATH='sources'
+SOURCE_PATH="sources"
 for ELT in ${ARRAY[@]}; do SOURCE_PATH=$SOURCE_PATH/$ELT; done
 
 # The standard GOAL plugins that must be added to the classpath for compilation
@@ -64,22 +68,22 @@ if [ ! -d $GUI ]; then unzip ${GUI}.zip -d $GUI >/dev/null; fi
 # Compilation
 # -----------
 CLASSPATH=$CORE/classes:$CMD/classes:$GUI/classes
-
 # The existing GOAL classes seem to have been compiled with and for Java 1.6.
-# That means that new plugin code has to be compiled for Java 1.6 too
+# That means that new plugin code has to be compiled for Java 1.6 as well
 # (I encountered runtime problems when compiling a plugin for Java 1.7). This
 # requires setting -source and -target and the bootstrap classpath. The
 # bootstrap classpath should probably actually be an rt.jar of a 1.6 JDK.
-# However, I just have a 1.7 JDK, and using it helps at leat omit a warning.
-# ADAPT THIS (according to your system):
+# However, I just have a 1.7 JDK, and using it helps at least omit a warning.
+# ADAPT THE LOCATION OF THE RT.JAR ACCORDING TO YOUR SYSTEM
 BOOTSTRAP_CLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar
 
-echo "Compiling sources..."
+echo -n "Compiling sources... "
 javac -classpath $CLASSPATH \
   -Xbootclasspath:$BOOTSTRAP_CLASSPATH -source 1.6 -target 1.6 \
-  -d classes $SOURCE_PATH/*.java
+  -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
 echo "Done"
 
+if [ "$2" = "compileonly" ]; then exit 0; fi
 
 # Installation
 # ------------

@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-16" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Structure label-on="Transition" type="FiniteStateAutomaton">
     <Name/>
     <Description/>
     <Formula/>
-    <Alphabet type="Propositional">
-        <Proposition>a</Proposition>
-        <Proposition>b</Proposition>
+    <Alphabet type="Classical">
+        <Symbol>a</Symbol>
+        <Symbol>b</Symbol>
     </Alphabet>
     <StateSet>
         <State sid="0">

@@ -8,3 +8,4 @@
 *.gem
 *.rbc
 .DS_Store
+*.class

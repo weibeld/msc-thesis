@@ -92,7 +92,7 @@ echo -e "States (n)\t\t$N" | indent
 echo "Output automaton"
 M=$(states $OUT)
 echo -e "States (m)\t\t$M" | indent
-# State growth from the input to the output automaton
+# State growth from the input (n) to the output (m) automaton
 # We want to have n and m in a relation of the form m = (xn)^n. To find x, we
 # have to calculate x = nth_root(m)/n. The nth root of m can be calculated by
 # e^(ln(m)/n), thus x = e^(ln(m)/n)/n.

@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<!--
+This manifest and the code of this example plugin add an additional Büchi
+complementation construction to GOAL: as a menu item in the GUI, and as an
+option to the 'complement' command on the command line.
+-->
+
+<plugin id="ch.unifr.goal.complement" version="0.0.1">
+  
+  <!-- The plugins whose code is accessed by this plugin -->
+  <requires>
+    <import plugin-id="org.svvrl.goal.core" />
+    <import plugin-id="org.svvrl.goal.gui" />
+    <import plugin-id="org.svvrl.goal.cmd" />
+  </requires>
+
+
+  <!-- The location of the code of this plugin -->
+  <runtime>
+    <library id="ch.unifr.goal.complement" path="classes/" type="code">
+      <!-- Uncomment if other plugins need to access the code of this plugin -->
+      <!-- <export prefix="*" /> -->
+    </library>
+  </runtime>
+
+
+  <!-- Extending the GUI menu with an additional menu item: an item under the
+       sub-menu Automaton > Complement -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FribourgComplementAction">
+    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+    <parameter id="location" value="first" />
+  </extension>
+
+
+  <!-- Extending the command line command 'complement' with an additional
+       algorithm, i.e. 'goal complement -m fribourg foo.gff' -->
+  <extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementCommand" id="FribourgComplementExtension">
+    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementExtension" />
+    <!-- The name of the command on the command line -->
+    <parameter id="name" value="fribourg" />
+  </extension>
+
+</plugin>
