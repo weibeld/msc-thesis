@@ -54,6 +54,17 @@ public class STState extends FSAState {
     this.setLabel(s);
   }
 
+  public boolean containsColor2() {
+    for (Component c : components) {
+      if (c.getColor() == 2) return true;
+    }
+    return false;
+  }
+
+  public int colorOfRightmostComponent() {
+    return components.get(components.size()-1).getColor();
+  }
+
 
 
   public class Component {

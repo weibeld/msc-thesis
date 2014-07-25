@@ -27,7 +27,7 @@ public class FribourgComplementAction extends AutomatonOperationAction<FSA, FSA>
   /* Abstract method from WindowAction */
   @Override
   public String getToolTip() {
-    return "The ground-breaking Büchi complementation construction from the University of Fribourg.";
+    return "The ground-breaking Büchi complementation algorithm using a subset-tuple construction.";
   }
 
 

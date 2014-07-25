@@ -9,18 +9,23 @@
     </Alphabet>
     <StateSet>
         <State sid="0">
-            <Y>100</Y>
-            <X>100</X>
+            <Y>191</Y>
+            <X>96</X>
             <Properties/>
         </State>
         <State sid="1">
-            <Y>100</Y>
-            <X>220</X>
+            <Y>96</Y>
+            <X>191</X>
             <Properties/>
         </State>
         <State sid="2">
-            <Y>100</Y>
-            <X>340</X>
+            <Y>191</Y>
+            <X>286</X>
+            <Properties/>
+        </State>
+        <State sid="3">
+            <Y>286</Y>
+            <X>191</X>
             <Properties/>
         </State>
     </StateSet>
@@ -31,54 +36,62 @@
         <Transition tid="0">
             <From>0</From>
             <To>1</To>
-            <Label>a</Label>
+            <Label>b</Label>
             <Properties/>
         </Transition>
         <Transition tid="1">
             <From>0</From>
             <To>1</To>
-            <Label>b</Label>
-            <Properties/>
-        </Transition>
-        <Transition tid="2">
-            <From>0</From>
-            <To>0</To>
             <Label>a</Label>
             <Properties/>
         </Transition>
-        <Transition tid="3">
-            <From>0</From>
-            <To>0</To>
+        <Transition tid="2">
+            <From>1</From>
+            <To>2</To>
             <Label>b</Label>
             <Properties/>
         </Transition>
-        <Transition tid="4">
+        <Transition tid="3">
             <From>1</From>
+            <To>2</To>
+            <Label>a</Label>
+            <Properties/>
+        </Transition>
+        <Transition tid="4">
+            <From>2</From>
             <To>1</To>
             <Label>b</Label>
             <Properties/>
         </Transition>
         <Transition tid="5">
-            <From>1</From>
-            <To>2</To>
+            <From>2</From>
+            <To>1</To>
             <Label>a</Label>
             <Properties/>
         </Transition>
         <Transition tid="6">
             <From>2</From>
-            <To>2</To>
-            <Label>a</Label>
+            <To>3</To>
+            <Label>b</Label>
             <Properties/>
         </Transition>
         <Transition tid="7">
-            <From>2</From>
-            <To>2</To>
+            <From>3</From>
+            <To>0</To>
             <Label>b</Label>
+            <Properties/>
+        </Transition>
+        <Transition tid="8">
+            <From>3</From>
+            <To>3</To>
+            <Label>a</Label>
             <Properties/>
         </Transition>
     </TransitionSet>
     <Acc type="Buchi">
+        <StateID>0</StateID>
         <StateID>1</StateID>
+        <StateID>3</StateID>
     </Acc>
     <Properties/>
 </Structure>
