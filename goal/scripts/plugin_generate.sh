@@ -1,11 +1,12 @@
 #!/bin/bash
-# dw-26.05.2014
 
 # Generates an example JPF plugin for GOAL in the specified directory. The
 # directory has to be a Java package name (the package of the plugin class),
 # and will be created. The plugin is ready to build with plugin_build.sh.
 # The plugin adds a dummy Büchi complementation construction to the GOAL GUI
 # and the command line.
+#
+# Daniel Weibel, 26.05.2014
 #
 # Usage: ./plugin_generate.sh <directory>
 

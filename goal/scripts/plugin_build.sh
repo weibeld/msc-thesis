@@ -1,5 +1,4 @@
 #!/bin/bash
-# dw-26.05.2014
 
 # Compiles and installs a JPF plugin for GOAL. Can be executed from anywhere.
 # Assumes that the name of the plugin folder is the package name of the Java
@@ -7,13 +6,15 @@
 # to generate a working example GOAL plugin. Assumes that the 'goal' command
 # is in the PATH.
 #
-# A typical plugin has the structure:
+# A typical JPF (Java Plugin Framework) plugin has the structure:
 # ch.unifr.goal.myplugin/
 #     plugin.xml
 #     sources/
 #         ch/unifr/goal/myplugin/<.java files>
 #     classes/
 #         ch/unifr/goal/myplugin/<.class files>   (after compilation)
+#
+# Daniel Weibel, 26.05.2014
 #
 # Usage: ./plugin_build.sh <directory> [compileonly]
 
@@ -25,13 +26,16 @@ if [ "$1" = "-h" ] || [ "$1" = "help" ] || [ $# -lt 1 ] || [ $# -gt 2 ]; then
   echo "Usage:"
   echo "    $(basename $0) <directory> [compileonly]"
   echo "Arguments:"
-  echo -e "    <directory>\t\tRoot directory of the plugin"
+  echo -e "    <directory>\t\tRoot directory of the plugin to compile and install"
   echo -e "    [compileonly]\tOPTIONAL: if present, just compiles the source code,"
   echo -e "    \t\t\tbut doesn't install the plugin"
   echo "Description:"
   echo "    Compiles the GOAL plugin located in <directory> and installs it in the"
-  echo "    GOAL system folder. The next execution of GOAL will include the plugin."
-  echo "    For removing all custom plugins from GOAL, use plugin_clear.sh."
+  echo "    GOAL system folder. The next run of GOAL will include the plugin. For"
+  echo "    removing all user-added plugins from GOAL, you can use plugin_clean.sh."
+  echo "Important:"
+  echo "    You have to adapt the value of the variable BOOTSTRAP_CLASSPATH in the"
+  echo "    script according to your system, in order for the compilation to work."
   exit 0
 fi
 
@@ -92,7 +96,3 @@ echo "Installing plugin at $GOAL_DIR/plugins"
 # to copy the folder and not the content.
 PLUGIN_DIR=$(dirname $PLUGIN_DIR)/$(basename $PLUGIN_DIR)
 cp -r $PLUGIN_DIR $GOAL_DIR/plugins
-
-
-
-

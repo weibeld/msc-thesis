@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Wrapper script for executing the GOAL Büchi complementation algorithms in the
-# command line mode. The main difference to using GOAL directly from the
-# command line, is that this script outputs some statistics for each run of an
-# algorithm.
+# Wrapper script for executing the GOAL Büchi complementation algorithms from
+# the command line. The main difference to using GOAL directly is that this
+# script measures the execution time and displays the number of states of the
+# input and output automaton and the state growth. More statistics could be
+# added.
 #
 # Daniel Weibel, 18.07.2014
 #
@@ -40,9 +41,9 @@ if [ "$1" = "help" ] || [ "$1" = "-h" ] || [ $# -lt 2 ] || [ $# -gt 3 ]; then
   exit 0
 fi
 
-if [ "$(which goal)" = "" ]; then
-  echo "You seem to not have GOAL installed"
-  echo "Make sure 'which goal' points to the GOAL executable"
+if [ "$(which goal)" == "" ]; then
+  echo "ERROR: make sure 'which goal' points to the GOAL launching script by, for"
+  echo "example, adding the GOAL system folder to the PATH"
   exit 1
 fi
 

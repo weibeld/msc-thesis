@@ -1,6 +1,8 @@
 package ch.unifr.goal.complement;
 
-/* Binds an action to the command line command defined in plugin.xml */
+/* Binds an action to the command line command (option to complement) that is
+ * defined in plugin.xml */
+/* Daniel Weibel, 25.07.2014 */
 
 import java.util.List;
 import org.svvrl.goal.cmd.AbstractCommandExtension;

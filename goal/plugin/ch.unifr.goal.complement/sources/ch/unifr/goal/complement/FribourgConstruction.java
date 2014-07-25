@@ -1,6 +1,7 @@
 package ch.unifr.goal.complement;
 
 /* Contains the actual complementation construction */
+/* Daniel Weibel, 25.07.2014 */
 
 import org.svvrl.goal.core.Editable;
 import org.svvrl.goal.core.Message;
@@ -53,21 +54,13 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   public FSA complement() {
     if (complement != null) return complement;
     fireReferenceChangedEvent(); // Method of AbstractControllableAlgorithm
-    // getInput: method of ComplementConstruction. Returns automaton to be
-    // complemented.
+    // getInput: method of ComplementConstruction. Returns automaton to be complemented.
     complement = construction(getInput().clone());
     return complement;
   }
 
 
-
   private FSA construction(FSA in) {
-
-    // if (true) {
-    // in.setCompleteTransitions(false);
-    // in.updateTransitionDisplay();
-    // return in;
-    // }
 
     // The input automaton: alphabet, initial state, and accepting states
     String[] inAlphabet = in.getAlphabet();
@@ -77,51 +70,42 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     // Make the input automaton complete before starting the construction
     if (!isComplete(in)) makeComplete(in);
 
-    // The output automaton
+    // The output automaton: alphabet and accepting states
     FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
     out.expandAlphabet(inAlphabet);
-
-    // List of references to all the states in the output automaton so far in
-    // the construction. We need this to be able to loop through all the states
-    // in our automaton in order to determine if a given state already exists.
-    StateSet outStates = new StateSet();
-
     BuchiAcc outAccStates = new BuchiAcc();
 
-    // We take care of giving IDs to the states in the out automaton ourselves
+    // We take care of giving IDs to the states in the output automaton ourselves
     int id = 0;
 
-    // The subset-tuple states to process
+    // The states of the output automaton whose successors we have to determine
     StateSet pendingSTStates = new StateSet();
 
+    // We do the same construction twice with slight differences. Iteration 1
+    // constructs the upper part, and iteration 2 the lower part of the automaton.
     for (int i = 1; i <= 2; i++) {
-
-      if (i == 1) {
       // Adding the initial state
-      STState outInitState = new STState(id++);
-      outInitState.addLeft(outInitState.new Component(inInitState, -1));
-      outInitState.makeLabel();
-      out.addState(outInitState);
-      out.setInitialState(outInitState);
-      pendingSTStates.add(outInitState);
-      outStates.add(outInitState);
+      if (i == 1) {
+        STState outInitState = new STState(id++);
+        outInitState.addLeft(outInitState.new Component(inInitState, -1));
+        outInitState.makeLabel();
+        out.addState(outInitState);
+        out.setInitialState(outInitState);
+        pendingSTStates.add(outInitState);
       }
-      else if (i == 2) {
-        pendingSTStates = outStates.clone();
-      }
+      // In the second stage we process all the states of the upper automaton again
+      else if (i == 2) pendingSTStates = new StateSet(out.getStates());
       
       while (!pendingSTStates.isEmpty()) {
-
+        // The state whose successors we are going to determine
         STState currentSTState = (STState) pendingSTStates.pollFirst();
-
         for (String symbol : inAlphabet) {
-          // The "symbol"-successor of the current subset-tuple state
+          // The current state's successor that we are going to construct
           STState succSTState = new STState(id);
-
+          // The input automaton states that have already occured in the right-to-left traversal
           StateSet seenFSAStates = new StateSet();
-
-          // Iterate through the components of this state from right to left
-          for (int j = currentSTState.numberOfComponents() - 1; j >= 0; j--) {
+          // Iterate through the components of the current state from right to left
+          for (int j = currentSTState.numberOfComponents()-1; j >= 0; j--) {
             Component currentComponent = currentSTState.getComponent(j);
             StateSet succFSAStates = in.getSuccessors(currentComponent.getStateSet(), symbol);
             succFSAStates.removeAll(seenFSAStates);
@@ -132,15 +116,18 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
               if (inAccStates.contains(state)) accFSAStates.add(state);
               else naccFSAStates.add(state);
             }
-
+            // One component in the current state can give birth to two new components
+            // (an accepting and a non-accepting one) in the successor state. In the
+            // following loop, the first iteration treats the accepting set and the
+            // second one the non-accepting set.
             for (int k = 0; k < 2; k++) {
               StateSet currentSet = new StateSet();
               if (k == 0) currentSet = accFSAStates;
               else if (k == 1) currentSet = naccFSAStates;
               if (currentSet.isEmpty()) continue;
               int color = -1;
-              if (i == 1) color = -1;
-              else if (i == 2) {
+              if (i == 1) color = -1;   // Stage 1 (upper part of automaton)
+              else if (i == 2) {        // Stage 2 (lower part of automaton)
                 int predColor = currentComponent.getColor();
                 if (currentSTState.containsColor2()) {
                   if (predColor == 0 && k != 0) color = 0;
@@ -152,32 +139,32 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                   else color = 2;
                 }
               }
+              // Add the component as the new leftmost component of the successor state
               succSTState.addLeft(succSTState.new Component(currentSet, color));
             }
+          } // End of iterating through all the components of the current state
 
-          }
-
-          // Does succSTState already exist in the automaton?
+          // Does succSTState already exist in the automaton? The label of a
+          // serves as a state's "signature" that is used for comparing if two
+          // states are the same
           succSTState.makeLabel();
           boolean alreadyExists = false;
-          for (State existingSTState : outStates) {
-            if (succSTState.getLabel().equals(existingSTState.getLabel())) {
-              succSTState = (STState) existingSTState;
+          for (State existingState : out.getStates()) {
+            if (succSTState.getLabel().equals(existingState.getLabel())) {
+              succSTState = (STState) existingState;
               alreadyExists = true;
               break;
             }
           }
           if (!alreadyExists) {
-            // Optimisation of Sec. IV.E of the paper. If the rightmost component
-            // has colour 2, don't create the state.
+            // Optimisation of deleting states with rightmost component colour 2
+            // The 'continue' jumps to the head of the loop through the alphabet
             if (i == 2 && succSTState.colorOfRightmostComponent() == 2) continue;
             out.addState(succSTState);
-            outStates.add(succSTState);
             pendingSTStates.add(succSTState);
             id++;
-            if (i == 2 && !succSTState.containsColor2()) {
-              outAccStates.add(succSTState);
-            }
+            // Set states containing no colour 2 as accepting states
+            if (i == 2 && !succSTState.containsColor2()) outAccStates.add(succSTState);
           }
           out.createTransition(currentSTState, succSTState, symbol);
         }
@@ -188,48 +175,33 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     return out;
 
-
-
-    // FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
-
+    /* Automaton API summary (see API of class Automaton or FSA) */
     // States
     // FSAState q0 = out.createState();
-    // FSAState q1 = out.createState();
-    // FSAState q2 = out.createState();
-    // FSAState q3 = new FSAState(8);
-    // out.addState(q3);
+    // FSAState q1 = new FSAState(8);
+    // out.addState(q1);
 
     // Initial state
     // out.setInitialState(q0);
 
     // Accepting states
     // BuchiAcc acc = new BuchiAcc();
-    // acc.add(q0);
+    // acc.add(q1);
     // out.setAcc(acc);
-
+  
+    // Alphabet
     // out.expandAlphabet(in.getAlphabet());
 
-    // Transitions and alphabet
+    // Transitions
     // out.createTransition(q0,q0,"a");
-    // out.createTransition(q0,q0,"b");
-    // out.createTransition(q0,q1,"a");
     // out.createTransition(q0,q1,"b");
+    // out.createTransition(q1,q1,"a");
     // out.createTransition(q1,q1,"b");
-    // out.createTransition(q1,q2,"a");
-    // out.createTransition(q2,q2,"a");
-    // out.createTransition(q2,q2,"b");
-    // out.createTransition(q2,q3,"a");
 
-    // String str = "alphabet of input aut. {";
-    // for (String symbol : in.getAlphabet()) {
-    //   str += symbol + ",";
-    // }
-    // str += "}";
-
-    // q0.setLabel("" + str);
-
-    // return out;
+    // Labels
+    // q0.setLabel("s" + q0.getID());
   }
+
 
   /* Checks if the automaton passed as argument is complete (i.e. at least one
    * transition for every symbol of the alphabet out of every state), or not. */
@@ -239,6 +211,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     }
     return true;
   }
+
 
   /* Makes the incomplete automaton passed as argument complete by creating an
    * additional non-accepting "dead state" and adding all missing transitions
