@@ -12,9 +12,10 @@
 #
 # Always call nailgun_off.sh to revert the changes done by nailgun_on.sh.
 #
-# Usage: ./nailgun_on.sh
-#
 # Daniel Weibel, 22.07.2014
+#
+# Usage: ./nailgun_on.sh
+
 
 if [ $# -gt 0 ]; then
   echo "Usage:"

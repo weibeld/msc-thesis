@@ -3,9 +3,10 @@
 # Reverts the changes made by nailgun_on.sh. In particular, stops the Nailgun
 # server and reverts the goal script to the original one.
 #
-# Usage: ./nailgun_off.sh
-#
 # Daniel Weibel, 23.07.2014
+#
+# Usage: ./nailgun_off.sh
+
 
 if [ $# -gt 0 ]; then
   echo "Usage:"

@@ -1,6 +1,6 @@
 package ch.unifr.goal.complement;
 
-/* Daniel Weibel, 25.07.2014 */
+/* Author: Daniel Weibel, 25.07.2014 */
 
 import org.svvrl.goal.core.Editable;
 import org.svvrl.goal.core.Message;

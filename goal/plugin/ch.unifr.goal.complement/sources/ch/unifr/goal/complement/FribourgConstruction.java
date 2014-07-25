@@ -1,7 +1,8 @@
 package ch.unifr.goal.complement;
 
 /* Contains the actual complementation construction */
-/* Daniel Weibel, 25.07.2014 */
+
+/* Author: Daniel Weibel, 25.07.2014 */
 
 import org.svvrl.goal.core.Editable;
 import org.svvrl.goal.core.Message;

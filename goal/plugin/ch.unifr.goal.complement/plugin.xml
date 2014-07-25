@@ -2,9 +2,10 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 
 <!--
-This manifest and the code of this example plugin add an additional Büchi
-complementation construction to GOAL: as a menu item in the GUI, and as an
+This manifest and the code of this plugin add the subset-tuple Büchi
+complementation algorithm to GOAL: as a menu item in the GUI, and as an
 option to the 'complement' command on the command line.
+Daniel Weibel, 27.05.2014
 -->
 
 <plugin id="ch.unifr.goal.complement" version="0.0.1">
