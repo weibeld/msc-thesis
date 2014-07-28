@@ -1,8 +1,8 @@
 package ch.unifr.goal.complement;
 
-/* Contains the actual complementation construction */
+/* Contains the complementation construction */
 
-/* Author: Daniel Weibel, 25.07.2014 */
+/* Daniel Weibel, 25.07.2014 */
 
 import org.svvrl.goal.core.Editable;
 import org.svvrl.goal.core.Message;
@@ -50,7 +50,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
 
   /* Abstract method from ComplementConstruction. Calls the method construction
-   * which is the entry point to the complementation construction. */
+   * which contains the complementation construction. */
   @Override
   public FSA complement() {
     if (complement != null) return complement;
@@ -145,7 +145,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             }
           } // End of iterating through all the components of the current state
 
-          // Does succSTState already exist in the automaton? The label of a
+          // Does succSTState already exist in the automaton? The label of a state
           // serves as a state's "signature" that is used for comparing if two
           // states are the same
           succSTState.makeLabel();

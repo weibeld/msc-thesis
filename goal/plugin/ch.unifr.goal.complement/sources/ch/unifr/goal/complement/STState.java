@@ -1,6 +1,6 @@
 package ch.unifr.goal.complement;
 
-/* Author: Daniel Weibel, 25.07.2014 */
+/* Daniel Weibel, 25.07.2014 */
 
 import org.svvrl.goal.core.Editable;
 import org.svvrl.goal.core.Message;
@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-/* A subset-tuple state, i.e. a state of the output automton of our
+/* A subset-tuple state (STState), i.e. a state of the output automaton of our
  * complementation construction. An STState consists of an ordered list (tuple)
  * of components (class Component). */
 public class STState extends FSAState {

@@ -8,6 +8,10 @@
 #
 # Usage: ./plugin_clean.sh
 
+
+# Exit if any command returns a non-zero status (i.e. error)
+set -e
+
 if [ $# -gt 0 ]; then
   echo "Usage:"
   echo "    $(basename $0)"

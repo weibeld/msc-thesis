@@ -10,8 +10,18 @@
 #
 # Usage: complement.sh <in.gff> <algorithm> [<out.gff>]
 
+
+# Exit if any command returns a non-zero status (i.e. error)
+set -e
+
+# Some things have to be handled differently for Mac and Linux
+if   [ $(uname -s) = "Darwin" ]; then OS="Mac"
+elif [ $(uname -s) = "Linux" ];  then OS="Linux"
+else OS="Linux"
+fi
+
 indent() {
-  sed -l 's/^/    /'
+  sed 's/^/    /'
 }
 
 if [ "$1" = "help" ] || [ "$1" = "-h" ] || [ $# -lt 2 ] || [ $# -gt 3 ]; then
@@ -42,8 +52,8 @@ if [ "$1" = "help" ] || [ "$1" = "-h" ] || [ $# -lt 2 ] || [ $# -gt 3 ]; then
 fi
 
 if [ "$(which goal)" == "" ]; then
-  echo "ERROR: make sure 'which goal' points to the GOAL launching script by, for"
-  echo "example, adding the GOAL system folder to the PATH"
+  echo "ERROR: make sure 'which goal' points to the 'goal' script by, for example,"
+  echo "adding the GOAL folder to the PATH"
   exit 1
 fi
 
@@ -54,19 +64,26 @@ OUT=$3
 # If argument $3 was missing, write output automaton to a temp file that is not
 # seen by the user. The contents of this file will be displayed to the screen.
 if [ "$OUT" = "" ]; then
-  OUT=$(mktemp -t goal)
-  DISPLAY="true"
+  if   [ $OS = "Mac" ];   then OUT=$(mktemp -t goal)
+  elif [ $OS = "Linux" ]; then OUT=$(mktemp -t goal.XXXXXX); fi
+  NO_SAVE="true"
 fi
 
 # The GOAL command we are going to execute
 C="goal complement -m $ALGO -o $OUT $IN"
-# The time measurement with 'time' is a bit awkward and only used because on
-# Mac, 'date' does just have second but no millisecond output. On Linux, one
-# could measure the time before and after the run with 'date +%N'.
-TIME_FILE=$(mktemp -t goal)
-{ time INFO=$($C 2>&1); } 2>$TIME_FILE
-TIME=$(cat $TIME_FILE | grep real | cut -d m -f 2 | tr -d s)
-
+# Execution of the command including measurement of the execution time
+if [ $OS = "Linux" ]; then
+  TIME_BEFORE=$(date +%s%N) # Current time in nanoseconds
+  INFO=$($C 2>&1)
+  TIME_AFTER=$(date +%s%N)  # Current time in nanoseconds
+  TIME=$(printf "%.3f" $(echo "($TIME_AFTER-$TIME_BEFORE)/1000000000" | bc -l))
+# On Mac, 'date' does only have seconds resolution. That's why we use a more
+# awkward way to measure the time with 'time'
+elif [ $OS = "Mac" ]; then
+  TIME_FILE=$(mktemp -t goal)
+  { time INFO=$($C 2>&1); } 2>$TIME_FILE
+  TIME=$(cat $TIME_FILE | grep real | cut -d m -f 2 | tr -d s)
+fi
 
 # INFO contains the output of the GOAL command (without the output automaton).
 # If the command executed properly, this is "null", if not, it is an error msg.
@@ -76,7 +93,7 @@ if [ "$INFO" != "null" ]; then
 fi
 
 # If argument $3 was not given, then output the automaton to the screen
-if [ $DISPLAY = "true" ]; then cat $OUT; echo; fi
+if [ "$NO_SAVE" = "true" ]; then cat $OUT; echo; fi
 
 # Get the number of states of an automaton in a GFF file
 states() {
@@ -97,5 +114,5 @@ echo -e "States (m)\t\t$M" | indent
 # We want to have n and m in a relation of the form m = (xn)^n. To find x, we
 # have to calculate x = nth_root(m)/n. The nth root of m can be calculated by
 # e^(ln(m)/n), thus x = e^(ln(m)/n)/n.
-printf -v X "%.3f" $(echo "e(l($M)/$N)/$N" | bc -l)
+X=$(printf "%.3f" $(echo "e(l($M)/$N)/$N" | bc -l))
 echo -e "State growth\tm = (${X}n)^n" | indent

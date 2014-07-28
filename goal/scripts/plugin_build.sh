@@ -33,15 +33,16 @@ if [ "$1" = "-h" ] || [ "$1" = "help" ] || [ $# -lt 1 ] || [ $# -gt 2 ]; then
   echo "    Compiles the GOAL plugin located in <directory> and installs it in the"
   echo "    GOAL system folder. The next run of GOAL will include the plugin. For"
   echo "    removing all user-added plugins from GOAL, you can use plugin_clean.sh."
-  echo "Important:"
-  echo "    You have to adapt the value of the variable BOOTSTRAP_CLASSPATH in the"
-  echo "    script according to your system, in order for the compilation to work."
+  echo "Note:"
+  echo "    If there is a compiler warning of the form \"bootstrap class path not"
+  echo "    set in conjunction with -source 1.6\", you can get rid of it by setting"
+  echo "    the -Xbootclasspath option for the javac command in the script."
   exit 0
 fi
 
 if [ "$(which goal)" == "" ]; then
-  echo "ERROR: make sure 'which goal' points to the GOAL launching script by, for"
-  echo "example, adding the GOAL system folder to the PATH"
+  echo "ERROR: make sure 'which goal' points to the 'goal' script by, for example,"
+  echo "adding the GOAL folder to the PATH"
   exit 1
 fi
 
@@ -62,29 +63,46 @@ CORE=$GOAL_DIR/plugins/org.svvrl.goal.core
 CMD=$GOAL_DIR/plugins/org.svvrl.goal.cmd
 GUI=$GOAL_DIR/plugins/org.svvrl.goal.gui
 
-# The GOAL plugins are zipped by default, but must be present in unzipped to be
+# The GOAL plugins are zipped by default, but must be present unzipped to be
 # accessible by the Java compiler. Unzip them if they aren't yet.
-if [ ! -d $CORE ]; then unzip ${CORE}.zip -d $CORE >/dev/null; fi
-if [ ! -d $CMD ]; then unzip ${CMD}.zip -d $CMD >/dev/null; fi
-if [ ! -d $GUI ]; then unzip ${GUI}.zip -d $GUI >/dev/null; fi
+if [ ! -d $CORE ]; then { unzip $CORE.zip -d $CORE; rm $CORE.zip; } >/dev/null; fi
+if [ ! -d $CMD ]; then { unzip $CMD.zip -d $CMD; rm $CMD.zip; } >/dev/null; fi
+if [ ! -d $GUI ]; then { unzip $GUI.zip -d $GUI; rm $GUI.zip; } >/dev/null; fi
 
 
 # Compilation
 # -----------
 CLASSPATH=$CORE/classes:$CMD/classes:$GUI/classes
-# The existing GOAL classes seem to have been compiled with and for Java 1.6.
-# That means that new plugin code has to be compiled for Java 1.6 as well
-# (I encountered runtime problems when compiling a plugin for Java 1.7). This
-# requires setting -source and -target and the bootstrap classpath. The
-# bootstrap classpath should probably actually be an rt.jar of a 1.6 JDK.
-# However, I just have a 1.7 JDK, and using it helps at least omit a warning.
-# ADAPT THE LOCATION OF THE RT.JAR ACCORDING TO YOUR SYSTEM
-BOOTSTRAP_CLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar
+# The GOAL binaries, as obtained from the GOAL website, have been compiled for
+# Java 1.6. This mean that the code for an additional plugin has to be compiled
+# for Java 1.6 as well. (I encountered runtime problems when compiling the
+# plugin for Java 1.7.) Compiling for a specific Java version can be done by
+# setting the javac options -source and -target. Additionally, there is the
+# option -Xbootclasspath: that has to be set to the rt.jar of a Java 1.6
+# runtime environment. However, if the -Xbootclasspath: is omitted, only a
+# compiler warning results, but the compilation still seems to work correctly.
+# So, setting the -Xbootclasspath: can be seen as optional.
+# ----------
+# Adapt this to your system if using the -Xbootclasspath: option below
+# Example for Mac:
+# BOOTSTRAP_CLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.6.0_45.jdk/Contents/Home/jre/lib/rt.jar
+# Example for Linux/Debian:
+# BOOTSTRAP_CLASSPATH=/usr/lib/jvm/java-6-openjdk-i386/jre/lib/rt.jar
 
-echo -n "Compiling sources... "
+# With -Xbootclasspath (no compiler warning)
+# echo -n "Compiling sources... "
+# javac -classpath $CLASSPATH \
+#   -Xbootclasspath:$BOOTSTRAP_CLASSPATH \
+#   -source 1.6 -target 1.6 \
+#   -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
+# echo "Done"
+
+# Without -Xbootclasspath (provokes a compiler warning)
+echo "Compiling sources... "
 javac -classpath $CLASSPATH \
-  -Xbootclasspath:$BOOTSTRAP_CLASSPATH -source 1.6 -target 1.6 \
+  -source 1.6 -target 1.6 \
   -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
+echo "-> For fixing the \"bootstrap class path\" warning, set -Xbootclasspath in script"
 echo "Done"
 
 if [ "$2" = "compileonly" ]; then exit 0; fi

@@ -2,7 +2,7 @@ package ch.unifr.goal.complement;
 
 /* Binds an action to clicking on the menu item that is defined in plugin.xml */
 
-/* Author: Daniel Weibel, 25.07.2014 */
+/* Daniel Weibel, 25.07.2014 */
 
 import org.svvrl.goal.core.FinishedException;
 import org.svvrl.goal.core.aut.Automaton;
