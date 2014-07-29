@@ -19,6 +19,7 @@ import org.svvrl.goal.core.aut.fsa.FSAState;
 
 import ch.unifr.goal.complement.STState;
 import ch.unifr.goal.complement.STState.Component;
+import ch.unifr.goal.complement.FribourgOptions;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
