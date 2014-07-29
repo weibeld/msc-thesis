@@ -1,0 +1,102 @@
+\documentclass[a4paper]{article}
+
+\usepackage{slashbox}
+\usepackage{a4wide}
+
+% More table cell spacing (standard Latex thing)
+\renewcommand{\arraystretch}{1.5}
+\renewcommand{\tabcolsep}{0.2cm}
+
+\parindent 0pt
+\parskip 5pt
+
+\begin{document}
+
+
+\subsection*{How to determine the color of component $j$ in state $q$?}
+
+The state $q$ is the successor state of state $p$.
+
+\begin{itemize} \itemsep2em
+\item If $p$ contains no component with color 2 ($0\,|\,1\,|\,01$)
+
+\begin{tabular}{|c|c|c|}
+\hline
+\backslashbox{The\\color of the\\predecessor component of $q(j)$ is...}{Component $q(j)$ is...} & non-accepting & accepting \\
+\hline
+0 & 0 & 2 \\
+\hline
+1 & 2 & 2 \\
+\hline
+\end{tabular}
+
+\item If $p$ contains one or more components with color 2 ($2\,|\,02\,|\,12\,|\,012$)
+
+\begin{tabular}{|c|c|c|}
+\hline
+\backslashbox{The\\color of the\\predecessor component of $q(j)$ is...}{Component $q(j)$ is...} & non-accepting & accepting \\
+\hline
+0 & 0 & 1 \\
+\hline
+1 & 1 & 1 \\
+\hline
+2 & 2 & 2 \\
+\hline
+\end{tabular}
+
+\end{itemize}
+
+
+
+\pagebreak
+
+
+
+\subsection*{How to determine the color of component $j$ in state $q$?}
+
+\textbf{Equivalent alternative, as discussed at the meeting.}
+
+The state $q$ is the successor state of state $p$.
+
+\begin{itemize} \itemsep2em
+\item If $p$ contains no component with color 2 or 1 ($0$)
+
+\begin{tabular}{|c|c|c|}
+\hline
+\backslashbox{The\\color of the\\predecessor component of $q(j)$ is...}{Component $q(j)$ is...} & non-accepting & accepting \\
+\hline
+0 & 0 & 2 \\
+\hline
+\end{tabular}
+
+\item If $p$ contains at least one component with color 1, but none with color 2 ($1\,|\,01$)
+
+\begin{tabular}{|c|c|c|}
+\hline
+\backslashbox{The\\color of the\\predecessor component of $q(j)$ is...}{Component $q(j)$ is...} & non-accepting & accepting \\
+\hline
+0 & 0 & 1 \\
+\hline
+1 & 1 & 2 \\
+\hline
+\end{tabular}
+
+Note: that a state contains color 1 but not color 2 can only happen if a run through a color 2 component previously died (color 2 disappeared).
+
+\item If $p$ contains one or more components with color 2 ($2\,|\,02\,|\,12\,|\,012$)
+
+\begin{tabular}{|c|c|c|}
+\hline
+\backslashbox{The\\color of the\\predecessor component of $q(j)$ is...}{Component $q(j)$ is...} & non-accepting & accepting \\
+\hline
+0 & 0 & 1 \\
+\hline
+1 & 1 & 1 \\
+\hline
+2 & 2 & 2 \\
+\hline
+\end{tabular}
+
+\end{itemize}
+
+\end{document}
