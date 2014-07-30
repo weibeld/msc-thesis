@@ -12,45 +12,40 @@ import org.svvrl.goal.gui.ProgressDialog;
 import org.svvrl.goal.gui.Window;
 import org.svvrl.goal.gui.action.AutomatonOperationAction;
 import org.svvrl.goal.gui.action.ExecutionException;
+import org.svvrl.goal.gui.action.AbstractComplementAction;
+import org.svvrl.goal.core.Properties;
+import org.svvrl.goal.gui.pref.OptionsDialog;
 
-/* Class Hierarchy: Object > AbstractAction > WindowAction > EditableAction >
- * AutomatonOperationAction
- * AutomatonOperationAction: abstraction for operations on automata that produce
- * new automata. */
-public class FribourgComplementAction extends AutomatonOperationAction<FSA, FSA> {
 
-  /* Constructor
-   * The string argument to super() is the label of the menu item. */
+/* Object > AbstractAction > WindowAction > EditableAction > AutomatonOperationAction >
+ * AbstractComplementAction */
+public class FribourgComplementAction extends AbstractComplementAction<FribourgConstruction> {
+
   public FribourgComplementAction(Window win) {
     super(win, "Fribourg Construction");
   }
 
+  @Override // Abstract method of AbstractComplementAction
+  protected FribourgConstruction getConstruction(FSA in, Properties o) {
+    FribourgOptions options;
+    if (o instanceof FribourgOptions) options = (FribourgOptions) o;
+    else options = new FribourgOptions(o);
+    return new FribourgConstruction(in, options);
+  }
 
-  /* Abstract method from WindowAction */
-  @Override
+  @Override // Abstract method of AbstractComplementAction
+  protected OptionsDialog<FribourgOptions> getOptionsDialog(Window win) {
+    return new OptionsDialog<FribourgOptions>(win, new FribourgComplementOptionsPanel());
+  }
+
+  @Override // Abstract method of AbstractComplementAction
+  protected Class<FribourgConstruction> getConstructionClass() {
+    return FribourgConstruction.class;
+  }
+
+  @Override // Abstract method of WindowAction
   public String getToolTip() {
     return "The ground-breaking Büchi complementation algorithm using a subset-tuple construction.";
-  }
-
-
-  /* Abstract method from AutomatonOperationAction
-   * Returns true if a specified automaton is supported by this action. */
-  @Override
-  public boolean isApplicable(Automaton aut) {
-    // Applicable only for nondeterministic Büchi automata
-    return OmegaUtil.isNBW(aut);
-  }
-
-
-  /* Abstract method from WindowAction
-   * Binds a concrete action to this menu item. */
-  @Override
-  public FSA execute(ProgressDialog dialog) throws ExecutionException, FinishedException {
-    // getInput: method of EditableAction. Returns the input of this action,
-    // i.e. the FSA to be complemented.
-    // complement: returns an FSA (the complement of the input automaton of
-    // FribourgConstruction).
-    return new FribourgConstruction(getInput().clone()).complement();
   }
 
 }

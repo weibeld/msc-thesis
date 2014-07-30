@@ -85,25 +85,25 @@ CLASSPATH=$CORE/classes:$CMD/classes:$GUI/classes
 # ----------
 # Adapt this to your system if using the -Xbootclasspath: option below
 # Example for Mac:
-# BOOTSTRAP_CLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.6.0_45.jdk/Contents/Home/jre/lib/rt.jar
+BOOTSTRAP_CLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar
 # Example for Linux/Debian:
 # BOOTSTRAP_CLASSPATH=/usr/lib/jvm/java-6-openjdk-i386/jre/lib/rt.jar
 
 # With -Xbootclasspath (no compiler warning)
-# echo -n "Compiling sources... "
-# javac -classpath $CLASSPATH \
-#   -Xbootclasspath:$BOOTSTRAP_CLASSPATH \
-#   -source 1.6 -target 1.6 \
-#   -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
-# echo "Done"
-
-# Without -Xbootclasspath (provokes a compiler warning)
-echo "Compiling sources... "
+echo -n "Compiling sources... "
 javac -classpath $CLASSPATH \
+  -Xbootclasspath:$BOOTSTRAP_CLASSPATH \
   -source 1.6 -target 1.6 \
   -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
-echo "-> For fixing the \"bootstrap class path\" warning, set -Xbootclasspath in script"
 echo "Done"
+
+# Without -Xbootclasspath (provokes a compiler warning)
+# echo "Compiling sources... "
+# javac -classpath $CLASSPATH \
+#   -source 1.6 -target 1.6 \
+#   -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
+# echo "-> For fixing the \"bootstrap class path\" warning, set -Xbootclasspath in script"
+# echo "Done"
 
 if [ "$2" = "compileonly" ]; then exit 0; fi
 

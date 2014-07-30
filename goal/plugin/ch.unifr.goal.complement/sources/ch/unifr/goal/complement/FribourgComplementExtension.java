@@ -20,17 +20,30 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
   /* Class hierarchy: Object > AbstractExpression > CommandExpression >
    * ComplementCommand */
   class FribourgComplementCommand extends ComplementCommand {
+
+    private FribourgOptions options;
+
     /* Constructor
      * args: the command line arguments */
-    public FribourgComplementCommand(List<Expression> args) {
+    public FribourgComplementCommand(List<Expression> args) throws IllegalArgumentException {
       super(args);
+      // Create FribourgOptions with default values
+      // TODO: can't call set<Option>() directly because of the restriction that
+      // ignoreRightColor2 is only accepted if makeComplete is true.
+      options = new FribourgOptions();
+      for (Expression arg : args) {
+        String opt = arg.toString();
+        if (opt.equals("-c")) options.setMakeComplete(true);
+        else if (opt.equals("-r2")) options.setIgnoreRightColor2(true);
+        else throw new IllegalArgumentException("Unknown option: " + opt);
+      }
     }
     /* Abstract method from ComplementCommand
      * Returns the FribourgConstruction which is the same used by the GUI
      * class FribourgComplementAction. */
     @Override
     public ComplementConstruction<?, ?> getComplementConstruction(FSA in) {
-      return new FribourgConstruction(in);
+      return new FribourgConstruction(in, options);
     }
   }
 

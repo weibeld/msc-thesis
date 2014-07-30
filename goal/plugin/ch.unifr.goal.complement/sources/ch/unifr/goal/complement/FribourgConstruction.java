@@ -17,6 +17,8 @@ import org.svvrl.goal.core.aut.AlphabetType;
 import org.svvrl.goal.core.aut.Position;
 import org.svvrl.goal.core.aut.fsa.FSAState;
 
+import org.svvrl.goal.core.Properties;
+
 import ch.unifr.goal.complement.STState;
 import ch.unifr.goal.complement.STState.Component;
 import ch.unifr.goal.complement.FribourgOptions;
@@ -33,6 +35,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
    * executed before. */
   private FSA complement = null;
 
+  private FribourgOptions options;
+
 
   /* Constructor
    * in is the input automaton to this construction. */
@@ -40,6 +44,19 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     super(in);
     if (!OmegaUtil.isNBW(in))
       throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
+  }
+
+  /* Constructor with options. Is the other constructor still needed? */
+  public FribourgConstruction(FSA in, FribourgOptions options) {
+    super(in);
+    if (!OmegaUtil.isNBW(in))
+      throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
+    this.options = options;
+  }
+
+  @Override // Method of interface Algorithm
+  public FribourgOptions getOptions() {
+    return options;
   }
 
 
@@ -57,10 +74,29 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     if (complement != null) return complement;
     fireReferenceChangedEvent(); // Method of AbstractControllableAlgorithm
     // getInput: method of ComplementConstruction. Returns automaton to be complemented.
-    complement = construction(getInput().clone());
+    complement = testConstruction(getInput().clone());
     return complement;
   }
 
+  // Check if the options work
+  private FSA testConstruction(FSA in) {
+    FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
+    FSAState q0 = out.createState();
+    out.setInitialState(q0);
+    BuchiAcc acc = new BuchiAcc();
+    acc.add(q0);
+    out.setAcc(acc);
+    out.expandAlphabet(in.getAlphabet());
+
+    String s = "Options: MakeComplete=";
+    if (getOptions().isMakeComplete()) s += "true, ";
+    else s += "false, ";
+    s += "IgnoreRightColor2=";
+    if (getOptions().isIgnoreRightColor2()) s += "true";
+    else s += "false";
+    q0.setLabel(s);
+    return out;
+  }
 
   private FSA construction(FSA in) {
 
@@ -177,7 +213,12 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     return out;
 
+
     /* Automaton API summary (see API of class Automaton or FSA) */
+
+    // Automaton
+    // FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
+
     // States
     // FSAState q0 = out.createState();
     // FSAState q1 = new FSAState(8);
