@@ -2,22 +2,12 @@ package ch.unifr.goal.complement;
 
 /* Daniel Weibel, 25.07.2014 */
 
-import org.svvrl.goal.core.Editable;
-import org.svvrl.goal.core.Message;
-import org.svvrl.goal.core.aut.BuchiAcc;
-import org.svvrl.goal.core.aut.OmegaUtil;
-import org.svvrl.goal.core.aut.State;
-import org.svvrl.goal.core.aut.StateSet;
-import org.svvrl.goal.core.aut.fsa.FSA;
-import org.svvrl.goal.core.comp.ComplementConstruction;
-
-import org.svvrl.goal.core.aut.AlphabetType;
-import org.svvrl.goal.core.aut.Position;
-import org.svvrl.goal.core.aut.fsa.FSAState;
-
-import java.util.Set;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.LinkedList;
+import org.svvrl.goal.core.aut.State;
+import org.svvrl.goal.core.aut.fsa.FSAState;
+import org.svvrl.goal.core.aut.StateSet;
+import org.svvrl.goal.core.Preference;
 
 
 /* A subset-tuple state (STState), i.e. a state of the output automaton of our
@@ -40,36 +30,37 @@ public class STState extends FSAState {
     return components.size();
   }
 
-  // Add a component as the leftmost element of the list of components of this state
+  /* Add a component as the leftmost element of the list of components of this state */
   public void addLeft(Component component) {
     components.add(0, component);
   }
 
-  // Create the label for the state that will be displayed in the rectangle
-  // next to each state in the graphical GOAL. The label has the form
-  // (({s0,s1},0),({s4},1)}. It also serves as a "signature" of a state for
-  // allowing easy comparison if two states are the same.
-  public void makeLabel() {
-    String s = "(";
-    for (Component c : components) {
-      s += "({";
-      for (State state : c.getStateSet()) s += "s" + state.getID() + ",";
-      s = s.substring(0, s.length()-1); // Remove last superfluous comma
-      s += "}," + c.getColor() + "),";
-    }
-    s = s.substring(0, s.length()-1);   // Remove last superfluous comma
-    this.setLabel(s);
-  }
-
   public boolean containsColor2() {
-    for (Component c : components) {
-      if (c.getColor() == 2) return true;
-    }
+    for (Component c : components) if (c.getColor() == 2) return true;
     return false;
   }
 
   public int colorOfRightmostComponent() {
     return components.get(components.size()-1).getColor();
+  }
+
+  /* Create the label for the state that will be displayed in the rectangle
+   * next to each state in the graphical GOAL. The label has the form
+   * (({s0,s1},0),({s4},1)}. It also serves as a "signature" of a state for
+   * allowing easy comparison if two states are the same. */
+  public void makeLabel() {
+    // The char displayed in front of a state's ID (s or q)
+    //String prefix = Preference.getPreference(Preference.StatePrefixKey);
+    String prefix = Preference.getStatePrefix();
+    String s = "(";
+    for (Component c : components) {
+      s += "({";
+      for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
+      s = s.substring(0, s.length()-1); // Remove last superfluous comma
+      s += "}," + c.getColor() + "),";
+    }
+    s = s.substring(0, s.length()-1);   // Remove last superfluous comma
+    this.setLabel(s);
   }
 
   

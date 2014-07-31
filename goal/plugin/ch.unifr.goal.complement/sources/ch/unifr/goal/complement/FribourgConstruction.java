@@ -1,9 +1,10 @@
 package ch.unifr.goal.complement;
 
-/* Contains the complementation construction */
-
 /* Daniel Weibel, 25.07.2014 */
 
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 import org.svvrl.goal.core.Editable;
 import org.svvrl.goal.core.Message;
 import org.svvrl.goal.core.aut.BuchiAcc;
@@ -12,45 +13,29 @@ import org.svvrl.goal.core.aut.State;
 import org.svvrl.goal.core.aut.StateSet;
 import org.svvrl.goal.core.aut.fsa.FSA;
 import org.svvrl.goal.core.comp.ComplementConstruction;
-
 import org.svvrl.goal.core.aut.AlphabetType;
 import org.svvrl.goal.core.aut.Position;
 import org.svvrl.goal.core.aut.fsa.FSAState;
-
 import org.svvrl.goal.core.Properties;
-
-import ch.unifr.goal.complement.STState;
 import ch.unifr.goal.complement.STState.Component;
-import ch.unifr.goal.complement.FribourgOptions;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 
 
-/* Class hierarchy: Object > AbstractAlgorithm > AbstractControllableAlgorithm >
- * AbstractEditableAlgorithm > ComplementConstruction */
+/* Class that contains everything for executing the Fribourg construction. It is
+ * used by both the GUI and the command line.
+ * Object > AbstractAlgorithm > AbstractControllableAlgorithm > AbstractEditableAlgorithm >
+ * ComplementConstruction */
 public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
-
-  /* Holding the complement automaton if complement() has already been
-   * executed before. */
+  // Holding the complement if complement() has already been executed before
   private FSA complement = null;
 
+  // Each FribourgConstruction is initalised with a FribourgOptions containing
+  // values for all the options for the FribourgConstruction
   private FribourgOptions options;
 
-
-  /* Constructor
-   * in is the input automaton to this construction. */
-  public FribourgConstruction(FSA in) {
-    super(in);
-    if (!OmegaUtil.isNBW(in))
-      throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
-  }
-
-  /* Constructor with options. Is the other constructor still needed? */
+  /* Constructor */
   public FribourgConstruction(FSA in, FribourgOptions options) {
     super(in);
-    if (!OmegaUtil.isNBW(in))
-      throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
+    if (!OmegaUtil.isNBW(in)) throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
     this.options = options;
   }
 
@@ -59,26 +44,20 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     return options;
   }
 
-
-  /* Method from interface EditableAlgorithm */
-  @Override
+  @Override // Method of interface EditableAlgorithm
   public Editable getIntermediateResult() {
     return complement;
   }
 
-
-  /* Abstract method from ComplementConstruction. Calls the method construction
-   * which contains the complementation construction. */
-  @Override
+  @Override // Abstract method of ComplementConstruction
   public FSA complement() {
     if (complement != null) return complement;
     fireReferenceChangedEvent(); // Method of AbstractControllableAlgorithm
-    // getInput: method of ComplementConstruction. Returns automaton to be complemented.
-    complement = testConstruction(getInput().clone());
+    complement = construction(getInput().clone());
     return complement;
   }
 
-  // Check if the options work
+  /* For testing only. Check values of FribourgOptions */
   private FSA testConstruction(FSA in) {
     FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
     FSAState q0 = out.createState();
@@ -87,26 +66,29 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     acc.add(q0);
     out.setAcc(acc);
     out.expandAlphabet(in.getAlphabet());
-
     String s = "Options: MakeComplete=";
     if (getOptions().isMakeComplete()) s += "true, ";
     else s += "false, ";
     s += "IgnoreRightColor2=";
-    if (getOptions().isIgnoreRightColor2()) s += "true";
+    if (getOptions().isDelRight2()) s += "true";
     else s += "false";
     q0.setLabel(s);
     return out;
   }
 
+  /* The implementation of the Fribourg complementation construction */
   private FSA construction(FSA in) {
-
     // The input automaton: alphabet, initial state, and accepting states
     String[] inAlphabet = in.getAlphabet();
     State inInitState = in.getInitialState();
     BuchiAcc inAccStates = (BuchiAcc) in.getAcc();
 
-    // Make the input automaton complete before starting the construction
-    if (!isComplete(in)) makeComplete(in);
+    // If the MakeComplete option is set, check if the input automaton is
+    // complete and make it complete if it isn't.
+    if (getOptions().isMakeComplete())
+      if (!isComplete(in))
+        //makeComplete(in);
+        OmegaUtil.makeTransitionComplete(in);
 
     // The output automaton: alphabet and accepting states
     FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
@@ -195,9 +177,10 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             }
           }
           if (!alreadyExists) {
-            // Optimisation of deleting states with rightmost component colour 2
-            // The 'continue' jumps to the head of the loop through the alphabet
-            if (i == 2 && succSTState.colorOfRightmostComponent() == 2) continue;
+            if (getOptions().isDelRight2())
+              // Optimisation of deleting states with rightmost component colour 2
+              // The 'continue' jumps to the head of the loop through the alphabet
+              if (i == 2 && succSTState.colorOfRightmostComponent() == 2) continue;
             out.addState(succSTState);
             pendingSTStates.add(succSTState);
             id++;
@@ -207,8 +190,12 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           out.createTransition(currentSTState, succSTState, symbol);
         }
       }
+      // If we are at the end of the first stage and the input automaton has
+      // not ensured to be complete at the beginning, we have to ensure that
+      // the current interim automaton is complete before continuing.
+      if (i == 1 && !getOptions().isMakeComplete())
+        if (!isComplete(out)) makeCompleteInterim(out);
     }
-
     out.setAcc(outAccStates);
 
     return out;
@@ -269,6 +256,9 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       for (String symbol : should) a.createTransition(state, deadState, symbol);
     }
     for (String symbol : alphabet) a.createTransition(deadState, deadState, symbol);
+  }
+
+  private void makeCompleteInterim(FSA outputStage1) {
   }
 
 }
