@@ -2,9 +2,13 @@ package ch.unifr.goal.complement;
 
 /* Daniel Weibel, 25.07.2014 */
 
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.HashMap;
 import org.svvrl.goal.core.Editable;
 import org.svvrl.goal.core.Message;
 import org.svvrl.goal.core.aut.BuchiAcc;
@@ -18,6 +22,8 @@ import org.svvrl.goal.core.aut.Position;
 import org.svvrl.goal.core.aut.fsa.FSAState;
 import org.svvrl.goal.core.Properties;
 import ch.unifr.goal.complement.STState.Component;
+
+import org.svvrl.goal.core.util.PowerSet;
 
 
 /* Class that contains everything for executing the Fribourg construction. It is
@@ -58,7 +64,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   }
 
   /* For testing only. Check values of FribourgOptions */
-  private FSA testConstruction(FSA in) {
+  private FSA constructionTest1(FSA in) {
     FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
     FSAState q0 = out.createState();
     out.setInitialState(q0);
@@ -76,9 +82,73 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     return out;
   }
 
+  private FSA constructionTest2(FSA in) {
+    FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
+    FSAState q0 = out.createState();
+    out.setInitialState(q0);
+    BuchiAcc acc = new BuchiAcc();
+    acc.add(q0);
+    out.setAcc(acc);
+    //out.expandAlphabet(in.getAlphabet());
+    // String s = "completeLabel([p,q],[]': ";
+    // String[] a = {"p","q"};
+    // String[] b = {};
+    // Set<String> props = AlphabetType.PROPOSITIONAL.completeLabels(a,b);
+    String s = "Alphabet of {";
+    String[] props = in.getAtomicPropositions();
+    for (String p : props) s += p + ",";
+    s += "}: ";
+    //String[] alph = AlphabetType.PROPOSITIONAL.genAlphabet(props);
+    String[] alph = in.getAlphabet();
+    for (String a : alph) s += a + ", ";
+    q0.setLabel(s);
+    return out;
+  }
+
+
+  private FSA constructionTest3(FSA in) {
+    Map<String,String> alphabetMapping = new HashMap<String,String>();
+    String[]     p = in.getAlphabet();
+    List<String> c = AlphabetType.CLASSICAL.genAlphabet(p.length);
+    for (int i = 0; i < p.length; i++) alphabetMapping.put(p[i], c.get(i));
+    AlphabetType.CLASSICAL.convertFrom(in, alphabetMapping);
+
+    // Map<String,String> invert = new HashMap<String,String>();
+    // for (Map.Entry<String,String> i : alphabetMapping.entrySet())
+    //   invert.put(i.getValue(), i.getKey());
+    // AlphabetType.PROPOSITIONAL.convertFrom(in, invert);    
+
+    return in;
+  }
+
   /* The implementation of the Fribourg complementation construction */
   private FSA construction(FSA in) {
-    // The input automaton: alphabet, initial state, and accepting states
+
+    /**** Conversion from PROPOSITIONAL to CLASSICAL alphabet ****/
+    /* We handle automata with propositional alphabets by converting them to
+     * classical before the construction, and converting them back to
+     * propositional after the construction. */
+
+    // An automaton A with a PROPOSITIONAL alphabet has a set of atomic
+    // propositions, e.g.
+    //    {p, q}                        --> A.getAtomicPropositions()
+    // The alphabet of A is then
+    //    {p q, p ~q, ~p q, ~p ~q}      --> A.getAlphabet()
+    // Converting A to an automaton with a CLASSICAL alphabet is then done by
+    // mapping the elements of A's alphabet to classical symbols, e.g.
+    //    Mapping = {a <- p q,  b <- p ~q,  c <- ~p q,  d <- ~p ~q}
+    // The whole conversion to classical is done by
+    //    AlphabetType.CLASSICAL.convertFrom(A, Mapping)
+    Map<String,String> alphabetMapping = new HashMap<String,String>();
+    if (in.getAlphabetType() == AlphabetType.PROPOSITIONAL) {
+      String[]     p = in.getAlphabet();
+      List<String> c = AlphabetType.CLASSICAL.genAlphabet(p.length);
+      for (int i = 0; i < p.length; i++) alphabetMapping.put(p[i], c.get(i));
+      AlphabetType.CLASSICAL.convertFrom(in, alphabetMapping);
+    }
+
+    // The input automaton (which now in any case has a classical alphabet):
+    // alphabet, initial state, and accepting states
     String[] inAlphabet = in.getAlphabet();
     State inInitState = in.getInitialState();
     BuchiAcc inAccStates = (BuchiAcc) in.getAcc();
@@ -86,16 +156,16 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     // If the MakeComplete option is set, check if the input automaton is
     // complete and make it complete if it isn't.
     if (getOptions().isMakeComplete())
-      if (!isComplete(in))
-        //makeComplete(in);
-        OmegaUtil.makeTransitionComplete(in);
+      if (!isComplete(in)) OmegaUtil.makeTransitionComplete(in);
 
-    // The output automaton: alphabet and accepting states
+    // The output automaton (which always has a classical alphabet as well; if
+    // the input automaton was propositional, the output automaton will be
+    // converted to propositional at the end): alphabet and accepting states
     FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
     out.expandAlphabet(inAlphabet);
     BuchiAcc outAccStates = new BuchiAcc();
 
-    // We take care of giving IDs to the states in the output automaton ourselves
+    // IDs of the states of the output automaton
     int id = 0;
 
     // The states of the output automaton whose successors we have to determine
@@ -190,13 +260,20 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           out.createTransition(currentSTState, succSTState, symbol);
         }
       }
-      // If we are at the end of the first stage and the input automaton has
-      // not ensured to be complete at the beginning, we have to ensure that
-      // the current interim automaton is complete before continuing.
-      if (i == 1 && !getOptions().isMakeComplete())
-        if (!isComplete(out)) makeCompleteInterim(out);
     }
     out.setAcc(outAccStates);
+
+    /**** Conversion from CLASSICAL to PROPOSITIONAL alphabet ****/
+    // If the input automaton had a propositional alphabet, we convert the
+    // classical output automaton now back to a propositional one by using the
+    // (inversion of) the same mapping as the initial conversion.
+    if (!alphabetMapping.isEmpty()) {
+      // We can invert the map because the values of the original map are unique
+      Map<String,String> invert = new HashMap<String,String>();
+      for (Map.Entry<String,String> i : alphabetMapping.entrySet())
+        invert.put(i.getValue(), i.getKey());
+      AlphabetType.PROPOSITIONAL.convertFrom(out, invert);
+    }
 
     return out;
 

@@ -73,6 +73,7 @@ if [ ! -d $GUI ]; then { unzip $GUI.zip -d $GUI; rm $GUI.zip; } >/dev/null; fi
 # Compilation
 # -----------
 CLASSPATH=$CORE/classes:$CMD/classes:$GUI/classes
+echo -n "Compiling sources... "
 # The GOAL binaries, as obtained from the GOAL website, have been compiled for
 # Java 1.6. This mean that the code for an additional plugin has to be compiled
 # for Java 1.6 as well. (I encountered runtime problems when compiling the
@@ -82,30 +83,28 @@ CLASSPATH=$CORE/classes:$CMD/classes:$GUI/classes
 # runtime environment. However, if the -Xbootclasspath: is omitted, only a
 # compiler warning results, but the compilation still seems to work correctly.
 # So, setting the -Xbootclasspath: can be seen as optional.
-# ----------
-# Adapt this to your system if using the -Xbootclasspath: option below
-# Example for Mac:
-BOOTSTRAP_CLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar
-# Example for Linux/Debian:
-# BOOTSTRAP_CLASSPATH=/usr/lib/jvm/java-6-openjdk-i386/jre/lib/rt.jar
-
-# With -Xbootclasspath (no compiler warning)
-echo -n "Compiling sources... "
-javac -classpath $CLASSPATH \
-  -Xbootclasspath:$BOOTSTRAP_CLASSPATH \
-  -source 1.6 -target 1.6 \
-  -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
+WITH_XBOOTLASSPATH=true
+if [ "$WITH_XBOOTLASSPATH" = true ]; then # No compiler warning
+  # Adapt this to the location of a Java 1.6 rt.jar on your system
+  # Example for Mac:
+  BOOTSTRAP_CLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar
+  # Example for Linux/Debian:
+  # BOOTSTRAP_CLASSPATH=/usr/lib/jvm/java-6-openjdk-i386/jre/lib/rt.jar
+  javac -classpath $CLASSPATH \
+    -Xbootclasspath:$BOOTSTRAP_CLASSPATH \
+    -source 1.6 -target 1.6 \
+    -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
+else  # Provokes a compiler warning
+  echo
+  javac -classpath $CLASSPATH \
+    -source 1.6 -target 1.6 \
+    -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
+  echo "-> For fixing the \"bootstrap class path\" warning, set -Xbootclasspath in script"
+fi
 echo "Done"
 
-# Without -Xbootclasspath (provokes a compiler warning)
-# echo "Compiling sources... "
-# javac -classpath $CLASSPATH \
-#   -source 1.6 -target 1.6 \
-#   -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
-# echo "-> For fixing the \"bootstrap class path\" warning, set -Xbootclasspath in script"
-# echo "Done"
-
 if [ "$2" = "compileonly" ]; then exit 0; fi
+
 
 # Installation
 # ------------

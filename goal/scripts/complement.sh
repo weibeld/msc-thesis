@@ -24,9 +24,9 @@ indent() {
   sed 's/^/    /'
 }
 
-if [ "$1" = "help" ] || [ "$1" = "-h" ] || [ $# -lt 2 ] || [ $# -gt 3 ]; then
+if [ "$1" = "help" ] || [ "$1" = "-h" ] || [ $# -lt 2 ]; then
   echo "Usage:"
-  echo "$(basename $0) <in.gff> <algorithm> [<out.gff>]" | indent
+  echo "$(basename $0) <in.gff> <algorithm> [<opts>] [<out.gff>]" | indent
   echo "Arguments:"
   echo -e "<in.gff>\t\t\tInput Büchi automaton" | indent
   echo -e "<algorithm>\t\t\tComplementation algorithm" | indent
@@ -43,11 +43,11 @@ if [ "$1" = "help" ] || [ "$1" = "-h" ] || [ $# -lt 2 ] || [ $# -gt 3 ]; then
   echo -e "* slice" | indent | indent
   echo -e "* waa" | indent | indent
   echo -e "* wapa" | indent | indent
+  echo -e "[<opts>]\t\t\tOPTIONAL: algorithm-specific options, see" | indent
+  echo -e "\t\t\t\t'goal help complement'" | indent
   echo -e "[<out.gff>]\t\t\tOPTIONAL: save output automaton to file" | indent
-  echo "Notes:"
-  echo "<algorithm> may include algorithm-specific arguments. In this case," | indent
-  echo "enclose the whole parameter in quotes, e.g. \"ramsey -r\". For a description" | indent
-  echo "of the algorithms and their arguments, see 'goal help complement'." | indent
+  echo "Example:"
+  echo "$(basename $0) example.gff rank -r -tr -cp result.gff" | indent
   exit 0
 fi
 
@@ -57,12 +57,19 @@ if [ "$(which goal)" == "" ]; then
   exit 1
 fi
 
-IN=$1
-ALGO=$2
-OUT=$3
+IN=$1     # Input file
+ALGO=$2   # Algorithm
+# The algorithm options are all the args following $2 and starting with a '-',
+# until either the end of the argument list or until the first argument after $2
+# not starting with a '-'. In the latter case, this last arg is the output file.
+ARRAY=($@)
+for ARG in ${ARRAY[@]:2}; do
+  if [ "${ARG:0:1}" = "-" ]; then OPTS=$OPTS" "$ARG
+  else OUT=$ARG; break; fi
+done
 
-# If argument $3 was missing, write output automaton to a temp file that is not
-# seen by the user. The contents of this file will be displayed to the screen.
+# If no output file was specified, write output automaton to a temp file that is
+# not seen by the user. This file will later be displayed to the screen.
 if [ "$OUT" = "" ]; then
   if   [ $OS = "Mac" ];   then OUT=$(mktemp -t goal)
   elif [ $OS = "Linux" ]; then OUT=$(mktemp -t goal.XXXXXX); fi
@@ -70,7 +77,7 @@ if [ "$OUT" = "" ]; then
 fi
 
 # The GOAL command we are going to execute
-C="goal complement -m $ALGO -o $OUT $IN"
+C="goal complement -m $ALGO $OPTS -o $OUT $IN"
 # Execution of the command including measurement of the execution time
 if [ $OS = "Linux" ]; then
   TIME_BEFORE=$(date +%s%N) # Current time in nanoseconds
@@ -92,7 +99,7 @@ if [ "$INFO" != "null" ]; then
   exit 1
 fi
 
-# If argument $3 was not given, then output the automaton to the screen
+# If no output file was specified, output automaton from temp file to the screen
 if [ "$NO_SAVE" = "true" ]; then cat $OUT; echo; fi
 
 # Get the number of states of an automaton in a GFF file
