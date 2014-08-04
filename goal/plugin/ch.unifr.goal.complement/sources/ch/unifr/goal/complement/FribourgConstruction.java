@@ -176,10 +176,11 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           } // End of iterating through all the components of the current state
 
           // If the input automaton was not complete and we encounter a state
-          // (currentSTState) that has no successors of a certain symbol, let
-          // this state be incomplete. We will make the final automaton complete
-          // at the end.
-          //if (succSTState.numberOfComponents() == 0) continue;
+          // (currentSTState) of which all the components have no successor for
+          // a given symbol, i.e. the whole state has no successor for a given
+          // symbol, let this state be incomplete. We will add a sink state to
+          // the upper part of the complement automaton at the end of stage 2.
+          if (succSTState.numberOfComponents() == 0) continue;
 
           // Does succSTState already exist in the automaton? The label of a state
           // serves as a state's "signature" that is used for comparing if two
@@ -205,19 +206,24 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             if (i == 2 && !succSTState.containsColor2()) outAccStates.add(succSTState);
           }
           out.createTransition(currentSTState, succSTState, symbol);
-        }
-      }
+        } // End of interating through symbols of alphabet
+      } // End of interating through pending states
+    } // End of iterating through stage 1 and stage 2
+
+    // If the constructed automaton is not complete. This can happen if the
+    // input automaton was not complete. Add an accepting sink state with all
+    // the missing transitions from the UPPER part of the automaton. It would
+    // be equivalent to add the missing transitions of ALL the states of the
+    // automaton, but it is sufficient to add only those from the upper part.
+    // Note that if the whole automaton is not complete, then the upper part of
+    // the automaton is not complete (because, disregarding the colors, all the
+    // states in the lower part are also present in the upper part).
+    if (!getOptions().isMakeComplete() && !isComplete(out)) {
+      STState sinkState = addSinkState(out, id);
+      outAccStates.add(sinkState);
     }
 
-    // Make constructed automaton complete by adding a dead state, and this
-    // dead state will be accepting.
-    // if (!out.isComplete()) {
-    //   STState deadState = makeComplete(out, id)
-         // makeComplete: create state with this id, call state.makeDeadStateLabel(),
-         // add state to automaton, and create transitions
-    //   outAccStates.add(deadState);
-    // }
-
+    // Set the accepting states
     out.setAcc(outAccStates);
 
     /**** Conversion from CLASSICAL to PROPOSITIONAL alphabet ****/
@@ -276,22 +282,24 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   }
 
 
-  /* Makes the incomplete automaton passed as argument complete by creating an
-   * additional non-accepting "dead state" and adding all missing transitions
-   * to this state. Assumes that the automaton in the argument is incomplete. */
-  private void makeComplete(FSA a) {
-    FSAState deadState = a.createState();
+  /* Add a sink state with all the missing transitions from the upper part of
+   * the automaton. This method is called at the end of the construction in
+   * case the constructed automaton is not complete. Return the sink state so
+   * that it can be added to the accepting state set. */
+  private STState addSinkState(FSA a, int id) {
+    STState sink = new STState(id);
+    sink.makeSinkLabel();
+    a.addState(sink);
     Set<String> alphabet = new HashSet<String>(Arrays.asList(a.getAlphabet()));
     for (State state : a.getStates()) {
+      if (!STState.isFromUpperPart(state)) continue;
       Set<String> should = new HashSet<String>(alphabet);
       Set<String> is = new HashSet<String>(a.getSymbolsFromState(state));
       should.removeAll(is);
-      for (String symbol : should) a.createTransition(state, deadState, symbol);
+      for (String symbol : should) a.createTransition(state, sink, symbol);
     }
-    for (String symbol : alphabet) a.createTransition(deadState, deadState, symbol);
-  }
-
-  private void makeCompleteInterim(FSA outputStage1) {
+    for (String symbol : alphabet) a.createTransition(sink, sink, symbol);
+    return sink;
   }
 
 

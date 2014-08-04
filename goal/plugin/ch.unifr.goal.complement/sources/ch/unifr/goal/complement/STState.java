@@ -63,6 +63,22 @@ public class STState extends FSAState {
     this.setLabel(s);
   }
 
+  /* The label of the "sink" state that is added to the constructed automaton
+   * (output of stage 2) if it is not complete. */
+  public void makeSinkLabel() {
+    this.setLabel("sink");
+  }
+
+  /* Check if an STState is part of the upper part of the automaton, i.e. all
+   * the components have color -1. It has to be done with a static method
+   * because if we have an Automaton, we can only get State objects from it
+   * and not STState objects, and we cannot cast a State to an STState. That is,
+   * we cannot call a special STState instance method on a state returned by
+   * Automaton. CAUTION: this way of testing for color -1 is very fragile. */
+  public static boolean isFromUpperPart(State state) {
+    return state.getLabel().contains("},-1)");
+  }
+
   
   /* A component of a subset-tuple state. Consists of a set of states of the
    * input automaton, and a colour (-1, 0, 1, or 2). */

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Structure label-on="Transition" type="FiniteStateAutomaton">
+    <Name/>
+    <Description/>
+    <Formula/>
+    <Alphabet type="Classical">
+        <Symbol>a</Symbol>
+        <Symbol>b</Symbol>
+    </Alphabet>
+    <StateSet>
+        <State sid="0">
+            <Y>100</Y>
+            <X>100</X>
+            <Properties/>
+        </State>
+        <State sid="1">
+            <Y>113</Y>
+            <X>246</X>
+            <Properties/>
+        </State>
+    </StateSet>
+    <InitialStateSet>
+        <StateID>0</StateID>
+    </InitialStateSet>
+    <TransitionSet complete="false">
+        <Transition tid="0">
+            <From>0</From>
+            <To>1</To>
+            <Label>a</Label>
+            <Properties/>
+        </Transition>
+        <Transition tid="2">
+            <From>1</From>
+            <To>1</To>
+            <Label>a</Label>
+            <Properties/>
+        </Transition>
+    </TransitionSet>
+    <Acc type="Buchi">
+        <StateID>1</StateID>
+    </Acc>
+    <Properties/>
+</Structure>
