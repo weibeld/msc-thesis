@@ -8,7 +8,7 @@
 #
 # Daniel Weibel, 18.07.2014
 #
-# Usage: complement.sh <in.gff> <algorithm> [<out.gff>]
+# Usage: complement.sh <in.gff> <algorithm> [<opts>] [<out.gff>]
 
 
 # Exit if any command returns a non-zero status (i.e. error)
@@ -104,7 +104,7 @@ if [ "$NO_SAVE" = "true" ]; then cat $OUT; echo; fi
 
 # Get the number of states of an automaton in a GFF file
 states() {
-  grep sid= $1 | wc -l | tr -d ' '
+  grep "sid=" $1 | wc -l | tr -d ' '
 }
 
 # Execution time

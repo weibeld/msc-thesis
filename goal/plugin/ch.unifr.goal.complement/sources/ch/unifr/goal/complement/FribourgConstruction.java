@@ -63,64 +63,6 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     return complement;
   }
 
-  /* For testing only. Check values of FribourgOptions */
-  private FSA constructionTest1(FSA in) {
-    FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
-    FSAState q0 = out.createState();
-    out.setInitialState(q0);
-    BuchiAcc acc = new BuchiAcc();
-    acc.add(q0);
-    out.setAcc(acc);
-    out.expandAlphabet(in.getAlphabet());
-    String s = "Options: MakeComplete=";
-    if (getOptions().isMakeComplete()) s += "true, ";
-    else s += "false, ";
-    s += "IgnoreRightColor2=";
-    if (getOptions().isDelRight2()) s += "true";
-    else s += "false";
-    q0.setLabel(s);
-    return out;
-  }
-
-  private FSA constructionTest2(FSA in) {
-    FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
-    FSAState q0 = out.createState();
-    out.setInitialState(q0);
-    BuchiAcc acc = new BuchiAcc();
-    acc.add(q0);
-    out.setAcc(acc);
-    //out.expandAlphabet(in.getAlphabet());
-    // String s = "completeLabel([p,q],[]': ";
-    // String[] a = {"p","q"};
-    // String[] b = {};
-    // Set<String> props = AlphabetType.PROPOSITIONAL.completeLabels(a,b);
-    String s = "Alphabet of {";
-    String[] props = in.getAtomicPropositions();
-    for (String p : props) s += p + ",";
-    s += "}: ";
-    //String[] alph = AlphabetType.PROPOSITIONAL.genAlphabet(props);
-    String[] alph = in.getAlphabet();
-    for (String a : alph) s += a + ", ";
-    q0.setLabel(s);
-    return out;
-  }
-
-
-  private FSA constructionTest3(FSA in) {
-    Map<String,String> alphabetMapping = new HashMap<String,String>();
-    String[]     p = in.getAlphabet();
-    List<String> c = AlphabetType.CLASSICAL.genAlphabet(p.length);
-    for (int i = 0; i < p.length; i++) alphabetMapping.put(p[i], c.get(i));
-    AlphabetType.CLASSICAL.convertFrom(in, alphabetMapping);
-
-    // Map<String,String> invert = new HashMap<String,String>();
-    // for (Map.Entry<String,String> i : alphabetMapping.entrySet())
-    //   invert.put(i.getValue(), i.getKey());
-    // AlphabetType.PROPOSITIONAL.convertFrom(in, invert);    
-
-    return in;
-  }
-
   /* The implementation of the Fribourg complementation construction */
   private FSA construction(FSA in) {
 
@@ -128,7 +70,6 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     /* We handle automata with propositional alphabets by converting them to
      * classical before the construction, and converting them back to
      * propositional after the construction. */
-
     // An automaton A with a PROPOSITIONAL alphabet has a set of atomic
     // propositions, e.g.
     //    {p, q}                        --> A.getAtomicPropositions()
@@ -234,6 +175,12 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             }
           } // End of iterating through all the components of the current state
 
+          // If the input automaton was not complete and we encounter a state
+          // (currentSTState) that has no successors of a certain symbol, let
+          // this state be incomplete. We will make the final automaton complete
+          // at the end.
+          //if (succSTState.numberOfComponents() == 0) continue;
+
           // Does succSTState already exist in the automaton? The label of a state
           // serves as a state's "signature" that is used for comparing if two
           // states are the same
@@ -261,6 +208,16 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
         }
       }
     }
+
+    // Make constructed automaton complete by adding a dead state, and this
+    // dead state will be accepting.
+    // if (!out.isComplete()) {
+    //   STState deadState = makeComplete(out, id)
+         // makeComplete: create state with this id, call state.makeDeadStateLabel(),
+         // add state to automaton, and create transitions
+    //   outAccStates.add(deadState);
+    // }
+
     out.setAcc(outAccStates);
 
     /**** Conversion from CLASSICAL to PROPOSITIONAL alphabet ****/
@@ -313,9 +270,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   /* Checks if the automaton passed as argument is complete (i.e. at least one
    * transition for every symbol of the alphabet out of every state), or not. */
   private boolean isComplete(FSA a) {
-    for (State s : a.getStates()) {
+    for (State s : a.getStates())
       if (a.getSymbolsFromState(s).size() != a.getAlphabet().length) return false;
-    }
     return true;
   }
 
@@ -336,6 +292,64 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   }
 
   private void makeCompleteInterim(FSA outputStage1) {
+  }
+
+
+  /* -------------------------------------------------------------------------*
+   * FOR TESTING
+   * -------------------------------------------------------------------------*/
+  private FSA constructionTest1(FSA in) {
+    FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
+    FSAState q0 = out.createState();
+    out.setInitialState(q0);
+    BuchiAcc acc = new BuchiAcc();
+    acc.add(q0);
+    out.setAcc(acc);
+    out.expandAlphabet(in.getAlphabet());
+    String s = "Options: MakeComplete=";
+    if (getOptions().isMakeComplete()) s += "true, ";
+    else s += "false, ";
+    s += "IgnoreRightColor2=";
+    if (getOptions().isDelRight2()) s += "true";
+    else s += "false";
+    q0.setLabel(s);
+    return out;
+  }
+
+  private FSA constructionTest2(FSA in) {
+    FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
+    FSAState q0 = out.createState();
+    out.setInitialState(q0);
+    BuchiAcc acc = new BuchiAcc();
+    acc.add(q0);
+    out.setAcc(acc);
+    //out.expandAlphabet(in.getAlphabet());
+    // String s = "completeLabel([p,q],[]': ";
+    // String[] a = {"p","q"};
+    // String[] b = {};
+    // Set<String> props = AlphabetType.PROPOSITIONAL.completeLabels(a,b);
+    String s = "Alphabet of {";
+    String[] props = in.getAtomicPropositions();
+    for (String p : props) s += p + ",";
+    s += "}: ";
+    //String[] alph = AlphabetType.PROPOSITIONAL.genAlphabet(props);
+    String[] alph = in.getAlphabet();
+    for (String a : alph) s += a + ", ";
+    q0.setLabel(s);
+    return out;
+  }
+
+  private FSA constructionTest3(FSA in) {
+    Map<String,String> alphabetMapping = new HashMap<String,String>();
+    String[]     p = in.getAlphabet();
+    List<String> c = AlphabetType.CLASSICAL.genAlphabet(p.length);
+    for (int i = 0; i < p.length; i++) alphabetMapping.put(p[i], c.get(i));
+    AlphabetType.CLASSICAL.convertFrom(in, alphabetMapping);
+    // Map<String,String> invert = new HashMap<String,String>();
+    // for (Map.Entry<String,String> i : alphabetMapping.entrySet())
+    //   invert.put(i.getValue(), i.getKey());
+    // AlphabetType.PROPOSITIONAL.convertFrom(in, invert);    
+    return in;
   }
 
 }

@@ -58,7 +58,7 @@ public class FribourgOptions extends Properties {
     else makeComplete = makeCompleteDefault;
     setProperty(makeCompleteKey, makeComplete);
 
-    // Ignore states whose rightmost color is 2 option
+    // Ignore states whose rightmost component has color 2 option
     boolean delRight2;
     if (options.containsKey(delRight2Key)) delRight2 = options.getPropertyAsBoolean(delRight2Key);
     else delRight2 = delRight2Default;
