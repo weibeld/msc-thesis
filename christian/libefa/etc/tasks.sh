@@ -1,8 +1,8 @@
 #!/bin/bash
 
 TEST_SET="example1.xml example2.xml example3.xml example4.xml example5.xml \
-          michel1.xml michel2.xml michel3.xml symbol2.xml symbol3.xml \
-          symbol4.xml symbol5.xml"
+          example6.xml example7.xml michel1.xml michel2.xml michel3.xml \
+          symbol2.xml symbol3.xml symbol4.xml symbol5.xml"
 HASHES="kazlib bernstein crc general-crc murmur1 murmur1a murmur2 murmur2a \
         murmurn2 murmura2 murmur3 one-at-a-time paul-hsieh rotatingv2"
 REPETITIONS=5

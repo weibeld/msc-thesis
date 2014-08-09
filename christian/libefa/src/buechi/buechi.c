@@ -531,7 +531,7 @@ int buechi_hash_mod_sub_const(hnlst_t *work_list, hash_t *hash,
       
       assert(new_set->label != NULL);
       
-      // check if the successor set of stats is already in set hash
+      // check if the successor set of states is already in set hash
       node = hash_lookup(hash, new_set->label);
       
       /* A new set of states has been generated and needs to be added to the 
@@ -876,7 +876,7 @@ int buechi_hash_tuple_const(hnlst_t *work_list, hash_t *sthash, hash_t *shash,
 	     has to deal with the transition rules.                           */
 	  switch (set->buechi_info) {
 	    case BUECHI_INFO_FORDINARY:
-	      if (set->accept || suc_set->mixed) {
+	      if (set->accept && (suc_set->accept || suc_set->mixed)) {
 		len = strlen(suc_set->label);
 		((char *)suc_set->label)[0] = '[';
 		((char *)suc_set->label)[len - 1] = ']';
@@ -1160,7 +1160,7 @@ int buechi_hash_tuple_const2(hnlst_t *work_list, hash_t *sthash, hash_t *shash,
 	     has to deal with the transition rules.                           */
 	  switch (set->buechi_info) {
 	    case BUECHI_INFO_FORDINARY:
-	      if (set->accept || suc_set->mixed) {
+	      if (set->accept || (suc_set->accept || suc_set->mixed)) {
 		len = strlen(suc_set->label);
 		((char *)suc_set->label)[0] = '[';
 		((char *)suc_set->label)[len - 1] = ']';
