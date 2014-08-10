@@ -1,101 +1,130 @@
 package ch.unifr.goal.complement;
 
-/* Daniel Weibel, 31.07.2014 */
-
 import org.svvrl.goal.core.Properties;
 import org.svvrl.goal.core.Preference;
 
-/* A FribourgOptions object contains the options for a FribourgConstruction as
+/*----------------------------------------------------------------------------*
+ * A FribourgOptions object contains the options for a FribourgConstruction as
  * key=value pairs. For creating a FribourgConstruction, one first creates a
  * FribourgOptions and passes it to the FribourgConstruction constructor.
  * ----------
- * Values for all these options also exist, independently from a FribourgOptions
- * object, in two different forms in a so called preference file:
- * - DEFAULT VALUES: defined in this file and never changed. Used only for the
- *   command line mode for determining the value of options that are not
- *   specified on the command line.
- * - PREFERENCE VALUES: set only when the user clicks 'Save as Default' in the
- *   options dialog when starting the construction in the GUI. Used only for
- *   initially selecting or not selecting the checkboxes in this dialog.
+ * This class has a second purpose, which is providing an interface to the
+ * GOAL preference file. For every option that exists in a FribourgOptions,
+ * there exist two entries in the preference file:
+ * 1) <option_key>=<PREFERENCE_VALUE>: used to initialise the checkboxes in the
+ *    options dialog in the GUI. Modified by clicking on 'Save as Default'.
+ * 2) <option_key>=<DEFAULT_VALUE>: used when the user clicks on 'Reset' in
+ *    'Preferences... > Complementation > Fribourg Construction' to reset the
+ *    preference values to the default values.
  * Both, default and preference values, are persistent across runs of GOAL.
- * ----------
- * java.util.Properties > org.svvrl.goal.core.Properties > FribourgOptions */
+ * Daniel Weibel, 31.07.2014
+ *----------------------------------------------------------------------------*/
+
+// java.util.Properties > org.svvrl.goal.core.Properties > FribourgOptions
 public class FribourgOptions extends Properties {
-  // The keys of all the options. The same keys are used in this object and in
-  // the preference file
-  private static final String delRight2Key;
-  private static final String makeCompleteKey;
+  
+  // Option keys (same keys used in FribourgOptions and in Preference file)
+  private static final String complKey;
+  private static final String right2IfComplKey;
+  private static final String mergeKey;
+  private static final String reduce2Key;
 
-  // The default values for all the options. Default values will never change
-  // unless they are changed here in the source file
-  private static final boolean makeCompleteDefault = false;
-  private static final boolean delRight2Default = false;
+  // Option default values that are saved in the Preference file
+  private static final boolean complDefault         = false;
+  private static final boolean right2IfComplDefault = true;
+  private static final boolean mergeDefault         = true;
+  private static final boolean reduce2Default       = true;
 
-  // Will be executed when the class is first accessed
+  // Will be executed when the class is first accessed. This is actually only
+  // necessary to set the default values in the preference file the very first
+  // time the plugin is run. In subsequent runs, the default values would still
+  // be in the Preference file, and setting them would not be necessary.
   static {
-    // Initialise the keys
-    delRight2Key = "delRight2";
-    makeCompleteKey = "makeComplete";
-    // Set the default values in the preferences file. This is actually only
-    // necessary the very first time the plugin is executed.
-    Preference.setDefault(makeCompleteKey, makeCompleteDefault);
-    Preference.setDefault(delRight2Key, delRight2Default);
+    // Initialise keys (has to be done in this static block)
+    complKey         = "compl";
+    right2IfComplKey = "right2IfCompl";
+    mergeKey         = "merge";
+    reduce2Key       = "reduce2";
+    // Set the default values
+    Preference.setDefault(complKey,         complDefault);
+    Preference.setDefault(right2IfComplKey, right2IfComplDefault);
+    Preference.setDefault(mergeKey,         mergeDefault);
+    Preference.setDefault(reduce2Key,       reduce2Default);
   }
 
-  /* Create a FribourgOptions object with the default values for all options */
+  /* Create a FribourgOptions object with the default values for all options.
+   * The idea is that after creating a FribourgOptions, the desired options are
+   * set with the public setter methods */
   public FribourgOptions() {
-    setProperty(makeCompleteKey, makeCompleteDefault);
-    setProperty(delRight2Key, delRight2Default);
+    setProperty(complKey,         complDefault);
+    setProperty(right2IfComplKey, right2IfComplDefault);
+    setProperty(mergeKey,         mergeDefault);
+    setProperty(reduce2Key,       reduce2Default);
   }
 
-  /* Create a FribourgOptions object with custom values for the options. If a
-   * specific option is present in the argument, set it to that value, otherwise
-   * set it to the default value. */
-  public FribourgOptions(Properties options) {
-    // Make complete at start option
-    boolean makeComplete;
-    if (options.containsKey(makeCompleteKey)) makeComplete = options.getPropertyAsBoolean(makeCompleteKey);
-    else makeComplete = makeCompleteDefault;
-    setProperty(makeCompleteKey, makeComplete);
-
-    // Ignore states whose rightmost component has color 2 option
-    boolean delRight2;
-    if (options.containsKey(delRight2Key)) delRight2 = options.getPropertyAsBoolean(delRight2Key);
-    else delRight2 = delRight2Default;
-    if (!makeComplete && delRight2) delRight2 = false;
-    setProperty(delRight2Key, delRight2);
+  /* Option getter methods */
+  public boolean isCompl() {
+    return getPropertyAsBoolean(complKey);
+  }
+  public boolean isRight2IfCompl() {
+    return getPropertyAsBoolean(right2IfComplKey);
+  }
+  public boolean isMerge() {
+    return getPropertyAsBoolean(mergeKey);
+  }
+  public boolean isReduce2() {
+    return getPropertyAsBoolean(reduce2Key);
   }
 
-  /* Instance methods to query the value of a specific option in this object */
-  public boolean isMakeComplete() {
-    return getPropertyAsBoolean(makeCompleteKey);
+  /* Option setter methods */
+  public void setCompl(boolean value) {
+    setProperty(complKey, value);
   }
-  public boolean isDelRight2() {
-    return getPropertyAsBoolean(delRight2Key);
+  public void setRight2IfCompl(boolean value) {
+    setProperty(right2IfComplKey, value);
+  }
+  public void setMerge(boolean value) {
+    setProperty(mergeKey, value);
+  }
+  public void setReduce2(boolean value) {
+    setProperty(reduce2Key, value);
   }
 
-  /* Static getter methods */
-  // Keys of options
-  public static String getMakeCompleteKey() {
-    return makeCompleteKey;
+
+  /* Interface (read-only) to the Preference file. Each option has a persistent
+   * default and preference value. */
+
+  // The preference values are used to set the checkboxes in the options dialog
+  // in the GUI. If the user clicks on 'Save as Default', the current selection
+  // of options will be set as the new preference values.
+  public static  boolean getComplPref() {
+    return Preference.getPreferenceAsBoolean(complKey);
   }
-  public static String getDelRight2Key() {
-    return delRight2Key;
+  public static boolean getRight2IfComplPref() {
+    return Preference.getPreferenceAsBoolean(right2IfComplKey);
   }
-  // Default values of options in the preference file. Is set in the static
-  // block of this class.
-  public static boolean getMakeCompleteDefault() {
-    return makeCompleteDefault;
+  public static boolean getMergePref() {
+    return Preference.getPreferenceAsBoolean(mergeKey);
   }
-  public static boolean getDelRight2Default() {
-    return delRight2Default;
+  public static boolean getReduce2Pref() {
+    return Preference.getPreferenceAsBoolean(reduce2Key);
   }
-  // Preference values of options in the preference file. Can only be set in
-  // the GUI by clicking on 'Save as Default' in the OptionsDialog.
-  public static  boolean getMakeCompletePref() {
-    return Preference.getPreferenceAsBoolean(makeCompleteKey);
+
+  // The default values are used when the user clicks on 'Reset' in the
+  // 'Preferences... > Complementation  > Fribourg Construction' dialog to
+  // reset the options to their default values (currently not implemented). The
+  // default values are never changed (unless in the source of this file).
+  public static boolean getComplDefault() {
+    return Preference.getDefaultAsBoolean(complKey);
   }
-  public static boolean getDelRight2Pref() {
-    return Preference.getPreferenceAsBoolean(delRight2Key);
+  public static boolean getRight2IfComplDefault() {
+    return Preference.getDefaultAsBoolean(right2IfComplKey);
   }
+  public static boolean getMergeDefault() {
+    return Preference.getDefaultAsBoolean(mergeKey);
+  }
+  public static boolean getReduce2Default() {
+    return Preference.getDefaultAsBoolean(reduce2Key);
+  }
+  
 }

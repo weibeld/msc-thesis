@@ -1,7 +1,5 @@
 package ch.unifr.goal.complement;
 
-/* Daniel Weibel, 31.07.2014 */
-
 import javax.swing.JCheckBox;
 import java.awt.GridLayout;
 import javax.swing.border.EmptyBorder;
@@ -11,61 +9,85 @@ import org.svvrl.goal.gui.pref.OptionsPanel;
 import org.svvrl.goal.core.Properties;
 
 
-/* The content of the OptionsDialog displayed before the construction starts.
- * Consists of a checkbox for every option. The state (checked/unchecked) of each
- * check box is according to the preference value of the option in the preference
- * file. These preference values can be changed by clicking on the 'Save as
- * Default' button in the OptionsDialog. The main goal of this class is to
- * return a FribourgOptions object that is used to create a FribourgConstruction.
- * JPanel > OptionsPanel */
+/*----------------------------------------------------------------------------*
+ * The panel in the options dialog in the GUI. Contains a checkbox for every
+ * option of the FribourgConstruction. Returns a FribourgOptions that reflects
+ * the selection of checkboxes in the panel. The checkboxes are initially set
+ * according to the pfererence values saved in the Preference file.
+ * Daniel Weibel, 31.07.2014
+ *----------------------------------------------------------------------------*/
+
+// JPanel > OptionsPanel
 public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions> {
+
   // A checkbox for every option
-  final JCheckBox makeCompleteCheckBox;
-  final JCheckBox delRight2CheckBox;
+  private final JCheckBox complCheckBox;
+  private final JCheckBox right2IfComplCheckBox;
+  private final JCheckBox mergeCheckBox;
+  private final JCheckBox reduce2CheckBox;
 
   /* Constructor */
   public FribourgComplementOptionsPanel() {
+
+    // Layout of panel in OptionsDialog
     this.setLayout(new GridLayout(0,1));
     this.setBorder(new EmptyBorder(10,10,5,10)); // (top,left,bottom,right)
 
-    // MakeComplete option
-    makeCompleteCheckBox = new JCheckBox("Make input automaton complete if it is incomplete");
-    makeCompleteCheckBox.setSelected(FribourgOptions.getMakeCompletePref());
-    this.add(makeCompleteCheckBox);
+    // Make input automaton complete
+    complCheckBox = new JCheckBox("Make input automaton complete if it is incomplete");
+    complCheckBox.setSelected(FribourgOptions.getComplPref());
+    this.add(complCheckBox);
 
-    // DelRight2 option
-    delRight2CheckBox = new JCheckBox("Ignore states whose rightmost component has color 2");
-    if (makeCompleteCheckBox.isSelected()) delRight2CheckBox.setSelected(FribourgOptions.getDelRight2Pref());
-    else delRight2CheckBox.setEnabled(false);
-    this.add(delRight2CheckBox);
-    // When makeCompleteCheckBox is selected, enable delRight2Checkbox, and vice versa
-    makeCompleteCheckBox.addItemListener(new ItemListener() {
+    // Rightmost colour 2 optmisation if input automaton is complete
+    right2IfComplCheckBox = new JCheckBox("If input automaton is complete, apply rightmost colour 2 optimisation");
+    right2IfComplCheckBox.setSelected(FribourgOptions.getRight2IfComplPref());
+    this.add(right2IfComplCheckBox);
+
+    // Component merging optimisation
+    mergeCheckBox = new JCheckBox("Apply component merging optimisation");
+    mergeCheckBox.setSelected(FribourgOptions.getMergePref());
+    this.add(mergeCheckBox);
+
+    // Colour 2 reduction optimisation. Can only be selected if the component
+    // merging optimisation is also selected.
+    reduce2CheckBox = new JCheckBox("Apply colour 2 reduction optimisation");
+    // If merge optimisation is on, initialise checkbox normally
+    if (mergeCheckBox.isSelected()) reduce2CheckBox.setSelected(FribourgOptions.getReduce2Pref());
+    // Else, set checkbox unchecked (default) and non-editable
+    else reduce2CheckBox.setEnabled(false);
+    this.add(reduce2CheckBox);
+    // Whenever merge is ticked, make colour 2 editable, and vice versa
+    mergeCheckBox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        if (makeCompleteCheckBox.isSelected())
-          delRight2CheckBox.setEnabled(true);
+        if (mergeCheckBox.isSelected())
+          reduce2CheckBox.setEnabled(true);
         else {
-          delRight2CheckBox.setSelected(false);
-          delRight2CheckBox.setEnabled(false);
+          reduce2CheckBox.setSelected(false);
+          reduce2CheckBox.setEnabled(false);
         }
       }
     }); 
   }
 
-  /* Create a FribourgOptions according to the state (checked/unchecked) of the
-   * checkboxes. */
+  /* Create a FribourgOptions according to the state of the checkboxes */
   @Override // Abstract method of OptionsPanel
   public FribourgOptions getOptions() {
-    Properties props = new Properties();
-    props.setProperty(FribourgOptions.getMakeCompleteKey(), makeCompleteCheckBox.isSelected());
-    props.setProperty(FribourgOptions.getDelRight2Key(), delRight2CheckBox.isSelected());
-    return new FribourgOptions(props);
+    FribourgOptions options = new FribourgOptions();
+    options.setCompl(complCheckBox.isSelected());
+    options.setRight2IfCompl(right2IfComplCheckBox.isSelected());
+    options.setMerge(mergeCheckBox.isSelected());
+    options.setReduce2(reduce2CheckBox.isSelected());
+    return options;
   }
 
-  /* Set the state of the checkboxes (checked/unchecked) according to the
-   * default values in the preference file of the corresonding options. */
+  /* Set the checkboxes according to the option default values, which are in
+   * the preference file. Used when the user clicks on 'Reset' in 'Preferences..
+   * > Complementation > Fribourg Construction' (currently not implemented */
   @Override // Abstract method of OptionsPanel
   public void reset() {
-    makeCompleteCheckBox.setSelected(FribourgOptions.getMakeCompleteDefault());
-    delRight2CheckBox.setSelected(FribourgOptions.getDelRight2Default());
+    complCheckBox.setSelected(FribourgOptions.getComplDefault());
+    right2IfComplCheckBox.setSelected(FribourgOptions.getRight2IfComplDefault());
+    mergeCheckBox.setSelected(FribourgOptions.getMergeDefault());
+    reduce2CheckBox.setSelected(FribourgOptions.getReduce2Default());
   }
 }

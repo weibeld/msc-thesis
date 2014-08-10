@@ -1,7 +1,5 @@
 package ch.unifr.goal.complement;
 
-/* Daniel Weibel, 25.07.2014 */
-
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
@@ -26,10 +24,13 @@ import ch.unifr.goal.complement.STState.Component;
 import org.svvrl.goal.core.util.PowerSet;
 
 
-/* Class that contains everything for executing the Fribourg construction. It is
- * used by both the GUI and the command line.
- * Object > AbstractAlgorithm > AbstractControllableAlgorithm > AbstractEditableAlgorithm >
- * ComplementConstruction */
+/*----------------------------------------------------------------------------*
+ * Implementation of the Fribourg Büchi complementation construction. This same
+ * class is used by both, the command line and the GUI
+ * Daniel Weibel, 25.07.2014
+ *----------------------------------------------------------------------------*/
+
+// Object > AbstractAlgorithm > AbstractControllableAlgorithm > AbstractEditableAlgorithm > ComplementConstruction
 public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   // Holding the complement if complement() has already been executed before
   private FSA complement = null;
@@ -66,9 +67,9 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   /* The implementation of the Fribourg complementation construction */
   private FSA construction(FSA in) {
 
-    /**** Conversion from PROPOSITIONAL to CLASSICAL alphabet ****/
-    /* We handle automata with propositional alphabets by converting them to
-     * classical before the construction, and converting them back to
+    /*** Convert input automaton from PROPOSITIONAL to CLASSICAL alphabet ***/
+    /* We handle input automata with propositional alphabet by converting them
+     * to classical before the construction, and converting them back to
      * propositional after the construction. */
     // An automaton A with a PROPOSITIONAL alphabet has a set of atomic
     // propositions, e.g.
@@ -88,16 +89,16 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       AlphabetType.CLASSICAL.convertFrom(in, alphabetMapping);
     }
 
+    // If the make complete option is set, and the input automaton is not
+    // complete, make it complete.
+    if (getOptions().isCompl() && !isComplete(in)) OmegaUtil.makeTransitionComplete(in);
+
     // The input automaton (which now in any case has a classical alphabet):
-    // alphabet, initial state, and accepting states
+    // alphabet, initial state, accepting states, and wheter it is complete
     String[] inAlphabet = in.getAlphabet();
     State inInitState = in.getInitialState();
     BuchiAcc inAccStates = (BuchiAcc) in.getAcc();
-
-    // If the MakeComplete option is set, check if the input automaton is
-    // complete and make it complete if it isn't.
-    if (getOptions().isMakeComplete())
-      if (!isComplete(in)) OmegaUtil.makeTransitionComplete(in);
+    boolean inIsComplete = isComplete(in);
 
     // The output automaton (which always has a classical alphabet as well; if
     // the input automaton was propositional, the output automaton will be
@@ -118,7 +119,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       // Adding the initial state
       if (i == 1) {
         STState outInitState = new STState(id++);
-        outInitState.addLeft(outInitState.new Component(inInitState, -1));
+        outInitState.addComponent(outInitState.new Component(inInitState, -1));
         outInitState.makeLabel();
         out.addState(outInitState);
         out.setInitialState(outInitState);
@@ -171,38 +172,39 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                 }
               }
               // Add the component as the new leftmost component of the successor state
-              succSTState.addLeft(succSTState.new Component(currentSet, color));
+              succSTState.addComponent(succSTState.new Component(currentSet, color));
             }
           } // End of iterating through all the components of the current state
 
-          // If the input automaton was not complete and we encounter a state
-          // (currentSTState) of which all the components have no successor for
-          // a given symbol, i.e. the whole state has no successor for a given
-          // symbol, let this state be incomplete. We will add a sink state to
-          // the upper part of the complement automaton at the end of stage 2.
+          // If the successor state is empty, it means that currentSTState has
+          // no successor of the current symbol, i.e. it is incomplete. We will
+          // take care of incomplete states (of the upper part of the automaton)
+          // at the end of stage 2. 'continue' jumps to the next symbol.
           if (succSTState.numberOfComponents() == 0) continue;
 
-          // Does succSTState already exist in the automaton? The label of a state
-          // serves as a state's "signature" that is used for comparing if two
-          // states are the same
+          // Does succSTState already exist in the automaton?
           succSTState.makeLabel();
           boolean alreadyExists = false;
           for (State existingState : out.getStates()) {
-            if (succSTState.getLabel().equals(existingState.getLabel())) {
+            if (succSTState.equals(existingState)) {
               succSTState = (STState) existingState;
               alreadyExists = true;
               break;
             }
           }
+          // If the state doesn't yet exist, add it to the automaton
           if (!alreadyExists) {
-            if (getOptions().isDelRight2())
-              // Optimisation of deleting states with rightmost component colour 2
-              // The 'continue' jumps to the head of the loop through the alphabet
-              if (i == 2 && succSTState.colorOfRightmostComponent() == 2) continue;
+            // If the option "If input automaton is complete, apply rightmost
+            // colour 2 optimisation" is set AND the input automaton is
+            // complete, then apply the rightmost colour 2 optimisation, i.e.
+            // do not add the state if its rightmost colour is 2.
+            if (i == 2 && getOptions().isRight2IfCompl() && inIsComplete)
+              // The 'continue' jumps to the next symbol of the alphabet
+              if (succSTState.colorOfRightmostComponent() == 2) continue;
             out.addState(succSTState);
             pendingSTStates.add(succSTState);
             id++;
-            // Set states containing no colour 2 as accepting states
+            // Add states containing no colour 2 to the accepting set
             if (i == 2 && !succSTState.containsColor2()) outAccStates.add(succSTState);
           }
           out.createTransition(currentSTState, succSTState, symbol);
@@ -210,23 +212,23 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       } // End of interating through pending states
     } // End of iterating through stage 1 and stage 2
 
-    // If the constructed automaton is not complete. This can happen if the
-    // input automaton was not complete. Add an accepting sink state with all
-    // the missing transitions from the UPPER part of the automaton. It would
-    // be equivalent to add the missing transitions of ALL the states of the
-    // automaton, but it is sufficient to add only those from the upper part.
-    // Note that if the whole automaton is not complete, then the upper part of
-    // the automaton is not complete (because, disregarding the colors, all the
-    // states in the lower part are also present in the upper part).
-    if (!getOptions().isMakeComplete() && !isComplete(out)) {
-      STState sinkState = addSinkState(out, id);
+    // If the upper part of the constructed automaton is not complete (this can
+    // happen if the input automaton was not complete), we have to make it
+    // complete by adding a sink state. This sink state has to be accepting.
+    // Note that we could also do this at the end of stage 1, but it doesn't
+    // matter, because the sink state would have no influence on the construc-
+    // tion of the lower part, and the operations on the lower part in stage 2
+    // have no influence on the completeness of the upper part.
+    if (!isUpperPartComplete(out)) {
+    //if (!isComplete(out)) {
+      STState sinkState = makeUpperPartComplete(out, id);
       outAccStates.add(sinkState);
     }
 
     // Set the accepting states
     out.setAcc(outAccStates);
 
-    /**** Conversion from CLASSICAL to PROPOSITIONAL alphabet ****/
+    /*** Convert output automaton from CLASSICAL to PROPOSITIONAL alphabet ***/
     // If the input automaton had a propositional alphabet, we convert the
     // classical output automaton now back to a propositional one by using the
     // (inversion of) the same mapping as the initial conversion.
@@ -273,20 +275,33 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   }
 
 
-  /* Checks if the automaton passed as argument is complete (i.e. at least one
-   * transition for every symbol of the alphabet out of every state), or not. */
+  /* Checks if the automaton passed as argument is complete, i.e. every state
+   * has at least one outgoing transition for every symbol of the alphabet */
   private boolean isComplete(FSA a) {
     for (State s : a.getStates())
-      if (a.getSymbolsFromState(s).size() != a.getAlphabet().length) return false;
+      if (!isStateComplete(a, s)) return false;
     return true;
   }
 
+  /* Checks if the upper part of the constructed automaton is complete. The
+   * argument may only be an output automaton of the Fribourg Construction */
+  private boolean isUpperPartComplete(FSA a) {
+    for (State s : a.getStates())
+      if (STState.isFromUpperPart(s) && !isStateComplete(a, s)) return false;
+    return true;
+  }
 
-  /* Add a sink state with all the missing transitions from the upper part of
-   * the automaton. This method is called at the end of the construction in
-   * case the constructed automaton is not complete. Return the sink state so
-   * that it can be added to the accepting state set. */
-  private STState addSinkState(FSA a, int id) {
+  /* Checks if a specific state of an automaton is complete, i.e. has an
+   * outgoing transition for every symbol of the automaton's alphabet */
+  private boolean isStateComplete(FSA a, State s) {
+    return a.getSymbolsFromState(s).size() == a.getAlphabet().length;
+  }
+
+
+  /* Make the upper part of the constructed automaton complete by adding a sink
+   * state with all the missing transitions. Return the sink state so that it
+   * can be added to the accepting set of the automaton */
+  private STState makeUpperPartComplete(FSA a, int id) {
     STState sink = new STState(id);
     sink.makeSinkLabel();
     a.addState(sink);
@@ -315,10 +330,10 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     out.setAcc(acc);
     out.expandAlphabet(in.getAlphabet());
     String s = "Options: MakeComplete=";
-    if (getOptions().isMakeComplete()) s += "true, ";
+    if (getOptions().isCompl()) s += "true, ";
     else s += "false, ";
     s += "IgnoreRightColor2=";
-    if (getOptions().isDelRight2()) s += "true";
+    if (getOptions().isRight2IfCompl()) s += "true";
     else s += "false";
     q0.setLabel(s);
     return out;

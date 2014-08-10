@@ -1,7 +1,5 @@
 package ch.unifr.goal.complement;
 
-/* Daniel Weibel, 25.07.2014 */
-
 import org.svvrl.goal.core.aut.fsa.FSA;
 import org.svvrl.goal.gui.Window;
 import org.svvrl.goal.gui.action.ExecutionException;
@@ -10,9 +8,12 @@ import org.svvrl.goal.core.Properties;
 import org.svvrl.goal.gui.pref.OptionsDialog;
 
 
-/* The action when clicking on the Complement > Fribourg Construction menu item.
- * AbstractAction > WindowAction > EditableAction > AutomatonOperationAction >
- * AbstractComplementAction */
+/*----------------------------------------------------------------------------*
+ * The action when clicking on the ribourg Construction menu item in the GUI.
+ * Daniel Weibel, 25.07.2014
+ *----------------------------------------------------------------------------*/
+
+// AbstractAction > WindowAction > EditableAction > AutomatonOperationAction > AbstractComplementAction
 public class FribourgComplementAction extends AbstractComplementAction<FribourgConstruction> {
 
   /* Constructor */
@@ -22,11 +23,13 @@ public class FribourgComplementAction extends AbstractComplementAction<FribourgC
 
   /* Create a FribourgConstruction with FribourgOptions */
   @Override // Abstract method of AbstractComplementAction
-  protected FribourgConstruction getConstruction(FSA in, Properties o) {
-    FribourgOptions options;
-    if (o instanceof FribourgOptions) options = (FribourgOptions) o;
-    else options = new FribourgOptions(o);
-    return new FribourgConstruction(in, options);
+  protected FribourgConstruction getConstruction(FSA in, Properties options) {
+    FribourgOptions fribourgOptions = (FribourgOptions) options;
+    return new FribourgConstruction(in, fribourgOptions);
+    // FribourgOptions options;
+    // if (o instanceof FribourgOptions) options = (FribourgOptions) o;
+    // else options = new FribourgOptions(o);
+    // return new FribourgConstruction(in, options);
   }
 
   /* Create the dialog that appears between clicking the menu item and the start
