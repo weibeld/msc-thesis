@@ -35,9 +35,43 @@ public class STState extends FSAState {
   }
 
   /* Add a component as the new leftmost component of the state */
-  public void addComponent(Component component) {
-    components.add(0, component);
+  public void addComponent(Component newComp) {
+    addLeftmost(newComp);
   }
+
+  public void addComponentWithMerging(Component newComp) {
+    Component leftmostComp = getLeftmost();
+    if (leftmostComp == null) {
+      addLeftmost(newComp);
+      return;
+    }
+    int leftmostColor = leftmostComp.getColor();
+    int newColor = newComp.getColor();
+    switch (leftmostColor) {
+      case -1: case 0:
+        addLeftmost(newComp);
+        break;
+      case 1:
+        if (newColor == 1) mergeWithLeftmost(newComp, 1);
+        else addLeftmost(newComp);
+        break;
+      case 2:
+        if (newColor == 1 || newColor == 2) mergeWithLeftmost(newComp, 2);
+        else addLeftmost(newComp);
+    }
+  }
+  
+
+  private void mergeWithLeftmost(Component newComp, int color) {
+    StateSet mergedStates = new StateSet();
+    mergedStates.addAll(getLeftmost().getStateSet());
+    mergedStates.addAll(newComp.getStateSet());
+    Component mergedComp = new Component(mergedStates, color);
+    removeLeftmost();
+    addLeftmost(mergedComp);
+  }
+
+  
 
   public boolean containsColor2() {
     for (Component c : components) if (c.getColor() == 2) return true;
@@ -45,7 +79,7 @@ public class STState extends FSAState {
   }
 
   public int colorOfRightmostComponent() {
-    return components.get(components.size()-1).getColor();
+    return getRightmost().getColor();
   }
 
   /* Tests if two STStates are equals by comparing their labels */
@@ -82,6 +116,23 @@ public class STState extends FSAState {
    * objects. That's also why we have to make the test via the label. */
   public static boolean isFromUpperPart(State state) {
     return state.getLabel().contains("},-1)");
+  }
+
+
+  /* Small private interface to the components list */
+  private void addLeftmost(Component c) {
+    components.add(0, c);
+  }
+  private Component getLeftmost() {
+    if (!components.isEmpty()) return components.get(0);
+    else return null;
+  }
+  private void removeLeftmost() {
+    if (!components.isEmpty()) components.remove(0);
+  }
+  private Component getRightmost() {
+    if (!components.isEmpty()) return components.get(components.size()-1);
+    else return null;
   }
 
   /*--------------------------------------------------------------------------*

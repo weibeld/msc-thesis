@@ -157,22 +157,57 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
               if (k == 0) currentSet = accFSAStates;
               else if (k == 1) currentSet = naccFSAStates;
               if (currentSet.isEmpty()) continue;
-              int color = -1;
-              if (i == 1) color = -1;   // Stage 1 (upper part of automaton)
-              else if (i == 2) {        // Stage 2 (lower part of automaton)
-                int predColor = currentComponent.getColor();
-                if (currentSTState.containsColor2()) {
-                  if (predColor == 0 && k != 0) color = 0;
-                  else if (predColor == 2) color = 2;
-                  else color = 1;
+
+              // int color = -1;
+              // if (i == 1) color = -1;   // Stage 1 (upper part of automaton)
+              // else if (i == 2) {        // Stage 2 (lower part of automaton)
+              //   int predColor = currentComponent.getColor();
+              //   if (currentSTState.containsColor2()) {
+              //     if (predColor == 0 && k != 0) color = 0;
+              //     else if (predColor == 2) color = 2;
+              //     else color = 1;
+              //   }
+              //   else {
+              //     if ((predColor == 0 || predColor == -1) && k != 0) color = 0;
+              //     else color = 2;
+              //   }
+              // }
+
+              int color = 999;
+              if (i == 1)
+                color = -1;
+              else {
+                if (!currentSTState.containsColor2()) {
+                  switch (currentComponent.getColor()) {
+                    case -1: case 0:
+                      if (k == 0) color = 2;
+                      else color = 0;
+                      break;
+                    case 1:
+                      color = 2;
+                  }
                 }
                 else {
-                  if ((predColor == 0 || predColor == -1) && k != 0) color = 0;
-                  else color = 2;
+                  switch (currentComponent.getColor()) {
+                    case 0:
+                      if (k == 0) color = 1;
+                      else color = 0;
+                      break;
+                    case 1:
+                      color = 1;
+                      break;
+                    case 2:
+                      color = 2;
+                  }
                 }
               }
-              // Add the component as the new leftmost component of the successor state
-              succSTState.addComponent(succSTState.new Component(currentSet, color));
+
+              STState.Component comp = succSTState.new Component(currentSet, color);
+              // Add the component to the successor state. If the merging opt-
+              // imisation is on, if possible, merge the component with the current
+              // leftmost component, else add it as the new leftmost component.
+              if (getOptions().isMerge()) succSTState.addComponentWithMerging(comp);
+              else succSTState.addComponent(comp);
             }
           } // End of iterating through all the components of the current state
 
