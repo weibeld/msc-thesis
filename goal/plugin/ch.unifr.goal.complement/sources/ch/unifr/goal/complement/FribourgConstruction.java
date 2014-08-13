@@ -64,6 +64,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     return complement;
   }
 
+
   /* The implementation of the Fribourg complementation construction */
   private FSA construction(FSA in) {
 
@@ -102,7 +103,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     // The output automaton (which always has a classical alphabet as well; if
     // the input automaton was propositional, the output automaton will be
-    // converted to propositional at the end): alphabet and accepting states
+    // converted to propositional at the end)
     FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
     out.expandAlphabet(inAlphabet);
     BuchiAcc outAccStates = new BuchiAcc();
@@ -130,119 +131,184 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       
       while (!pendingSTStates.isEmpty()) {
         // The state whose successors we are going to determine
-        STState currentSTState = (STState) pendingSTStates.pollFirst();
+        STState p = (STState) pendingSTStates.pollFirst();
         for (String symbol : inAlphabet) {
           // The current state's successor that we are going to construct
-          STState succSTState = new STState(id);
+          STState q = new STState(id);
           // The input automaton states that have already occured in the right-to-left traversal
-          StateSet seenFSAStates = new StateSet();
+          StateSet occurredStates = new StateSet();
           // Iterate through the components of the current state from right to left
-          for (int j = currentSTState.numberOfComponents()-1; j >= 0; j--) {
-            Component currentComponent = currentSTState.getComponent(j);
-            StateSet succFSAStates = in.getSuccessors(currentComponent.getStateSet(), symbol);
-            succFSAStates.removeAll(seenFSAStates);
-            seenFSAStates.addAll(succFSAStates);
-            StateSet accFSAStates = new StateSet();
-            StateSet naccFSAStates = new StateSet();
-            for (State state : succFSAStates) {
-              if (inAccStates.contains(state)) accFSAStates.add(state);
-              else naccFSAStates.add(state);
+          for (int j = p.numberOfComponents()-1; j >= 0; j--) {
+            Component pj = p.getComponent(j);
+            StateSet pjSuccs = in.getSuccessors(pj.getStateSet(), symbol);
+            pjSuccs.removeAll(occurredStates);
+            occurredStates.addAll(pjSuccs);
+            StateSet pjAcc = new StateSet();
+            StateSet pjNonAcc = new StateSet();
+            for (State state : pjSuccs) {
+              if (inAccStates.contains(state)) pjAcc.add(state);
+              else pjNonAcc.add(state);
             }
-            // One component in the current state can give birth to two new components
-            // (an accepting and a non-accepting one) in the successor state. In the
-            // following loop, the first iteration treats the accepting set and the
-            // second one the non-accepting set.
-            for (int k = 0; k < 2; k++) {
-              StateSet currentSet = new StateSet();
-              if (k == 0) currentSet = accFSAStates;
-              else if (k == 1) currentSet = naccFSAStates;
-              if (currentSet.isEmpty()) continue;
+            final int ACC = 0, NONACC = ACC+1;
+            for (int t = ACC; t <= NONACC; t++) {
+              StateSet qkStates;
+              if (t == ACC) qkStates = pjAcc;
+              else qkStates = pjNonAcc;
 
-              // int color = -1;
-              // if (i == 1) color = -1;   // Stage 1 (upper part of automaton)
-              // else if (i == 2) {        // Stage 2 (lower part of automaton)
-              //   int predColor = currentComponent.getColor();
-              //   if (currentSTState.containsColor2()) {
-              //     if (predColor == 0 && k != 0) color = 0;
-              //     else if (predColor == 2) color = 2;
-              //     else color = 1;
-              //   }
-              //   else {
-              //     if ((predColor == 0 || predColor == -1) && k != 0) color = 0;
-              //     else color = 2;
-              //   }
-              // }
+              int qkColor = 999;          // This component's color
+              boolean qkM2 = false;      // Is this component the M2 of q?
+              boolean qkM2Exclude = false;  // Is this component the () of q that is 
 
-              int color = 999;
-              if (i == 1)
-                color = -1;
-              else {
-                if (!currentSTState.containsColor2()) {
-                  switch (currentComponent.getColor()) {
+              if (i == 1) {
+                if (qkStates.isEmpty()) continue;
+                qkColor = -1;
+              }
+              else if (getOptions().isReduce2()) {
+                if (p.containsNoColor1And2()) {
+                  if (qkStates.isEmpty()) continue;
+                  switch (t) {
+                    case ACC:
+                      if (!p.hasM2()) {
+                        qkColor = 2;
+                        qkM2 = true;
+                        p.setM2(pj);
+                      }
+                      else qkColor = 1;
+                      break;
+                    case NONACC: qkColor = 0;
+                  }
+                }
+                else { // p contains a M2 for sure which is [] or ()
+                  if (pj == p.getM2()) {
+                    switch (t) {
+                      case ACC:
+                        if (qkStates.isEmpty()) continue;
+                        qkColor = 2;
+                        qkM2 = true;
+                        break;
+                      case NONACC:
+                        if (!qkStates.isEmpty() && !pjAcc.isEmpty())
+                          qkColor = 1;
+                        else if (!qkStates.isEmpty() && pjAcc.isEmpty()) {
+                          qkColor = 2;
+                          qkM2 = true;
+                        }
+                        else if (qkStates.isEmpty() && !pjAcc.isEmpty())
+                          continue;
+                        else if (qkStates.isEmpty() && pjAcc.isEmpty()) {
+                          q.markM2Disappearance();
+                          continue;
+                        }
+                    }
+                  }
+                  else {  // If p(j) is not the M2 of p
+                    if (qkStates.isEmpty()) continue;
+                    switch (pj.getColor()) {
+                      case 1:
+                        qkColor = 1;
+                        break;
+                      case 0:
+                        if (t == ACC) {
+                          qkColor = 1;
+                          if (p.isM2Disappeared() && p.isLeftNeighborOfM2(pj)) qkM2Exclude = true;
+                        }
+                        else qkColor = 0;
+                    }
+                  }
+                }
+              }
+              else { // If the options Reduce2 is off
+                if (qkStates.isEmpty()) continue;
+                if (!p.containsColor2()) {
+                  switch (pj.getColor()) {
                     case -1: case 0:
-                      if (k == 0) color = 2;
-                      else color = 0;
+                      if (t == ACC) qkColor = 2;
+                      else qkColor = 0;
                       break;
                     case 1:
-                      color = 2;
+                      qkColor = 2;
                   }
                 }
                 else {
-                  switch (currentComponent.getColor()) {
+                  switch (pj.getColor()) {
                     case 0:
-                      if (k == 0) color = 1;
-                      else color = 0;
+                      if (t == ACC) qkColor = 1;
+                      else qkColor = 0;
                       break;
                     case 1:
-                      color = 1;
+                      qkColor = 1;
                       break;
                     case 2:
-                      color = 2;
+                      qkColor = 2;
                   }
                 }
               }
 
-              STState.Component comp = succSTState.new Component(currentSet, color);
+              STState.Component qk = q.new Component(qkStates, qkColor);
               // Add the component to the successor state. If the merging opt-
               // imisation is on, if possible, merge the component with the current
               // leftmost component, else add it as the new leftmost component.
-              if (getOptions().isMerge()) succSTState.addComponentWithMerging(comp);
-              else succSTState.addComponent(comp);
-            }
-          } // End of iterating through all the components of the current state
+              if (getOptions().isMerge()) {
+                q.addComponentWithMerging(qk);
+                if (getOptions().isReduce2()) {
+                  if (qkM2) q.setM2Leftmost();
+                  if (qkM2Exclude) q.setM2ExcludeLeftmost();
+                }
+              }
+              else q.addComponent(qk);   
+            } // End of iterating through the two successor sets of pj
+          } // End of iterating through components of state p
 
-          // If the successor state is empty, it means that currentSTState has
+          // If the M2 of p disappeared, and q does not contain only colour 0,
+          // then we have to select one of the colour 1 components of q as the
+          // new M2.
+          if (getOptions().isReduce2() && q.isM2Disappeared() && !q.containsNoColor1And2()) {
+            Component qM2 = null;
+            int start = q.getDisappearedM2Position();
+            int size = q.numberOfComponents();
+            for (int k = 0; k < size; k++) {
+              Component comp = q.getComponent((start-k)%size);
+              if (comp.getColor() == 1 && comp != q.getM2Exclude()) {
+                qM2 = comp;
+                break;
+              }
+            }
+            // There is only one colour 1 in q, and it has to be the M2Exclude
+            if (qM2 == null) qM2 = q.getM2Exclude();
+            q.setM2(qM2);
+          }
+
+          // If the successor state is empty, it means that p has
           // no successor of the current symbol, i.e. it is incomplete. We will
           // take care of incomplete states (of the upper part of the automaton)
           // at the end of stage 2. 'continue' jumps to the next symbol.
-          if (succSTState.numberOfComponents() == 0) continue;
+          if (q.numberOfComponents() == 0) continue;
 
-          // Does succSTState already exist in the automaton?
-          succSTState.makeLabel();
-          boolean alreadyExists = false;
-          for (State existingState : out.getStates()) {
-            if (succSTState.equals(existingState)) {
-              succSTState = (STState) existingState;
-              alreadyExists = true;
+          // Does q already exist in the automaton?
+          q.makeLabel();
+          boolean qAlreadyExists = false;
+          for (State state : out.getStates()) {
+            if (q.equals(state)) {
+              q = (STState) state;
+              qAlreadyExists = true;
               break;
             }
           }
           // If the state doesn't yet exist, add it to the automaton
-          if (!alreadyExists) {
+          if (!qAlreadyExists) {
             // If the option "If input automaton is complete, apply rightmost
             // colour 2 optimisation" is set AND the input automaton is
             // complete, then apply the rightmost colour 2 optimisation, i.e.
             // do not add the state if its rightmost colour is 2.
             if (i == 2 && getOptions().isRight2IfCompl() && inIsComplete)
-              // The 'continue' jumps to the next symbol of the alphabet
-              if (succSTState.colorOfRightmostComponent() == 2) continue;
-            out.addState(succSTState);
-            pendingSTStates.add(succSTState);
+               if (q.colorOfRightmostComponent() == 2) continue;
+            out.addState(q);
+            pendingSTStates.add(q);
             id++;
             // Add states containing no colour 2 to the accepting set
-            if (i == 2 && !succSTState.containsColor2()) outAccStates.add(succSTState);
+            if (i == 2 && !q.containsColor2()) outAccStates.add(q);
           }
-          out.createTransition(currentSTState, succSTState, symbol);
+          out.createTransition(p, q, symbol);
         } // End of interating through symbols of alphabet
       } // End of interating through pending states
     } // End of iterating through stage 1 and stage 2
@@ -255,7 +321,6 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     // tion of the lower part, and the operations on the lower part in stage 2
     // have no influence on the completeness of the upper part.
     if (!isUpperPartComplete(out)) {
-    //if (!isComplete(out)) {
       STState sinkState = makeUpperPartComplete(out, id);
       outAccStates.add(sinkState);
     }

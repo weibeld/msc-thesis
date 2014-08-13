@@ -20,10 +20,17 @@ public class STState extends FSAState {
   // ponent, and the last element int the list is the rightmost component.
   private List<Component> components;
 
+  private int indexOfM2;
+  private int indexOfM2Exclude;
+  private int rightOffsetOfDisappearedM2;
+
   /* Constructor */
   public STState(int id) {
     super(id);
     components = new LinkedList<Component>();
+    indexOfM2 = -1;
+    indexOfM2Exclude = -1;
+    rightOffsetOfDisappearedM2 = -1;
   }
 
   public Component getComponent(int index) {
@@ -45,9 +52,8 @@ public class STState extends FSAState {
       addLeftmost(newComp);
       return;
     }
-    int leftmostColor = leftmostComp.getColor();
     int newColor = newComp.getColor();
-    switch (leftmostColor) {
+    switch (leftmostComp.getColor()) {
       case -1: case 0:
         addLeftmost(newComp);
         break;
@@ -63,15 +69,124 @@ public class STState extends FSAState {
   
 
   private void mergeWithLeftmost(Component newComp, int color) {
+    Component leftmostComp = getLeftmost();
     StateSet mergedStates = new StateSet();
-    mergedStates.addAll(getLeftmost().getStateSet());
+    mergedStates.addAll(leftmostComp.getStateSet());
     mergedStates.addAll(newComp.getStateSet());
     Component mergedComp = new Component(mergedStates, color);
     removeLeftmost();
     addLeftmost(mergedComp);
+    if (isM2(leftmostComp)) setM2(mergedComp);
+    if (isM2Exclude(leftmostComp)) setM2Exclude(mergedComp);
   }
 
-  
+  public Component getComponentWithColor0() {
+    for (Component c : components)
+      if (c.getColor() == 0) return c;
+    return null;
+  }
+
+  // public Component getLeftNeighbor(Component comp) {
+  //   int index = components.indexOf(comp);
+  //   if (index == 0) return null;
+  //   else return components.get(index-1);
+  // }
+
+  public boolean isLeftNeighborOfM2(Component comp) {
+    if (indexOfM2 == 0)
+      if (comp == getRightmost()) return true;
+      else return false;
+    else
+      if (comp == getComponent(indexOfM2 - 1)) return true;
+      else return false;
+  }
+
+  // public Component getColor0LeftOfM2() {
+  //   if (indexOfM2 == 0) {
+  //     if (getRightmost().getColor() == 0) return getRightmost();
+  //     else return null;
+  //   }
+  //   else return components.get(indexOfM2 - 1);  // Must have colour 0
+  // }
+
+  public boolean isM2(Component comp) {
+    if (comp == getM2()) return true;
+    else return false;
+  }
+
+  // Set an existing component to M2
+  public void setM2(Component comp) {
+    indexOfM2 = components.indexOf(comp);
+  }
+
+  // Set the leftmost component to M2
+  public void setM2Leftmost() {
+    indexOfM2 = 0;
+  }
+
+  public boolean hasM2() {
+    return getM2() != null;
+  }
+
+  public Component getM2() {
+    if (indexOfM2 == -1) return null;
+    else return components.get(indexOfM2);
+  }
+
+
+  // Make the leftmost component the M2Exclude
+  public void setM2ExcludeLeftmost() {
+    indexOfM2Exclude = 0;
+  }
+
+  public void setM2Exclude(Component comp) {
+    indexOfM2Exclude = components.indexOf(comp);
+  }
+
+  public boolean isM2Exclude(Component comp) {
+    if (comp == getM2Exclude()) return true;
+    else return false;
+  }
+
+  public Component getM2Exclude() {
+    if (indexOfM2Exclude == -1) return null;
+    else return components.get(indexOfM2Exclude);
+  }
+
+
+  // public void markM2() {
+  //   markedM2RightOffset = components.size();
+  // }
+
+  // public boolean hasMarkedM2() {
+  //   return markedM2RightOffset != -1;
+  // }
+
+  // public Component getMarkedM2() {
+  //   return components.get(components.size() - markedM2RightOffset - 1);
+  // }
+
+  public void markM2Disappearance() {
+    rightOffsetOfDisappearedM2 = components.size();
+  }
+
+  public boolean isM2Disappeared() {
+    return rightOffsetOfDisappearedM2 != -1;
+  }
+
+  public int getDisappearedM2Position() {
+    return components.size()-1-rightOffsetOfDisappearedM2;
+  }
+
+  // public boolean containsColor1Or2() {
+  //   return !containsNoColor1And2();
+  // }
+
+  public boolean containsNoColor1And2() {
+    for (Component c : components)
+      if (c.getColor() == 1 || c.getColor() == 2) return false;
+    return true;
+  }
 
   public boolean containsColor2() {
     for (Component c : components) if (c.getColor() == 2) return true;
@@ -87,6 +202,10 @@ public class STState extends FSAState {
     return this.getLabel().equals(otherState.getLabel()); 
   }
 
+  public List<Component> getComponents() {
+    return components;
+  }
+
   /* Create the label for the state that will be displayed in the box next to
    * each state in the GOAL GUI. The label has the form (({s0,s1},0),({s4},1)}.
    * It also servers for testing state equalitiy (see equals()). */
@@ -98,11 +217,31 @@ public class STState extends FSAState {
       s += "({";
       for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
       s = s.substring(0, s.length()-1); // Remove last superfluous comma
-      s += "}," + c.getColor() + "),";
+      s += "}," + c.getColor() + ")";
+      if (isM2(c)) s += "*";
+      s += ",";
     }
     s = s.substring(0, s.length()-1);   // Remove last superfluous comma
-    this.setLabel(s);
+    s += ")";
+    setLabel(s);
   }
+  // public void makeLabel() {
+  //   String prefix = Preference.getStatePrefix();
+  //   String s = "(";
+  //   for (Component c : components) {
+  //     Component c = getComponent(i);
+  //     s += "({";
+  //     for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
+  //     s = s.substring(0, s.length()-1); // Remove last superfluous comma
+  //     s += "}," + c.getColor() + ")";
+  //     if (isM2(c)) s += "*";
+  //     s += ",";
+  //   }
+  //   s = s.substring(0, s.length()-1);   // Remove last superfluous comma
+  //   s += ")";
+  //   System.out.println(s);
+  //   //this.setLabel(s);
+  // }
 
   /* The label of the sink state that is added to the upper part of the
    * automaton if it is not complete. */
