@@ -112,7 +112,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     int id = 0;
 
     // The states of the output automaton whose successors we have to determine
-    StateSet pendingSTStates = new StateSet();
+    StateSet pendingStates = new StateSet();
 
     // We do the same construction twice with slight differences. Iteration 1
     // constructs the upper part, and iteration 2 the lower part of the automaton.
@@ -125,20 +125,23 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
         else outInitState.makeLabelNormal();
         out.addState(outInitState);
         out.setInitialState(outInitState);
-        pendingSTStates.add(outInitState);
+        pendingStates.add(outInitState);
       }
       // In the second stage we process all the states of the upper automaton again
-      else if (i == 2) pendingSTStates = new StateSet(out.getStates());
+      else if (i == 2) pendingStates = new StateSet(out.getStates());
       
-      while (!pendingSTStates.isEmpty()) {
-        // The state whose successors we are going to determine
-        STState p = (STState) pendingSTStates.pollFirst();
+      // An element of pendingStates will be our state p and in this loop we are
+      // going to construct for each symbol of the alphabet, the state q,
+      // "symbol"-successor of p.
+      while (!pendingStates.isEmpty()) {
+        STState p = (STState) pendingStates.pollFirst();
         for (String symbol : inAlphabet) {
-          // The current state's successor that we are going to construct
           STState q = new STState(id);
-          // The input automaton states that have already occured in the right-to-left traversal
+          // Successors of components of p that have occurred in the processed components so far
           StateSet occurredStates = new StateSet();
-          // Iterate through the components of the current state from right to left
+          // Iterate through the components of p from right to left. At each
+          // time we will treat the component pj, and we are going to determine
+          // the 0, 1, or 2 successor components pk of pj.
           for (int j = p.numberOfComponents()-1; j >= 0; j--) {
             Component pj = p.getComponent(j);
             StateSet pjSuccs = in.getSuccessors(pj.getStateSet(), symbol);
@@ -150,26 +153,34 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
               if (inAccStates.contains(state)) pjAcc.add(state);
               else pjNonAcc.add(state);
             }
+            // The successor of pj are divided in two sets (acc/non-acc) and we
+            // are now going to treat first the acc then the non-acc set. Each
+            // of them can give rise to a component qk of the successor state q.
+            // For a qk, we have to determine its colour and its state set.
             final int ACC = 0, NONACC = ACC+1;
             for (int t = ACC; t <= NONACC; t++) {
+              int qkColor = 999;
               StateSet qkStates;
               if (t == ACC) qkStates = pjAcc;
               else qkStates = pjNonAcc;
+              // Switches that are set if qk gets one of these roles:
+              boolean qkM2 = false;         // Is qk the M2 of q?
+              boolean qkM2Exclude = false;  // Is qk the colour 1 comp. that cannot be the new M2 of q? (If the M2 of p disappeared)
 
-              int qkColor = 999;          // This component's color
-              boolean qkM2 = false;      // Is this component the M2 of q?
-              boolean qkM2Exclude = false;  // Is this component the () of q that is 
-
+              // If we are constructing the upper part of the automaton
               if (i == 1) {
                 if (qkStates.isEmpty()) continue;
                 qkColor = -1;
               }
+              // If we are construction the lower part of the automaton AND the
+              // colour 2 reduction is ON
               else if (getOptions().isReduce2()) {
-                if (p.containsNoColor1And2()) {
+                // If p contains only colour 0 or -1 components. p has no M2.
+                if (p.hasOnlyColor0OrMinus1()) {
                   if (qkStates.isEmpty()) continue;
                   switch (t) {
                     case ACC:
-                      if (!q.containsColor2()) {
+                      if (!q.hasColor2()) {
                         qkColor = 2;
                         qkM2 = true;
                       }
@@ -178,7 +189,9 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                     case NONACC: qkColor = 0;
                   }
                 }
-                else { // p contains a M2 for sure which is [] or ()
+                // If p contains colour 1 or 2 comps. p has a colour 1 or 2 M2.
+                else {
+                  // If the current component of p, pj, IS the M2 of p
                   if (pj == p.getM2()) {
                     switch (t) {
                       case ACC:
@@ -188,20 +201,26 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                         break;
                       case NONACC:
                         if (!qkStates.isEmpty() && !pjAcc.isEmpty())
-                          qkColor = 1;
+                          qkColor = 1; // Will be merged with the acc child of pj
                         else if (!qkStates.isEmpty() && pjAcc.isEmpty()) {
                           qkColor = 2;
                           qkM2 = true;
                         }
                         else if (qkStates.isEmpty() && !pjAcc.isEmpty())
                           continue;
+                        // pj, the M2 of p, has no successor. It disappears. We
+                        // will elect one of the comps. of p as p's M2, once p
+                        // is fully constructed.
                         else if (qkStates.isEmpty() && pjAcc.isEmpty()) {
+                          // Mark the position in q where the child of M2(p)
+                          // (and thus M2(q)) WOULD BE if M2(p) would have a child
                           q.markM2Disappearance();
                           continue;
                         }
                     }
                   }
-                  else {  // If p(j) is not the M2 of p
+                  // If the current component of p, pj, IS NOT the M2 of p.
+                  else {
                     if (qkStates.isEmpty()) continue;
                     switch (pj.getColor()) {
                       case 1:
@@ -210,16 +229,28 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                       case 0:
                         if (t == ACC) {
                           qkColor = 1;
-                          if (p.isM2Disappeared() && p.isLeftNeighborOfM2(pj)) qkM2Exclude = true;
+                          // Our condition is that if M2(p) disappears, then M2(q)
+                          // will be the first () to the left of where the child
+                          // of M2(p) WOULD BE, that is NOT A CHILD of the imme-
+                          // diate {}-left-neighbour of M2(p). The parent of qk is
+                          // pj. That is, if pj IS the left neighbour of M2(p), qk
+                          // has colour 1, and M2(p) has indeed disappeared, then
+                          // qk is exactly that component of q that has to be ex-
+                          // cluded from the election of M2(q) later.
+                          // Cyclic: e.g. ([],..,{}), {} is to the left of []
+                          if (p.isM2Disappeared() && pj == p.getLeftNeighborOfM2())
+                            qkM2Exclude = true;
                         }
                         else qkColor = 0;
                     }
                   }
                 }
               }
-              else { // If the options Reduce2 is off
+              // If we are constructing the lower part of the automaton and the
+              // colour 2 reduction optimisation is OFF
+              else {
                 if (qkStates.isEmpty()) continue;
-                if (!p.containsColor2()) {
+                if (!p.hasColor2()) {
                   switch (pj.getColor()) {
                     case -1: case 0:
                       if (t == ACC) qkColor = 2;
@@ -243,52 +274,56 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                   }
                 }
               }
-
+              // At this point, we have determined the (non-empty) state set and colour of qk
               STState.Component qk = q.new Component(qkStates, qkColor);
-              // Add the component to the successor state. If the merging opt-
-              // imisation is on, if possible, merge the component with the current
-              // leftmost component, else add it as the new leftmost component.
               if (getOptions().isMerge()) {
+                // Add qk to left edge of q, and merge it if possible with the
+                // old leftmost component of q
                 q.addComponentWithMerging(qk);
-                if (getOptions().isReduce2()) {
-                  if (qkM2) q.setM2(qk);
-                  if (qkM2Exclude) q.setM2ExcludeLeftmost();
+                if (getOptions().isReduce2()) { // If qk has a special role, set it
+                  if (qkM2) q.setM2(qk);                     // qk has colour 2, cannot be merged
+                  if (qkM2Exclude) q.setM2ExcludeLeftmost(); // qk has colour 1, can be merged
                 }
               }
               else q.addComponent(qk);   
             } // End of iterating through the two successor sets of pj
           } // End of iterating through components of state p
 
-          // If the M2 of p disappeared, and q does not contain only colour 0,
-          // then we have to select one of the colour 1 components of q as the
-          // new M2.
-          if (getOptions().isReduce2() && q.isM2Disappeared() && !q.containsNoColor1And2()) {
-            Component qM2 = null;
-            int start = q.getDisappearedM2Position();
-            int size = q.numberOfComponents();
-            for (int k = 0; k < size; k++) {
-              //System.out.println("(start-k)%size = (" + start+" - "+k+") % " + size + " = " + mod((start-k),size));
-              Component comp = q.getComponent(mod((start-k),size));
-              if (comp.getColor() == 1 && comp != q.getM2Exclude()) {
-                qM2 = comp;
-                break;
-              }
-            }
-            //System.out.println("\n");
-            // There is only one colour 1 in q, and it has to be the M2Exclude
-            if (qM2 == null) qM2 = q.getM2Exclude();
-            q.setM2(qM2);
-          }
-
-          // If the successor state is empty, it means that p has
-          // no successor of the current symbol, i.e. it is incomplete. We will
-          // take care of incomplete states (of the upper part of the automaton)
-          // at the end of stage 2. 'continue' jumps to the next symbol.
+          // At this point, we finished constructing q.
+          // If q is empty, it means that p has no outgoing transition for the
+          // current symbol. We will take care of incomplete states at the end
+          // of stage 2. The continue jumps to the next symbol of the alphabet.
           if (q.numberOfComponents() == 0) continue;
 
-          // Does q already exist in the automaton?
+          if (getOptions().isReduce2()) {
+            // If M2(p) disappeared, then q has not yet an M2(q), and we have to
+            // elect one. Remember that we have postponed this decision to the
+            // time when q will have been fully constructed. Of course, q needs
+            // an M2 only, if it contains at least one colour 1 component.
+            if (q.isM2Disappeared() && !q.hasOnlyColor0OrMinus1()) {
+              int start = q.getDisappearedM2Position();
+              int size = q.numberOfComponents();
+              // Iterate through the comps of q, starting from the index where
+              // the child of M2(p) would be, to the left, cyclically. E.g. <- 2 <- 1 <- 0 | 4 <- 3
+              for (int k = 0; k < size; k++) {
+                Component candidate = q.getComponent(mod((start-k),size));
+                // The first comp. with colour 1 and that is not the marked child of
+                // the {}-left-neighbour of the disappeared M2(p) becomes M2(q).
+                if (candidate.getColor() == 1 && candidate != q.getM2Exclude()) {
+                  q.setM2(candidate);
+                  break;
+                }
+              }
+              // If no M2(q) has been elected above, then q contains only exactly
+              // one (), and this is the m2Exclude. Since it is the last () in q,
+              // we can set it as M2(q).
+              if (!q.hasM2()) q.setM2(q.getM2Exclude());
+            }
+          }
+          // q is now really finished. We can create its label.
           if (getOptions().isBrack()) q.makeLabelBrackets();
           else q.makeLabelNormal();
+          // Does q already exist in the automaton?
           boolean qAlreadyExists = false;
           for (State state : out.getStates()) {
             if (q.equals(state)) {
@@ -306,10 +341,10 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             if (i == 2 && getOptions().isRight2IfCompl() && inIsComplete)
                if (q.colorOfRightmostComponent() == 2) continue;
             out.addState(q);
-            pendingSTStates.add(q);
+            pendingStates.add(q);
             id++;
             // Add states containing no colour 2 to the accepting set
-            if (i == 2 && !q.containsColor2()) outAccStates.add(q);
+            if (i == 2 && !q.hasColor2()) outAccStates.add(q);
           }
           out.createTransition(p, q, symbol);
         } // End of interating through symbols of alphabet
@@ -345,7 +380,6 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     return out;
 
-
     /* Automaton API summary (see API of class Automaton or FSA) */
 
     // Automaton
@@ -376,13 +410,6 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     // Labels
     // q0.setLabel("s" + q0.getID());
   }
-
-  private int mod(int a, int b) {
-    int result = a % b;
-    if (result < 0) return result + b;
-    else return result;
-  }
-
 
   /* Checks if the automaton passed as argument is complete, i.e. every state
    * has at least one outgoing transition for every symbol of the alphabet */
@@ -424,6 +451,13 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     }
     for (String symbol : alphabet) a.createTransition(sink, sink, symbol);
     return sink;
+  }
+
+  /* Modulo function with only positive outputs. e.g. -2 mod 7 = 5 and not -2 */
+  private int mod(int a, int b) {
+    int result = a % b;
+    if (result < 0) return result + b;
+    else return result;
   }
 
 
