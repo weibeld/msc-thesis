@@ -168,10 +168,9 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                   if (qkStates.isEmpty()) continue;
                   switch (t) {
                     case ACC:
-                      if (!p.hasM2()) {
+                      if (!q.containsColor2()) {
                         qkColor = 2;
                         qkM2 = true;
-                        p.setM2(pj);
                       }
                       else qkColor = 1;
                       break;
@@ -251,7 +250,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
               if (getOptions().isMerge()) {
                 q.addComponentWithMerging(qk);
                 if (getOptions().isReduce2()) {
-                  if (qkM2) q.setM2Leftmost();
+                  if (qkM2) q.setM2(qk);
                   if (qkM2Exclude) q.setM2ExcludeLeftmost();
                 }
               }
@@ -267,12 +266,14 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             int start = q.getDisappearedM2Position();
             int size = q.numberOfComponents();
             for (int k = 0; k < size; k++) {
-              Component comp = q.getComponent((start-k)%size);
+              //System.out.println("(start-k)%size = (" + start+" - "+k+") % " + size + " = " + mod((start-k),size));
+              Component comp = q.getComponent(mod((start-k),size));
               if (comp.getColor() == 1 && comp != q.getM2Exclude()) {
                 qM2 = comp;
                 break;
               }
             }
+            //System.out.println("\n");
             // There is only one colour 1 in q, and it has to be the M2Exclude
             if (qM2 == null) qM2 = q.getM2Exclude();
             q.setM2(qM2);
@@ -372,6 +373,12 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     // Labels
     // q0.setLabel("s" + q0.getID());
+  }
+
+  private int mod(int a, int b) {
+    int result = a % b;
+    if (result < 0) return result + b;
+    else return result;
   }
 
 

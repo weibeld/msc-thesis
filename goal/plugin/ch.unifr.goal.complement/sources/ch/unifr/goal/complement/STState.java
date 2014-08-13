@@ -20,20 +20,23 @@ public class STState extends FSAState {
   // ponent, and the last element int the list is the rightmost component.
   private List<Component> components;
 
-  private int indexOfM2;
-  private int indexOfM2Exclude;
+  //private int indexOfM2;
+  private Component m2;
+  //private int indexOfM2Exclude;
+  private Component m2Exclude;
   private int rightOffsetOfDisappearedM2;
 
   /* Constructor */
   public STState(int id) {
     super(id);
     components = new LinkedList<Component>();
-    indexOfM2 = -1;
-    indexOfM2Exclude = -1;
+    m2 = null;
+    m2Exclude = null;
     rightOffsetOfDisappearedM2 = -1;
   }
 
   public Component getComponent(int index) {
+    if (index == -1) System.out.println("index is -1: " + getLabel() + "index of m2: " + components.indexOf(m2));
     return components.get(index);
   }
 
@@ -93,12 +96,14 @@ public class STState extends FSAState {
   // }
 
   public boolean isLeftNeighborOfM2(Component comp) {
-    if (indexOfM2 == 0)
-      if (comp == getRightmost()) return true;
+    if (isLeftmost(m2))
+      if (isRightmost(comp)) return true;
       else return false;
-    else
-      if (comp == getComponent(indexOfM2 - 1)) return true;
+    else {
+      //System.out.println("index of m2: " + components.indexOf(m2));
+      if (comp == getComponent(components.indexOf(m2) - 1)) return true;
       else return false;
+    }
   }
 
   // public Component getColor0LeftOfM2() {
@@ -110,47 +115,47 @@ public class STState extends FSAState {
   // }
 
   public boolean isM2(Component comp) {
-    if (comp == getM2()) return true;
+    if (comp == m2) return true;
     else return false;
   }
 
   // Set an existing component to M2
   public void setM2(Component comp) {
-    indexOfM2 = components.indexOf(comp);
+    m2 = comp;
   }
 
   // Set the leftmost component to M2
   public void setM2Leftmost() {
-    indexOfM2 = 0;
+    m2 = getLeftmost();
   }
 
   public boolean hasM2() {
-    return getM2() != null;
+    return m2 != null;
   }
 
   public Component getM2() {
-    if (indexOfM2 == -1) return null;
-    else return components.get(indexOfM2);
+    if (m2 == null) return null;
+    else return m2;
   }
 
 
   // Make the leftmost component the M2Exclude
   public void setM2ExcludeLeftmost() {
-    indexOfM2Exclude = 0;
+    m2Exclude = getLeftmost();
   }
 
   public void setM2Exclude(Component comp) {
-    indexOfM2Exclude = components.indexOf(comp);
+    m2Exclude = comp;
   }
 
   public boolean isM2Exclude(Component comp) {
-    if (comp == getM2Exclude()) return true;
+    if (comp == m2Exclude) return true;
     else return false;
   }
 
   public Component getM2Exclude() {
-    if (indexOfM2Exclude == -1) return null;
-    else return components.get(indexOfM2Exclude);
+    if (m2Exclude == null) return null;
+    else return m2Exclude;
   }
 
 
@@ -220,10 +225,29 @@ public class STState extends FSAState {
       s += "}," + c.getColor() + ")";
       if (isM2(c)) s += "*";
       s += ",";
+      if (rightOffsetOfDisappearedM2 != -1 && components.indexOf(c) == components.size()-1-rightOffsetOfDisappearedM2)
+        s += "[],";
     }
     s = s.substring(0, s.length()-1);   // Remove last superfluous comma
     s += ")";
     setLabel(s);
+  }
+
+public String getLabel() {
+    // The char displayed in front of a state's ID (s or q)
+    String prefix = Preference.getStatePrefix();
+    String s = "(";
+    for (Component c : components) {
+      s += "({";
+      for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
+      s = s.substring(0, s.length()-1); // Remove last superfluous comma
+      s += "}," + c.getColor() + ")";
+      if (isM2(c)) s += "*";
+      s += ",";
+    }
+    s = s.substring(0, s.length()-1);   // Remove last superfluous comma
+    s += ")";
+    return s;
   }
   // public void makeLabel() {
   //   String prefix = Preference.getStatePrefix();
@@ -269,9 +293,15 @@ public class STState extends FSAState {
   private void removeLeftmost() {
     if (!components.isEmpty()) components.remove(0);
   }
+  private boolean isLeftmost(Component c) {
+    return getLeftmost() == c;
+  }
   private Component getRightmost() {
     if (!components.isEmpty()) return components.get(components.size()-1);
     else return null;
+  }
+  private boolean isRightmost(Component c) {
+    return c == getRightmost();
   }
 
   /*--------------------------------------------------------------------------*
