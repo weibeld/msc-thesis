@@ -121,7 +121,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       if (i == 1) {
         STState outInitState = new STState(id++);
         outInitState.addComponent(outInitState.new Component(inInitState, -1));
-        outInitState.makeLabel();
+        if (getOptions().isBrack()) outInitState.makeLabelBrackets();
+        else outInitState.makeLabelNormal();
         out.addState(outInitState);
         out.setInitialState(outInitState);
         pendingSTStates.add(outInitState);
@@ -286,7 +287,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           if (q.numberOfComponents() == 0) continue;
 
           // Does q already exist in the automaton?
-          q.makeLabel();
+          if (getOptions().isBrack()) q.makeLabelBrackets();
+          else q.makeLabelNormal();
           boolean qAlreadyExists = false;
           for (State state : out.getStates()) {
             if (q.equals(state)) {

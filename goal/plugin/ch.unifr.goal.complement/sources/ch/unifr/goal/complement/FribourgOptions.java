@@ -28,12 +28,14 @@ public class FribourgOptions extends Properties {
   private static final String right2IfComplKey;
   private static final String mergeKey;
   private static final String reduce2Key;
+  private static final String brackKey;
 
   // Option default values that are saved in the Preference file
   private static final boolean complDefault         = false;
   private static final boolean right2IfComplDefault = true;
   private static final boolean mergeDefault         = true;
   private static final boolean reduce2Default       = true;
+  private static final boolean brackDefault         = false;
 
   // Will be executed when the class is first accessed. This is actually only
   // necessary to set the default values in the preference file the very first
@@ -45,11 +47,13 @@ public class FribourgOptions extends Properties {
     right2IfComplKey = "right2IfCompl";
     mergeKey         = "merge";
     reduce2Key       = "reduce2";
+    brackKey         = "brack";
     // Set the default values
     Preference.setDefault(complKey,         complDefault);
     Preference.setDefault(right2IfComplKey, right2IfComplDefault);
     Preference.setDefault(mergeKey,         mergeDefault);
     Preference.setDefault(reduce2Key,       reduce2Default);
+    Preference.setDefault(brackKey,         brackDefault);
   }
 
   /* Create a FribourgOptions object with the default values for all options.
@@ -60,6 +64,7 @@ public class FribourgOptions extends Properties {
     setProperty(right2IfComplKey, right2IfComplDefault);
     setProperty(mergeKey,         mergeDefault);
     setProperty(reduce2Key,       reduce2Default);
+    setProperty(brackKey,         brackDefault);
   }
 
   /* Option getter methods */
@@ -75,6 +80,9 @@ public class FribourgOptions extends Properties {
   public boolean isReduce2() {
     return getPropertyAsBoolean(reduce2Key);
   }
+  public boolean isBrack() {
+    return getPropertyAsBoolean(brackKey);
+  }
 
   /* Option setter methods */
   public void setCompl(boolean value) {
@@ -89,6 +97,9 @@ public class FribourgOptions extends Properties {
   public void setReduce2(boolean value) {
     setProperty(reduce2Key, value);
   }
+  public void setBrack(boolean value) {
+    setProperty(brackKey, value);
+  }
 
 
   /* Interface (read-only) to the Preference file. Each option has a persistent
@@ -97,7 +108,7 @@ public class FribourgOptions extends Properties {
   // The preference values are used to set the checkboxes in the options dialog
   // in the GUI. If the user clicks on 'Save as Default', the current selection
   // of options will be set as the new preference values.
-  public static  boolean getComplPref() {
+  public static boolean getComplPref() {
     return Preference.getPreferenceAsBoolean(complKey);
   }
   public static boolean getRight2IfComplPref() {
@@ -108,6 +119,9 @@ public class FribourgOptions extends Properties {
   }
   public static boolean getReduce2Pref() {
     return Preference.getPreferenceAsBoolean(reduce2Key);
+  }
+  public static boolean getBrackPref() {
+    return Preference.getPreferenceAsBoolean(brackKey);
   }
 
   // The default values are used when the user clicks on 'Reset' in the
@@ -125,6 +139,9 @@ public class FribourgOptions extends Properties {
   }
   public static boolean getReduce2Default() {
     return Preference.getDefaultAsBoolean(reduce2Key);
+  }
+  public static boolean getBrackDefault() {
+    return Preference.getDefaultAsBoolean(brackKey);
   }
   
 }

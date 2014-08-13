@@ -20,9 +20,7 @@ public class STState extends FSAState {
   // ponent, and the last element int the list is the rightmost component.
   private List<Component> components;
 
-  //private int indexOfM2;
   private Component m2;
-  //private int indexOfM2Exclude;
   private Component m2Exclude;
   private int rightOffsetOfDisappearedM2;
 
@@ -36,7 +34,7 @@ public class STState extends FSAState {
   }
 
   public Component getComponent(int index) {
-    if (index == -1) System.out.println("index is -1: " + getLabel() + "index of m2: " + components.indexOf(m2));
+    //if (index == -1) System.out.println("index is -1: " + getLabel() + "index of m2: " + components.indexOf(m2));
     return components.get(index);
   }
 
@@ -214,10 +212,12 @@ public class STState extends FSAState {
   /* Create the label for the state that will be displayed in the box next to
    * each state in the GOAL GUI. The label has the form (({s0,s1},0),({s4},1)}.
    * It also servers for testing state equalitiy (see equals()). */
-  public void makeLabel() {
+  public void makeLabelNormal() {
     // The char displayed in front of a state's ID (s or q)
     String prefix = Preference.getStatePrefix();
     String s = "(";
+    if (rightOffsetOfDisappearedM2 != -1 && rightOffsetOfDisappearedM2 == numberOfComponents())
+        s += "|,";
     for (Component c : components) {
       s += "({";
       for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
@@ -226,29 +226,68 @@ public class STState extends FSAState {
       if (isM2(c)) s += "*";
       s += ",";
       if (rightOffsetOfDisappearedM2 != -1 && components.indexOf(c) == components.size()-1-rightOffsetOfDisappearedM2)
-        s += "[],";
+        s += "|,";
     }
     s = s.substring(0, s.length()-1);   // Remove last superfluous comma
     s += ")";
     setLabel(s);
   }
 
-public String getLabel() {
-    // The char displayed in front of a state's ID (s or q)
+  public void makeLabelBrackets() {
     String prefix = Preference.getStatePrefix();
     String s = "(";
+    if (rightOffsetOfDisappearedM2 != -1 && rightOffsetOfDisappearedM2 == numberOfComponents())
+        s += "|,";
     for (Component c : components) {
-      s += "({";
+      int color = c.getColor();
+      String left = "", right = "";
+      switch (color) {
+        case -1:
+          left = "'";
+          right = "'";
+          break;
+        case 0:
+          left = "{";
+          right = "}";
+          break;
+        case 1:
+          left = "(";
+          right = ")";
+          break;
+        case 2:
+          left = "[";
+          right = "]";
+      } 
+      s += left;
       for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
       s = s.substring(0, s.length()-1); // Remove last superfluous comma
-      s += "}," + c.getColor() + ")";
+      s += right;
       if (isM2(c)) s += "*";
       s += ",";
+      if (rightOffsetOfDisappearedM2 != -1 && components.indexOf(c) == components.size()-1-rightOffsetOfDisappearedM2)
+        s += "|,";
     }
     s = s.substring(0, s.length()-1);   // Remove last superfluous comma
     s += ")";
-    return s;
+    setLabel(s);
   }
+
+// public String getLabel() {
+//     // The char displayed in front of a state's ID (s or q)
+//     String prefix = Preference.getStatePrefix();
+//     String s = "(";
+//     for (Component c : components) {
+//       s += "({";
+//       for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
+//       s = s.substring(0, s.length()-1); // Remove last superfluous comma
+//       s += "}," + c.getColor() + ")";
+//       if (isM2(c)) s += "*";
+//       s += ",";
+//     }
+//     s = s.substring(0, s.length()-1);   // Remove last superfluous comma
+//     s += ")";
+//     return s;
+//   }
   // public void makeLabel() {
   //   String prefix = Preference.getStatePrefix();
   //   String s = "(";

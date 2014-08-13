@@ -25,6 +25,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
   private final JCheckBox right2IfComplCheckBox;
   private final JCheckBox mergeCheckBox;
   private final JCheckBox reduce2CheckBox;
+  private final JCheckBox brackCheckBox;
 
   /* Constructor */
   public FribourgComplementOptionsPanel() {
@@ -66,7 +67,12 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
           reduce2CheckBox.setEnabled(false);
         }
       }
-    }); 
+    });
+
+    // Use the bracket notation
+    brackCheckBox = new JCheckBox("Use the \"bracket notation\" for state labels");
+    brackCheckBox.setSelected(FribourgOptions.getBrackPref());
+    this.add(brackCheckBox); 
   }
 
   /* Create a FribourgOptions according to the state of the checkboxes */
@@ -77,6 +83,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     options.setRight2IfCompl(right2IfComplCheckBox.isSelected());
     options.setMerge(mergeCheckBox.isSelected());
     options.setReduce2(reduce2CheckBox.isSelected());
+    options.setBrack(brackCheckBox.isSelected());
     return options;
   }
 
@@ -89,5 +96,6 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     right2IfComplCheckBox.setSelected(FribourgOptions.getRight2IfComplDefault());
     mergeCheckBox.setSelected(FribourgOptions.getMergeDefault());
     reduce2CheckBox.setSelected(FribourgOptions.getReduce2Default());
+    brackCheckBox.setSelected(FribourgOptions.getBrackDefault());
   }
 }
