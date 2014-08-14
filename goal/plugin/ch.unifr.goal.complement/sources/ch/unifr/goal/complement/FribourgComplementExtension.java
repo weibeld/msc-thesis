@@ -67,8 +67,7 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
   @Override // Method of interface CommandExtension
   public String getHelp() {
     String s;
-    s =  pad(bCode)     + "Use the \"bracket notation\" in the state labels.\n";
-    s +=  pad(cCode)    + "Make input automaton complete if it is not complete. This option\n";
+    s =  pad(cCode)    + "Make input automaton complete if it is not complete. This option\n";
     s +=         "         generally DECREASES the performance of the algorithm.\n";
     s += pad(r2ifcCode) + "If the input automaton is complete, apply the optimisation of\n";
     s +=         "         deleting states whose rightmost component has colour 2.\n";

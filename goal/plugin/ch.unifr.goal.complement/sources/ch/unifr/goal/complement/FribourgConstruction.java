@@ -21,8 +21,6 @@ import org.svvrl.goal.core.aut.fsa.FSAState;
 import org.svvrl.goal.core.Properties;
 import ch.unifr.goal.complement.STState.Component;
 
-import org.svvrl.goal.core.util.PowerSet;
-
 
 /*----------------------------------------------------------------------------*
  * Implementation of the Fribourg Büchi complementation construction. This same
