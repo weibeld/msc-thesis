@@ -1,0 +1,174 @@
+Installation of libefa
+======================
+
+dw-15.08.2014
+
+
+Debian
+******
+
+Preliminaries:
+	sudo apt-get install libxml2-dev or something similar
+	a4wide.sty in /usr/share/texlive/texmf/tex/latex/a4wide
+
+The working directory is the libefa root directory.
+
+1
+================================================================================
+Run
+	libtoolize --force
+	aclocal --force --warnings=all
+	autoconf --force --warnings=all
+	autoheader --force --warnings=all
+	automake --force --warnings=all --add-missing
+Without this, ./configure gives a "cannot find install-sh..." error
+================================================================================
+
+2
+================================================================================
+In configure, outcomment the line
+	LIBEFA_COMPILE_WARNINGS(maximum)
+and the consecutive lines
+	PKG_PROG_PKG_CONFIG
+		 	PKG_CHECK_MODULES(LIBXML, libxml-2.0)
+Now, ./configure should run through without errors
+================================================================================
+
+3
+================================================================================
+Run
+	./configure					\
+		--disable-rbtree			\
+		LDFLAGS=-lxml2				\
+		CFLAGS="-I/usr/include/libxml2 -lrt"	\
+		--prefix=/home/dw/libefa
+-I/usr/include/libxml2 includes the location where the libxml/*.h headers are.
+-lrt includes a time library, defining the function clock_gettime.
+--prefix=/home/dw/libefa sets the desired installation location.
+================================================================================
+
+4
+================================================================================
+	make clean
+================================================================================
+
+5
+================================================================================
+In src/Makefile, delete the string
+	@WARN_CFLAGS@
+Without that, make will abort with a "error: @WARN_CFLAGS@: No such file or directory"
+================================================================================
+
+6
+================================================================================
+	make
+================================================================================
+
+7
+================================================================================
+	make install
+================================================================================
+
+
+
+Mac
+***
+
+Note: the program will probably never run correctly on Mac.
+
+The working directory is the libefa root directory.
+
+1
+================================================================================
+Run
+	glibtoolize --force
+	aclocal --force --warnings=all
+	autoconf --force --warnings=all
+	autoheader --force --warnings=all
+	automake --force --warnings=all --add-missing
+Without this, ./configure gives a "cannot find install-sh..." error
+================================================================================
+
+2
+================================================================================
+In configure, outcomment the line
+	LIBEFA_COMPILE_WARNINGS(maximum)
+Now, ./configure should run through without errors
+================================================================================
+
+3
+================================================================================
+Run
+	./configure					\
+		--disable-rbtree			\
+		LDFLAGS=-lxml2				\
+		--prefix=/Users/dw/libefa
+--prefix=/Users/dw/libefa sets the desired installation location.
+================================================================================
+
+4
+================================================================================
+	make clean
+================================================================================
+
+5
+================================================================================
+In src/Makefile, delete the string
+	@WARN_CFLAGS@
+Without that, make will abort with a "error: @WARN_CFLAGS@: No such file or directory"
+================================================================================
+
+6
+================================================================================
+In src/efa.c, add
+	#include <mach/clock.h>
+	#include <mach/mach.h>
+In function efa_end_timer, add
+	clock_serv_t cclock;
+  	mach_timespec_t mts;
+and replace
+	ret = clock_gettime(CLOCK_PROCESS_CPUTIME_ID, ts_end);
+	if (ret == -1) {
+    		efa_errno = EFA_ETIMER;
+    		return NULL;
+  	}
+with
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+  	ret = clock_get_time(cclock, &mts);
+  	if (ret == -1) {
+    		efa_errno = EFA_ETIMER;
+    		return NULL;
+  	}
+  	mach_port_deallocate(mach_task_self(), cclock);
+  	ts_end->tv_sec = mts.tv_sec;
+  	ts_end->tv_nsec = mts.tv_nsec;
+and in function efa_start_timer, also add
+	clock_serv_t cclock;
+  	mach_timespec_t mts;
+and replace
+	ret = clock_gettime(CLOCK_PROCESS_CPUTIME_ID, ts_start);
+  	if (ret == -1) {
+    		efa_errno = EFA_ETIMER;
+    		return -1;
+  	}
+with
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+  	ret = clock_get_time(cclock, &mts);
+  	if (ret == -1) {
+    		efa_errno = EFA_ETIMER;
+    		return -1;
+  	}
+  	mach_port_deallocate(mach_task_self(), cclock);
+  	ts_start->tv_sec = mts.tv_sec;
+  	ts_start->tv_nsec = mts.tv_nsec;
+================================================================================
+
+7
+================================================================================
+	make
+================================================================================
+
+8
+================================================================================
+	make install
+================================================================================
