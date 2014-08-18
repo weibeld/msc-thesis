@@ -1,0 +1,20 @@
+Meeting with Joel, 18.08.2014
+-----------------------------
+
+
+- ()[] -> [] merge is not allowed, but []() -> [] merge is allowed. Reason is that adjacent [](), in this order, can only appear if a {} disappears. Every state can only have a finite number of {}-disappearances, because the number of {} in a state cannot increase (only stay the same or decrease). In the []() merge we are actually converting the () to a [] and then the two [] are merged. The conversion from () to [] is allowed because it can happen only a finite number of times, because it's coupled to {}-disappearance.
+
+Question: can []() not happen if we have (..[1]{2}{3}..) --> (..[1](2){3}(3)..)?
+Yes, but this can happen also only finitely many times. The successor state has one fewer {} than the predecessor state.
+
+
+- Variant of the colour 2 reduction optimisation. When a [M2] disappears in p, then we make the M2 of q [M2] and not (M2), i.e. make the colour 1 component of q that we choose as the M2 of q colour 2. However, q is still accepting. To this end, it is labelled with for example a 1, and all other states that don't have this special situation are labelled with 0. The acceptance condition is then to make all states accepting that have no colour 2 (as before) and those having colour 2 and labelled with 1.
+
+
+- The | in the labels of the states with the colour 2 reduction optimisation should not be considered when testing for state equality. To this end, it is best to completely remove it from the label. Because what counts is which component is the M2 of this state. It would be necessary to keep it if we would make the choice of a new M2 only in r and not in q; p(..(){}[]..) -> q(..(){}..) --> r(..[]{}()..).
+
+
+- My version of the colour 2 reduction optimisation should give equivalent automata to the version of Joel and Ulrich (in q, always the () to the left of the {} to the left of where the disappeared [] would be). The reason is that they skip probably more () but this happens only if a {} in p (the one to the left of the [M2] in p) disappears. This can happen only finitely many times. That is, their version skips finitely many times a () but since we cycle the tuple, all the () will eventually be caught. We can say this because we know that there can only be finitely many skips of (). The two versions give possibly different automata but they are equivalent.
+
+
+- The colour 2 reduction optimisation is only interesting for its low worst case state growth. In practice it gives worse results than applying only the merging optimisation. So, for the theoretical worst case results, the best version of the algorithm includes merging + colour 2 reduction, and for the practical results the best version includes rightmost colour 2 + merging.
