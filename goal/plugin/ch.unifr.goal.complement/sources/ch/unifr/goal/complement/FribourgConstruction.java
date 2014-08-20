@@ -127,6 +127,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       }
       // In the second stage we process all the states of the upper automaton again
       else if (i == 2) pendingStates = new StateSet(out.getStates());
+      if (i == 2) stagePause("Stage 1 finished");
       
       // An element of pendingStates will be our state p and in this loop we are
       // going to construct for each symbol of the alphabet, the state q,

@@ -14,11 +14,11 @@ import org.svvrl.goal.gui.pref.OptionsDialog;
  *----------------------------------------------------------------------------*/
 
 // AbstractAction > WindowAction > EditableAction > AutomatonOperationAction > AbstractComplementAction
-public class FribourgComplementAction extends AbstractComplementAction<FribourgConstruction> {
+public class TestComplementAction extends AbstractComplementAction<FribourgConstruction> {
 
   /* Constructor */
-  public FribourgComplementAction(Window win) {
-    super(win, "Fribourg Construction"); // Text of menu item and title of status window
+  public TestComplementAction(Window win) {
+    super(win, "Test Construction"); // Text of menu item and title of status window
   }
 
   /* Create a FribourgConstruction with FribourgOptions */
@@ -37,7 +37,7 @@ public class FribourgComplementAction extends AbstractComplementAction<FribourgC
   @Override // Abstract method of AbstractComplementAction
   protected OptionsDialog<FribourgOptions> getOptionsDialog(Window win) {
     OptionsDialog<FribourgOptions> dialog = new OptionsDialog<FribourgOptions>(win, new FribourgComplementOptionsPanel());
-    dialog.setTitle("Options for the Fribourg Construction");
+    dialog.setTitle("Options for the Test Construction");
     return dialog;
   }
 

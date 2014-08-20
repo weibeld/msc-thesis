@@ -50,16 +50,36 @@ public class STState extends FSAState {
       Component leftmostComp = getLeftmost();
       int newColor = newComp.getColor();
       switch (leftmostComp.getColor()) {
-        case -1: case 0: // |X| -> {} ==> |X|{} (nothing can be merged in a {})
+        // |X| -> {} ==> |X|{} (nothing can be merged in a {})
+        case -1: case 0:
           addLeftmost(newComp);
           break;
-        case 1: // () -> () ==> ()
+        case 1:
+          // () -> ().. ==> ()..
           if (newColor == 1) mergeIn(newComp, 1);
+          // [] -> ().. ==> []..
+          else if (newColor == 2) {
+            mergeIn(newComp, 2);
+            // [] -> ()[].. ==> [][].. ==> []
+            if (components.size() > 1 && components.get(1).getColor() == 2) {
+              leftmostComp = getLeftmost();
+              removeLeftmost();
+              mergeIn(leftmostComp, 2);
+            }
+          }
           else addLeftmost(newComp);
           break;
-        case 2: // () -> [] ==> []  AND  [] -> [] ==> []
-          if (newColor == 1 || newColor == 2) mergeIn(newComp, 2);
+        // case 1: // () -> () ==> ()
+        //   if (newColor == 1) mergeIn(newComp, 1);
+        //   else addLeftmost(newComp);
+        //   break;
+        case 2:
+          // [] -> [].. ==> []..
+          if (newColor == 2) mergeIn(newComp, 2);
           else addLeftmost(newComp);
+        // case 2: // () -> [] ==> []  AND  [] -> [] ==> []
+        //   if (newColor == 1 || newColor == 2) mergeIn(newComp, 2);
+        //   else addLeftmost(newComp);
       }
     }
   }
@@ -71,9 +91,9 @@ public class STState extends FSAState {
     Component mergedComp = new Component(mergedStates, color);
     removeLeftmost();
     addLeftmost(mergedComp);
-    // If the old leftmost had a role, then the new merged leftmost has it too
-    if (leftmostComp == m2)        setM2(mergedComp);
-    if (leftmostComp == m2Exclude) setM2Exclude(mergedComp);
+    // If one of the merged comp. had a role, then the new leftmost has it too
+    if (leftmostComp == m2 || newComp == m2) setM2(mergedComp);
+    if (leftmostComp == m2Exclude || newComp == m2Exclude) setM2Exclude(mergedComp);
   }
 
   
@@ -129,6 +149,10 @@ public class STState extends FSAState {
   }
   public int colorOfRightmostComponent() {
     return getRightmost().getColor();
+  }
+  public int colorOfSecondLeftmostComponent() {
+    if (components.size() > 1) return components.get(1).getColor();
+    else return 999;
   }
 
   /* State equivalence */
@@ -192,8 +216,8 @@ public class STState extends FSAState {
       s += right;
       if (c == m2) s += "*";
       s += ",";
-      if (rightOffsetOfDisappearedM2 != -1 && components.indexOf(c) == components.size()-1-rightOffsetOfDisappearedM2)
-        s += "|,";
+      // if (rightOffsetOfDisappearedM2 != -1 && components.indexOf(c) == components.size()-1-rightOffsetOfDisappearedM2)
+      //   s += "|,";
     }
     s = s.substring(0, s.length()-1);   // Remove last superfluous comma
     s += ")";

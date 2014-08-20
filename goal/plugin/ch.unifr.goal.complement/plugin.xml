@@ -26,22 +26,39 @@ Daniel Weibel, 27.05.2014
     </library>
   </runtime>
 
-
-  <!-- Extending the GUI menu with an additional menu item: an item under the
-       sub-menu Automaton > Complement -->
+  <!-- Extending the GUI menu with an item under Automaton > Complement -->
   <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FribourgComplementAction">
     <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementAction" />
     <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
     <parameter id="location" value="first" />
   </extension>
 
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TestComplementAction">
+    <parameter id="class" value="ch.unifr.goal.complement.TestComplementAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+    <parameter id="location" value="after=ch.unifr.goal.complement.FribourgComplementAction" />
+  </extension>
+
+  <!-- Extending the GUI menu with an item uder Automaton > Complement (Step by Step) -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepFribourgComplementAction">
+    <parameter id="class" value="ch.unfir.goal.complement.StepByStepFribourgComplementAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.StepByStepMSComplementAction" />
+  </extension>
+
+  <!-- Extending the preferences dialog with an additional item Fribourg Constr-
+       uction under the Complementation item. The displayed panel is the same as
+       the one of the options dialog when starting the construction -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="FribourgComplementOptionsPanel">
+    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Fribourg Construction?first" />
+  </extension>
 
   <!-- Extending the command line command 'complement' with an additional
        algorithm, i.e. 'goal complement -m fribourg foo.gff' -->
   <extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementCommand" id="FribourgComplementExtension">
     <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementExtension" />
-    <!-- The name of the command on the command line -->
-    <parameter id="name" value="fribourg" />
+    <parameter id="name" value="fribourg" /> <!-- Name of command -->
   </extension>
 
 </plugin>

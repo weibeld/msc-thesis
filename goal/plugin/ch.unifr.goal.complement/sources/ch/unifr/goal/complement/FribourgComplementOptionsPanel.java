@@ -1,5 +1,6 @@
 package ch.unifr.goal.complement;
 
+import javax.swing.Box;
 import javax.swing.JCheckBox;
 import java.awt.GridLayout;
 import javax.swing.border.EmptyBorder;
@@ -34,20 +35,24 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     this.setLayout(new GridLayout(0,1));
     this.setBorder(new EmptyBorder(10,10,5,10)); // (top,left,bottom,right)
 
+    // vBox: vertical stack of hBoxes
+    Box vBox = createYBox();
+    Box hBox = createXBox();
+
     // Make input automaton complete
     complCheckBox = new JCheckBox("Make input automaton complete if it is incomplete");
     complCheckBox.setSelected(FribourgOptions.getComplPref());
-    this.add(complCheckBox);
+    vBox.add(hBox.add(complCheckBox));
 
     // Rightmost colour 2 optmisation if input automaton is complete
     right2IfComplCheckBox = new JCheckBox("If input automaton is complete, apply rightmost colour 2 optimisation");
     right2IfComplCheckBox.setSelected(FribourgOptions.getRight2IfComplPref());
-    this.add(right2IfComplCheckBox);
+    vBox.add(hBox.add(right2IfComplCheckBox));
 
     // Component merging optimisation
     mergeCheckBox = new JCheckBox("Apply component merging optimisation");
     mergeCheckBox.setSelected(FribourgOptions.getMergePref());
-    this.add(mergeCheckBox);
+    vBox.add(hBox.add(mergeCheckBox));
 
     // Colour 2 reduction optimisation. Can only be selected if the component
     // merging optimisation is also selected.
@@ -56,7 +61,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     if (mergeCheckBox.isSelected()) reduce2CheckBox.setSelected(FribourgOptions.getReduce2Pref());
     // Else, set checkbox unchecked (default) and non-editable
     else reduce2CheckBox.setEnabled(false);
-    this.add(reduce2CheckBox);
+    vBox.add(hBox.add(reduce2CheckBox));
     // Whenever merge is ticked, make colour 2 editable, and vice versa
     mergeCheckBox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -72,7 +77,10 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     // Use the bracket notation
     brackCheckBox = new JCheckBox("Use the \"bracket notation\" for state labels");
     brackCheckBox.setSelected(FribourgOptions.getBrackPref());
-    this.add(brackCheckBox); 
+    vBox.add(hBox.add(brackCheckBox));
+
+    // Add the vertical stack of hBoxes
+    this.add(vBox);
   }
 
   /* Create a FribourgOptions according to the state of the checkboxes */
