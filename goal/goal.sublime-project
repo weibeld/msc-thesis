@@ -1,0 +1,17 @@
+{
+	"folders":
+	[
+		{
+			"path": "plugin/ch.unifr.goal.complement"
+		},
+		{
+			"path": "/Applications/GOAL.app/Contents/Resources/Java/plugins/org.svvrl.goal.core"
+		},
+		{
+			"path": "/Applications/GOAL.app/Contents/Resources/Java/plugins/org.svvrl.goal.gui"
+		},
+		{
+			"path": "/Applications/GOAL.app/Contents/Resources/Java/plugins/org.svvrl.goal.cmd"
+		}
+	]
+}

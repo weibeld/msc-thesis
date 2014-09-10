@@ -22,21 +22,18 @@
 # Exit if any command returns a non-zero status (i.e. error)
 set -e
 
-if [ "$1" = "-h" ] || [ "$1" = "help" ] || [ $# -lt 1 ] || [ $# -gt 2 ]; then
+if [ "$1" = "-h" ] || [ "$1" = "help" ] || [ "$1" = "--help" ] || [ $# -lt 1 ] || [ $# -gt 2 ]; then
   echo "Usage:"
   echo "    $(basename $0) <directory> [compileonly]"
   echo "Arguments:"
   echo -e "    <directory>\t\tRoot directory of the plugin to compile and install"
-  echo -e "    [compileonly]\tOPTIONAL: if present, just compiles the source code,"
-  echo -e "    \t\t\tbut doesn't install the plugin"
+  echo -e "    [compileonly]\tOPTIONAL: just compile, don't install"
   echo "Description:"
-  echo "    Compiles the GOAL plugin located in <directory> and installs it in the"
-  echo "    GOAL system folder. The next run of GOAL will include the plugin. For"
-  echo "    removing all user-added plugins from GOAL, you can use plugin_clean.sh."
+  echo "    Compiles and intalls the GOAL plugin in <directory>. For removing all"
+  echo "    user-added plugins, use plugin_clean.sh."
   echo "Note:"
-  echo "    If there is a compiler warning of the form \"bootstrap class path not"
-  echo "    set in conjunction with -source 1.6\", you can get rid of it by setting"
-  echo "    the -Xbootclasspath option for the javac command in the script."
+  echo "    Compiler warning \"bootstrap class path not set in conjunction with"
+  echo "    -source 1.6\" can be removed with \"javac -Xbootclasspath:\" in script."
   exit 0
 fi
 
@@ -46,7 +43,7 @@ if [ "$(which goal)" == "" ]; then
   exit 1
 fi
 
-PLUGIN_DIR=$1
+PLUGIN_DIR=$(echo $1 | sed 's/\/$//') # Remove possible trailing /
 
 # Get path to the directory containing the source files, relative to the plugin
 # directory. The plugin directory is per convention the package name of the
@@ -83,18 +80,16 @@ echo -n "Compiling sources... "
 # runtime environment. However, if the -Xbootclasspath: is omitted, only a
 # compiler warning results, but the compilation still seems to work correctly.
 # So, setting the -Xbootclasspath: can be seen as optional.
-WITH_XBOOTLASSPATH=true
-if [ "$WITH_XBOOTLASSPATH" = true ]; then # No compiler warning
-  # Adapt this to the location of a Java 1.6 rt.jar on your system
-  # Example for Mac:
-  BOOTSTRAP_CLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar
-  # Example for Linux/Debian:
-  # BOOTSTRAP_CLASSPATH=/usr/lib/jvm/java-6-openjdk-i386/jre/lib/rt.jar
+WITH_XBOOTCLASSPATH=true
+# No compiler warning
+if [ "$WITH_XBOOTCLASSPATH" = true ]; then
+  # Adapt value of -Xbootclasspath:
   javac -classpath $CLASSPATH \
-    -Xbootclasspath:$BOOTSTRAP_CLASSPATH \
+    -Xbootclasspath:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar \
     -source 1.6 -target 1.6 \
     -d $PLUGIN_DIR/classes $PLUGIN_DIR/$SOURCE_PATH/*.java
-else  # Provokes a compiler warning
+# Provokes a compiler warning
+else
   echo
   javac -classpath $CLASSPATH \
     -source 1.6 -target 1.6 \
@@ -109,7 +104,4 @@ if [ "$2" = "compileonly" ]; then exit 0; fi
 # Installation
 # ------------
 echo "Installing plugin at $GOAL_DIR/plugins"
-# Remove possible slash (/) at end of PLUGIN_DIR. This is necessary for cp -r
-# to copy the folder and not the content.
-PLUGIN_DIR=$(dirname $PLUGIN_DIR)/$(basename $PLUGIN_DIR)
 cp -r $PLUGIN_DIR $GOAL_DIR/plugins

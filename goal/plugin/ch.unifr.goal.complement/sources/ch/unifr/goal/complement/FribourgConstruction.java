@@ -33,6 +33,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   // Holding the complement if complement() has already been executed before
   private FSA complement = null;
 
+  private FSA out = getInput();
+
   // Each FribourgConstruction is initalised with a FribourgOptions containing
   // values for all the options for the FribourgConstruction
   private FribourgOptions options;
@@ -51,7 +53,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
   @Override // Method of interface EditableAlgorithm
   public Editable getIntermediateResult() {
-    return complement;
+    return out;
   }
 
   @Override // Abstract method of ComplementConstruction
@@ -102,7 +104,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     // The output automaton (which always has a classical alphabet as well; if
     // the input automaton was propositional, the output automaton will be
     // converted to propositional at the end)
-    FSA out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
+    out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
     out.expandAlphabet(inAlphabet);
     BuchiAcc outAccStates = new BuchiAcc();
 
@@ -111,6 +113,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     // The states of the output automaton whose successors we have to determine
     StateSet pendingStates = new StateSet();
+
+    stagePause("Fribourg Construction started\n");
 
     // We do the same construction twice with slight differences. Iteration 1
     // constructs the upper part, and iteration 2 the lower part of the automaton.
@@ -127,7 +131,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       }
       // In the second stage we process all the states of the upper automaton again
       else if (i == 2) pendingStates = new StateSet(out.getStates());
-      if (i == 2) stagePause("Stage 1 finished");
+      if (i == 2) stagePause("Stage 1 finished\n");
       
       // An element of pendingStates will be our state p and in this loop we are
       // going to construct for each symbol of the alphabet, the state q,
@@ -347,6 +351,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           }
           out.createTransition(p, q, symbol);
         } // End of interating through symbols of alphabet
+        pause("Determined successors of state " + p.getLabel() + "\n");
       } // End of interating through pending states
     } // End of iterating through stage 1 and stage 2
 
@@ -376,6 +381,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
         invert.put(i.getValue(), i.getKey());
       AlphabetType.PROPOSITIONAL.convertFrom(out, invert);
     }
+
+    stagePause("Stage 2 finished\n");
 
     return out;
 
