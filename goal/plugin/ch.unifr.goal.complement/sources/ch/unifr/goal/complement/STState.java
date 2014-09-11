@@ -69,17 +69,10 @@ public class STState extends FSAState {
           }
           else addLeftmost(newComp);
           break;
-        // case 1: // () -> () ==> ()
-        //   if (newColor == 1) mergeIn(newComp, 1);
-        //   else addLeftmost(newComp);
-        //   break;
         case 2:
           // [] -> [].. ==> []..
           if (newColor == 2) mergeIn(newComp, 2);
           else addLeftmost(newComp);
-        // case 2: // () -> [] ==> []  AND  [] -> [] ==> []
-        //   if (newColor == 1 || newColor == 2) mergeIn(newComp, 2);
-        //   else addLeftmost(newComp);
       }
     }
   }
@@ -168,8 +161,8 @@ public class STState extends FSAState {
     // The char displayed in front of a state's ID (s or q)
     String prefix = Preference.getStatePrefix();
     String s = "(";
-    if (rightOffsetOfDisappearedM2 != -1 && rightOffsetOfDisappearedM2 == numberOfComponents())
-        s += "|,";
+    // if (rightOffsetOfDisappearedM2 != -1 && rightOffsetOfDisappearedM2 == numberOfComponents())
+    //     s += "|,";
     for (Component c : components) {
       s += "({";
       for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
@@ -177,8 +170,8 @@ public class STState extends FSAState {
       s += "}," + c.getColor() + ")";
       if (c == m2) s += "*";
       s += ",";
-      if (rightOffsetOfDisappearedM2 != -1 && components.indexOf(c) == components.size()-1-rightOffsetOfDisappearedM2)
-        s += "|,";
+      // if (rightOffsetOfDisappearedM2 != -1 && components.indexOf(c) == components.size()-1-rightOffsetOfDisappearedM2)
+      //   s += "|,";
     }
     s = s.substring(0, s.length()-1);   // Remove last superfluous comma
     s += ")";
@@ -188,8 +181,8 @@ public class STState extends FSAState {
   public void makeLabelBrackets() {
     String prefix = Preference.getStatePrefix();
     String s = "(";
-    if (rightOffsetOfDisappearedM2 != -1 && rightOffsetOfDisappearedM2 == numberOfComponents())
-        s += "|,";
+    // if (rightOffsetOfDisappearedM2 != -1 && rightOffsetOfDisappearedM2 == numberOfComponents())
+    //     s += "|,";
     for (Component c : components) {
       int color = c.getColor();
       String left = "", right = "";

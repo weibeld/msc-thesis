@@ -47,7 +47,7 @@ while $eq do
   echo $s + ", " + $t;
   
   echo -n "  Complementing by " + $test_alg + ": ";
-  $o2 = complement -m $test_alg -m $o;
+  $o2 = complement -m $test_alg $o;
   ($s, $t) = stat $o2;
   echo $s + ", " + $t;
   
