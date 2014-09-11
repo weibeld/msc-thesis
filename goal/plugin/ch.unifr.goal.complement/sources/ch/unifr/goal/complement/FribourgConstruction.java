@@ -20,6 +20,8 @@ import org.svvrl.goal.core.aut.Position;
 import org.svvrl.goal.core.aut.fsa.FSAState;
 import org.svvrl.goal.core.Properties;
 import ch.unifr.goal.complement.STState.Component;
+import org.svvrl.goal.core.Preference;
+
 
 
 /*----------------------------------------------------------------------------*
@@ -33,7 +35,11 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   // Holding the complement if complement() has already been executed before
   private FSA complement = null;
 
-  private FSA out = getInput();
+  // Holding the intermediate results of the construction for the step-by-step
+  // execution (used by getIntermediateResult()s).
+  private FSA in;
+  private FSA out;
+  private boolean preprocess;
 
   // Each FribourgConstruction is initalised with a FribourgOptions containing
   // values for all the options for the FribourgConstruction
@@ -42,7 +48,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   /* Constructor */
   public FribourgConstruction(FSA in, FribourgOptions options) {
     super(in);
-    if (!OmegaUtil.isNBW(in)) throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
+    if (!OmegaUtil.isNBW(in)) // Needed for command line mode
+      throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
     this.options = options;
   }
 
@@ -53,7 +60,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
   @Override // Method of interface EditableAlgorithm
   public Editable getIntermediateResult() {
-    return out;
+    if (preprocess) return in;
+    else return out;
   }
 
   @Override // Abstract method of ComplementConstruction
@@ -66,7 +74,14 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
 
   /* The implementation of the Fribourg complementation construction */
-  private FSA construction(FSA in) {
+  private FSA construction(FSA input) {
+    // The input automaton to complement
+    in = input;
+
+    /* Preprocessing input automaton */
+    preprocess = true;
+    stage("Stage 0: Preprocessing input automaton");
+    boolean preprocessingDone = false;
 
     /*** Convert input automaton from PROPOSITIONAL to CLASSICAL alphabet ***/
     /* We handle input automata with propositional alphabet by converting them
@@ -88,18 +103,31 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       List<String> c = AlphabetType.CLASSICAL.genAlphabet(p.length);
       for (int i = 0; i < p.length; i++) alphabetMapping.put(p[i], c.get(i));
       AlphabetType.CLASSICAL.convertFrom(in, alphabetMapping);
+      step("Input automaton has propositional alphabet. Converting it to classical.");
+      preprocessingDone = true;
     }
 
     // If the make complete option is set, and the input automaton is not
     // complete, make it complete.
-    if (getOptions().isCompl() && !isComplete(in)) OmegaUtil.makeTransitionComplete(in);
+    if (getOptions().isCompl()) {
+      String pre = "The \"Make Complete\" option is on. ";
+      if (!isComplete(in)) {
+        OmegaUtil.makeTransitionComplete(in);
+        step(pre + "Making input automaton complete.");
+      }
+      else
+        step(pre + "Input automaton is already complete.");
+      preprocessingDone = true;
+    }
 
-    // The input automaton (which now in any case has a classical alphabet):
-    // alphabet, initial state, accepting states, and wheter it is complete
+    // The input automaton (which now in any case has a classical alphabet)
     String[] inAlphabet = in.getAlphabet();
     State inInitState = in.getInitialState();
     BuchiAcc inAccStates = (BuchiAcc) in.getAcc();
     boolean inIsComplete = isComplete(in);
+
+    if (!preprocessingDone) step("Nothing to preprocess.");
+    preprocess = false;
 
     // The output automaton (which always has a classical alphabet as well; if
     // the input automaton was propositional, the output automaton will be
@@ -114,13 +142,12 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     // The states of the output automaton whose successors we have to determine
     StateSet pendingStates = new StateSet();
 
-    stagePause("Fribourg Construction started\n");
-
     // We do the same construction twice with slight differences. Iteration 1
     // constructs the upper part, and iteration 2 the lower part of the automaton.
     for (int i = 1; i <= 2; i++) {
       // Adding the initial state
       if (i == 1) {
+        stage("Stage 1: Constructing upper part of output automaton");
         STState outInitState = new STState(id++);
         outInitState.addComponent(outInitState.new Component(inInitState, -1));
         if (getOptions().isBrack()) outInitState.makeLabelBrackets();
@@ -128,10 +155,13 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
         out.addState(outInitState);
         out.setInitialState(outInitState);
         pendingStates.add(outInitState);
+        step("Adding initial state.");
       }
       // In the second stage we process all the states of the upper automaton again
-      else if (i == 2) pendingStates = new StateSet(out.getStates());
-      if (i == 2) stagePause("Stage 1 finished\n");
+      else if (i == 2) {
+        stage("Stage 2: Constructing lower part of output automaton");
+        pendingStates = new StateSet(out.getStates());
+      }
       
       // An element of pendingStates will be our state p and in this loop we are
       // going to construct for each symbol of the alphabet, the state q,
@@ -351,8 +381,10 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           }
           out.createTransition(p, q, symbol);
         } // End of interating through symbols of alphabet
-        pause("Determined successors of state " + p.getLabel() + "\n");
+        step("Determining successors of state " + Preference.getStatePrefix() + p.getID() + ".");
       } // End of interating through pending states
+      if (i == 1) step("Construction of upper part complete.");
+      if (i == 2) step("Construction of lower part complete.");
     } // End of iterating through stage 1 and stage 2
 
     // If the upper part of the constructed automaton is not complete (this can
@@ -365,11 +397,14 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     if (!isUpperPartComplete(out)) {
       STState sinkState = makeUpperPartComplete(out, id);
       outAccStates.add(sinkState);
+      step("Upper part of output automaton is not complete. Making it complete by adding a sink state.");
     }
-
     // Set the accepting states
     out.setAcc(outAccStates);
+    step("Setting accepting states.");
 
+
+    stage("Stage 3: Postprocessing output automaton");
     /*** Convert output automaton from CLASSICAL to PROPOSITIONAL alphabet ***/
     // If the input automaton had a propositional alphabet, we convert the
     // classical output automaton now back to a propositional one by using the
@@ -380,10 +415,11 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       for (Map.Entry<String,String> i : alphabetMapping.entrySet())
         invert.put(i.getValue(), i.getKey());
       AlphabetType.PROPOSITIONAL.convertFrom(out, invert);
+      step("Converting alphabet back to propositional.");
     }
+    else step("Nothing to postprocess.");
 
-    stagePause("Stage 2 finished\n");
-
+    stage(">> Fribourg Construction finished <<");
     return out;
 
     /* Automaton API summary (see API of class Automaton or FSA) */
@@ -415,6 +451,16 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     // Labels
     // q0.setLabel("s" + q0.getID());
+  } // End of construction()
+
+  /* Steps and stages for the step-by-step execution. A stage has many steps. */
+  private void step(String message) {
+    pause(message + "\n");
+    fireReferenceChangedEvent();
+  }
+  private void stage(String message) {
+    stagePause(message + "\n");
+    fireReferenceChangedEvent();
   }
 
   /* Checks if the automaton passed as argument is complete, i.e. every state

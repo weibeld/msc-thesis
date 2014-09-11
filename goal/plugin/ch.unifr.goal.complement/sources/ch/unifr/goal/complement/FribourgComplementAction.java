@@ -46,7 +46,6 @@ public class FribourgComplementAction extends AbstractComplementAction<FribourgC
     return FribourgConstruction.class;
   }
 
-  /* The text when hovering over the Fribourg Construction menu item */
   @Override // Abstract method of WindowAction
   public String getToolTip() {
     return "The ground-breaking Büchi complementation algorithm using a subset-tuple construction.";

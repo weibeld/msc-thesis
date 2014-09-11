@@ -8,6 +8,7 @@ import org.svvrl.goal.gui.Tab;
 import org.svvrl.goal.gui.ControllableTab;
 import org.svvrl.goal.gui.pref.OptionsDialog;
 import org.svvrl.goal.core.FinishedException;
+import org.svvrl.goal.core.aut.OmegaUtil;
 
 /* javax.swing.AbstractAction > WindowAction > EditableAction */
 public class StepByStepFribourgComplementAction extends EditableAction<FSA,Void> {
@@ -19,9 +20,9 @@ public class StepByStepFribourgComplementAction extends EditableAction<FSA,Void>
     super(win, "Fribourg Construction"); // Text of menu item and title of status window
   }
 
-  @Override // Method of EditableAction
+  @Override // Method of WindowAction
   public void preProcess(ProgressDialog dialog) throws Exception {
-    super.preProcess(dialog);
+    super.preProcess(dialog);  // Calls isApplicable()
     OptionsDialog<FribourgOptions> optionsDialog = new OptionsDialog<FribourgOptions>(getWindow(), new FribourgComplementOptionsPanel());
     optionsDialog.setTitle("Options for the Fribourg Construction");
     optionsDialog.setVisible(true);
@@ -34,7 +35,7 @@ public class StepByStepFribourgComplementAction extends EditableAction<FSA,Void>
   public Void execute(ProgressDialog dialog) {
     final FribourgConstruction constr = new FribourgConstruction(getInput(), options);
     ControllableTab tab = new ControllableTab(constr);
-    //tab.setEditable(constr.getIntermediateResult());
+    tab.setEditable(getInput());
     getWindow().addTab(tab);
     Thread t = new Thread() {
       public void run() {
@@ -50,12 +51,13 @@ public class StepByStepFribourgComplementAction extends EditableAction<FSA,Void>
   // public void postProcess(ProgressDialog dialog) {
   // }
 
-  @Override // Method of EditableAction
+  // Called by preProcess of EditableAction
+  @Override // Method of WindowAction
   public boolean isApplicable(Tab tab) {
-    return true;
+    if (OmegaUtil.isNBW(getInput())) return true;
+    else return false;
   }
 
-  /* Text when hovering over the menu item */
   @Override // Abstract method of WindowAction
   public String getToolTip() {
     return "Step-by-step version of the Fribourg construction";
