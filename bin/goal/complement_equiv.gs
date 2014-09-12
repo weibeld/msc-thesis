@@ -10,17 +10,18 @@
 # doesn't work).
 # dw-18.08.2014
 
-if $1 == "" || $2 == "" then
-  echo "Usage: complement_equiv.gs BASE_ALGORITHM TEST_ALGORITHM [ 
-         STATE_SIZE PROP_SIZE TRAN_DENSITY ACC_DENSITY ]";
-  exit;
-fi
+# if $1 == "" || $2 == "" then
+#   echo "Usage: complement_equiv.gs BASE_ALGORITHM TEST_ALGORITHM [ 
+#          STATE_SIZE PROP_SIZE TRAN_DENSITY ACC_DENSITY ]";
+#   exit;
+# fi
 
 echo "Check the correctness of a complementation algorithm.";
 echo;
 
-$base_alg = $1;
-$test_alg = $2;
+$base_alg = "piterman";
+$test_alg = "fribourg";
+$n = $1;
 $state_size = $3;
 $prop_size = $4;
 $dt = $5;
@@ -32,7 +33,7 @@ if $state_size == null || $prop_size == null || $dt == null || $da == null then
   $da = 0.5;
 fi
 
-$count = 0;
+$count = 1;
 $eq = 1;
 while $eq do
   echo "#" + $count + ": ";
@@ -42,12 +43,12 @@ while $eq do
   echo $s + ", " + $t;
   
   echo -n "  Complementing by " + $base_alg + ": ";
-  $o1 = complement -m $base_alg $o;
+  $o1 = complement -m $base_alg -eq -macc -sim -sp -ro -r $o;
   ($s, $t) = stat $o1;
   echo $s + ", " + $t;
   
   echo -n "  Complementing by " + $test_alg + ": ";
-  $o2 = complement -m $test_alg $o;
+  $o2 = complement -m $test_alg -c -r2ifc -m $o;
   ($s, $t) = stat $o2;
   echo $s + ", " + $t;
   
@@ -62,5 +63,6 @@ while $eq do
     echo $o;
   fi
 
+  if $count == $n then break; fi
   $count = $count + 1;
 done

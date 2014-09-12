@@ -1,0 +1,11 @@
+- Complementation algorithm option passing as variables: does it work in the new version of GOAL? -> No, it's the same
+- Update to new version of GOAL on Mac -> Done
+- Report bug in new GOAL version (2014-08-08): the Ctr-C (or Cmd-C on Mac) shortcut for complementation does not work -> Done
+- Asking for ControllableTab output panel: rank and slice do it right. With all the other algorithms, the panel grows as well. -> Done
+- Asking for GOAL batch complementation algorithm options -> Done
+
+
+- Script for transferring files and folders between local machine and cluster -> Done
+- RSA authentication on cluster (for login without entering password) -> Done
+- Cluster submit options and folder structure -> Done
+- Asking for memory usage on cluster

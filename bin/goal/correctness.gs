@@ -2,22 +2,22 @@
 # dw-11.09.2014
 # Usage: goal batch correctness.gs fribourg piterman 100
 
-if $# != 3 then
-  echo "Usage:";
-  echo;
-  echo "    goal batch " + $0 + " <test algo> <base algo> <repetitions>";
-  echo;
-  echo "Generates a random automaton, complements it with the base algorithm (ground-";
-  echo "truth) and the test algorithm, and test the equivalence of the two complements.";
-  echo "Repeats this <repetitions> times.";
-  echo;
-  echo ">> IMPORTANT: algorithm options must be set INSIDE the script.";
-  exit;
-fi
+# if $# != 3 then
+#   echo "Usage:";
+#   echo;
+#   echo "    goal batch " + $0 + " <test algo> <base algo> <repetitions>";
+#   echo;
+#   echo "Generates a random automaton, complements it with the base algorithm (ground-";
+#   echo "truth) and the test algorithm, and test the equivalence of the two complements.";
+#   echo "Repeats this <repetitions> times.";
+#   echo;
+#   echo ">> IMPORTANT: algorithm options must be set INSIDE the script.";
+#   exit;
+# fi
 
-$test_algo = $1;
-$base_algo = $2;
-$n = $3;
+$test_algo = "fribourg";
+$base_algo = "piterman";
+$n = $1;
 
 $alphabets[0] = "classical";
 $alphabets[1] = "propositional";
@@ -27,17 +27,18 @@ while "true" do
 
   echo $count + ".";
   echo `date`;
+  $time_before = `date +%s`;
 
   # 1. Generate random automaton
   # ----------------------------
   echo "Generating random automaton";
-  $alph_type = $alphabets[`ruby -e 'print "%d" % rand(0..1)'`];
+  $states =               `ruby -e 'print "%d" % (rand(9)+2)'`; # [2..10]
+  $alph_type = $alphabets[`ruby -e 'print "%d" % rand(2)'`];    # [0..1]
   if $alph_type == "propositional" then
-    $alph_size = `ruby -e 'print "%d" % rand(1..3)'`;
+    $alph_size =          `ruby -e 'print "%d" % (rand(3)+1)'`; # [1..3]
   else
-    $alph_size = `ruby -e 'print "%d" % rand(1..5)'`;
+    $alph_size =          `ruby -e 'print "%d" % (rand(5)+1)'`; # [1..5]
   fi
-  $states =    `ruby -e 'print "%d" % rand(2..10)'`; 
   $automaton = generate -t fsa -a nbw -m probability -A $alph_type -n $alph_size -s $states -r;
   echo "  Alphabet:      " + $alph_type;
   echo "  Alphabet size: " + $alph_size;
@@ -68,6 +69,18 @@ while "true" do
     echo $automaton;
   fi
 
+  # Time measurement
+  # ----------------
+  $time_after = `date +%s`;
+  $time_diff = `echo "$time_after - $time_before" | bc`;
+  # if $time_diff >= 60 then
+  #   $min = `echo "$time_diff / 60" | bc`;
+  #   $sec = `echo "$time_diff % 60" | bc`;
+  #   $time_string = $min + " min. " + $sec + " sec.";
+  # else
+  #   $time_string = $time_diff + " sec.";
+  # fi
+  echo "Elapsed time: " + $time_diff + " sec.";
   echo;
   
   if $count == $n then break; fi
