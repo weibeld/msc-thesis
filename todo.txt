@@ -3,9 +3,19 @@
 - Report bug in new GOAL version (2014-08-08): the Ctr-C (or Cmd-C on Mac) shortcut for complementation does not work -> Done
 - Asking for ControllableTab output panel: rank and slice do it right. With all the other algorithms, the panel grows as well. -> Done
 - Asking for GOAL batch complementation algorithm options -> Done
-
-
 - Script for transferring files and folders between local machine and cluster -> Done
 - RSA authentication on cluster (for login without entering password) -> Done
 - Cluster submit options and folder structure -> Done
+
+- Rename test automata files -> Done
+- GOAL script that complements the 11'000 test automata
+	- Report generated number of states
+	- Memory: 1 GB. If exceeded, report as "out of memory"
+	- Time limit: 10 min. If exceed, report as "timeout"
+		67 new-s-15-r-1.00-f-0.10--1-of-100.gff
+		110 new-s-15-r-1.00-f-0.10--2-of-100.gff
+		timeout new-s-15-r-1.00-f-0.10--3-of-100.gff
+		33 new-s-15-r-1.00-f-0.10--4-of-100.gff
+		memory new-s-15-r-1.00-f-0.10--5-of-100.gff
+
 - Asking for memory usage on cluster

@@ -1,0 +1,10 @@
+UBELIX
+
+Java
+Default maximum heap size: 	8 GB
+Memory used by JVM:		> 1.5 GB
+
+Set max. Java heap size: 	java -Xmx512M
+			 	java -Xmx1G
+Set memory limit for shell:	ulimit -S -v $((2**20))
+				$((2**20)) = 1048576 -> multiples of 1KB -> 1GB

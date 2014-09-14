@@ -2,7 +2,7 @@
 
 FILE_OR_FOLDER=$1
 
-DEST='dw07r324@submit.unibe.ch:~'
+DEST='dw07r324@submit.unibe.ch:~'"/$2"
 
 if [ -f $FILE_OR_FOLDER ] || [ -d $FILE_OR_FOLDER ]; then
   scp -r $FILE_OR_FOLDER $DEST
