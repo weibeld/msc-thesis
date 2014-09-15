@@ -6,16 +6,8 @@
 - Script for transferring files and folders between local machine and cluster -> Done
 - RSA authentication on cluster (for login without entering password) -> Done
 - Cluster submit options and folder structure -> Done
-
 - Rename test automata files -> Done
-- GOAL script that complements the 11'000 test automata
-	- Report generated number of states
-	- Memory: 1 GB. If exceeded, report as "out of memory"
-	- Time limit: 10 min. If exceed, report as "timeout"
-		67 new-s-15-r-1.00-f-0.10--1-of-100.gff
-		110 new-s-15-r-1.00-f-0.10--2-of-100.gff
-		timeout new-s-15-r-1.00-f-0.10--3-of-100.gff
-		33 new-s-15-r-1.00-f-0.10--4-of-100.gff
-		memory new-s-15-r-1.00-f-0.10--5-of-100.gff
+- Script for complementing the 11'000 test automata and reporting generated number of states, used real time, and used CPU time -> Done
+- R script for evaluating the data in the result file of the above script
 
 - Asking for memory usage on cluster

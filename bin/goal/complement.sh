@@ -1,54 +1,53 @@
 #!/bin/bash
+# dw-14.09.2014
 
-data=~/data/test
-goal=~/bin/GOAL-20140808/goal
+#data=~/data/test
+data=../automata
+#goal=~/bin/GOAL-20140808/goal
+goal=goal
 out=out
 log=log
-timeout=5   # Seconds
+timeout=7 # Seconds
 memory=1G
-log_screen=true
-
-# Out file format
-t=T
-m=M
-delim="\t"
+log_stdout=true
+algo=fribourg
+opts="-r2ifc -m"
 
 # Nice date
 d() { date "+%F %H:%M:%S"; }
 
 # GNU time
-time=~/bin/gnu_time/bin/time
+#time=~/bin/gnu_time/bin/time
+time=../time/bin/time
 time_format="real: %e\nuser_cpu: %U\nsys_cpu: %S\n"
 
+# Out file format
+na=NA  # Recognised as "not a number" by R
+sep="\t"
+
 # Out file initialisation
-echo "# $(d)" >>$out
+echo    "# $(d)" >>$out
+echo -e "# Complementation:\t\t$algo $opts" >>$out
 echo -e "# Memory limit (Java heap):\t$memory" >>$out
 echo -e "# Timeout (CPU time):\t\t${timeout}s" >>$out
-echo -e "States${delim}Sec. R${delim}Sec. C${delim}File" >>$out
+echo -e "states${sep}t_out${sep}m_out${sep}real_t${sep}cpu_t${sep}file" >>$out
 
-# log() {
-#   if [ $log_screen == true ]; then
-#     if [ "$2" != "" ]; then echo -n "$1" | tee -a $log
-#     else echo "$1" | tee -a $log; fi
-#   else
-#     if [ "$2" != "" ]; then echo -n "$1" >>$log
-#     else echo "$1" >>$log; fi
-#   fi
-# }
-
+# Log to log file, or log file and screen
 log() {
-  if [ "$2" != "" ]; then msg="echo -n $1"
-  else msg="echo $1"; fi
-  if [ $log_screen == true ]; then $msg | tee -a $log
-  else $msg >>$log
-  fi
+  if [ $log_stdout == true ]; then msg "$@" | tee -a $log
+  else msg "$@" >>$log; fi
+}
+msg() {
+  if [ "$2" != "" ]; then echo -n "$1"
+  else echo "$1"; fi
 }
 
 # Set maximum Java heap size
 export JVMARGS="-Xmx$memory"
 
 # Capture Ctrl-C
-#trap some_function SIGINT
+ctrl_c() { exit 1; }
+trap ctrl_c SIGINT
 
 tmp=tmp.out
 for filename in $data/*.gff; do
@@ -57,24 +56,27 @@ for filename in $data/*.gff; do
   # Complementation
   log "$(d): Complementing $file... " n
   ulimit -S -t $timeout
-  # { $time -f $time_format $goal complement -m fribourg $filename; } &>$tmp
-  { $time -f "$time_format" $goal complement -m fribourg $filename; } &>$tmp
+  { $time -f "$time_format" $goal complement -m $algo $opts $filename; } &>$tmp
   #timeout ${timeout}s $goal complement -m fribourg $filename &>$tmp # Exit code 124
   ulimit -S -t unlimited
 
+
+  t_out=0
+  m_out=0
   # Timeout
   if grep -q "time limit exceeded" $tmp; then
     log "Timeout"
-    c1=$t
+    t_out=1
+    states=$na
   # Memory excess
   elif grep -q "java.lang.OutOfMemoryError" $tmp; then
     log "Memory excess"
-    c1=$m
+    m_out=1
+    states=$na
   # Successful execution
   else
-    states=$(grep sid= $tmp | wc -l | tr -d ' ')
     log "Success"
-    c1=$states
+    states=$(grep sid= $tmp | wc -l | tr -d ' ')
   fi
 
   # Times
@@ -84,7 +86,7 @@ for filename in $data/*.gff; do
   total_cpu=$(bc <<< "$user_cpu + $sys_cpu")
 
   # Write out file
-  echo -e ${c1}${delim}${wallclock}${delim}${total_cpu}${delim}${file} >>$out
+  echo -e ${states}${sep}${t_out}${sep}${m_out}${sep}${wallclock}${sep}${total_cpu}${sep}${file} >>$out
 
 done
 rm $tmp
