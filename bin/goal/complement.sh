@@ -2,7 +2,7 @@
 # dw-14.09.2014
 
 #data=~/data/test
-data=../automata
+data=~/Desktop/automata
 #goal=~/bin/GOAL-20140808/goal
 goal=goal
 out=out
@@ -18,11 +18,11 @@ d() { date "+%F %H:%M:%S"; }
 
 # GNU time
 #time=~/bin/gnu_time/bin/time
-time=../time/bin/time
+time=~/Desktop/time/bin/time
 time_format="real: %e\nuser_cpu: %U\nsys_cpu: %S\n"
 
 # Out file format
-na=NA  # Recognised as "not a number" by R
+na=NA  # Recognised by R as "not available"
 sep="\t"
 
 # Out file initialisation
