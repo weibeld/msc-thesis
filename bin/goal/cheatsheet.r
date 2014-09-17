@@ -18,8 +18,12 @@ w[w > 90]
 teams[w > 90]
 df$teams[df$w > 90]
 
+# Defining a function
+double <- function(x) {2*x} 
+
 # List existing objects
-ls()
+objects()
+ls() # Alias of above
 
 # Saving and loading objects
 save(df, file="./df.rdata")
@@ -34,6 +38,22 @@ example(data.frame)	# EXECUTES example expressions with this function
 # Read text file into data frame
 df <- read.table(file="out", header=TRUE, sep="\t")
 write.table(df, file="out_from_r", sep="\t", row.names=FALSE, quote=FALSE)
+
+# Column names of data frame
+names(df)
+
+# Merge character vectors
+a <- c("hello", "world")
+b <- c("foo", "bar")
+paste(a,b,sep="-")  # Gives character vector: "hello-foo" "world-bar"
+
+# Set operations
+c <- 1:20
+d <- 10:30
+intersect(c,d)
+union(c,d)
+setdiff(c,d)  # What is in c but not in d?
+setequal(c,d)
 
 
 
