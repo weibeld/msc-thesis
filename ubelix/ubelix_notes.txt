@@ -1,0 +1,44 @@
+Cluster Notes
+*************
+
+
+UBELIX
+======
+Default heap sizes
+	Initial:	~ 500 MB
+	Maximum:	~ 8 GB
+Memory used by JVM:	> 1.5 GB
+
+It's not possible to restrict a JVM to use at most <n> CPUs. There is no JVM option for this. With taskset it would be possible to restrict the JVM to a specific set of <n> CPUs, however this is not what we want.
+
+A way how this restriction could be done, however, would be to analyse the code of the Java programme and to make sure that no more than <n> threads can ever be running in parallel.
+
+
+Java
+====
+Get maximum and initial heap size:
+	java -XX:+PrintFlagsFinal -version | grep "MaxHeapSize\|InitialHeapSize"
+
+Set maximum and inital heap size
+	java -Xmx1G -Xms1G ...
+Initial and maximum heap size should be set to the same value (http://docs.oracle.com/cd/E22289_01/html/821-1274/configuring-the-default-jvm-and-java-arguments.html)
+
+Get the number of processors that the JVM sees and regards as available
+public class CPU {
+    public static void main(String[] args) {
+	int p = Runtime.getRuntime().availableProcessors();
+        System.out.println("Available processors: " + p);
+    }
+}
+
+
+Shell
+=====
+Set memory limit for current shell (shell process including all sub-processes)
+	ulimit -S -v $((2**20))
+	# $((2**20)) = 1048576 = 1M  ->  1M * 1 KB = 1 GB
+
+Restrict a process to specific processors
+	taskset
+It's only possible to restrict a process to a set of *specific* processors (e.g. processor #0, #1, #2, and #3) and not to a maximal number of processors.
+

@@ -10,4 +10,12 @@
 - Script for complementing the 11'000 test automata and reporting generated number of states, used real time, and used CPU time -> Done
 - R script for evaluating the data in the result file of the above script
 
-- Asking for memory usage on cluster
+- submit.sh: add option for parallel environment SMP (request 2 or 3 slots for GOAL complementation)
+- submit.sh: add scratch as default (or option)
+- submit.sh: save issued qsub command in file
+- complement.sh: use default time command (not GNU time) because it has a higher precision (1/1000 sec.) and GNU time which has only 1/100 sec. precision seems to just truncate the least significant digit (instead of rounding)
+- complement.sh: use local scratch (for automata and tmp file)
+- complement.sh: set values for t_out and m_out to Y and N
+- complement.sh: add columns for transition density and acceptance density
+- complement.sh: show user_cpu and sys_cpu in two separate columns
+- R package with functions for reading and analysing result data

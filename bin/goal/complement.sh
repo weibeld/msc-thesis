@@ -1,27 +1,32 @@
 #!/bin/bash
 # dw-14.09.2014
 
+# Frequently edited parameters
 data=~/data/test_set_s15
 #data=~/Desktop/automata
 goal=~/bin/GOAL-20140808/goal
 #goal=goal
-out=out
-log=log
+algo=fribourg
+opts="-r2ifc -m"
 timeout=600 # Seconds
 memory=1G
 log_stdout=false
-algo=fribourg
-opts="-r2ifc -m"
 
 # For security
-if [ ! -d $data ]; then echo "Error: $data is not a valid directory"; exit 1; fi
-if [ ! -f $goal ]; then echo "Error: $goal is not a valid file"; exit 1; fi
+if [ ! -d $data ]; then
+  echo "Error: $data is not a valid directory"; exit 1; fi
+if [ ! -f $goal ] && [ -z "$(which $goal)" ]; then
+  echo "Error: $goal is not a valid file"; exit 1; fi
+
+# Result (out) and log file
+out=out
+log=log
 
 # Nice date
 d() { date "+%F %H:%M:%S"; }
 
 # GNU time
-time=~/bin/gnu_time/bin/time
+time=~/bin/gnu_time/bin/gtime
 #time=~/Desktop/time/bin/time
 time_format="real: %e\nuser_cpu: %U\nsys_cpu: %S\n"
 
