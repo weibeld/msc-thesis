@@ -30,7 +30,7 @@ s="\t"   # Column separator
 d() { date "+%F %H:%M:%S"; }
 
 # Out file header
-cat >$TMP/$out <<EOF
+cat >$out <<EOF
 # Starting date:             $(d)
 # Cluster job ID:            $JOB_ID
 # Cluster node:              $HOSTNAME  
@@ -39,12 +39,12 @@ cat >$TMP/$out <<EOF
 # Timeout (CPU time):        ${timeout}s
 EOF
 # Column titles (and order)
-echo -e "states${s}t_out${s}m_out${s}real_t${s}tcpu_t${s}ucpu_t${s}scpu_t${s}dt${s}da${s}file" >>$TMP/$out
+echo -e "states${s}t_out${s}m_out${s}real_t${s}tcpu_t${s}ucpu_t${s}scpu_t${s}dt${s}da${s}file" >>$out
 
 # Log to log file, or log file and screen
 log() {
-  if [ $log_stdout == true ]; then msg "$@" | tee -a $TMP/$log
-  else msg "$@" >>$TMP/$log; fi
+  if [ $log_stdout == true ]; then msg "$@" | tee -a $log
+  else msg "$@" >>$log; fi
 }
 msg() {
   if [ "$2" != "" ]; then echo -n "$1"
@@ -59,12 +59,12 @@ ctrl_c() { exit 1; }
 trap ctrl_c SIGINT
 
 # Pack folder with data, move it to local scratch, unpack, work with it
-tar -cz -f tmp.tar.gz -C $(dirname $data) $(basename $data)
-mv tmp.tar.gz $TMP
-tar -xz -f $TMP/tmp.tar.gz -C $TMP && rm $TMP/tmp.tar.gz
-data=$TMP/$(basename $data)
+# tar -cz -f tmp.tar.gz -C $(dirname $data) $(basename $data)
+# mv tmp.tar.gz $TMP
+# tar -xz -f $TMP/tmp.tar.gz -C $TMP && rm $TMP/tmp.tar.gz
+# data=$TMP/$(basename $data)
 
-tmp=$TMP/tmp.out
+tmp=tmp.out
 for filename in $data/*.gff; do
   file=$(basename $filename)
 
@@ -118,9 +118,9 @@ for filename in $data/*.gff; do
   da=$(echo $file | egrep -o "a[0-9].[0-9]" | sed 's/^a//')
 
   # Write out file
-  echo -e ${states}${s}${t_out}${s}${m_out}${s}${real}${s}${tot_cpu}${s}${user_cpu}${s}${sys_cpu}${s}${dt}${s}${da}${s}${file} >>$TMP/$out
+  echo -e ${states}${s}${t_out}${s}${m_out}${s}${real}${s}${tot_cpu}${s}${user_cpu}${s}${sys_cpu}${s}${dt}${s}${da}${s}${file} >>$out
 
 done
 
 # Copy result files from local scratch to job directory
-cp $TMP/$out $TMP/$log .
+#cp $TMP/$out $TMP/$log .
