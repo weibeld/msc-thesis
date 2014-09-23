@@ -1,15 +1,18 @@
 #!/bin/bash
 # dw-22.09.2014
 
+set -e
+
 usage() {
   echo "Usage"
-  echo "    $0 [OPTONS] JOB_SCRIPT"
+  echo "    $0 [OPTIONS] JOB_SCRIPT [ARGS]"
   echo
   echo "OPTIONS                     [Default]"
   echo "    -m: Memory              [4G]"
   echo "    -c: CPU time            [01:00:00]"
-  echo "    -o: STDOUT file         [<job>.out]"
-  echo "    -e: STDERR file         [<job>.err]"
+  echo "    -d: Execution directory [SCRIPT_DIR]"
+  echo "    -o: STDOUT file         [stdout]"
+  echo "    -e: STDERR file         [stderr]"
   echo "    -q: Queue               [all.q]"
   echo "    -s: Scratch             [off]        (set to e.g. [2G] to activate)"
   echo "    -p: Parallel env. SMP   [off]        (set to e.g. [2] slots to activate)"
@@ -21,10 +24,20 @@ usage() {
   echo "        n: No e-mails are sent"
 }
 
-while getopts ":m:c:o:e:q:s:p:n:" opt; do
+test() {
+  kind=$1 # "file" or "directory"
+  path=$2
+  if [ ! -${kind:0:1} "$path" ]; then echo "Error: \"$path\" is not a valid $kind"; exit 1; fi
+  if [ ${path:0:1} != "/" ]; then echo "Error: must specify absolute paths"; exit 1; fi
+}
+
+if [ $# -eq 0 ]; then usage; exit 0; fi
+
+while getopts ":m:c:d:o:e:q:s:p:n:" opt; do
   case $opt in
     m) memory=$OPTARG; ;;
     c) cpu_time=$OPTARG; ;;
+    d) dir=$OPTARG; ;;
     o) out_file=$OPTARG; ;;
     e) err_file=$OPTARG; ;;
     q) queue=$OPTARG; ;;
@@ -36,18 +49,17 @@ while getopts ":m:c:o:e:q:s:p:n:" opt; do
   esac
 done
 
-shift $(($OPTIND - 1))
-if [ $# -ne 1 ]; then usage; exit 1; fi
-
+shift $(($OPTIND-1))
 script=$1
-if [ ! -f $script ]; then echo "Error: $script is not a valid file"; exit 1; fi
+test file "$script"
 
-job=$(basename $(dirname $script))
+shift # $@ contains job script arguments (if any)
 
 if [ -z $memory ]; then memory=4G; fi
 if [ -z $cpu_time ]; then cpu_time=01:00:00; fi
-if [ -z $out_file ]; then out_file=$job.out; fi
-if [ -z $err_file ]; then err_file=$job.err; fi
+if [ -z $dir ]; then dir=$(dirname $script); else test directory $dir; fi
+if [ -z $out_file ]; then out_file=stdout; fi
+if [ -z $err_file ]; then err_file=stderr; fi
 if [ -z $notification ]; then notification=a; fi
 if [ -z $queue ]; then queue=all.q; fi
 
@@ -59,13 +71,12 @@ if [ -z $slots ]; then slots=off; fi
 if [ $slots == off ]; then pe=""
 else pe="-pe smp $slots -R y "; fi
 
+job=$(basename $dir)
 email=daniel.weibel@unifr.ch
-
-cd $(dirname $script)
 
 cmd=\
 "qsub "\
-"-cwd "\
+"-wd $dir "\
 "-V "\
 "-M $email "\
 "-m $notification "\
@@ -76,8 +87,16 @@ cmd=\
 "-o $out_file "\
 "-e $err_file "\
 "-N $job "\
-"$(basename $script)"
+"$script"
 
-$cmd
+# Qsub execution with $@ args to the job script
+$cmd "$@"
 
-echo $cmd >qsub
+# Save issued qsub command
+args=("$@")
+for a in "${args[@]}"; do
+  # Enclose multi-word args in \"
+  if [ $(wc -w <<< $a) -gt 1 ]; then a=$(sed -e 's/^/\"/' -e 's/$/\"/' <<< $a); fi
+  arg_string=$arg_string" "$a
+done
+echo $cmd $arg_string >$dir/qsub

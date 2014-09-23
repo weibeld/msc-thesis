@@ -1,21 +1,23 @@
 #!/bin/bash
 # dw-14.09.2014
 
-# Frequently edited parameters
-local=false
-if [ "$local" == true ]; then data=~/Desktop/automata; else data=~/data/test_set_s15; fi
-goal=goal # GOAL executable
-algo=fribourg
-opts="-r2ifc -m"
+# Algorithm and options can be specified as command line arguments
+if [ -n "$1" ]; then algo="$*"
+else algo="fribourg -r2ifc -m"; fi
+
+# Other frequently edited parameters
+#data=~/data/test_set_s15
+data=~/data/test_set_s15
+goal=~/bin/GOAL-20140808/goal
 timeout=600 # Seconds
 memory=1G
 log_stdout=false
 
-# For security
-if [ ! -d $data ]; then
-  echo "Error: $data is not a valid directory"; exit 1; fi
-if [ ! -f $goal ] && [ -z "$(which $goal)" ]; then
-  echo "Error: $goal is not a valid file"; exit 1; fi
+# test() {
+#   if [ ! -f "$1" ]; then echo "Error: \"$1\" is not a valid file"; exit 1; fi
+# }
+# test $data_archive
+# test $goal_archive
 
 # Out file and log file
 out=out
@@ -33,8 +35,9 @@ d() { date "+%F %H:%M:%S"; }
 cat >$out <<EOF
 # Starting date:             $(d)
 # Cluster job ID:            $JOB_ID
-# Cluster node:              $HOSTNAME  
-# Complementation algorithm: $algo $opts
+# Cluster node:              $HOSTNAME
+# Cluster queue:             $QUEUE
+# Complementation algorithm: $algo
 # Memory limit (Java heap):  $memory
 # Timeout (CPU time):        ${timeout}s
 EOF
@@ -58,11 +61,18 @@ export JVMARGS="-Xmx$memory -Xms$memory"
 ctrl_c() { exit 1; }
 trap ctrl_c SIGINT
 
-# Pack folder with data, move it to local scratch, unpack, work with it
-# tar -cz -f tmp.tar.gz -C $(dirname $data) $(basename $data)
-# mv tmp.tar.gz $TMP
-# tar -xz -f $TMP/tmp.tar.gz -C $TMP && rm $TMP/tmp.tar.gz
-# data=$TMP/$(basename $data)
+# # Copy data to scratch
+# cp $data_archive tmp.tar.gz
+# data=data
+# mkdir $data
+# tar xzf tmp.tar.gz -C $data --strip-components 1 && rm tmp.tar.gz
+
+# # Copy GOAL to scratch
+# cp $goal_archive tmp.tar.gz
+# goal_dir=GOAL
+# mkdir $goal_dir
+# tar xzf tmp.tar.gz -C $goal_dir --strip-components 1 && rm tmp.tar.gz
+# goal=$goal_dir/goal
 
 tmp=tmp.out
 for filename in $data/*.gff; do
@@ -70,9 +80,10 @@ for filename in $data/*.gff; do
 
   # Complementation command execution
   # ----------------------------------------------------------------------------
-  log "$(d): Complementing $file... " n
+  log "$(d): Complementing $file... "
   ulimit -S -t $timeout
-  { time $goal complement -m $algo $opts $filename; } &>$tmp
+  { time $goal complement -m $algo $filename; } &>$tmp
+  if [ $? -ne 0 ]; then cat $tmp >>$log; fi
   #timeout ${timeout}s $goal complement -m fribourg $filename &>$tmp # Exit code 124
   ulimit -S -t unlimited
 
@@ -123,4 +134,4 @@ for filename in $data/*.gff; do
 done
 
 # Copy result files from local scratch to job directory
-#cp $TMP/$out $TMP/$log .
+#cp $out $log .
