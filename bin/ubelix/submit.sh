@@ -4,10 +4,10 @@
 set -e
 
 usage() {
-  echo "Usage"
-  echo "    $0 [OPTIONS] JOB_SCRIPT [ARGS]"
+  echo "USAGE"
+  echo "    $(basename $0) [OPTIONS] JOB_SCRIPT [ARGS]"
   echo
-  echo "OPTIONS                     [Default]"
+  echo "OPTIONS                     [DEFAULT]"
   echo "    -m: Memory              [4G]"
   echo "    -c: CPU time            [01:00:00]"
   echo "    -d: Execution directory [SCRIPT_DIR]"
@@ -27,8 +27,8 @@ usage() {
 test() {
   kind=$1 # "file" or "directory"
   path=$2
-  if [ ! -${kind:0:1} "$path" ]; then echo "Error: \"$path\" is not a valid $kind"; exit 1; fi
-  if [ ${path:0:1} != "/" ]; then echo "Error: must specify absolute paths"; exit 1; fi
+  if [ ! -${kind:0:1} "$path" ]; then echo "Error: invalid $kind ($path)"; exit 1; fi
+  if [ ${path:0:1} != "/" ]; then echo "Error: must specify absolute path ($path)"; exit 1; fi
 }
 
 if [ $# -eq 0 ]; then usage; exit 0; fi
@@ -50,14 +50,14 @@ while getopts ":m:c:d:o:e:q:s:p:n:" opt; do
 done
 
 shift $(($OPTIND-1))
-script=$1
+script=$(eval echo $1)
 test file "$script"
 
 shift # $@ contains job script arguments (if any)
 
 if [ -z $memory ]; then memory=4G; fi
 if [ -z $cpu_time ]; then cpu_time=01:00:00; fi
-if [ -z $dir ]; then dir=$(dirname $script); else test directory $dir; fi
+if [ -z $dir ]; then dir=$(dirname $script); else dir=$(eval echo $dir); test directory $dir; fi
 if [ -z $out_file ]; then out_file=stdout; fi
 if [ -z $err_file ]; then err_file=stderr; fi
 if [ -z $notification ]; then notification=a; fi

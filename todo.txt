@@ -17,12 +17,20 @@
 - submit.sh: add option for parallel environment SMP (request 2 or 3 slots for GOAL complementation) -> Done
 - submit.sh: add scratch as default (or option) -> Done
 - submit.sh: save issued qsub command in file -> Done
+
+23.09.2014
 - submit.sh: allow arguments to job script -> Done
 - complement.sh: take algorithm and algorithm options as arguments -> Done
 - Set up only one global complement.sh that is referenced from the individual jobs. Algoritm and options are passed to complement.sh as arguments -> Done
 - Copy GOAL folder to scratch. There are errors when multiple jobs try to access it in the global home directory -> Done
 - Maintain zipped versions of all the data that has to be moved to the local scratch by every job -> Done
 
-- complement.sh: better logging
+24.09.2014
+- complement.sh: better logging -> Done
+- complement.sh: add job name to out and log file -> Done
+- complement.sh: make "data" a command line argument -> Done
+- Change back to the 2013-07-11 version of GOAL. The reason is that in the newest version (2014-08-08) invalid complementation algorithm options are ignored instead of reported. In the 2013-07-11 version, on the other hand, GOAL aborts with the message "Unknown argument -x". -> Done
+- complement.sh: detect unknown complementation algorithms and options. Abort job in that case. -> Done
+
 - complement.sh: improve definition and writing out of columns
 - R package with functions for reading and analysing result data

@@ -2,16 +2,18 @@ read <- function(file) {
   read.table(file=file, header=TRUE, sep="\t")
 }
 
-nb.timeouts <- function(df) {
-  sum(df$t_out)
+timeouts <- function(df) {
+  table(df$t_out)
+}
+timeouts.show <- function(df) {
+  df[df$t_out == "Y",]
 }
 
-show.timeouts <- function(df) {
-  df[df$t_out == 1,]
+memouts <- function(df) {
+  table(df$m_out)
 }
-
-nb.memouts <- function(df) {
-  sum(df$m_out)
+memouts.show <- function(df) {
+  df[df$m_out == "Y",]
 }
 
 summary.states <- function(df) {
@@ -23,7 +25,7 @@ fivenum.states <- function(df) {
 }
 
 summary.cputime <- function(df) {
-  summary(df$cpu_t)
+  summary(df$tcpu_t)
 }
 
 summary.realtime <- function(df) {
