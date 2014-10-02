@@ -22,9 +22,9 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
   private final String cCode     = "-c";       // Make complete
   private final String r2ifcCode = "-r2ifc";   // Right colour 2 if complete
   private final String mCode     = "-m";       // Merge components
-  private final String m2Code    = "-m2";      // Reduce colour 2
+  private final String m2Code    = "-m2";      // Reduce colour 2 components
   private final String bCode     = "-b";       // Use the bracket notation
-  private final String rCode     = "-r";       // Remove unreachable and dead
+  private final String rCode     = "-r";       // Remove unreachable and dead states
 
   /* Inner class creating a FribourgConstruction, including a FribourgOptions */
   // Object > AbstractExpression > CommandExpression > ComplementCommand
@@ -51,12 +51,12 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
       }
       if (m2 && !m) throw new IllegalArgumentException("Option -m2 requires option -m");
       options = new FribourgOptions();
-      options.setCompl(c);
-      options.setRight2IfCompl(r2ifc);
-      options.setMerge(m);
-      options.setReduce2(m2);
-      options.setBrack(b);
-      options.setPrune(r);
+      options.setC(c);
+      options.setR2ifc(r2ifc);
+      options.setM(m);
+      options.setM2(m2);
+      options.setB(b);
+      options.setR(r);
     }
 
     /* Return a FribourgConstruction initialised with our FribourgOptions */

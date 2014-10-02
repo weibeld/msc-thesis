@@ -24,20 +24,20 @@ import org.svvrl.goal.core.Preference;
 public class FribourgOptions extends Properties {
   
   // Option keys (same keys used in FribourgOptions and in Preference file)
-  private static final String complKey;
-  private static final String right2IfComplKey;
-  private static final String mergeKey;
-  private static final String reduce2Key;
-  private static final String brackKey;
-  private static final String pruneKey;
+  private static final String cKey;
+  private static final String r2ifcKey;
+  private static final String mKey;
+  private static final String m2Key;
+  private static final String bKey;
+  private static final String rKey;
 
   // Option default values that are saved in the Preference file
-  private static final boolean complDefault         = false;
-  private static final boolean right2IfComplDefault = true;
-  private static final boolean mergeDefault         = true;
-  private static final boolean reduce2Default       = false;
-  private static final boolean brackDefault         = false;
-  private static final boolean pruneDefault         = true;
+  private static final boolean cDefault     = false;
+  private static final boolean r2ifcDefault = true;
+  private static final boolean mDefault     = true;
+  private static final boolean m2Default    = false;
+  private static final boolean bDefault     = false;
+  private static final boolean rDefault     = true;
 
   // Will be executed when the class is first accessed. This is actually only
   // necessary to set the default values in the preference file the very first
@@ -45,120 +45,120 @@ public class FribourgOptions extends Properties {
   // be in the Preference file, and setting them would not be necessary.
   static {
     // Initialise keys (has to be done in this static block)
-    complKey         = "compl";
-    right2IfComplKey = "right2IfCompl";
-    mergeKey         = "merge";
-    reduce2Key       = "reduce2";
-    brackKey         = "brack";
-    pruneKey         = "prune";
+    cKey     = "c";
+    r2ifcKey = "r2ifc";
+    mKey     = "m";
+    m2Key    = "m2";
+    bKey     = "b";
+    rKey     = "r";
     // Set the default values
-    Preference.setDefault(complKey,         complDefault);
-    Preference.setDefault(right2IfComplKey, right2IfComplDefault);
-    Preference.setDefault(mergeKey,         mergeDefault);
-    Preference.setDefault(reduce2Key,       reduce2Default);
-    Preference.setDefault(brackKey,         brackDefault);
-    Preference.setDefault(pruneKey,         pruneDefault);
+    Preference.setDefault(cKey,     cDefault);
+    Preference.setDefault(r2ifcKey, r2ifcDefault);
+    Preference.setDefault(mKey,     mDefault);
+    Preference.setDefault(m2Key,    m2Default);
+    Preference.setDefault(bKey,     bDefault);
+    Preference.setDefault(rKey,     rDefault);
   }
 
   /* Create a FribourgOptions object with the default values for all options.
    * The idea is that after creating a FribourgOptions, the desired options are
    * set with the public setter methods */
   public FribourgOptions() {
-    setProperty(complKey,         complDefault);
-    setProperty(right2IfComplKey, right2IfComplDefault);
-    setProperty(mergeKey,         mergeDefault);
-    setProperty(reduce2Key,       reduce2Default);
-    setProperty(brackKey,         brackDefault);
-    setProperty(pruneKey,         pruneDefault);
+    setProperty(cKey,     cDefault);
+    setProperty(r2ifcKey, r2ifcDefault);
+    setProperty(mKey,     mDefault);
+    setProperty(m2Key,    m2Default);
+    setProperty(bKey,     bDefault);
+    setProperty(rKey,     rDefault);
   }
 
   /* Option getter methods */
-  public boolean isCompl() {
-    return getPropertyAsBoolean(complKey);
+  public boolean isC() {
+    return getPropertyAsBoolean(cKey);
   }
-  public boolean isRight2IfCompl() {
-    return getPropertyAsBoolean(right2IfComplKey);
+  public boolean isR2ifc() {
+    return getPropertyAsBoolean(r2ifcKey);
   }
-  public boolean isMerge() {
-    return getPropertyAsBoolean(mergeKey);
+  public boolean isM() {
+    return getPropertyAsBoolean(mKey);
   }
-  public boolean isReduce2() {
-    return getPropertyAsBoolean(reduce2Key);
+  public boolean isM2() {
+    return getPropertyAsBoolean(m2Key);
   }
-  public boolean isBrack() {
-    return getPropertyAsBoolean(brackKey);
+  public boolean isB() {
+    return getPropertyAsBoolean(bKey);
   }
-  public boolean isPrune() {
-    return getPropertyAsBoolean(pruneKey);
+  public boolean isR() {
+    return getPropertyAsBoolean(rKey);
   }
 
   /* Option setter methods */
-  public void setCompl(boolean value) {
-    setProperty(complKey, value);
+  public void setC(boolean value) {
+    setProperty(cKey, value);
   }
-  public void setRight2IfCompl(boolean value) {
-    setProperty(right2IfComplKey, value);
+  public void setR2ifc(boolean value) {
+    setProperty(r2ifcKey, value);
   }
-  public void setMerge(boolean value) {
-    setProperty(mergeKey, value);
+  public void setM(boolean value) {
+    setProperty(mKey, value);
   }
-  public void setReduce2(boolean value) {
-    setProperty(reduce2Key, value);
+  public void setM2(boolean value) {
+    setProperty(m2Key, value);
   }
-  public void setBrack(boolean value) {
-    setProperty(brackKey, value);
+  public void setB(boolean value) {
+    setProperty(bKey, value);
   }
-  public void setPrune(boolean value) {
-    setProperty(pruneKey, value);
+  public void setR(boolean value) {
+    setProperty(rKey, value);
   }
 
 
-  /* Interface (read-only) to the Preference file. Each option has a persistent
-   * default and preference value. */
-
+  /* -------------------------------------------------------------------------*
+   * Interface (read-only) to the Preference file. Each option has a persistent
+   * default and preference value.
+   * -------------------------------------------------------------------------*/
   // The preference values are used to set the checkboxes in the options dialog
   // in the GUI. If the user clicks on 'Save as Default', the current selection
   // of options will be set as the new preference values.
-  public static boolean getComplPref() {
-    return Preference.getPreferenceAsBoolean(complKey);
+  public static boolean getCPref() {
+    return Preference.getPreferenceAsBoolean(cKey);
   }
-  public static boolean getRight2IfComplPref() {
-    return Preference.getPreferenceAsBoolean(right2IfComplKey);
+  public static boolean getR2ifcPref() {
+    return Preference.getPreferenceAsBoolean(r2ifcKey);
   }
-  public static boolean getMergePref() {
-    return Preference.getPreferenceAsBoolean(mergeKey);
+  public static boolean getMPref() {
+    return Preference.getPreferenceAsBoolean(mKey);
   }
-  public static boolean getReduce2Pref() {
-    return Preference.getPreferenceAsBoolean(reduce2Key);
+  public static boolean getM2Pref() {
+    return Preference.getPreferenceAsBoolean(m2Key);
   }
-  public static boolean getBrackPref() {
-    return Preference.getPreferenceAsBoolean(brackKey);
+  public static boolean getBPref() {
+    return Preference.getPreferenceAsBoolean(bKey);
   }
-  public static boolean getPrunePref() {
-    return Preference.getPreferenceAsBoolean(pruneKey);
+  public static boolean getRPref() {
+    return Preference.getPreferenceAsBoolean(rKey);
   }
-
   // The default values have to be accessed when the user clicks on 'Reset' in
   // the 'Preferences... > Complementation  > Fribourg Construction' dialog to
   // reset the options to their default values. The default values are never
   // changed (except in this file).
-  public static boolean getComplDefault() {
-    return Preference.getDefaultAsBoolean(complKey);
+  public static boolean getCDefault() {
+    return Preference.getDefaultAsBoolean(cKey);
   }
-  public static boolean getRight2IfComplDefault() {
-    return Preference.getDefaultAsBoolean(right2IfComplKey);
+  public static boolean getR2ifcDefault() {
+    return Preference.getDefaultAsBoolean(r2ifcKey);
   }
-  public static boolean getMergeDefault() {
-    return Preference.getDefaultAsBoolean(mergeKey);
+  public static boolean getMDefault() {
+    return Preference.getDefaultAsBoolean(mKey);
   }
-  public static boolean getReduce2Default() {
-    return Preference.getDefaultAsBoolean(reduce2Key);
+  public static boolean getM2Default() {
+    return Preference.getDefaultAsBoolean(m2Key);
   }
-  public static boolean getBrackDefault() {
-    return Preference.getDefaultAsBoolean(brackKey);
+  public static boolean getBDefault() {
+    return Preference.getDefaultAsBoolean(bKey);
   }
-  public static boolean getPruneDefault() {
-    return Preference.getDefaultAsBoolean(pruneKey);
+  public static boolean getRDefault() {
+    return Preference.getDefaultAsBoolean(rKey);
   }
   
 }

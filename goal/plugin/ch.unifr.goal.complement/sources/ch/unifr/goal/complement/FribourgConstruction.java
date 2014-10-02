@@ -116,7 +116,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     }
     // If the make complete option is set, and the input automaton is not
     // complete, make it complete.
-    if (getOptions().isCompl()) {
+    if (getOptions().isC()) {
       String pre = "\"Make Complete\" option (-c) is on. ";
       if (!isComplete(in)) {
         OmegaUtil.makeTransitionComplete(in);
@@ -162,7 +162,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
         stage("Stage 1: Constructing upper part of output automaton");
         STState outInitState = new STState(id++);
         outInitState.addComponent(outInitState.new Component(inInitState, -1));
-        if (getOptions().isBrack()) outInitState.makeLabelBrackets();
+        if (getOptions().isB()) outInitState.makeLabelBrackets();
         else outInitState.makeLabelNormal();
         out.addState(outInitState);
         out.setInitialState(outInitState);
@@ -219,7 +219,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
               }
               // If we are construction the lower part of the automaton AND the
               // colour 2 reduction is ON
-              else if (getOptions().isReduce2()) {
+              else if (getOptions().isM2()) {
                 // If p contains only colour 0 or -1 components. p has no M2.
                 if (p.hasOnlyColor0OrMinus1()) {
                   if (qkStates.isEmpty()) continue;
@@ -321,11 +321,11 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
               }
               // At this point, we have determined the (non-empty) state set and colour of qk
               STState.Component qk = q.new Component(qkStates, qkColor);
-              if (getOptions().isMerge()) {
+              if (getOptions().isM()) {
                 // Add qk to left edge of q, and merge it if possible with the
                 // old leftmost component of q
                 q.addComponentWithMerging(qk);
-                if (getOptions().isReduce2()) { // If qk has a special role, set it
+                if (getOptions().isM2()) { // If qk has a special role, set it
                   if (qkM2) q.setM2(qk);                     // qk has colour 2, cannot be merged
                   if (qkM2Exclude) q.setM2ExcludeLeftmost(); // qk has colour 1, can be merged
                 }
@@ -340,7 +340,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           // of stage 2. The continue jumps to the next symbol of the alphabet.
           if (q.numberOfComponents() == 0) continue;
 
-          if (getOptions().isReduce2()) {
+          if (getOptions().isM2()) {
             // If M2(p) disappeared, then q has not yet an M2(q), and we have to
             // elect one. Remember that we have postponed this decision to the
             // time when q will have been fully constructed. Of course, q needs
@@ -366,7 +366,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             }
           }
           // q is now really finished. We can create its label.
-          if (getOptions().isBrack()) q.makeLabelBrackets();
+          if (getOptions().isB()) q.makeLabelBrackets();
           else q.makeLabelNormal();
           // Does q already exist in the automaton?
           boolean qAlreadyExists = false;
@@ -383,7 +383,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             // colour 2 optimisation" is set AND the input automaton is
             // complete, then apply the rightmost colour 2 optimisation, i.e.
             // do not add the state if its rightmost colour is 2.
-            if (i == 2 && getOptions().isRight2IfCompl() && inIsComplete)
+            if (i == 2 && getOptions().isR2ifc() && inIsComplete)
                if (q.colorOfRightmostComponent() == 2) continue;
             out.addState(q);
             pendingStates.add(q);
@@ -437,7 +437,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       somethingToPostprocess = true;
     }
     // If the -r option is set, remove unreachable and dead states
-    if (getOptions().isPrune()) {
+    if (getOptions().isR()) {
       StateReducer.removeUnreachable(out);
       StateReducer.removeDead(out);
       step("Removing unreachable and dead states.");
@@ -445,7 +445,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     }
     if (!somethingToPostprocess) step("Nothing to postprocess.");
 
-    stage("Fribourg Construction finished :)");
+    stage("Fribourg Construction finished \\(^_^)/");
     return out;
 
     /* Automaton API summary (see API of class Automaton or FSA) */
@@ -551,10 +551,10 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     out.setAcc(acc);
     out.expandAlphabet(in.getAlphabet());
     String s = "Options: MakeComplete=";
-    if (getOptions().isCompl()) s += "true, ";
+    if (getOptions().isC()) s += "true, ";
     else s += "false, ";
     s += "IgnoreRightColor2=";
-    if (getOptions().isRight2IfCompl()) s += "true";
+    if (getOptions().isR2ifc()) s += "true";
     else s += "false";
     q0.setLabel(s);
     return out;
