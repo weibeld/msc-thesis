@@ -18,6 +18,7 @@ import org.svvrl.goal.core.comp.ComplementConstruction;
 import org.svvrl.goal.core.aut.AlphabetType;
 import org.svvrl.goal.core.aut.Position;
 import org.svvrl.goal.core.aut.fsa.FSAState;
+import org.svvrl.goal.core.aut.opt.StateReducer;
 import org.svvrl.goal.core.Properties;
 import ch.unifr.goal.complement.STState.Component;
 import org.svvrl.goal.core.Preference;
@@ -32,14 +33,15 @@ import org.svvrl.goal.core.Preference;
 
 // Object > AbstractAlgorithm > AbstractControllableAlgorithm > AbstractEditableAlgorithm > ComplementConstruction
 public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
+
   // Holding the complement if complement() has already been executed before
   private FSA complement = null;
 
   // Holding the intermediate results of the construction for the step-by-step
-  // execution (used by getIntermediateResult()s).
+  // execution (used by getIntermediateResult()).
   private FSA in;
   private FSA out;
-  private boolean preprocess;
+  private boolean preprocessPhase;
 
   // Each FribourgConstruction is initalised with a FribourgOptions containing
   // values for all the options for the FribourgConstruction
@@ -48,7 +50,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
   /* Constructor */
   public FribourgConstruction(FSA in, FribourgOptions options) {
     super(in);
-    if (!OmegaUtil.isNBW(in)) // Needed for command line mode
+    if (!OmegaUtil.isNBW(in)) // Applicability test needed for command line
       throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
     this.options = options;
   }
@@ -58,9 +60,11 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     return options;
   }
 
+  // Return current state of the constructed automaton after a step or stage
+  // during the step-by-step execution of the algorithm.
   @Override // Method of interface EditableAlgorithm
   public Editable getIntermediateResult() {
-    if (preprocess) return in;
+    if (preprocessPhase) return in;
     else return out;
   }
 
@@ -75,14 +79,18 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
   /* The implementation of the Fribourg complementation construction */
   private FSA construction(FSA input) {
+
     // The input automaton to complement
     in = input;
 
-    /* Preprocessing input automaton */
-    preprocess = true;
+    /* -----------------------------------------------------------------------*
+     * Preprocessing phase
+     *   - Translate alphabet to classical if it is propositional
+     *   - If the -c option is set, make automaton complete
+     * -----------------------------------------------------------------------*/
+    preprocessPhase = true;
     stage("Stage 0: Preprocessing input automaton");
-    boolean preprocessingDone = false;
-
+    boolean somethingToPreprocess = false;
     /*** Convert input automaton from PROPOSITIONAL to CLASSICAL alphabet ***/
     /* We handle input automata with propositional alphabet by converting them
      * to classical before the construction, and converting them back to
@@ -104,30 +112,34 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       for (int i = 0; i < p.length; i++) alphabetMapping.put(p[i], c.get(i));
       AlphabetType.CLASSICAL.convertFrom(in, alphabetMapping);
       step("Input automaton has propositional alphabet. Converting it to classical.");
-      preprocessingDone = true;
+      somethingToPreprocess = true;
     }
-
     // If the make complete option is set, and the input automaton is not
     // complete, make it complete.
     if (getOptions().isCompl()) {
-      String pre = "The \"Make Complete\" option is on. ";
+      String pre = "\"Make Complete\" option (-c) is on. ";
       if (!isComplete(in)) {
         OmegaUtil.makeTransitionComplete(in);
         step(pre + "Making input automaton complete.");
       }
-      else
-        step(pre + "Input automaton is already complete.");
-      preprocessingDone = true;
+      else step(pre + "Input automaton is already complete.");
+      somethingToPreprocess = true;
     }
+    // If there was nothing to preprocess
+    if (!somethingToPreprocess) step("Nothing to preprocess.");
+    preprocessPhase = false;
 
+
+    /* -----------------------------------------------------------------------*
+     * Complementation phase
+     *   - Stage 1: construct upper part of complement
+     *   - Stage 2: construct lower part of complement
+     * -----------------------------------------------------------------------*/
     // The input automaton (which now in any case has a classical alphabet)
     String[] inAlphabet = in.getAlphabet();
     State inInitState = in.getInitialState();
     BuchiAcc inAccStates = (BuchiAcc) in.getAcc();
     boolean inIsComplete = isComplete(in);
-
-    if (!preprocessingDone) step("Nothing to preprocess.");
-    preprocess = false;
 
     // The output automaton (which always has a classical alphabet as well; if
     // the input automaton was propositional, the output automaton will be
@@ -404,7 +416,13 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     step("Setting accepting states.");
 
 
+    /* -----------------------------------------------------------------------*
+     * Postprocessing phase
+     *   - Convert alphabet back to propositional if it was propositional
+     *   - If the -r option is set, remove unreachable and dead states
+     * -----------------------------------------------------------------------*/
     stage("Stage 3: Postprocessing output automaton");
+    boolean somethingToPostprocess = false;
     /*** Convert output automaton from CLASSICAL to PROPOSITIONAL alphabet ***/
     // If the input automaton had a propositional alphabet, we convert the
     // classical output automaton now back to a propositional one by using the
@@ -416,10 +434,18 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
         invert.put(i.getValue(), i.getKey());
       AlphabetType.PROPOSITIONAL.convertFrom(out, invert);
       step("Converting alphabet back to propositional.");
+      somethingToPostprocess = true;
     }
-    else step("Nothing to postprocess.");
+    // If the -r option is set, remove unreachable and dead states
+    if (getOptions().isPrune()) {
+      StateReducer.removeUnreachable(out);
+      StateReducer.removeDead(out);
+      step("Removing unreachable and dead states.");
+      somethingToPostprocess = true;
+    }
+    if (!somethingToPostprocess) step("Nothing to postprocess.");
 
-    stage(">> Fribourg Construction finished <<");
+    stage("Fribourg Construction finished :)");
     return out;
 
     /* Automaton API summary (see API of class Automaton or FSA) */

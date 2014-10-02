@@ -11,13 +11,15 @@ import org.svvrl.goal.core.Properties;
 
 
 /*----------------------------------------------------------------------------*
- * The panel in the options dialog in the GUI. Contains a checkbox for every
- * option of the FribourgConstruction. Returns a FribourgOptions that reflects
- * the selection of checkboxes in the panel. The checkboxes are initially set
- * according to the pfererence values saved in the Preference file.
+ * The JPanel appearing in the options dialog when complementing an automaton,
+ * and in the GOAL preferences under Preferences > Complementation >
+ * FribourgConstruction.
+ * Contains a checkbox for every option of the Fribourg Construction. Returns a
+ * FribourgOptions with options set according to the state of the checkboxes.
+ * On object creation, the checkboxes are set according to the preference values
+ * in the preference file.
  * Daniel Weibel, 31.07.2014
  *----------------------------------------------------------------------------*/
-
 // JPanel > OptionsPanel
 public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions> {
 
@@ -27,6 +29,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
   private final JCheckBox mergeCheckBox;
   private final JCheckBox reduce2CheckBox;
   private final JCheckBox brackCheckBox;
+  private final JCheckBox pruneCheckBox;
 
   /* Constructor */
   public FribourgComplementOptionsPanel() {
@@ -39,24 +42,24 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     Box vBox = createYBox();
     Box hBox = createXBox();
 
-    // Make input automaton complete
-    complCheckBox = new JCheckBox("Make input automaton complete if it is incomplete");
+    // Option: make input automaton complete (-c)
+    complCheckBox = new JCheckBox("Make input automaton complete if it is incomplete (-c)");
     complCheckBox.setSelected(FribourgOptions.getComplPref());
     vBox.add(hBox.add(complCheckBox));
 
-    // Rightmost colour 2 optmisation if input automaton is complete
-    right2IfComplCheckBox = new JCheckBox("If input automaton is complete, apply rightmost colour 2 optimisation");
+    // Option: rightmost colour 2 pruning if input automaton is complete (-r2ifc)
+    right2IfComplCheckBox = new JCheckBox("If input automaton is complete, apply rightmost colour 2 optimisation (-r2ifc)");
     right2IfComplCheckBox.setSelected(FribourgOptions.getRight2IfComplPref());
     vBox.add(hBox.add(right2IfComplCheckBox));
 
-    // Component merging optimisation
-    mergeCheckBox = new JCheckBox("Apply component merging optimisation");
+    // Option: component merging optimisation (-m)
+    mergeCheckBox = new JCheckBox("Apply component merging optimisation (-m)");
     mergeCheckBox.setSelected(FribourgOptions.getMergePref());
     vBox.add(hBox.add(mergeCheckBox));
 
-    // Colour 2 reduction optimisation. Can only be selected if the component
-    // merging optimisation is also selected.
-    reduce2CheckBox = new JCheckBox("Apply colour 2 reduction optimisation");
+    // Option: colour 2 reduction optimisation (-m2). Can only be selected if
+    // the -m option is also selected.
+    reduce2CheckBox = new JCheckBox("Apply colour 2 component reduction optimisation (-m2)");
     // If merge optimisation is on, initialise checkbox normally
     if (mergeCheckBox.isSelected()) reduce2CheckBox.setSelected(FribourgOptions.getReduce2Pref());
     // Else, set checkbox unchecked (default) and non-editable
@@ -74,10 +77,15 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
       }
     });
 
-    // Use the bracket notation
-    brackCheckBox = new JCheckBox("Use the \"bracket notation\" for state labels");
+    // Option: use the bracket notation
+    brackCheckBox = new JCheckBox("Use the \"bracket notation\" for labelling states (-b)");
     brackCheckBox.setSelected(FribourgOptions.getBrackPref());
     vBox.add(hBox.add(brackCheckBox));
+
+    // Option: prune unreachable and dead states from the output automaton
+    pruneCheckBox = new JCheckBox("Remove unreachable and dead states from the output automaton (-r)");
+    pruneCheckBox.setSelected(FribourgOptions.getPrunePref());
+    vBox.add(hBox.add(pruneCheckBox));
 
     // Add the vertical stack of hBoxes
     this.add(vBox);
@@ -92,6 +100,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     options.setMerge(mergeCheckBox.isSelected());
     options.setReduce2(reduce2CheckBox.isSelected());
     options.setBrack(brackCheckBox.isSelected());
+    options.setPrune(pruneCheckBox.isSelected());
     return options;
   }
 
@@ -105,5 +114,6 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     mergeCheckBox.setSelected(FribourgOptions.getMergeDefault());
     reduce2CheckBox.setSelected(FribourgOptions.getReduce2Default());
     brackCheckBox.setSelected(FribourgOptions.getBrackDefault());
+    pruneCheckBox.setSelected(FribourgOptions.getPruneDefault());
   }
 }

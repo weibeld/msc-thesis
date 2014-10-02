@@ -34,3 +34,4 @@
 
 - complement.sh: improve definition and writing out of columns
 - R package with functions for reading and analysing result data
+- Algorithm implementation: add the -r option for removing unreachable and dead states. A state can be removed (because it is unreachable or dead) if: (1) it is not reachable form the initial state, (2) it cannot reach an accepting state.

@@ -8,7 +8,7 @@ import org.svvrl.goal.core.Preference;
  * key=value pairs. For creating a FribourgConstruction, one first creates a
  * FribourgOptions and passes it to the FribourgConstruction constructor.
  * ----------
- * This class has a second purpose, which is providing an interface to the
+ * This class has a second purpose, which is providing a static interface to the
  * GOAL preference file. For every option that exists in a FribourgOptions,
  * there exist two entries in the preference file:
  * 1) <option_key>=<PREFERENCE_VALUE>: used to initialise the checkboxes in the
@@ -29,13 +29,15 @@ public class FribourgOptions extends Properties {
   private static final String mergeKey;
   private static final String reduce2Key;
   private static final String brackKey;
+  private static final String pruneKey;
 
   // Option default values that are saved in the Preference file
   private static final boolean complDefault         = false;
   private static final boolean right2IfComplDefault = true;
   private static final boolean mergeDefault         = true;
-  private static final boolean reduce2Default       = true;
+  private static final boolean reduce2Default       = false;
   private static final boolean brackDefault         = false;
+  private static final boolean pruneDefault         = true;
 
   // Will be executed when the class is first accessed. This is actually only
   // necessary to set the default values in the preference file the very first
@@ -48,12 +50,14 @@ public class FribourgOptions extends Properties {
     mergeKey         = "merge";
     reduce2Key       = "reduce2";
     brackKey         = "brack";
+    pruneKey         = "prune";
     // Set the default values
     Preference.setDefault(complKey,         complDefault);
     Preference.setDefault(right2IfComplKey, right2IfComplDefault);
     Preference.setDefault(mergeKey,         mergeDefault);
     Preference.setDefault(reduce2Key,       reduce2Default);
     Preference.setDefault(brackKey,         brackDefault);
+    Preference.setDefault(pruneKey,         pruneDefault);
   }
 
   /* Create a FribourgOptions object with the default values for all options.
@@ -65,6 +69,7 @@ public class FribourgOptions extends Properties {
     setProperty(mergeKey,         mergeDefault);
     setProperty(reduce2Key,       reduce2Default);
     setProperty(brackKey,         brackDefault);
+    setProperty(pruneKey,         pruneDefault);
   }
 
   /* Option getter methods */
@@ -83,6 +88,9 @@ public class FribourgOptions extends Properties {
   public boolean isBrack() {
     return getPropertyAsBoolean(brackKey);
   }
+  public boolean isPrune() {
+    return getPropertyAsBoolean(pruneKey);
+  }
 
   /* Option setter methods */
   public void setCompl(boolean value) {
@@ -99,6 +107,9 @@ public class FribourgOptions extends Properties {
   }
   public void setBrack(boolean value) {
     setProperty(brackKey, value);
+  }
+  public void setPrune(boolean value) {
+    setProperty(pruneKey, value);
   }
 
 
@@ -123,11 +134,14 @@ public class FribourgOptions extends Properties {
   public static boolean getBrackPref() {
     return Preference.getPreferenceAsBoolean(brackKey);
   }
+  public static boolean getPrunePref() {
+    return Preference.getPreferenceAsBoolean(pruneKey);
+  }
 
-  // The default values are used when the user clicks on 'Reset' in the
-  // 'Preferences... > Complementation  > Fribourg Construction' dialog to
-  // reset the options to their default values (currently not implemented). The
-  // default values are never changed (unless in the source of this file).
+  // The default values have to be accessed when the user clicks on 'Reset' in
+  // the 'Preferences... > Complementation  > Fribourg Construction' dialog to
+  // reset the options to their default values. The default values are never
+  // changed (except in this file).
   public static boolean getComplDefault() {
     return Preference.getDefaultAsBoolean(complKey);
   }
@@ -142,6 +156,9 @@ public class FribourgOptions extends Properties {
   }
   public static boolean getBrackDefault() {
     return Preference.getDefaultAsBoolean(brackKey);
+  }
+  public static boolean getPruneDefault() {
+    return Preference.getDefaultAsBoolean(pruneKey);
   }
   
 }
