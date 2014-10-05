@@ -1,3 +1,7 @@
+/*============================================================================*
+ * Author: Daniel Weibel <daniel.weibel@unifr.ch>
+ * Last modified: 5 Oct. 2014
+ *============================================================================*/
 package ch.unifr.goal.complement;
 
 import org.svvrl.goal.core.Properties;
@@ -17,9 +21,7 @@ import org.svvrl.goal.core.Preference;
  *    'Preferences... > Complementation > Fribourg Construction' to reset the
  *    preference values to the default values.
  * Both, default and preference values, are persistent across runs of GOAL.
- * Daniel Weibel, 31.07.2014
  *----------------------------------------------------------------------------*/
-
 // java.util.Properties > org.svvrl.goal.core.Properties > FribourgOptions
 public class FribourgOptions extends Properties {
   
@@ -29,6 +31,7 @@ public class FribourgOptions extends Properties {
   private static final String mKey;
   private static final String m2Key;
   private static final String bKey;
+  private static final String maccKey;
   private static final String rKey;
 
   // Option default values that are saved in the Preference file
@@ -37,6 +40,7 @@ public class FribourgOptions extends Properties {
   private static final boolean mDefault     = true;
   private static final boolean m2Default    = false;
   private static final boolean bDefault     = false;
+  private static final boolean maccDefault  = true;
   private static final boolean rDefault     = true;
 
   // Will be executed when the class is first accessed. This is actually only
@@ -50,6 +54,7 @@ public class FribourgOptions extends Properties {
     mKey     = "m";
     m2Key    = "m2";
     bKey     = "b";
+    maccKey  = "macc";
     rKey     = "r";
     // Set the default values
     Preference.setDefault(cKey,     cDefault);
@@ -57,18 +62,20 @@ public class FribourgOptions extends Properties {
     Preference.setDefault(mKey,     mDefault);
     Preference.setDefault(m2Key,    m2Default);
     Preference.setDefault(bKey,     bDefault);
+    Preference.setDefault(maccKey,  maccDefault);
     Preference.setDefault(rKey,     rDefault);
   }
 
   /* Create a FribourgOptions object with the default values for all options.
-   * The idea is that after creating a FribourgOptions, the desired options are
-   * set with the public setter methods */
+   * The idea is however that after creating a FribourgOptions, the individual
+   * options are customised with the public setter methods */
   public FribourgOptions() {
     setProperty(cKey,     cDefault);
     setProperty(r2ifcKey, r2ifcDefault);
     setProperty(mKey,     mDefault);
     setProperty(m2Key,    m2Default);
     setProperty(bKey,     bDefault);
+    setProperty(maccKey,  maccDefault);
     setProperty(rKey,     rDefault);
   }
 
@@ -87,6 +94,9 @@ public class FribourgOptions extends Properties {
   }
   public boolean isB() {
     return getPropertyAsBoolean(bKey);
+  }
+  public boolean isMacc() {
+    return getPropertyAsBoolean(maccKey);
   }
   public boolean isR() {
     return getPropertyAsBoolean(rKey);
@@ -107,6 +117,9 @@ public class FribourgOptions extends Properties {
   }
   public void setB(boolean value) {
     setProperty(bKey, value);
+  }
+  public void setMacc(boolean value) {
+    setProperty(maccKey, value);
   }
   public void setR(boolean value) {
     setProperty(rKey, value);
@@ -135,10 +148,13 @@ public class FribourgOptions extends Properties {
   public static boolean getBPref() {
     return Preference.getPreferenceAsBoolean(bKey);
   }
+  public static boolean getMaccPref() {
+    return Preference.getPreferenceAsBoolean(maccKey);
+  }
   public static boolean getRPref() {
     return Preference.getPreferenceAsBoolean(rKey);
   }
-  // The default values have to be accessed when the user clicks on 'Reset' in
+  // The default values are accessed when the user clicks on 'Reset' in
   // the 'Preferences... > Complementation  > Fribourg Construction' dialog to
   // reset the options to their default values. The default values are never
   // changed (except in this file).
@@ -156,6 +172,9 @@ public class FribourgOptions extends Properties {
   }
   public static boolean getBDefault() {
     return Preference.getDefaultAsBoolean(bKey);
+  }
+  public static boolean getMaccDefault() {
+    return Preference.getDefaultAsBoolean(maccKey);
   }
   public static boolean getRDefault() {
     return Preference.getDefaultAsBoolean(rKey);

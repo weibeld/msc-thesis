@@ -1,18 +1,21 @@
+/*============================================================================*
+ * Author: Daniel Weibel <daniel.weibel@unifr.ch>
+ * Last modified: 25 July 2014
+ *============================================================================*/
 package ch.unifr.goal.complement;
 
+import org.svvrl.goal.core.Properties;
 import org.svvrl.goal.core.aut.fsa.FSA;
 import org.svvrl.goal.gui.Window;
 import org.svvrl.goal.gui.action.ExecutionException;
 import org.svvrl.goal.gui.action.AbstractComplementAction;
-import org.svvrl.goal.core.Properties;
 import org.svvrl.goal.gui.pref.OptionsDialog;
 
-
 /*----------------------------------------------------------------------------*
- * The action when clicking on the Fribourg Construction menu item in the GUI.
- * Daniel Weibel, 25.07.2014
+ * Interface of the Fribourg construction with the GUI. This class defines
+ * the action when clicking on the Fribourg Construction menu item under
+ * Automaton > Complement in the GUI.
  *----------------------------------------------------------------------------*/
-
 // AbstractAction > WindowAction > EditableAction > AutomatonOperationAction > AbstractComplementAction
 public class FribourgComplementAction extends AbstractComplementAction<FribourgConstruction> {
 

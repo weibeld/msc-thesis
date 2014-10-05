@@ -1,15 +1,24 @@
+/*============================================================================*
+ * Author: Daniel Weibel <daniel.weibel@unifr.ch>
+ * Last modified: 5 Oct. 2014
+ *============================================================================*/
 package ch.unifr.goal.complement;
 
+import org.svvrl.goal.core.FinishedException;
 import org.svvrl.goal.core.aut.fsa.FSA;
+import org.svvrl.goal.core.aut.OmegaUtil;
 import org.svvrl.goal.gui.Window;
-import org.svvrl.goal.gui.action.EditableAction;
 import org.svvrl.goal.gui.ProgressDialog;
 import org.svvrl.goal.gui.Tab;
 import org.svvrl.goal.gui.ControllableTab;
+import org.svvrl.goal.gui.action.EditableAction;
 import org.svvrl.goal.gui.pref.OptionsDialog;
-import org.svvrl.goal.core.FinishedException;
-import org.svvrl.goal.core.aut.OmegaUtil;
 
+/*----------------------------------------------------------------------------*
+ * Interface of the Fribourg construction with the GUI. This class defines
+ * the action when clicking on the Fribourg Construction menu item under
+ * Automaton > Complement (Step-by-Step) in the GUI.
+ *----------------------------------------------------------------------------*/
 /* javax.swing.AbstractAction > WindowAction > EditableAction */
 public class StepByStepFribourgComplementAction extends EditableAction<FSA,Void> {
 

@@ -1,13 +1,17 @@
+/*============================================================================*
+ * Author: Daniel Weibel <daniel.weibel@unifr.ch>
+ * Last modified: 5 Oct. 2014
+ *============================================================================*/
 package ch.unifr.goal.complement;
 
 import javax.swing.Box;
 import javax.swing.JCheckBox;
-import java.awt.GridLayout;
 import javax.swing.border.EmptyBorder;
+import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import org.svvrl.goal.gui.pref.OptionsPanel;
 import org.svvrl.goal.core.Properties;
+import org.svvrl.goal.gui.pref.OptionsPanel;
 
 
 /*----------------------------------------------------------------------------*
@@ -18,7 +22,6 @@ import org.svvrl.goal.core.Properties;
  * FribourgOptions with options set according to the state of the checkboxes.
  * On object creation, the checkboxes are set according to the preference values
  * in the preference file.
- * Daniel Weibel, 31.07.2014
  *----------------------------------------------------------------------------*/
 // JPanel > OptionsPanel
 public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions> {
@@ -29,6 +32,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
   private final JCheckBox mCheckBox;
   private final JCheckBox m2CheckBox;
   private final JCheckBox bCheckBox;
+  private final JCheckBox maccCheckBox;
   private final JCheckBox rCheckBox;
 
   /* Constructor */
@@ -82,6 +86,11 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     bCheckBox.setSelected(FribourgOptions.getBPref());
     vBox.add(hBox.add(bCheckBox));
 
+    // Option: maximise the accepting states of the input automaton
+    maccCheckBox = new JCheckBox("Maximise the accepting set of the input automaton (-macc)");
+    maccCheckBox.setSelected(FribourgOptions.getMaccPref());
+    vBox.add(hBox.add(maccCheckBox));
+
     // Option: prune unreachable and dead states from the output automaton
     rCheckBox = new JCheckBox("Remove unreachable and dead states from the output automaton (-r)");
     rCheckBox.setSelected(FribourgOptions.getRPref());
@@ -100,6 +109,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     options.setM(mCheckBox.isSelected());
     options.setM2(m2CheckBox.isSelected());
     options.setB(bCheckBox.isSelected());
+    options.setMacc(maccCheckBox.isSelected());
     options.setR(rCheckBox.isSelected());
     return options;
   }
@@ -114,6 +124,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     mCheckBox.setSelected(FribourgOptions.getMDefault());
     m2CheckBox.setSelected(FribourgOptions.getM2Default());
     bCheckBox.setSelected(FribourgOptions.getBDefault());
+    maccCheckBox.setSelected(FribourgOptions.getMaccDefault());
     rCheckBox.setSelected(FribourgOptions.getRDefault());
   }
 }

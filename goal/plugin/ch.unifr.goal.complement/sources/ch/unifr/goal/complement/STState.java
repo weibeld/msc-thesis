@@ -1,17 +1,19 @@
+/*============================================================================*
+ * Author: Daniel Weibel <daniel.weibel@unifr.ch>
+ * Last modified: 5 Oct. 2014
+ *============================================================================*/
 package ch.unifr.goal.complement;
 
 import java.util.List;
 import java.util.LinkedList;
 import org.svvrl.goal.core.aut.State;
-import org.svvrl.goal.core.aut.fsa.FSAState;
 import org.svvrl.goal.core.aut.StateSet;
-import org.svvrl.goal.core.Preference;
+import org.svvrl.goal.core.aut.fsa.FSAState;
 
 /*----------------------------------------------------------------------------*
  * A subset-tuple state (STState), i.e. a state of the output automaton of the
  * Fribourg complementation construction. An STState consists of an ordered list
  * (tuple) of components (inner class Component).
- * Daniel Weibel, 25.07.2014
  *----------------------------------------------------------------------------*/
 public class STState extends FSAState {
 
@@ -158,15 +160,12 @@ public class STState extends FSAState {
    * each state in the GOAL GUI. The label has the form (({s0,s1},0),({s4},1)}.
    * It also servers for testing state equalitiy (see equals()). */
   public void makeLabelNormal() {
-    // The char displayed in front of a state's ID (s or q)
-    String prefix = Preference.getStatePrefix();
     String s = "(";
     // if (rightOffsetOfDisappearedM2 != -1 && rightOffsetOfDisappearedM2 == numberOfComponents())
     //     s += "|,";
     for (Component c : components) {
       s += "({";
-      for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
-      s = s.substring(0, s.length()-1); // Remove last superfluous comma
+      s += Util.printStateSet(c.getStateSet());
       s += "}," + c.getColor() + ")";
       if (c == m2) s += "*";
       s += ",";
@@ -179,7 +178,6 @@ public class STState extends FSAState {
   }
   /* Label when the bracket notation option is on */
   public void makeLabelBrackets() {
-    String prefix = Preference.getStatePrefix();
     String s = "(";
     // if (rightOffsetOfDisappearedM2 != -1 && rightOffsetOfDisappearedM2 == numberOfComponents())
     //     s += "|,";
@@ -204,8 +202,7 @@ public class STState extends FSAState {
           right = "]";
       } 
       s += left;
-      for (State state : c.getStateSet()) s += prefix + state.getID() + ",";
-      s = s.substring(0, s.length()-1); // Remove last superfluous comma
+      s += Util.printStateSet(c.getStateSet());
       s += right;
       if (c == m2) s += "*";
       s += ",";

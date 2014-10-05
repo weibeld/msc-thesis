@@ -1,3 +1,7 @@
+/*============================================================================*
+ * Author: Daniel Weibel <daniel.weibel@unifr.ch>
+ * Last modified: 5 Oct. 2014
+ *============================================================================*/
 package ch.unifr.goal.complement;
 
 import java.util.List;
@@ -9,28 +13,26 @@ import java.util.Map.Entry;
 import java.util.HashMap;
 import org.svvrl.goal.core.Editable;
 import org.svvrl.goal.core.Message;
+import org.svvrl.goal.core.Properties;
+import org.svvrl.goal.core.Preference;
 import org.svvrl.goal.core.aut.BuchiAcc;
 import org.svvrl.goal.core.aut.OmegaUtil;
 import org.svvrl.goal.core.aut.State;
 import org.svvrl.goal.core.aut.StateSet;
 import org.svvrl.goal.core.aut.fsa.FSA;
-import org.svvrl.goal.core.comp.ComplementConstruction;
 import org.svvrl.goal.core.aut.AlphabetType;
 import org.svvrl.goal.core.aut.Position;
 import org.svvrl.goal.core.aut.fsa.FSAState;
+import org.svvrl.goal.core.comp.ComplementConstruction;
 import org.svvrl.goal.core.aut.opt.StateReducer;
-import org.svvrl.goal.core.Properties;
 import ch.unifr.goal.complement.STState.Component;
-import org.svvrl.goal.core.Preference;
 
 
 
 /*----------------------------------------------------------------------------*
- * Implementation of the Fribourg Büchi complementation construction. This same
- * class is used by both, the command line and the GUI
- * Daniel Weibel, 25.07.2014
+ * Implementation of the Fribourg construction. This same class is used by both,
+ * the command line and the GUI.
  *----------------------------------------------------------------------------*/
-
 // Object > AbstractAlgorithm > AbstractControllableAlgorithm > AbstractEditableAlgorithm > ComplementConstruction
 public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
@@ -85,8 +87,9 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     /* -----------------------------------------------------------------------*
      * Preprocessing phase
-     *   - Translate alphabet to classical if it is propositional
-     *   - If the -c option is set, make automaton complete
+     *   - Translate alphabet to classical (if it is propositional)
+     *   - Make automaton complete (if -c is set)
+     *   - Maximise the accepting state set (if -macc is set)
      * -----------------------------------------------------------------------*/
     preprocessPhase = true;
     stage("Stage 0: Preprocessing input automaton");
@@ -125,6 +128,16 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       else step(pre + "Input automaton is already complete.");
       somethingToPreprocess = true;
     }
+    // If the -macc option is set, maximise the accepting set, i.e. make as many
+    // non-accepting states as possible accepting without changing the language.
+    if (getOptions().isMacc()) {
+      String msg = "Maximising accepting set: ";
+      StateSet additionalAccStates = OmegaUtil.maximizeAcceptingSet(in);
+      if (!additionalAccStates.isEmpty()) msg += "added {" + Util.printStateSet(additionalAccStates) + "} to the accepting set.";
+      else msg += "no non-accepting states could be made accepting.";
+      step(msg);
+      somethingToPreprocess = true;
+    }
     // If there was nothing to preprocess
     if (!somethingToPreprocess) step("Nothing to preprocess.");
     preprocessPhase = false;
@@ -132,8 +145,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     /* -----------------------------------------------------------------------*
      * Complementation phase
-     *   - Stage 1: construct upper part of complement
-     *   - Stage 2: construct lower part of complement
+     *   - Stage 1: construct upper part of complement automaton
+     *   - Stage 2: construct lower part of complement automaton
      * -----------------------------------------------------------------------*/
     // The input automaton (which now in any case has a classical alphabet)
     String[] inAlphabet = in.getAlphabet();
@@ -351,7 +364,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
               // Iterate through the comps of q, starting from the index where
               // the child of M2(p) would be, to the left, cyclically. E.g. <- 2 <- 1 <- 0 | 4 <- 3
               for (int k = 0; k < size; k++) {
-                Component candidate = q.getComponent(mod((start-k),size));
+                Component candidate = q.getComponent(Util.mod((start-k),size));
                 // The first comp. with colour 1 and that is not the marked child of
                 // the {}-left-neighbour of the disappeared M2(p) becomes M2(q).
                 if (candidate.getColor() == 1 && candidate != q.getM2Exclude()) {
@@ -418,11 +431,18 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     /* -----------------------------------------------------------------------*
      * Postprocessing phase
-     *   - Convert alphabet back to propositional if it was propositional
-     *   - If the -r option is set, remove unreachable and dead states
+     *   - Remove unreachable and dead states (if -r is set)
+     *   - Convert alphabet back to propositional (if it was propositional)
      * -----------------------------------------------------------------------*/
     stage("Stage 3: Postprocessing output automaton");
     boolean somethingToPostprocess = false;
+    // If the -r option is set, remove unreachable and dead states
+    if (getOptions().isR()) {
+      StateReducer.removeUnreachable(out);
+      StateReducer.removeDead(out);
+      step("Removing unreachable and dead states.");
+      somethingToPostprocess = true;
+    }
     /*** Convert output automaton from CLASSICAL to PROPOSITIONAL alphabet ***/
     // If the input automaton had a propositional alphabet, we convert the
     // classical output automaton now back to a propositional one by using the
@@ -434,13 +454,6 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
         invert.put(i.getValue(), i.getKey());
       AlphabetType.PROPOSITIONAL.convertFrom(out, invert);
       step("Converting alphabet back to propositional.");
-      somethingToPostprocess = true;
-    }
-    // If the -r option is set, remove unreachable and dead states
-    if (getOptions().isR()) {
-      StateReducer.removeUnreachable(out);
-      StateReducer.removeDead(out);
-      step("Removing unreachable and dead states.");
       somethingToPostprocess = true;
     }
     if (!somethingToPostprocess) step("Nothing to postprocess.");
@@ -530,14 +543,6 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     for (String symbol : alphabet) a.createTransition(sink, sink, symbol);
     return sink;
   }
-
-  /* Modulo function with only positive outputs. e.g. -2 mod 7 = 5 and not -2 */
-  private int mod(int a, int b) {
-    int result = a % b;
-    if (result < 0) return result + b;
-    else return result;
-  }
-
 
   /* -------------------------------------------------------------------------*
    * FOR TESTING

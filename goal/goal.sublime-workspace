@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"adde",
+				"addedAccStates"
+			],
+			[
+				"prune",
+				"pruneCheckBox"
+			],
+			[
 				"pre",
 				"preprocessingDone"
 			],
@@ -288,18 +296,18 @@
 	"buffers":
 	[
 		{
-			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java",
+			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java",
 			"settings":
 			{
-				"buffer_size": 2284,
+				"buffer_size": 5129,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
+			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgOptions.java",
 			"settings":
 			{
-				"buffer_size": 2276,
+				"buffer_size": 6879,
 				"line_ending": "Unix"
 			}
 		},
@@ -307,7 +315,23 @@
 			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementOptionsPanel.java",
 			"settings":
 			{
-				"buffer_size": 4603,
+				"buffer_size": 5596,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java",
+			"settings":
+			{
+				"buffer_size": 2887,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
+			"settings":
+			{
+				"buffer_size": 2594,
 				"line_ending": "Unix"
 			}
 		},
@@ -315,7 +339,15 @@
 			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgConstruction.java",
 			"settings":
 			{
-				"buffer_size": 24835,
+				"buffer_size": 26968,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/Util.java",
+			"settings":
+			{
+				"buffer_size": 1362,
 				"line_ending": "Unix"
 			}
 		},
@@ -323,15 +355,7 @@
 			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/STState.java",
 			"settings":
 			{
-				"buffer_size": 8805,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java",
-			"settings":
-			{
-				"buffer_size": 4330,
+				"buffer_size": 8616,
 				"line_ending": "Unix"
 			}
 		}
@@ -376,6 +400,12 @@
 	},
 	"file_history":
 	[
+		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/STState.java",
+		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java",
+		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgConstruction.java",
+		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementOptionsPanel.java",
+		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
+		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java",
 		"/Users/dw/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
 		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java.out",
 		"/Applications/GOAL.app/Contents/Resources/Java/plugins/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
@@ -385,15 +415,9 @@
 		"/Users/dw/Desktop/thesis/goal/goal.sublime-project",
 		"/Users/dw/Desktop/thesis/goal/goal.sublime-workspace",
 		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction_.java",
-		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java",
 		"/Users/dw/Desktop/wk/webdav_for_jax_rs/webdav-fileserver/pom.xml",
 		"/Volumes/127.0.0.1/test/aaaaaaaaaaaaaaaaaaaaaa",
-		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/STState.java",
 		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgOptions.java",
-		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgConstruction.java",
-		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementOptionsPanel.java",
-		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java",
-		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
 		"/Applications/GOAL.app/Contents/Resources/Java/plugins/org.svvrl.goal.gui/plugin.xml",
 		"/Users/dw/Desktop/fbk/cover_letter.tex",
 		"/Users/dw/Desktop/tex/test.tex",
@@ -493,6 +517,28 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"getOptions",
+			"pruneCheckBox",
+			"brackCheckBox",
+			"reduce2CheckBox",
+			"mergeCheckBox",
+			"right2IfComplCheckBox",
+			"cCheckBox",
+			"complCheckBox",
+			"pruneDefault",
+			"brackDefault",
+			"reduce2Default",
+			"mergeDefault",
+			"right2IfComplDefault",
+			"complDefault",
+			"pruneKey",
+			"brackKey",
+			"reduce2Key",
+			"mergeKey",
+			"right2IfComplKey",
+			"complKey",
+			"preprocessingDone",
+			"preprocess",
 			"rightOffsetOf",
 			"rightOffsetOfDisappearedM2",
 			"brackets",
@@ -598,29 +644,7 @@
 			"ignoreRightColor2",
 			"makeComplete",
 			"ignoreRightColor2",
-			"outStates",
-			"inAlphabet",
-			"successorStates",
-			"newState",
-			"SubsetTupleState",
-			"toProcess",
-			"indent()",
-			"indent",
-			"[->",
-			"->",
-			"∂",
-			"generalisation",
-			"which",
-			"GOAL_PLUGINS",
-			"href",
-			"goal",
-			"tab_c",
-			"href",
-			"link",
-			"editorin",
-			"editorout",
-			"is_a",
-			"array_or_string"
+			"outStates"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -628,6 +652,24 @@
 		"regex": false,
 		"replace_history":
 		[
+			"rCheckBox",
+			"bCheckBox",
+			"m2CheckBox",
+			"mCheckBox",
+			"r2ifcCheckBox",
+			"cCheckBox",
+			"rDefault",
+			"bDefault",
+			"m2Default",
+			"mDefault",
+			"r2ifcDefault",
+			"cDefault",
+			"rKey",
+			"bKey",
+			"m2Key",
+			"mKey",
+			"r2ifcKey",
+			"cKey",
 			"qMay2",
 			"stateSet",
 			"pjAcc",
@@ -645,23 +687,23 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 5,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java",
+					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java",
 					"settings":
 					{
-						"buffer_size": 2284,
+						"buffer_size": 5129,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1598,
-								1598
+								2888,
+								2888
 							]
 						],
 						"settings":
@@ -719,25 +761,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 73.0,
+						"translation.y": 264.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
+					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgOptions.java",
 					"settings":
 					{
-						"buffer_size": 2276,
+						"buffer_size": 6879,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2090,
-								2090
+								1400,
+								1400
 							]
 						],
 						"settings":
@@ -794,7 +836,7 @@
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 3.0,
+						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
@@ -805,15 +847,15 @@
 					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementOptionsPanel.java",
 					"settings":
 					{
-						"buffer_size": 4603,
+						"buffer_size": 5596,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3577,
-								3589
+								498,
+								498
 							]
 						],
 						"settings":
@@ -871,25 +913,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 394.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgConstruction.java",
+					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java",
 					"settings":
 					{
-						"buffer_size": 24835,
+						"buffer_size": 2887,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3923,
-								3926
+								649,
+								649
 							]
 						],
 						"settings":
@@ -947,25 +989,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 702.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/STState.java",
+					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
 					"settings":
 					{
-						"buffer_size": 8805,
+						"buffer_size": 2594,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2551,
-								2551
+								315,
+								315
 							]
 						],
 						"settings":
@@ -1030,18 +1072,18 @@
 				},
 				{
 					"buffer": 5,
-					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java",
+					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgConstruction.java",
 					"settings":
 					{
-						"buffer_size": 4330,
+						"buffer_size": 26968,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1088,
+								1088
 							]
 						],
 						"settings":
@@ -1099,7 +1141,159 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 394.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/Util.java",
+					"settings":
+					{
+						"buffer_size": 1362,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								719,
+								719
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/STState.java",
+					"settings":
+					{
+						"buffer_size": 8616,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								451,
+								451
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3540.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
