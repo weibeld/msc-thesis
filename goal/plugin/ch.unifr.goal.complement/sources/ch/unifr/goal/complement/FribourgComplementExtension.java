@@ -28,7 +28,8 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
   private final String m2Code    = "-m2";      // Reduce colour 2 components
   private final String bCode     = "-b";       // Use the bracket notation
   private final String maccCode  = "-macc";    // Maximise accepting set
-  private final String rCode     = "-r";       // Remove unreachable and dead states
+  private final String rCode     = "-r";       // Remove unreachable and dead from OUTPUT
+  private final String rrCode    = "-rr";      // Remove unreachable and dead from INPUT
 
   /* Inner class creating a FribourgConstruction, including a FribourgOptions */
   // Object > AbstractExpression > CommandExpression > ComplementCommand
@@ -43,7 +44,7 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
       // By default, all options are off, and they can be switched on by speci-
       // fying them on the command line. This is a convention that is followed
       // by the other existing algorithms in GOAL.
-      boolean c = false, r2ifc = false, m = false, m2 = false, b = false, macc = false, r = false;
+      boolean c=false, r2ifc=false, m=false, m2=false, b=false, macc=false, r=false, rr=false;
       for (Expression arg : args) {
         if (arg.toString().equals(cCode))          c     = true;
         else if (arg.toString().equals(r2ifcCode)) r2ifc = true;
@@ -52,6 +53,7 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
         else if (arg.toString().equals(bCode))     b     = true;
         else if (arg.toString().equals(maccCode))  macc  = true;
         else if (arg.toString().equals(rCode))     r     = true;
+        else if (arg.toString().equals(rrCode))    rr     = true;
         else throw new IllegalArgumentException("Unknown option: " + arg.toString());
       }
       if (m2 && !m) throw new IllegalArgumentException("Option -m2 requires option -m");
@@ -63,6 +65,7 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
       options.setB(b);
       options.setMacc(macc);
       options.setR(r);
+      options.setRR(rr);
     }
 
     /* Return a FribourgConstruction initialised with our FribourgOptions */
@@ -85,7 +88,8 @@ public class FribourgComplementExtension extends AbstractCommandExtension {
     s +=         "         colour 2. This option requires the " + mCode + " option to be set.\n";
     s += pad(bCode)     + "Use the \"bracket notation\" for the state labels.\n";
     s += pad(maccCode)  + "Maximise the accpeting set of the input automaton.\n";
-    s += pad(rCode)     + "Remove unreachable and dead states from the output automaton.";
+    s += pad(rCode)     + "Remove unreachable and dead states from the OUTPUT automaton.\n";
+    s += pad(rrCode)    + "Remove unreachable and dead states from the INPUT automaton.";
     return s;
   }
 

@@ -33,6 +33,7 @@ public class FribourgOptions extends Properties {
   private static final String bKey;
   private static final String maccKey;
   private static final String rKey;
+  private static final String rrKey;
 
   // Option default values that are saved in the Preference file
   private static final boolean cDefault     = false;
@@ -42,6 +43,7 @@ public class FribourgOptions extends Properties {
   private static final boolean bDefault     = false;
   private static final boolean maccDefault  = true;
   private static final boolean rDefault     = true;
+  private static final boolean rrDefault    = false;
 
   // Will be executed when the class is first accessed. This is actually only
   // necessary to set the default values in the preference file the very first
@@ -56,6 +58,7 @@ public class FribourgOptions extends Properties {
     bKey     = "b";
     maccKey  = "macc";
     rKey     = "r";
+    rrKey    = "rr";
     // Set the default values
     Preference.setDefault(cKey,     cDefault);
     Preference.setDefault(r2ifcKey, r2ifcDefault);
@@ -64,6 +67,7 @@ public class FribourgOptions extends Properties {
     Preference.setDefault(bKey,     bDefault);
     Preference.setDefault(maccKey,  maccDefault);
     Preference.setDefault(rKey,     rDefault);
+    Preference.setDefault(rrKey,    rrDefault);
   }
 
   /* Create a FribourgOptions object with the default values for all options.
@@ -77,6 +81,7 @@ public class FribourgOptions extends Properties {
     setProperty(bKey,     bDefault);
     setProperty(maccKey,  maccDefault);
     setProperty(rKey,     rDefault);
+    setProperty(rrKey,    rrDefault);
   }
 
   /* Option getter methods */
@@ -101,6 +106,9 @@ public class FribourgOptions extends Properties {
   public boolean isR() {
     return getPropertyAsBoolean(rKey);
   }
+  public boolean isRR() {
+    return getPropertyAsBoolean(rrKey);
+  }
 
   /* Option setter methods */
   public void setC(boolean value) {
@@ -123,6 +131,9 @@ public class FribourgOptions extends Properties {
   }
   public void setR(boolean value) {
     setProperty(rKey, value);
+  }
+  public void setRR(boolean value) {
+    setProperty(rrKey, value);
   }
 
 
@@ -154,6 +165,9 @@ public class FribourgOptions extends Properties {
   public static boolean getRPref() {
     return Preference.getPreferenceAsBoolean(rKey);
   }
+  public static boolean getRRPref() {
+    return Preference.getPreferenceAsBoolean(rrKey);
+  }
   // The default values are accessed when the user clicks on 'Reset' in
   // the 'Preferences... > Complementation  > Fribourg Construction' dialog to
   // reset the options to their default values. The default values are never
@@ -178,6 +192,9 @@ public class FribourgOptions extends Properties {
   }
   public static boolean getRDefault() {
     return Preference.getDefaultAsBoolean(rKey);
+  }
+  public static boolean getRRDefault() {
+    return Preference.getDefaultAsBoolean(rrKey);
   }
   
 }

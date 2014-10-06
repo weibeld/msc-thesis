@@ -104,7 +104,7 @@ if [ "$NO_SAVE" = "true" ]; then cat $OUT; echo; fi
 
 # Get the number of states of an automaton in a GFF file
 states() {
-  grep "sid=" $1 | wc -l | tr -d ' '
+  grep -o "sid=" $1 | wc -l | tr -d ' '
 }
 
 # Execution time

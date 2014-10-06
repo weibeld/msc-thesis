@@ -1,6 +1,6 @@
 # GOAL script for testing correctness of complementation algorithm.
 # dw-11.09.2014
-# Usage: goal batch correctness.gs fribourg piterman 100
+# Usage: goal batch compl_equiv.gs fribourg piterman 100
 
 # if $# != 3 then
 #   echo "Usage:";

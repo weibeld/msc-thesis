@@ -1,6 +1,8 @@
 #!./goal batch
 
-# For 11'000 automata:
+# Apparently used by Ming-Hsien and his team for generating the test set of
+# 11'000 random automata. Note that the generated automata may contain unreach-
+# able and dead states because the -r option of generate is not set.
 
 $size = $1;
 $props = $2;

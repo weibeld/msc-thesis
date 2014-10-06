@@ -120,12 +120,25 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     // If the make complete option is set, and the input automaton is not
     // complete, make it complete.
     if (getOptions().isC()) {
-      String pre = "\"Make Complete\" option (-c) is on. ";
+      String msg = "Making input automaton complete";
       if (!isComplete(in)) {
         OmegaUtil.makeTransitionComplete(in);
-        step(pre + "Making input automaton complete.");
+        msg += ".";
       }
-      else step(pre + "Input automaton is already complete.");
+      else msg += ": automaton is already complete.";
+      step(msg);
+      somethingToPreprocess = true;
+    }
+    // If the -rr option is set, remove unreachable and dead states from the
+    // input automaton
+    if (getOptions().isRR()) {
+      String msg = "Removing unreachable and dead states: ";
+      int statesBefore = in.getStateSize();
+      StateReducer.removeUnreachable(in);
+      StateReducer.removeDead(in);
+      int statesRemoved = statesBefore - in.getStateSize();
+      msg += "removed " + statesRemoved + " " + (statesRemoved==1?"state":"states") + ".";
+      step(msg);
       somethingToPreprocess = true;
     }
     // If the -macc option is set, maximise the accepting set, i.e. make as many
@@ -133,8 +146,8 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     if (getOptions().isMacc()) {
       String msg = "Maximising accepting set: ";
       StateSet additionalAccStates = OmegaUtil.maximizeAcceptingSet(in);
-      if (!additionalAccStates.isEmpty()) msg += "added {" + Util.printStateSet(additionalAccStates) + "} to the accepting set.";
-      else msg += "no non-accepting states could be made accepting.";
+      if (!additionalAccStates.isEmpty()) msg += "made {" + Util.printStateSet(additionalAccStates) + "} accepting.";
+      else msg += "no states could be made accepting.";
       step(msg);
       somethingToPreprocess = true;
     }
@@ -438,9 +451,13 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     boolean somethingToPostprocess = false;
     // If the -r option is set, remove unreachable and dead states
     if (getOptions().isR()) {
+      String msg = "Removing unreachable and dead states: ";
+      int statesBefore = out.getStateSize();
       StateReducer.removeUnreachable(out);
       StateReducer.removeDead(out);
-      step("Removing unreachable and dead states.");
+      int statesRemoved = statesBefore - out.getStateSize();
+      msg += "removed " + statesRemoved + " " + (statesRemoved==1?"state":"states") + ".";
+      step(msg);
       somethingToPostprocess = true;
     }
     /*** Convert output automaton from CLASSICAL to PROPOSITIONAL alphabet ***/

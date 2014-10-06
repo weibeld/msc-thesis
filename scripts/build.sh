@@ -1,22 +1,23 @@
 #!/bin/bash
 
-# Compiles and installs a JPF plugin for GOAL. Can be executed from anywhere.
-# Assumes that the name of the plugin folder is the package name of the Java
-# package containing the plugin (this is a convention). Use plugin_generate.sh
-# to generate a working example GOAL plugin. Assumes that the 'goal' command
-# is in the PATH.
+# Compiles and installs a JPF (Java Plugin Framework) plugin for GOAL. Can be 
+# executed from anywhere. Assumes that the name of the plugin directory is equal
+# to the Java package name of the plugin.
 #
-# A typical JPF (Java Plugin Framework) plugin has the structure:
-# ch.unifr.goal.myplugin/
-#     plugin.xml
+# A typical JPF plugin has the structure:
+# ch.unifr.goal.myplugin/   # Plugin direcory
+#     plugin.xml            # JPF plugin manifest
 #     sources/
 #         ch/unifr/goal/myplugin/<.java files>
 #     classes/
-#         ch/unifr/goal/myplugin/<.class files>   (after compilation)
+#         ch/unifr/goal/myplugin/<.class files>
+#
+# Installing the plugin is simply done by copying the plugin directory
+# (ch.unifr.goal.myplugin/ in the above example) to <GOAL>/plugins.
+#
+# Usage: ./plugin_build.sh <plugin_dir> [compileonly]
 #
 # Daniel Weibel, 26.05.2014
-#
-# Usage: ./plugin_build.sh <directory> [compileonly]
 
 
 # Exit if any command returns a non-zero status (i.e. error)
@@ -24,13 +25,10 @@ set -e
 
 if [ "$1" = "-h" ] || [ "$1" = "help" ] || [ "$1" = "--help" ] || [ $# -lt 1 ] || [ $# -gt 2 ]; then
   echo "Usage:"
-  echo "    $(basename $0) <directory> [compileonly]"
-  echo "Arguments:"
-  echo -e "    <directory>\t\tRoot directory of the plugin to compile and install"
-  echo -e "    [compileonly]\tOPTIONAL: just compile, don't install"
+  echo "    $(basename $0) <plugin_dir>"
   echo "Description:"
-  echo "    Compiles and intalls the GOAL plugin in <directory>. For removing all"
-  echo "    user-added plugins, use plugin_clean.sh."
+  echo "    Compiles and installs the GOAL plugin in <plugin_dir>. Installing means"
+  echo "    simply copying <plugin_dir> to <GOAL>/plugins."
   echo "Note:"
   echo "    Compiler warning \"bootstrap class path not set in conjunction with"
   echo "    -source 1.6\" can be removed with \"javac -Xbootclasspath:\" in script."
@@ -97,8 +95,6 @@ else
   echo "-> For fixing the \"bootstrap class path\" warning, set -Xbootclasspath in script"
 fi
 echo "Done"
-
-if [ "$2" = "compileonly" ]; then exit 0; fi
 
 
 # Installation

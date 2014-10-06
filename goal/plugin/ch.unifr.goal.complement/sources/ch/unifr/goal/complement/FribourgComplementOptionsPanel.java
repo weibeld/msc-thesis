@@ -34,6 +34,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
   private final JCheckBox bCheckBox;
   private final JCheckBox maccCheckBox;
   private final JCheckBox rCheckBox;
+  private final JCheckBox rrCheckBox;
 
   /* Constructor */
   public FribourgComplementOptionsPanel() {
@@ -96,6 +97,11 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     rCheckBox.setSelected(FribourgOptions.getRPref());
     vBox.add(hBox.add(rCheckBox));
 
+    // Option: prune unreachable and dead states from the input automaton
+    rrCheckBox = new JCheckBox("Remove unreachable and dead states from the input automaton (-rr)");
+    rrCheckBox.setSelected(FribourgOptions.getRRPref());
+    vBox.add(hBox.add(rrCheckBox));
+
     // Add the vertical stack of hBoxes
     this.add(vBox);
   }
@@ -111,6 +117,7 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     options.setB(bCheckBox.isSelected());
     options.setMacc(maccCheckBox.isSelected());
     options.setR(rCheckBox.isSelected());
+    options.setRR(rrCheckBox.isSelected());
     return options;
   }
 
@@ -126,5 +133,6 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     bCheckBox.setSelected(FribourgOptions.getBDefault());
     maccCheckBox.setSelected(FribourgOptions.getMaccDefault());
     rCheckBox.setSelected(FribourgOptions.getRDefault());
+    rrCheckBox.setSelected(FribourgOptions.getRRDefault());
   }
 }

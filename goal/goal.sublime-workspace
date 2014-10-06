@@ -299,7 +299,7 @@
 			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java",
 			"settings":
 			{
-				"buffer_size": 5129,
+				"buffer_size": 5402,
 				"line_ending": "Unix"
 			}
 		},
@@ -307,7 +307,7 @@
 			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgOptions.java",
 			"settings":
 			{
-				"buffer_size": 6879,
+				"buffer_size": 7408,
 				"line_ending": "Unix"
 			}
 		},
@@ -315,7 +315,7 @@
 			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementOptionsPanel.java",
 			"settings":
 			{
-				"buffer_size": 5596,
+				"buffer_size": 6007,
 				"line_ending": "Unix"
 			}
 		},
@@ -339,7 +339,7 @@
 			"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgConstruction.java",
 			"settings":
 			{
-				"buffer_size": 26968,
+				"buffer_size": 27653,
 				"line_ending": "Unix"
 			}
 		},
@@ -695,15 +695,15 @@
 					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java",
 					"settings":
 					{
-						"buffer_size": 5129,
+						"buffer_size": 5402,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2888,
-								2888
+								4910,
+								4910
 							]
 						],
 						"settings":
@@ -761,7 +761,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 264.0,
+						"translation.y": 1050.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -771,15 +771,15 @@
 					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgOptions.java",
 					"settings":
 					{
-						"buffer_size": 6879,
+						"buffer_size": 7408,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1400,
-								1400
+								2386,
+								2386
 							]
 						],
 						"settings":
@@ -837,7 +837,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 402.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -847,15 +847,15 @@
 					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementOptionsPanel.java",
 					"settings":
 					{
-						"buffer_size": 5596,
+						"buffer_size": 6007,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								498,
-								498
+								5988,
+								5988
 							]
 						],
 						"settings":
@@ -1075,15 +1075,15 @@
 					"file": "plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgConstruction.java",
 					"settings":
 					{
-						"buffer_size": 26968,
+						"buffer_size": 27653,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1088,
-								1088
+								21722,
+								21722
 							]
 						],
 						"settings":

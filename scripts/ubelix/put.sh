@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Usage: put.sh FILE_OR_FOLDER [DESTINATION_FILE_OR_FOLDER]
 
 FILE_OR_FOLDER=$1
 
