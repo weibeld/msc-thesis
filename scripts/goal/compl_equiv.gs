@@ -35,11 +35,11 @@ while "true" do
   $states =               `ruby -e 'print "%d" % (rand(9)+2)'`; # [2..10]
   $alph_type = $alphabets[`ruby -e 'print "%d" % rand(2)'`];    # [0..1]
   if $alph_type == "propositional" then
-    $alph_size =          `ruby -e 'print "%d" % (rand(3)+1)'`; # [1..3]
+    $alph_size =          `ruby -e 'print "%d" % (rand(2)+1)'`; # [1..2]
   else
-    $alph_size =          `ruby -e 'print "%d" % (rand(5)+1)'`; # [1..5]
+    $alph_size =          `ruby -e 'print "%d" % (rand(4)+1)'`; # [1..4]
   fi
-  $automaton = generate -t fsa -a nbw -m probability -A $alph_type -n $alph_size -s $states -r;
+  $automaton = generate -t fsa -a nbw -m probability -A $alph_type -n $alph_size -s $states;
   echo "  Alphabet:      " + $alph_type;
   echo "  Alphabet size: " + $alph_size;
   echo "  States:        " + $states;
@@ -57,7 +57,7 @@ while "true" do
   # 3. Complement random automaton by test algorithm
   # ------------------------------------------------
   echo -n "Complementing with " + $test_algo + "... ";
-  $result_test = complement -m $test_algo -c -r2ifc -m $automaton;
+  $result_test = complement -m $test_algo -r2ifc $automaton;
   echo "done";
 
   # 4. Check equivalence of results

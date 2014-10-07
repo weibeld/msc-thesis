@@ -1,4 +1,5 @@
 #!/bin/bash
+# Wrapper for the qsub command.
 # dw-22.09.2014
 
 set -e
@@ -50,7 +51,7 @@ while getopts ":m:c:d:o:e:q:s:p:n:" opt; do
 done
 
 shift $(($OPTIND-1))
-script=$(eval echo $1)
+script=$(eval echo $1) # Enforece tilde expansion
 test file "$script"
 
 shift # $@ contains job script arguments (if any)

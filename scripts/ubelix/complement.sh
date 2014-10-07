@@ -1,4 +1,5 @@
 #!/bin/bash
+# Complement all the automata in a directory.
 # dw-24.09.2014
 
 # Defaults for command line parameters
@@ -91,9 +92,10 @@ cat >$out <<EOF
 # Timeout (CPU time):        ${timeout}s
 EOF
 # Column titles (and order)
-echo -e "states${s}t_out${s}m_out${s}real_t${s}tcpu_t${s}ucpu_t${s}scpu_t${s}dt${s}da${s}file" >>$out
+echo -e "states${s}zstates${s}t_out${s}m_out${s}real_t${s}tcpu_t${s}ucpu_t${s}scpu_t${s}dt${s}da${s}file" >>$out
 
-stdout=$TMP/tmp.stdout
+compl=$TMP/complement.gff
+compl_reduced=$TMP/reduced_complement.gff
 stderr=$TMP/tmp.stderr
 for filename in $data/*.gff; do
   file=$(basename $filename)
@@ -102,7 +104,7 @@ for filename in $data/*.gff; do
   # ----------------------------------------------------------------------------
   echo "$(d): $file" >>$log
   ulimit -S -t $timeout
-  { time $goal complement -m $algo $filename; } 1>$stdout 2>$stderr
+  { time $goal complement -m $algo $filename; } 1>$compl 2>$stderr
   # If timeout:
   #   - exit code 152
   #   - to stderr: ...goal: line 19: <PID> CPU time limit exceeded (core dumped) java ${JVMARGS} ...
@@ -120,15 +122,21 @@ for filename in $data/*.gff; do
   if grep -q "time limit exceeded" $stderr; then
     t_out=$y
     states=$na
+    zstates=$na
     cat $stderr >>$log; echo "==> This was a timeout" >>$log
   # Memory excess
   elif grep -q "java.lang.OutOfMemoryError" $stderr; then
     m_out=$y
     states=$na
+    zstates=$na
     cat $stderr >>$log; echo "==> This was a memory excess" >>$log
   # Successful execution
   else
-    states=$(grep "sid=" $stdout | wc -l | tr -d ' ')
+    states=$(grep "sid=" $compl | wc -l | tr -d ' ')
+    $goal reduce $compl >$compl_reduced # Remove unreachable and dead states
+    states_reduced=$(grep "sid=" $compl_reduced | wc -l | tr -d ' ')
+    #states_reduced=X
+    zstates=$(($states-$states_reduced))
   fi
 
   # Times
@@ -153,7 +161,7 @@ for filename in $data/*.gff; do
   da=$(echo $file | egrep -o "a[0-9].[0-9]" | sed 's/^a//')
 
   # Write line to out file
-  echo -e ${states}${s}${t_out}${s}${m_out}${s}${real}${s}${tot_cpu}${s}${user_cpu}${s}${sys_cpu}${s}${dt}${s}${da}${s}${file} >>$out
+  echo -e ${states}${s}${zstates}${s}${t_out}${s}${m_out}${s}${real}${s}${tot_cpu}${s}${user_cpu}${s}${sys_cpu}${s}${dt}${s}${da}${s}${file} >>$out
 done
 
 # Copy result files from local scratch to job directory
