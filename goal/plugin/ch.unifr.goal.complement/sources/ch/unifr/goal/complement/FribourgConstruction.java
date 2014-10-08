@@ -266,17 +266,22 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                   if (pj == p.getM2()) {
                     switch (t) {
                       case ACC:
+                        // M2 has no acceptin successors
                         if (qkStates.isEmpty()) continue;
+                        // M2 has accepting successors
                         qkColor = 2;
                         qkM2 = true;
                         break;
                       case NONACC:
+                        // M2 has accepting AND non-accepting successors
                         if (!qkStates.isEmpty() && !pjAcc.isEmpty())
-                          qkColor = 1; // Will be merged with the acc child of pj
+                          qkColor = 2; // Will be merged with the acc child of pj
+                        // M2 has only non-accepting successors
                         else if (!qkStates.isEmpty() && pjAcc.isEmpty()) {
                           qkColor = 2;
                           qkM2 = true;
                         }
+                        // M2 has only accepting successors
                         else if (qkStates.isEmpty() && !pjAcc.isEmpty())
                           continue;
                         // pj, the M2 of p, has no successor. It disappears. We

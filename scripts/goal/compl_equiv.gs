@@ -1,6 +1,10 @@
-# GOAL script for testing correctness of complementation algorithm.
-# dw-11.09.2014
-# Usage: goal batch compl_equiv.gs fribourg piterman 100
+# GOAL script for testing correctness of complementation algorithm. Generates
+# <n> random automata, complements them with a base algorithm and a test
+# algorithm, and checks whether the results are equivalent.
+#
+# Usage: goal batch compl_equiv.gs fribourg piterman <n>
+#
+# # dw-11.09.2014
 
 # if $# != 3 then
 #   echo "Usage:";
