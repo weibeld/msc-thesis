@@ -38,7 +38,7 @@ while getopts ":m:c:d:o:e:q:s:p:n:" opt; do
   case $opt in
     m) memory=$OPTARG; ;;
     c) cpu_time=$OPTARG; ;;
-    d) dir=$OPTARG; ;;
+    d) dir=$(sed 's/\/$//'<<<$OPTARG); ;;
     o) out_file=$OPTARG; ;;
     e) err_file=$OPTARG; ;;
     q) queue=$OPTARG; ;;

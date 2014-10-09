@@ -1,0 +1,11 @@
+The options to all the complementation construction that are set as default in the GUI
+
+ramsey -macc -min -r
+safra
+modifiedsafra
+ms
+wapa
+waa
+piterman -eq -macc -sim -ro -r
+rank -r -tr -ro -macc
+slice -p -macc -ro -madj -eg -r

@@ -1,0 +1,66 @@
+GOAL complementation constructions and their options
+On command line and in GUI
+
+dw-09.10.2014
+
+slice		Slice-Based								GUI defaults
+-p		Use the preliminary version						on
+-r		Remove unreachable and dead states in the resulting automaton		on
+-cp		Apply enhanced cut-point						off (only selectable if -p off)
+-ro		Reduce transitions							on
+-macc		Maxmize the accepting set of the source automaton			on
+-tt		Make the transition relation of the input Büchi automaton total		off (only selectable if -p off)
+-bfs		The way of traversal: DFS (if -bfs not set) BFS (if -bfs set)		DFS
+-madj		Merge adjacent 0-sets or adjacent *-sets				on
+-eg		Apply enhanced guessing							on
+
+piterman	Safra-Piterman								GUI defaults
+-eq		Apply local opt. by merging equiv. states in the conv. from DPW to NBW	on
+-macc		Maxmize accepting set of the source automaton				on
+-sim		Apply local opt. by using sim. relation to simplify the intermed. DPW	on
+-sp		Simplify the parity condition through the computation of Rabin index	off
+-ro		Reduce transitions in the conv. fro the compl. NPW to the compl. NBW	on
+-r		Reduce unreachable and dead states					on
+
+rank		Rank-Based								GUI defaults
+-r		Remove unreachable and dead states in the resulting automaton		on
+-tr		Apply tight rank							on
+-cp		Apply turn wise cut-point						off
+-ro		Apply tight rank and reduce outdegree					on
+-macc		Maxmize the accepting set of the target automaton			on
+
+ramsey		Ramsey-Based								GUI defaults
+-macc		Maxmize the accepting set of the source automaton			on
+-min		Minimize the intermediate DFW						on
+-r		Reduce unreachable and dead states					on
+
+safra		Safra's									GUI defaults
+-atl		Simplify accepting true loops						off
+-sa		Mark nodes that have only accepting successors green			off
+
+modifiedsafra	Modified Safra's							GUI defaults
+-atl		Simplify accepting true loops						off
+-sa		Mark nodes that have only accepting successors green			off
+
+ms		Muller-Schupp
+No options
+
+wapa		Via Weak Alternating Parity Automaton
+No options
+
+waa		Via Weak Alternating Automaton
+No options
+
+--------
+
+kurshan		Kurshan's
+Only for deterministic Büchi automata. Complementation of deterministic Büchi automata.
+
+classic		Classic
+Only for finite-word automata. Determinization by subset-construction, then complementation by
+switching accepting and non-accepting states.
+
+deterministic
+Only on command line. Probably for testing if a Büchi automaton is deterministic. If run on a non-determinstic
+Büchi automaton or a non-Büchi automaton outputs: ERROR: Unknown result in complementing in.gff. If run on a
+deterministic Büchi automaton, outputs the same automaton.
