@@ -3,6 +3,7 @@ On command line and in GUI
 
 dw-09.10.2014
 
+1)
 slice		Slice-Based								GUI defaults
 -p		Use the preliminary version						on
 -r		Remove unreachable and dead states in the resulting automaton		on
@@ -14,6 +15,7 @@ slice		Slice-Based								GUI defaults
 -madj		Merge adjacent 0-sets or adjacent *-sets				on
 -eg		Apply enhanced guessing							on
 
+2)
 piterman	Safra-Piterman								GUI defaults
 -eq		Apply local opt. by merging equiv. states in the conv. from DPW to NBW	on
 -macc		Maxmize accepting set of the source automaton				on
@@ -22,6 +24,7 @@ piterman	Safra-Piterman								GUI defaults
 -ro		Reduce transitions in the conv. fro the compl. NPW to the compl. NBW	on
 -r		Reduce unreachable and dead states					on
 
+3)
 rank		Rank-Based								GUI defaults
 -r		Remove unreachable and dead states in the resulting automaton		on
 -tr		Apply tight rank							on
@@ -29,38 +32,60 @@ rank		Rank-Based								GUI defaults
 -ro		Apply tight rank and reduce outdegree					on
 -macc		Maxmize the accepting set of the target automaton			on
 
+4)
 ramsey		Ramsey-Based								GUI defaults
 -macc		Maxmize the accepting set of the source automaton			on
 -min		Minimize the intermediate DFW						on
 -r		Reduce unreachable and dead states					on
 
+5)
 safra		Safra's									GUI defaults
 -atl		Simplify accepting true loops						off
 -sa		Mark nodes that have only accepting successors green			off
 
+6)
 modifiedsafra	Modified Safra's							GUI defaults
 -atl		Simplify accepting true loops						off
 -sa		Mark nodes that have only accepting successors green			off
 
+7)
 ms		Muller-Schupp
 No options
 
+8)
 wapa		Via Weak Alternating Parity Automaton
 No options
 
+9)
 waa		Via Weak Alternating Automaton
 No options
 
 --------
 
+10)
 kurshan		Kurshan's
 Only for deterministic Büchi automata. Complementation of deterministic Büchi automata.
 
+11)
 classic		Classic
 Only for finite-word automata. Determinization by subset-construction, then complementation by
 switching accepting and non-accepting states.
 
+12)
 deterministic
 Only on command line. Probably for testing if a Büchi automaton is deterministic. If run on a non-determinstic
 Büchi automaton or a non-Büchi automaton outputs: ERROR: Unknown result in complementing in.gff. If run on a
 deterministic Büchi automaton, outputs the same automaton.
+
+--------
+
+Summary: NBW constructions with default options
+ramsey -macc -min -r
+safra
+modifiedsafra
+ms
+wapa
+waa
+piterman -eq -macc -sim -ro -r
+rank -r -tr -ro -macc
+slice -p -macc -ro -madj -eg -r

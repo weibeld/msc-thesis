@@ -1,0 +1,54 @@
+Classification of the complementation constructions in GOAL
+Source: Ming-Hsien Tsai et al., State of Büchi Complementation, 2010, Section 3
+
+dw-10.10.2014
+
+Ramsey-based approaches
+Author			Year		Notes					Reference	Complexity		Name in GOAL
+Büchi			1962		Original construction			[1]		2^(2^O(n))		-
+Sistla, Vardi, Wolper	1987		Improvement of Büchi's construction	[2]		2^O(n^2)		ramsey
+
+Determinization-based approaches
+Author			Year		Notes					Reference	Complexity		Name in GOAL
+Safra			1988		Proposition of this approach		[3]		2^O(n log n)		safra
+Muller, Schupp		1995		Simpler but worse than Safra		[4]		?			ms
+Piterman		2007		Improvement of Safra's construction	[6]		n^(2n)			piterman
+
+Rank-based approaches
+Author			Year		Notes					Reference	Complexity		Name in GOAL
+Kupferman, Vardi	2001		Proposition of this approach		[5]		2^O(n log n)		-
+Schewe			2009		Improvment of Kupferman and Vardi's	[9]		O((0.76n)^n)		rank
+
+Slice-based approaches
+Author			Year		Notes					Reference	Complexity		Name in GOAL
+Vardi, Wilke		2007		Preliminary version of slice		[7]		(3n)^n			slice -p
+Kähler, Wilke		2008		More elaborated version of Vardi, Wilke	[8]		4(3n)^n			slice
+
+
+References
+[1] Büchi: On a decision method in restricted second order arithmetic, 1962.
+[2] Sistla, Vardi, Wolper: The complementation problem for Büchi automata with appplications to temporal logic, 1987.
+[3] Safra: On the complexity of ω-automata, 1988.
+[4] Muller, Schupp: Simulating alternating tree automata by nondeterministic automata, 1995.
+[5] Kupferman, Vardi: Weak alternating automata are not that weak, 2001.
+[6] Piterman: From nondeterministic Büchi and Streett automata to deterministic parity automata, 2007.
+[7] Vardi, Wilke: Automata: from logics to algorithms, 2007.
+[8] Kähler, Wilke: Complementation, disambiguation, and determinization of Büchi automata unified, 2008.
+[9] Schewe: Büchi complementation made tight, 2009.
+
+
+Summary
+Listed NBW constructions: 	ramsey, safra, ms, piterman, rank, slice	6
+Not listed NBW constructions:	modifiedsafra, waa, wapa			3
+Total NBW constructions:							9
+
+Other constructions:		kurshan						DBW complementation
+				classic 					NFA, DFA complementation
+				deterministic					Test if Büchi automaton is deterministic (?)
+
+
+Acronyms
+NBW	Non-deterministic Büchi automaton
+DBW	Deterministic Büchi automaton
+NFA	Non-determinstic finite state automaton
+DFA	Deterministic finite state automaton

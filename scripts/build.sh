@@ -24,12 +24,13 @@
 set -e
 
 if [ "$1" = "-h" ] || [ "$1" = "help" ] || [ "$1" = "--help" ] || [ $# -lt 1 ] || [ $# -gt 2 ]; then
-  echo "Usage:"
-  echo "    $(basename $0) <plugin_dir>"
-  echo "Description:"
-  echo "    Compiles and installs the GOAL plugin in <plugin_dir>. Installing means"
-  echo "    simply copying <plugin_dir> to <GOAL>/plugins."
-  echo "Note:"
+  echo "USAGE:"
+  echo "    $(basename $0) PLUGIN_DIR [-c]"
+  echo "DESCRIPTION:"
+  echo "    Compiles and installs the GOAL plugin in PLUGIN_DIR. Installing means"
+  echo "    simply copying PLUGIN_DIR to <GOAL>/plugins. With the option -c, the"
+  echo "    plugin is only compiled but not installed."
+  echo "NOTE:"
   echo "    Compiler warning \"bootstrap class path not set in conjunction with"
   echo "    -source 1.6\" can be removed with \"javac -Xbootclasspath:\" in script."
   exit 0
@@ -96,6 +97,7 @@ else
 fi
 echo "Done"
 
+if [ "$2" == -c ]; then exit 0; fi
 
 # Installation
 # ------------
