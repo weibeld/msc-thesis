@@ -15,7 +15,7 @@ usage() {
   echo "USAGE:"
   echo "    $(basename $0) [-a algorithm] [-d data]"
   echo
-  echo "OPTIONS                             [DEFAULT]"
+  echo "OPTIONS:                            [DEFAULT]"
   echo "    -a: Algorithm and options       [\"$default_algo\"]"
   echo "    -d: Data (absolute paths only)  [$default_data]"
 }
