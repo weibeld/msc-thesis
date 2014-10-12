@@ -213,7 +213,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           // Iterate through the components of p from right to left. At each
           // time we will treat the component pj, and we are going to determine
           // the 0, 1, or 2 successor components pk of pj.
-          boolean starDies = false;
+          boolean existsC2Privileged = false;
           for (int j = p.numberOfComponents()-1; j >= 0; j--) {
             Component pj = p.getComponent(j);
             StateSet pjSuccs = in.getSuccessors(pj.stateSet(), symbol);
@@ -255,12 +255,27 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                 }
               }
             }
+
+            //----------------------------------------------------------------
             else {
-              if (pj.isStar() && acc.isEmpty() && nonacc.isEmpty()) {
-                starDies = true;
-                continue;
+              // p has one EmptyC2Component, and otherwise just 0 and 1-coloured
+              // components. One of the 1-coloured components of q will be made
+              // 2-coloured, and the EmptyC2Component of q will be removed.
+              if (p.hasEmptyC2Component()) {
+                if (pj.isEmptyC2Component())
+                  q.addComponent(q.new EmptyC2Component());
+                else if (pj.color() == 0) {
+                  q.addComponent(q.new Component(acc,    1));
+                  q.addComponent(q.new Component(nonacc, 0));
+                }
+                else if (pj.color() == 1) {
+                  q.addComponent(q.new Component(acc,    1));
+                  q.addComponent(q.new Component(nonacc, 1));
+                }
+                
               }
-              if (p.hasColor2()) {
+              // p has exactly one 2-coloured component.
+              else if (p.hasColor2()) {
                 if (pj.color() == 0) {
                   q.addComponent(q.new Component(acc,    1));
                   q.addComponent(q.new Component(nonacc, 0));
@@ -270,31 +285,87 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
                   q.addComponent(q.new Component(nonacc, 1));
                 }
                 else if (pj.color() == 2) {
-                  if (pj.isStar()) {
-                    //q.addComponent(q.new Component(acc,    2, false, true));
-                    //if (!acc.isEmpty()) q.addComponent(q.new Component(nonacc, 1, true));
-                    //if (acc.isEmpty())  q.addComponent(q.new Component(nonacc, 2, false, true));
-                  }
+                  if (acc.isEmpty() && nonacc.isEmpty())
+                    q.addComponent(q.new EmptyC2Component());
                   else {
-                    //q.addComponent(q.new Component(acc,    1, true));
-                    //q.addComponent(q.new Component(nonacc, 1, true));
+                    q.addComponent(q.new Component(acc,    2));
+                    //q.addComponent(q.new Component(nonacc, acc.isEmpty()?2:1));
+                    q.addComponent(q.new Component(nonacc, 2));
                   }
                 }
               }
+              // p contains only -1, 0, or 1-coloured components. Only one
+              // of them may have one 2-coloured successor component.
               else {
                 if (pj.color() == -1 && i == 1) { // When building upper part
                   q.addComponent(q.new Component(acc,    -1));
                   q.addComponent(q.new Component(nonacc, -1));
                 }
                 else if (pj.color() == 0 || pj.color() == -1) {
-                  q.addComponent(q.new Component(acc,    2));
-                  q.addComponent(q.new Component(nonacc, 0));
+                  if (!existsC2Privileged) {
+                    q.addComponent(q.new Component(acc,    2));
+                    q.addComponent(q.new Component(nonacc, 0));
+                    if (!acc.isEmpty()) existsC2Privileged = true;
+                  }
+                  else {
+                    q.addComponent(q.new Component(acc,    1));
+                    q.addComponent(q.new Component(nonacc, 0));
+                  }
                 }
                 else if (pj.color() == 1) {
-                  q.addComponent(q.new Component(acc,    2));
-                  q.addComponent(q.new Component(nonacc, 2));
+                  if (!existsC2Privileged) {
+                    q.addComponent(q.new Component(acc,    2));
+                    //q.addComponent(q.new Component(nonacc, acc.isEmpty()?2:1));
+                    q.addComponent(q.new Component(nonacc, 2));
+                    if (!acc.isEmpty() || !nonacc.isEmpty()) existsC2Privileged = true;
+                  }
+                  else {
+                    q.addComponent(q.new Component(acc,    1));
+                    q.addComponent(q.new Component(nonacc, 1));
+                  }
                 }
               }
+            //------------------------------------------------------------------
+
+              // if (pj.isStar() && acc.isEmpty() && nonacc.isEmpty()) {
+              //   starDies = true;
+              //   continue;
+              // }
+              // if (p.hasColor2()) {
+              //   if (pj.color() == 0) {
+              //     q.addComponent(q.new Component(acc,    1));
+              //     q.addComponent(q.new Component(nonacc, 0));
+              //   }
+              //   else if (pj.color() == 1) {
+              //     q.addComponent(q.new Component(acc,    1));
+              //     q.addComponent(q.new Component(nonacc, 1));
+              //   }
+              //   else if (pj.color() == 2) {
+              //     if (pj.isStar()) {
+              //       //q.addComponent(q.new Component(acc,    2, false, true));
+              //       //if (!acc.isEmpty()) q.addComponent(q.new Component(nonacc, 1, true));
+              //       //if (acc.isEmpty())  q.addComponent(q.new Component(nonacc, 2, false, true));
+              //     }
+              //     else {
+              //       //q.addComponent(q.new Component(acc,    1, true));
+              //       //q.addComponent(q.new Component(nonacc, 1, true));
+              //     }
+              //   }
+              // }
+              // else {
+              //   if (pj.color() == -1 && i == 1) { // When building upper part
+              //     q.addComponent(q.new Component(acc,    -1));
+              //     q.addComponent(q.new Component(nonacc, -1));
+              //   }
+              //   else if (pj.color() == 0 || pj.color() == -1) {
+              //     q.addComponent(q.new Component(acc,    2));
+              //     q.addComponent(q.new Component(nonacc, 0));
+              //   }
+              //   else if (pj.color() == 1) {
+              //     q.addComponent(q.new Component(acc,    2));
+              //     q.addComponent(q.new Component(nonacc, 2));
+              //   }
+              // }
             }
 
             // The successor of pj are divided in two sets (acc/non-acc) and we
@@ -443,13 +514,27 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
           // If q is empty, it means that p has no outgoing transition for the
           // current symbol. We will take care of incomplete states at the end
           // of stage 2. The continue jumps to the next symbol of the alphabet.
+
+          if (getOptions().isM2()) {
+            if (p.hasEmptyC2Component()) {
+              // Make one of the 1-coloured components of q 2-coloured
+              // If there are no 1-coloured components, just nothing changes
+              Component make2Colored = q.getC1ToBeMadeC2();
+              if (make2Colored != null) make2Colored.setColor(2);
+              // Remove the EmptyC2Component of q
+              q.removeEmptyC2Component();
+            }
+            if (q.hasEmptyC2Component() && q.numberOfComponents() == 1) {
+              q.removeEmptyC2Component();
+            }
+          }
           if (q.numberOfComponents() == 0) continue;
 
           if (getOptions().isM()) {
             q.mergeComponents();
           }
 
-          if (getOptions().isM2()) {
+          //if (getOptions().isM2()) {
             // If M2(p) disappeared, then q has not yet an M2(q), and we have to
             // elect one. Remember that we have postponed this decision to the
             // time when q will have been fully constructed. Of course, q needs
@@ -473,7 +558,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
             //   // we can set it as M2(q).
             //   if (!q.hasM2()) q.setM2(q.getM2Exclude());
             // }
-          }
+          //}
           // q is now really finished. We can create its label.
           if (getOptions().isB()) q.makeLabel2();
           else q.makeLabel1();

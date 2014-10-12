@@ -28,10 +28,57 @@ public class STState extends FSAState {
     components = new LinkedList<Component>();
   }
 
+  public boolean hasEmptyC2Component() {
+    return getEmptyC2Component() != null;
+  }
+  public void removeEmptyC2Component() {
+    components.remove(getEmptyC2Component());
+  }
+  public Component getC1ToBeMadeC2() {
+    if (!hasC1Components()) return null;
+    EmptyC2Component ec2 = getEmptyC2Component();
+    Component c0 = getC0ToLeftOf(ec2);
+    if (c0 != null) return getC1ToLeftOf(c0);
+    return getC1ToLeftOf(getC1ToLeftOf(ec2));
+  }
+  private EmptyC2Component getEmptyC2Component() {
+    for (Component c : components)
+      if (c.isEmptyC2Component()) return (EmptyC2Component) c;
+    return null;
+  }
+  private Component getC1ToLeftOf(Component comp) {
+    Component cand = leftNeighbor(comp);
+    while (cand != comp) {
+      if (cand.color() == 1) return cand;
+      cand = leftNeighbor(cand);
+    }
+    if (cand.color() == 1) return cand; // cand == comp
+    return null;
+  }
+  private Component getC0ToLeftOf(Component comp) {
+    Component cand = leftNeighbor(comp);
+    while (cand != comp) {
+      if (cand.color() == 0) return cand;
+      cand = leftNeighbor(cand);
+    }
+    if (cand.color() == 0) return cand; // cand == comp
+    return null;
+  }
+  private Component leftNeighbor(Component comp) {
+    int index = components.indexOf(comp);
+    if (index > 0) return components.get(index-1);
+    else return components.get(components.size()-1);
+  }
+
+  private boolean hasC1Components() {
+    for (Component c : components)
+      if (c.color() == 1) return true;
+    return false;
+  }
 
   /* Component operations */
   public void addComponent(Component newComp) {
-    if (! newComp.isEmpty()) addLeftmost(newComp);
+    if (!newComp.isEmpty() || newComp.isEmptyC2Component()) addLeftmost(newComp);
   }
   public Component getComponent(int index) {
     return components.get(index);
@@ -46,7 +93,7 @@ public class STState extends FSAState {
   // []()->[], and [][]->[]. The inversion of the list is for doing the []()->[]
   // merge more conveniently.
   public void mergeComponents() {
-    components =  Util.invertList(mergeComps(Util.invertList(components)));
+    components = Util.invertList(mergeComps(Util.invertList(components)));
   }
   // Prolog-like merging. Merge head with already merged tail
   private LinkedList<Component> mergeComps(List<Component> list) {
@@ -68,8 +115,8 @@ public class STState extends FSAState {
     states.addAll(c1.stateSet());
     states.addAll(c2.stateSet());
     Component mergedComp = new Component(states, color);
-    if (c1.isStar() || c2.isStar()) mergedComp.setStar();
-    if (c1.isSuppressed() || c2.isSuppressed()) mergedComp.setSuppressed();
+    // if (c1.isStar() || c2.isStar()) mergedComp.setStar();
+    // if (c1.isSuppressed() || c2.isSuppressed()) mergedComp.setSuppressed();
     return mergedComp;
   }
   //------------------
@@ -259,9 +306,15 @@ public class STState extends FSAState {
     public int color() {
       return color;
     }
+    public void setColor(int color) {
+      this.color = color;
+    }
+    public boolean isEmptyC2Component() {
+      return color == -2;
+    }
     public String print1() {
       String s = "({" + Util.printStates(stateSet) + "}," + color + ")";
-      if (isStar()) s += "*";
+      //if (isStar()) s += "*";
       return s;
     }
     public String print2() {
@@ -270,26 +323,38 @@ public class STState extends FSAState {
       else if (color == 0) s = "{" + Util.printStates(stateSet) + "}";
       else if (color == 1) s = "(" + Util.printStates(stateSet) + ")";
       else if (color == 2) s = "[" + Util.printStates(stateSet) + "]";
-      if (isStar()) s += "*";
+      //if (isStar()) s += "*";
       return s;
     }
 
     // For the colour 2 reduction optimisation (-m2)
-    private boolean star;
-    private boolean suppressedColor2;
+    // private boolean star;
+    // private boolean suppressedColor2;
 
-    public boolean isStar() {
-      return star;
-    }
-    public boolean isSuppressed() {
-      return suppressedColor2;
-    }
+    // public boolean isStar() {
+    //   return star;
+    // }
+    // public boolean isSuppressed() {
+    //   return suppressedColor2;
+    // }
 
-    public void setStar() {
-      star = true;
+    // public void setStar() {
+    //   star = true;
+    // }
+    // public void setSuppressed() {
+    //   suppressedColor2 = true;
+    // }
+  }
+
+  public class EmptyC2Component extends Component {
+    public EmptyC2Component() {
+      super(new StateSet(), -2);
     }
-    public void setSuppressed() {
-      suppressedColor2 = true;
+    public String print1() {
+      return "|";
+    }
+    public String print2() {
+      return "|";
     }
   }
 
