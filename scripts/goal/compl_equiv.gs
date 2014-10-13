@@ -53,6 +53,8 @@ while "true" do
   echo $equal;
   if !$equal then
     echo $automaton;
+    $file = $count + ".gff";
+    save $automaton $file;
   fi
 
   # Time measurement

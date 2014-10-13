@@ -59,5 +59,14 @@ range() {
 }
 export -f range # Bash way of exporting functions
 
-# Execute the GOAL batch script
-$goal batch $batch $n $s_min $s_max $a_min $a_max
+# The below GOAL command may abort due to a memory excess. In that case it is
+# repeated until the required number of tests are done
+while true; do
+  $goal batch $batch $n $s_min $s_max $a_min $a_max
+  done=$(grep "Elapsed time:" stdout | wc -l)
+  if [ $done -lt $n ]; then
+    echo -e "\n\n=================\n* Memory excess *\n=================\n\n"
+    n=$(bc <<<"$n - $done")
+  else break;
+  fi
+done

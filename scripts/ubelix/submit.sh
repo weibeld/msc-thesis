@@ -17,7 +17,7 @@ usage() {
   echo "    -q: Queue               [all.q]"
   echo "    -s: Scratch             [off]        (set to e.g. [2G] to activate)"
   echo "    -p: Parallel env. SMP   [off]        (set to e.g. [2] slots to activate)"
-  echo "    -n: E-mail notification [a]"
+  echo "    -n: E-mail notification [n]"
   echo "        b: E-mail is sent at beginning of job"
   echo "        e: E-mail is sent at end of job"
   echo "        a: E-mail is sent when job is aborted or rescheduled"
@@ -61,7 +61,7 @@ if [ -z $cpu_time ]; then cpu_time=01:00:00; fi
 if [ -z $dir ]; then dir=$(dirname $script); else dir=$(eval echo $dir); test directory $dir; fi
 if [ -z $out_file ]; then out_file=stdout; fi
 if [ -z $err_file ]; then err_file=stderr; fi
-if [ -z $notification ]; then notification=a; fi
+if [ -z $notification ]; then notification=n; fi
 if [ -z $queue ]; then queue=all.q; fi
 
 if [ -z $scratch_size ]; then scratch_size=off; fi
