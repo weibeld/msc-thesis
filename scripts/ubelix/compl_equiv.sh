@@ -57,16 +57,17 @@ range() {
   size=$(($to-$from+1))
   echo $(($RANDOM%$size + $from))
 }
-export -f range # Bash way of exporting functions
+export -f range # Exporting function
 
 # The below GOAL command may abort due to a memory excess. In that case it is
 # repeated until the required number of tests are done
+todo=$n
 while true; do
-  $goal batch $batch $n $s_min $s_max $a_min $a_max
+  $goal batch $batch $todo $s_min $s_max $a_min $a_max
   done=$(grep "Elapsed time:" stdout | wc -l)
   if [ $done -lt $n ]; then
     echo -e "\n\n=================\n* Memory excess *\n=================\n\n"
-    n=$(bc <<<"$n - $done")
+    todo=$(($n-$done))
   else break;
   fi
 done

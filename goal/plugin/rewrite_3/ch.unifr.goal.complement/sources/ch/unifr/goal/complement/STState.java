@@ -1,6 +1,6 @@
 /*============================================================================*
  * Author: Daniel Weibel <daniel.weibel@unifr.ch>
- * Last modified: 5 Oct. 2014
+ * Last modified: 14 Oct. 2014
  *============================================================================*/
 package ch.unifr.goal.complement;
 
@@ -17,98 +17,87 @@ import org.svvrl.goal.core.aut.fsa.FSAState;
  *----------------------------------------------------------------------------*/
 public class STState extends FSAState {
 
-  // The state's components. The order of the list reflects the order of the
-  // components in the state. The first element in list is the leftmost com-
-  // ponent, and the last element int the list is the rightmost component.
+  // The components of this state
   private List<Component> components;
 
-  private boolean m2Accepting = false;
+  // Mark a state as accepting even though it has colour 2. For -m2 option only.
+  private boolean hasAccFlag = false;
 
-  /* Constructor */
+  // Constructor
   public STState(int id) {
     super(id);
     components = new LinkedList<Component>();
   }
 
-  public void setM2Accepting() {
-    m2Accepting = true;
-  }
-  public boolean isM2Accepting() {
-    return m2Accepting;
-  }
-
-  public boolean hasEmptyC2Component() {
-    return getEmptyC2Component() != null;
-  }
-  public void removeEmptyC2Component() {
-    components.remove(getEmptyC2Component());
-  }
-  private EmptyC2Component getEmptyC2Component() {
-    for (Component c : components)
-      if (c.isEmptyC2Component()) return (EmptyC2Component) c;
-    return null;
-  }
-
-  public Component getC1ToBeMadeC2() {
-    if (!hasC1Components()) return null;
-    EmptyC2Component ec2 = getEmptyC2Component();
-    Component c0 = getC0ToLeftOf(ec2);
-    if (c0 != null) return getC1ToLeftOf(c0);
-    return getC1ToLeftOf(getC1ToLeftOf(ec2));
-  }
-  private Component getC1ToLeftOf(Component comp) {
-    Component cand = leftNeighbor(comp);
-    while (cand != comp) {
-      if (cand.color() == 1) return cand;
-      cand = leftNeighbor(cand);
-    }
-    if (cand.color() == 1) return cand; // cand == comp
-    return null;
-  }
-  private Component getC0ToLeftOf(Component comp) {
-    Component cand = leftNeighbor(comp);
-    while (cand != comp) {
-      if (cand.color() == 0) return cand;
-      cand = leftNeighbor(cand);
-    }
-    if (cand.color() == 0) return cand; // cand == comp
-    return null;
-  }
-  private Component leftNeighbor(Component comp) {
-    int index = components.indexOf(comp);
-    if (index > 0) return components.get(index-1);
-    else return components.get(components.size()-1);
-  }
-  private boolean hasC1Components() {
-    for (Component c : components)
-      if (c.color() == 1) return true;
-    return false;
-  }
-
-  /* Component operations */
-  public void addComponent(Component comp) {
-    if (!comp.isEmpty() || comp.isEmptyC2Component()) components.add(0, comp);
-  }
+  // Component operations
   public Component getComponent(int index) {
     return components.get(index);
   }
   public int numberOfComponents() {
     return components.size();
   }
+  // Add component only if it's not empty (unless it's a EmptyColor2Component)
+  public void addComponent(Component comp) {
+    if (!comp.isEmpty() || comp.isEmptyColor2Component()) components.add(0, comp);
+  }
+  
+  // Colour queries
+  public boolean hasColor2() {
+    for (Component c : components) if (c.color() == 2) return true;
+    return false;
+  }
+  public boolean hasColor1() {
+    for (Component c : components) if (c.color() == 1) return true;
+    return false;
+  }
+  public boolean hasColor0() {
+    for (Component c : components) if (c.color() == 0) return true;
+    return false;
+  }
+  public boolean isRightmostColor2() {
+    return components.get(components.size()-1).color() == 2;
+  }
+  // Checks if the components in a given state have colour -1. Since on the
+  // calling end we have only access to a State object (instead of STState),
+  // this test has to be made in this way via the label.
+  public static boolean isFromUpperPart(State state) {
+    return state.getLabel().contains("},-1)") || state.getLabel().contains("^");
+  }
 
-  // For the merging optimisation (-m)
-  // Apply all possible mergings on the components of the state, i.e. ()()->(),
-  // []()->[], and [][]->[]. The inversion of the list is for doing the []()->[]
-  // merge more conveniently.
+  // State equivalence
+  public boolean equals(State other) {
+    return this.getLabel().equals(other.getLabel()); 
+  }
+
+  // State label
+  public void makeLabel(boolean bracketNotation) {
+    String s = "(";
+    for (Component c : components) s += c.print(bracketNotation) + ",";
+    s = s.substring(0, s.length()-1); // Remove last superfluous comma
+    s += ")";
+    if (hasAccFlag) s += "*";
+    setLabel(s);
+  }
+  // Label of a sink state
+  public void makeSinkLabel() {
+    this.setLabel("sink");
+  }
+
+  /*==========================================================================*
+   * For the -m option
+   *==========================================================================*/
+  // Entry point: merge the components of a whole state
   public void mergeComponents() {
+    // List is inverted for doing the []()->[] merge from right to left rather
+    // than from left to right, which is easier.
     components = Util.invertList(mergeComps(Util.invertList(components)));
   }
-  // Prolog-like merging. Merge head with already merged tail
+  // Prolog-like merging of component list. Merge head with already merged tail.
   private LinkedList<Component> mergeComps(List<Component> list) {
     if (list.size() <= 1) return new LinkedList<Component>(list);
     return add(Util.head(list), mergeComps(Util.tail(list)));
   }
-  // Push new component on left end of list, if possible, merge with list head
+  // Add single component to left end of list
   private LinkedList<Component> add(Component c, LinkedList<Component> list) {
     Component h = list.get(0);
     if      (c.color() == 1 && h.color() == 1) list.set(0, merge(c, h, 1));
@@ -117,73 +106,71 @@ public class STState extends FSAState {
     else list.add(0, c);
     return list;
   }
-  // Merge two components into one
+  // Merge two components to one component with the specified color
   private Component merge(Component c1, Component c2, int color) {
     StateSet states = new StateSet();
     states.addAll(c1.stateSet());
     states.addAll(c2.stateSet());
-    Component mergedComp = new Component(states, color);
-    return mergedComp;
-  }
-  
-  /* Colours */
-  public boolean hasColor2() {
-    for (Component c : components) if (c.color() == 2) return true;
-    return false;
-  }
-  // For the -r2ifc option
-  public boolean isRightmostColor2() {
-    return components.get(components.size()-1).color() == 2;
+    return new Component(states, color);
   }
 
-  /* State equivalence */
-  public boolean equals(State otherState) {
-    return this.getLabel().equals(otherState.getLabel()); 
+  /*==========================================================================*
+   * For the -m2 option
+   *==========================================================================*/
+  public boolean hasEmptyColor2() {
+    return getEmptyColor2() != null;
+  }
+  // Precondition: hasEmptyColor2(), hasColor0(), and hasColor1() are true
+  public Component getColor1ToMakeColor2() {
+    return getColor1LeftOf(getColor0LeftOf(getEmptyColor2()));
+  }
+  public void setAccFlag() {
+    hasAccFlag = true;
+  }
+  public boolean hasAccFlag() {
+    return hasAccFlag;
+  }
+  public void removeEmptyColor2() {
+    components.remove(getEmptyColor2());
+  }
+  private EmptyColor2Component getEmptyColor2() {
+    for (Component c : components)
+      if (c.isEmptyColor2Component()) return (EmptyColor2Component) c;
+    return null;
+  }
+  private Component getColor1LeftOf(Component comp) {
+    return getXLeftOf(1, comp);
+  }
+  private Component getColor0LeftOf(Component comp) {
+    return getXLeftOf(0, comp);
+  }
+  // Returns null if there's no other component with color X
+  private Component getXLeftOf(int color, Component comp) {
+    Component cand = leftNeighborOf(comp);
+    while (cand != comp) {
+      if (cand.color() == color) return cand;
+      cand = leftNeighborOf(cand);
+    }
+    return null;
+  }
+  private Component leftNeighborOf(Component comp) {
+    int index = components.indexOf(comp);
+    if (index > 0) return components.get(index-1);
+    else return components.get(components.size()-1);
   }
 
-  /* Label */
-  /* Create the label for the state that will be displayed in the box next to
-   * each state in the GOAL GUI. The label has the form (({s0,s1},0),({s4},1)).
-   * It also servers for testing state equality (see equals()). */
-  public void makeLabel1() {
-    String s = "(";
-    for (Component c : components) s += c.print1() + ",";
-    s = s.substring(0, s.length()-1);   // Remove last superfluous comma
-    s += ")";
-    if (m2Accepting) s += "*";
-    setLabel(s);
-  }
-  /* Label when the bracket notation option is on */
-  public void makeLabel2() {
-    String s = "(";
-    for (Component c : components) s += c.print2() + ",";
-    s = s.substring(0, s.length()-1);   // Remove last superfluous comma
-    s += ")";
-    if (m2Accepting) s += "*";
-    setLabel(s);
-  }
-  /* The label of the sink state that is added to the upper part of the
-   * automaton if it is not complete. */
-  public void makeSinkLabel() {
-    this.setLabel("sink");
-  }
 
-  /* Check if an STState is part of the upper part of the automaton, i.e. all
-   * the components have color -1. It has to be done indirectly via a State
-   * object (and not STState) because the Automaton class returns only State
-   * objects. That's also why we have to make the test via the label. */
-  public static boolean isFromUpperPart(State state) {
-    return state.getLabel().contains("},-1)") || state.getLabel().contains("^");
-  }
-
-  /*--------------------------------------------------------------------------*
+  /*==========================================================================*
    * A component of an STState. A component consists of a set of states of the
    * input automaton, and a colour (-1, 0, 1, or 2).
-   *--------------------------------------------------------------------------*/
+   *==========================================================================*/
   public class Component {
+
+    // Fields
     private StateSet stateSet;
     private int color;
 
+    // Constructors
     public Component(StateSet stateSet, int color) {
       this.stateSet = stateSet;
       this.color = color;
@@ -193,6 +180,8 @@ public class STState extends FSAState {
       stateSet.add(state);
       this.color = color;
     }
+
+    // Getter and setter methods
     public StateSet stateSet() {
       return stateSet;
     }
@@ -205,52 +194,34 @@ public class STState extends FSAState {
     public void setColor(int color) {
       this.color = color;
     }
-    public boolean isEmptyC2Component() {
+
+    // Used for the -m2 option only
+    public boolean isEmptyColor2Component() {
       return color == -2;
     }
-    public String print1() {
-      String s = "({" + Util.printStates(stateSet) + "}," + color + ")";
-      //if (isStar()) s += "*";
-      return s;
-    }
-    public String print2() {
+
+    // String representation of this component, used for the state label
+    public String print(boolean bracketNotation) {
       String s = "";
-      if (color == -1)     s = "^" + Util.printStates(stateSet) + "^";
-      else if (color == 0) s = "{" + Util.printStates(stateSet) + "}";
-      else if (color == 1) s = "(" + Util.printStates(stateSet) + ")";
-      else if (color == 2) s = "[" + Util.printStates(stateSet) + "]";
-      //if (isStar()) s += "*";
+      if (bracketNotation) {
+        if (color == -1)     s = "^" + Util.printStates(stateSet) + "^";
+        else if (color == 0) s = "{" + Util.printStates(stateSet) + "}";
+        else if (color == 1) s = "(" + Util.printStates(stateSet) + ")";
+        else if (color == 2) s = "[" + Util.printStates(stateSet) + "]";
+      }
+      else s = "({" + Util.printStates(stateSet) + "}," + color + ")";
       return s;
     }
-
-    // For the colour 2 reduction optimisation (-m2)
-    // private boolean star;
-    // private boolean suppressedColor2;
-
-    // public boolean isStar() {
-    //   return star;
-    // }
-    // public boolean isSuppressed() {
-    //   return suppressedColor2;
-    // }
-
-    // public void setStar() {
-    //   star = true;
-    // }
-    // public void setSuppressed() {
-    //   suppressedColor2 = true;
-    // }
   }
 
-  public class EmptyC2Component extends Component {
-    public EmptyC2Component() {
+
+  /*==========================================================================*
+   * A special type of component representing an emptied 2-coloured component
+   * for the -m2 option.
+   *==========================================================================*/
+  public class EmptyColor2Component extends Component {
+    public EmptyColor2Component() {
       super(new StateSet(), -2);
-    }
-    public String print1() {
-      return "|";
-    }
-    public String print2() {
-      return "|";
     }
   }
 
