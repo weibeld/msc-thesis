@@ -1,0 +1,29 @@
+#!/bin/bash
+# Perform the complementation-equivalence test on all the automata in the
+# specified folder.
+#
+# dw-14.10.2014
+
+folder=$(sed 's/\/$//' <<<"$1")
+
+# Copy folder with automata to local scratch
+data=$TMP/automata
+mkdir $data
+cp -r $folder/*.gff $data
+
+# Copy GOAL script to local scratch
+batch=$TMP/batch.gs
+cp ~/scripts/compl_equiv_2.gs $batch
+
+# Copy GOAL to local scratch
+cp ~/bin/GOAL-20130711.tar.gz $TMP/tmp.tar.gz
+goal_dir=$TMP/GOAL
+mkdir $goal_dir
+tar xzf $TMP/tmp.tar.gz -C $goal_dir --strip-components 1 && rm $TMP/tmp.tar.gz
+goal=$goal_dir/goal
+
+# Set Java heap size for GOAL.
+export JVMARGS="-Xmx6G -Xms6G"
+
+# Execute the GOAL script
+$goal batch $batch $data

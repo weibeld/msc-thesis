@@ -1,13 +1,13 @@
-# Performs the complementation-equivalence test on the automta in the folder
-# from within the script is run.
+# Performs the complementation-equivalence test on all the automata in the
+# specified folder.
 #
-# Run from within a folder containing GOAL automata (.gff files):
-#
-# $ goal batch compl_equiv_2.gs
+# $ goal batch compl_equiv_2.gs <folder>
 #
 # dw-08.10.2014
 
-for $in in `ls *.gff` do
+$folder = $1;
+
+for $in in `ls $folder/*.gff` do
 
   echo "Automaton: " + $in;
 
@@ -23,7 +23,7 @@ for $in in `ls *.gff` do
   $equal = equivalence $frib $pit;
   echo $equal;
   if !$equal then
-    echo $in;
+    echo "Incorrect: " + $in;
   fi
 
   echo;
