@@ -81,7 +81,6 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     // The input automaton to the construction
     in = input;
-    boolean isCompleteIn = isComplete(in);
 
     // The output automaton of the construction
     out = new FSA(AlphabetType.CLASSICAL, Position.OnTransition);
@@ -112,21 +111,7 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       List<String> c = AlphabetType.CLASSICAL.genAlphabet(p.length);
       for (int i = 0; i < p.length; i++) alphabetMapping.put(p[i], c.get(i));
       AlphabetType.CLASSICAL.convertFrom(in, alphabetMapping);
-      step("Input automaton has propositional alphabet. Converting it to classical.");
-      somethingToPreprocess = true;
-    }
-    // Copy alphabet of input automaton to output automaton
-    out.expandAlphabet(in.getAlphabet());
-
-    // Make input automaton complete
-    if (options.isC()) {
-      String msg = "Making input automaton complete";
-      if (!isCompleteIn) {
-        OmegaUtil.makeTransitionComplete(in);
-        msg += ".";
-      }
-      else msg += ": automaton is already complete.";
-      step(msg);
+      step("Converting alphabet of input automaton from propositional to classical.");
       somethingToPreprocess = true;
     }
 
@@ -138,6 +123,22 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
       int after = before - in.getStateSize();
       step("Removing unreachable and dead states: removed " + after + " state" + (after==1?"":"s") + ".");
       somethingToPreprocess = true;
+    }
+
+    // Make input automaton complete
+    if (options.isC()) {
+      if (!isComplete(in)) {
+        OmegaUtil.makeTransitionComplete(in);
+        step("Making input automaton complete (-c option).");
+      }
+      else step("Input automaton is already complete (-c option).");
+      somethingToPreprocess = true;
+    }
+
+    // Inform user whether the -r2ifc option has an effect or not
+    if (options.isR2ifc()) {
+      if (isComplete(in)) step("Input automaton is complete. Can apply -r2ifc optimisation.");
+      else step("Input automaton is not complete. Cannot apply -r2ifc optimisation.");
     }
 
     // Maximise the accepting set of the input automaton, that is, making as
@@ -155,6 +156,9 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
     if (!somethingToPreprocess) step("Nothing to preprocess.");
     preprocessing = false;
 
+    // Information possibly affected by preprocessing
+    out.expandAlphabet(in.getAlphabet());  // Set alphabet of output automaton
+    boolean isCompleteIn = isComplete(in); // Is the input automaton complete?
 
     /*========================================================================*
      * COMPLEMENTATION
@@ -361,13 +365,11 @@ public class FribourgConstruction extends ComplementConstruction<FSA, FSA> {
 
     // If the -r option is set, remove unreachable and dead states
     if (options.isR()) {
-      String msg = "Removing unreachable and dead states: ";
-      int statesBefore = out.getStateSize();
-      StateReducer.removeUnreachable(out);
-      StateReducer.removeDead(out);
-      int statesRemoved = statesBefore - out.getStateSize();
-      msg += "removed " + statesRemoved + " " + (statesRemoved==1?"state":"states") + ".";
-      step(msg);
+      int before = in.getStateSize();
+      StateReducer.removeUnreachable(in);
+      StateReducer.removeDead(in);
+      int after = before - in.getStateSize();
+      step("Removing unreachable and dead states: removed " + after + " state" + (after==1?"":"s") + ".");
       somethingToPostprocess = true;
     }
 
