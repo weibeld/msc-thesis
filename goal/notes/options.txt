@@ -1,5 +1,5 @@
-GOAL complementation constructions and their options
-On command line and in GUI
+GOAL complementation constructions and their options (GOAL version 2014-10-16)
+On command line (1st column) and in GUI (2nd column)
 
 dw-09.10.2014
 
@@ -17,6 +17,7 @@ slice		Slice-Based								GUI defaults
 
 2)
 piterman	Safra-Piterman								GUI defaults
+-ht		Use Schewe history trees instead of Safra trees				off
 -eq		Apply local opt. by merging equiv. states in the conv. from DPW to NBW	on
 -macc		Maxmize accepting set of the source automaton				on
 -sim		Apply local opt. by using sim. relation to simplify the intermed. DPW	on
@@ -40,6 +41,7 @@ ramsey		Ramsey-Based								GUI defaults
 
 5)
 safra		Safra's									GUI defaults
+-htl		Use Schewe history trees instead of Safra trees				off
 -atl		Simplify accepting true loops						off
 -sa		Mark nodes that have only accepting successors green			off
 

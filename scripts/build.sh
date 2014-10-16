@@ -15,8 +15,6 @@
 # Installing the plugin is simply done by copying the plugin directory
 # (ch.unifr.goal.myplugin/ in the above example) to <GOAL>/plugins.
 #
-# Usage: ./plugin_build.sh <plugin_dir> [compileonly]
-#
 # Daniel Weibel, 26.05.2014
 
 
