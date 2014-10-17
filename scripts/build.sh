@@ -18,51 +18,51 @@
 # Daniel Weibel, 26.05.2014
 
 
-# Exit if any command returns a non-zero status (i.e. error)
-set -e
+set -e # Exit if any command returns a non-zero status (i.e. error)
 
-if [ "$1" = "-h" ] || [ "$1" = "help" ] || [ "$1" = "--help" ] || [ $# -lt 1 ] || [ $# -gt 2 ]; then
+if [ $# -lt 2 ] || [ $# -gt 3 ]; then
   echo "USAGE:"
-  echo "    $(basename $0) PLUGIN_DIR [-c]"
+  echo "    $(basename $0) PLUGIN_DIR GOAL_DIR [-c]"
   echo "DESCRIPTION:"
-  echo "    Compiles and installs the GOAL plugin in PLUGIN_DIR. Installing means"
-  echo "    simply copying PLUGIN_DIR to <GOAL>/plugins. With the option -c, the"
-  echo "    plugin is only compiled but not installed."
+  echo "    Compiles the GOAL plugin in PLUGIN_DIR and installs it under GOAL_DIR."
+  echo "    With the -c option, the plugin is only compiled but not installed."
   echo "NOTE:"
   echo "    Compiler warning \"bootstrap class path not set in conjunction with"
   echo "    -source 1.6\" can be removed with \"javac -Xbootclasspath:\" in script."
   exit 0
 fi
 
-if [ "$(which goal)" == "" ]; then
-  echo "ERROR: make sure 'which goal' points to the 'goal' script by, for example,"
-  echo "adding the GOAL folder to the PATH"
-  exit 1
-fi
+test_dir() {
+  if [ ! -d "$1" ]; then echo "Error: $1 is not a valid directory"; exit 1; fi
+}
 
-PLUGIN_DIR=$(echo $1 | sed 's/\/$//') # Remove possible trailing /
+# Root directory of the plugin to install
+PLUGIN_DIR=$(sed 's/\/$//' <<<"$1")
+test_dir "$PLUGIN_DIR"
+
+# GOAL installation directory
+GOAL_DIR=$(sed 's/\/$//' <<<"$2")
+test_dir "$GOAL_DIR"
 
 # Get path to the directory containing the source files, relative to the plugin
 # directory. The plugin directory is per convention the package name of the
 # plugin code. I.e. the plugin in directory ch.unifr.example has its source
 # files in ch.unifr.example/sources/ch/unifr/example.
 PLUGIN_NAME=$(basename $PLUGIN_DIR)
-IFS='.' read -a ARRAY <<< $PLUGIN_NAME
+IFS='.' read -a ARRAY <<<$PLUGIN_NAME
 SOURCE_PATH="sources"
 for ELT in ${ARRAY[@]}; do SOURCE_PATH=$SOURCE_PATH/$ELT; done
 
 # The standard GOAL plugins that must be added to the classpath for compilation
-GOAL_DIR=$(dirname $(which goal))
 CORE=$GOAL_DIR/plugins/org.svvrl.goal.core
 CMD=$GOAL_DIR/plugins/org.svvrl.goal.cmd
 GUI=$GOAL_DIR/plugins/org.svvrl.goal.gui
 
 # The GOAL plugins are zipped by default, but must be present unzipped to be
 # accessible by the Java compiler. Unzip them if they aren't yet.
-if [ ! -d $CORE ]; then { unzip $CORE.zip -d $CORE; rm $CORE.zip; } >/dev/null; fi
-if [ ! -d $CMD ]; then { unzip $CMD.zip -d $CMD; rm $CMD.zip; } >/dev/null; fi
-if [ ! -d $GUI ]; then { unzip $GUI.zip -d $GUI; rm $GUI.zip; } >/dev/null; fi
-
+[ ! -d $CORE ] && unzip $CORE.zip -d $CORE >/dev/null && rm $CORE.zip
+[ ! -d $CMD ]  && unzip $CMD.zip -d  $CMD  >/dev/null && rm $CMD.zip
+[ ! -d $GUI ]  && unzip $GUI.zip -d  $GUI  >/dev/null && rm $GUI.zip
 
 # Compilation
 # -----------
@@ -95,7 +95,7 @@ else
 fi
 echo "Done"
 
-if [ "$2" == -c ]; then exit 0; fi
+if [ "$3" == -c ]; then exit 0; fi
 
 # Installation
 # ------------

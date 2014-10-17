@@ -1,0 +1,39 @@
+Introduction
+
+Background
+- Context of Büchi complementation: system verification
+- Büchi complementation: map of the territory to cover
+    - Definition of Büchi automata
+    - Notation
+- Review of Büchi complementation algorithms
+    - Maybe use classification in four approaches as in Tsai, 2010
+    - Put emphasis on the ones that will later be used in the experiments, but dont' mention this
+- Fribourg construction
+    - Put in relation with above framework
+    - What about epsilon-transitions?
+- Experimental evaluations of algorithms
+  - Tsai, results
+  - Christian
+
+Experimental investigation
+- "THIS is what I'm doing and THIS is how I am going to investigate it"
+    - Aim: investigate performance of Fribourg construction experimentally
+    - Means: implement it, use GOAL, where other algorithms are implemented, perform experiments
+- GOAL
+- Compare algorithm options internally
+- Compare with other algorithms
+    - Justifiy: only piterman, rank, and slice
+- Justifiy measures
+    - Measure only number of generated states (not transitions, acc states, densities, etc.), use of the -r option, take into account time or not?
+- Experiment description
+  - What compare to what
+  - Test data
+  - Justify
+
+Results
+
+Discussion
+- All things that I know now that I didn't know at the beginning
+- Limitations of own work
+    - Test data, many universal automata, fixed size, fixed alphabet size (representativeness of test set), time, memory, some algorithms cannot even be compared, GOAL implementation (dependable?),
+    - How I would have done it in an idea research world

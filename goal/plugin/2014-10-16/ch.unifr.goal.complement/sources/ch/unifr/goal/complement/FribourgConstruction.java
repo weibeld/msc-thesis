@@ -47,12 +47,17 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
   // The options that have been set for this construction
   private FribourgOptions options;
 
-  /* Constructor */
+  /* Constructor used by the complementation command */
   public FribourgConstruction(FSA in, FribourgOptions options) {
     super(in);
     if (!OmegaUtil.isNBW(in)) // Applicability test needed for command line
       throw new IllegalArgumentException(Message.onlyForFSA(BuchiAcc.class));
     this.options = options;
+  }
+  /* Constructor used by the containment and equivalence commands (if the
+   * Fribourg construction is the default complementation construction) */
+  public FribourgConstruction(FSA in) {
+    this(in, new FribourgOptions()); // FribourgOptions with default settings
   }
 
   @Override // Method of interface Algorithm

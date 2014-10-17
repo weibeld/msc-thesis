@@ -35,9 +35,7 @@ public class FribourgComplementInterface extends AbstractComplementConstructionI
     // fying them on the command line. This is a convention that is followed
     // by the other existing algorithms in GOAL.
     boolean c=false, r2ifc=false, m=false, m2=false, b=false, macc=false, r=false, rr=false;
-    // Currently, args contains the filename of the automaton to be complemented
-    // If complement -m fribourg -macc -r -o out.gff in.gff, args is [-macc, -r, in.gff]
-    for (Expression a : args) {
+    for (Expression a : args) { // args contains e.g. [-m, -macc, -r]
       String arg = a.toString();
       if (arg.equals(cCode))          c     = true;
       else if (arg.equals(r2ifcCode)) r2ifc = true;
@@ -47,7 +45,6 @@ public class FribourgComplementInterface extends AbstractComplementConstructionI
       else if (arg.equals(maccCode))  macc  = true;
       else if (arg.equals(rCode))     r     = true;
       else if (arg.equals(rrCode))    rr    = true;
-      else if (!arg.substring(0,1).equals("-"));
       else throw new EvaluationException("Unknown option: " + arg);
     }
     if (m2 && !m) throw new EvaluationException("Option -m2 requires option -m");
