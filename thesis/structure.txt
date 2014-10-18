@@ -1,34 +1,84 @@
+Investigation of the Performance of a Subset-Tuple Büchi Complementation Construction
+
 Introduction
+- Context of study
+Opening
+Büchi complementation denotes the problem of finding a Büchi automaton that accepts the complement language of another Büchi automaton. Büchi automata are a kind of omega-automata, that is, finite state automata that accept infinite (rather than finite) words. A word is accepted by a Büchi automaton there is a run for it that goes through at least one accepting state infinitely often.
+
+Why is Büchi complementation a topic?
+Since the introduction of Büchi automata in 1962, algorithms for Büchi complementation have been a permanent subject of research. 
+
+Where is Büchi complementation used?
+
+Fribourg construction
+The supervisors of this thesis, Prof. Ulrich Ultes-Nitsche and Joel Allred, have developed a new Büchi complementation construction. This construction is inspired from different sides: the subset-construction for automata on finite words, the complementation construction for deterministic Büchi automata (Kurshan's construction), and the slice-based approach for complementing non-deterministic automata. 
+
+- Stating the problem, reason the research is worth tackling
+
+
+- Aim and scope
+The aim of this thesis is to investigate the performance of the Fribourg construction under practical scenarios. . This contrasts with a the
+
+- Significance
+
+
+- Overview
+
 
 Background
-- Context of Büchi complementation: system verification
-- Büchi complementation: map of the territory to cover
-    - Definition of Büchi automata
-    - Notation
+(- Context of Büchi complementation: system verification)
+- Büchi automata and Büchi complementation
+    - Büchi automata
+        - DBW vs. NBW, usually Büchi automaton means NBW
+        - Equivalences (NBW <-> omega-regular languages <-> certain logics <-> other omega automata, but NBW != DBW)
+        - Büchi automata are closed under complementation -> proof Büchi, 1962
+    - Algorithmic view of Büchi complementation
+        - Complementing finite word automata
+            - DFA/NFA are also closed under complementation (because regular languages are closed under complementation)
+            - DFA: switch acc and non-acc states; NFA: transform to DFA with subset-construction
+        - Deterministic Büchi automata
+            - Kurshans's construction
+        - Non-deterministic Büchi automata
+            - Determinisation to DBW doesn't work because NBW > DBW
+            - Even for an NBW that does have an equivalent DBW, the subset-construction doesn't work (DBW would accept too much words)
+            - More complicated procedures necessary
+            - Sets the stage for the next section
+            - In the following, we only talk about complementation of NBW (because for DBW the problem is "solved")
+    - Complexity of Büchi complementation
+        - Lower bound
 - Review of Büchi complementation algorithms
     - Maybe use classification in four approaches as in Tsai, 2010
     - Put emphasis on the ones that will later be used in the experiments, but dont' mention this
 - Fribourg construction
     - Put in relation with above framework
+    - Three optimisations: r2ifc, m, m2
     - What about epsilon-transitions?
-- Experimental evaluations of algorithms
+- Experimental evaluations of complementation algorithms
   - Tsai, results
   - Christian
 
-Experimental investigation
-- "THIS is what I'm doing and THIS is how I am going to investigate it"
-    - Aim: investigate performance of Fribourg construction experimentally
-    - Means: implement it, use GOAL, where other algorithms are implemented, perform experiments
+Performance investigation of the Fribourg construction
+- Summary
+    - Implement in GOAL, compare algorithm with different option combinations internally, compare algorithm with other existing algorithms
 - GOAL
-- Compare algorithm options internally
-- Compare with other algorithms
-    - Justifiy: only piterman, rank, and slice
-- Justifiy measures
-    - Measure only number of generated states (not transitions, acc states, densities, etc.), use of the -r option, take into account time or not?
-- Experiment description
-  - What compare to what
-  - Test data
-  - Justify
+    - What is it? Which complementation algorithms are implemented
+- Implementation
+    - Options, -c, -r2ifc, -m, -m2, -b, -macc, -r, -rr
+    - Correctness: complementation-equivalence test with all option combinations
+- Experiment idea (includes justification)
+    - Test data
+    - Internal: which option combinations to compare and why?
+    - External
+        - Against which other algorithms to compare?
+        - Take best version of each other algorithm (default options)
+    - Timeouts, memory outs: cannot avoid them (problem with exponentiality)
+    - Primary measure: number of states of output automaton
+- Experiment setup
+    - Detailed description of experiments
+        - Comparisons in table form
+        - Environment (UBELIX)
+        - Allocation: Intel Xeon E5-2665 2.40GHz (hnodes), as many cores as they want (16 total)
+        - Timeout 10 min, memory limit 1GB Java heap
 
 Results
 
@@ -37,3 +87,5 @@ Discussion
 - Limitations of own work
     - Test data, many universal automata, fixed size, fixed alphabet size (representativeness of test set), time, memory, some algorithms cannot even be compared, GOAL implementation (dependable?),
     - How I would have done it in an idea research world
+
+Conclusions
