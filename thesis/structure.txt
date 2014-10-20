@@ -49,6 +49,7 @@ Background
 - Review of Büchi complementation algorithms
     - Maybe use classification in four approaches as in Tsai, 2010
     - Put emphasis on the ones that will later be used in the experiments, but dont' mention this
+    - Sources: Vardi, The Büchi complementation saga, 2007
 - Fribourg construction
     - Put in relation with above framework
     - Three optimisations: r2ifc, m, m2
@@ -56,6 +57,10 @@ Background
 - Experimental evaluations of complementation algorithms
   - Tsai, results
   - Christian
+  - Klein, Baier: Experiments with deterministic ω-automata for formulas of linear temporal logic
+  - K ̈ahler, D., Wilke, T.: Complementation, disambiguation, and determinization of Bu ̈chi automata unified
+  - Karmarkar, H., Chakraborty, S.: On minimal odd rankings for Bu ̈chi complemen- tation
+  - Tsay: GOAL extended: Towards a research tool for omega automata and temporal logic
 
 Performance investigation of the Fribourg construction
 - Summary
