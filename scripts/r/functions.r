@@ -31,3 +31,13 @@ summary.cputime <- function(df) {
 summary.realtime <- function(df) {
   summary(df$real_t)
 }
+
+# n: states of input automaton
+# m: states of output automaton
+# Outputs m = (xn)^n
+complexity <- function(n, m) {
+  # x = nth_root(m)/n
+  x <- m^(1/n)/n
+  x <- round(x, digits=3)
+  write(paste0("(",x,"n)^n"), file="")
+}

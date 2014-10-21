@@ -10,8 +10,8 @@ Sistla, Vardi, Wolper	1987		Improvement of Büchi's construction	[2]		2^O(n^2)		
 
 Determinization-based approaches
 Author			Year		Notes					Reference	Complexity		Name in GOAL
-Safra			1988		Proposition of this approach		[3]		2^O(n log n)		safra
-Muller, Schupp		1995		Simpler but worse than Safra		[4]		?			ms
+Safra			1988		First matching the (then) lower bound	[3]		2^O(n log n)		safra
+Muller, Schupp		1995		Simpler but worse than Safra		[4]		2^O(n log n)		ms
 Piterman		2007		Improvement of Safra's construction	[6]		n^(2n)			piterman
 
 Rank-based approaches

@@ -23,3 +23,15 @@ Finite automata and their decision problems
 Rabin, Scott
 1959
 Have it
+
+Safra's Construction (Büchi determinisation)
+--------------------
+NBW to DRW (non-det. Büchi to det. Rabin)
+First NBW determinization procedure to match the lower bound of 2^O(n log n) by Michel
+Safra, On the complexity of omega automata, 1988
+
+Muller-Schupp Construction (Büchi determinisation)
+----------
+NBW to DRW
+Also matches the lower bound of 2^O(n log n)
+Muller, Schupp, Simulating Alternating Tree Automata by Nondeterministic Automata, 1995
