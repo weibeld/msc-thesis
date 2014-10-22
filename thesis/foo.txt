@@ -1,9 +1,0 @@
-@INPROCEEDINGS{1963_muller, 
-author={Muller, David E.}, 
-booktitle={Switching Circuit Theory and Logical Design, Proceedings of the Fourth Annual Symposium on}, 
-title={Infinite sequences and finite machines}, 
-year={1963}, 
-month={Oct}, 
-pages={3-16}, 
-keywords={Circuits;Electric breakdown;Humans;Photoelectron microscopy}, 
-doi={10.1109/SWCT.1963.8},}

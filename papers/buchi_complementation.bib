@@ -2,12 +2,59 @@
 %% http://bibdesk.sourceforge.net/
 
 
-%% Created for Daniel Weibel at 2014-10-22 18:03:26 +0200 
+%% Created for Daniel Weibel at 2014-10-22 19:28:03 +0200 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
+
+@incollection{1999_thomas,
+	Annote = {Non-determinisation and non-Ramsey construction (one of the first). Not sure if it is really a rank-based construction.
+
+NBW --> WAPA (weak alternating parity automaton)
+WAPA --> complement WAPA
+WAPA --> NBW
+
+Implemented in GOAL as "wapa"},
+	Author = {Thomas, Wolfgang},
+	Booktitle = {Jewels are Forever},
+	Date-Added = {2014-10-22 17:00:39 +0000},
+	Date-Modified = {2014-10-22 17:02:42 +0000},
+	Doi = {10.1007/978-3-642-60207-8_10},
+	Editor = {Karhum{\"a}ki, Juhani and Maurer, Hermann and P{\u a}un, Gheorghe and Rozenberg, Grzegorz},
+	Isbn = {978-3-642-64304-0},
+	Keywords = {Construction, Rank-based},
+	Language = {English},
+	Pages = {109-120},
+	Publisher = {Springer Berlin Heidelberg},
+	Title = {Complementation of B{\"u}chi Automata Revisited},
+	Url = {http://dx.doi.org/10.1007/978-3-642-60207-8_10},
+	Year = {1999},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QE3BkZi8xOTk5X3Rob21hcy5wZGbSFwsYGVdOUy5kYXRhTxEBpAAAAAABpAACAAAMTWFjaW50b3NoIEhEAAAAAAAAAAAAAAAAAAAAzhRNMkgrAAABIEroDzE5OTlfdGhvbWFzLnBkZgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEhUDbQbatzAAAAAAAAAAAAAQADAAAJIAAAAAAAAAAAAAAAAAAAAANwZGYAABAACAAAzhQxEgAAABEACAAA0G2PUwAAAAEAGAEgSugAezTfAHpTeAAFwP4ABcCQAAISKQACAEVNYWNpbnRvc2ggSEQ6VXNlcnM6AGR3OgBEZXNrdG9wOgB0aGVzaXM6AHBhcGVyczoAcGRmOgAxOTk5X3Rob21hcy5wZGYAAA4AIAAPADEAOQA5ADkAXwB0AGgAbwBtAGEAcwAuAHAAZABmAA8AGgAMAE0AYQBjAGkAbgB0AG8AcwBoACAASABEABIAMlVzZXJzL2R3L0Rlc2t0b3AvdGhlc2lzL3BhcGVycy9wZGYvMTk5OV90aG9tYXMucGRmABMAAS8AABUAAgAJ//8AAIAG0hscHR5aJGNsYXNzbmFtZVgkY2xhc3Nlc11OU011dGFibGVEYXRhox0fIFZOU0RhdGFYTlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVkQXJjaGl2ZXLRJidUcm9vdIABAAgAEQAaACMALQAyADcAQABGAE0AVQBgAGcAagBsAG4AcQBzAHUAdwCEAI4ApACpALECWQJbAmACawJ0AoIChgKNApYCmwKoAqsCvQLAAsUAAAAAAAACAQAAAAAAAAAoAAAAAAAAAAAAAAAAAAACxw==}}
+
+@incollection{2003_Gurumurthy,
+	Annote = {Improvements to the rank-based construction of Kupferman, Vardi (2001)
+Implementation and experimental comparison of the individual optimisations within the construction
+
+Probably the "waa" complementation method in GOAL (which is the implementation of Kupferman, Vardi, 2001) contains the optimisation of this paper (see API)},
+	Author = {Gurumurthy, Sankar and Kupferman, Orna and Somenzi, Fabio and Vardi, MosheY.},
+	Booktitle = {Correct Hardware Design and Verification Methods},
+	Date-Added = {2014-10-22 16:37:53 +0000},
+	Date-Modified = {2014-10-22 16:39:25 +0000},
+	Doi = {10.1007/978-3-540-39724-3_10},
+	Editor = {Geist, Daniel and Tronci, Enrico},
+	Isbn = {978-3-540-20363-6},
+	Keywords = {Construction, Rank-based},
+	Language = {English},
+	Pages = {96-110},
+	Publisher = {Springer Berlin Heidelberg},
+	Series = {Lecture Notes in Computer Science},
+	Title = {On Complementing Nondeterministic B{\"u}chi Automata},
+	Url = {http://dx.doi.org/10.1007/978-3-540-39724-3_10},
+	Volume = {2860},
+	Year = {2003},
+	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QF3BkZi8yMDAzX2d1cnVtdXJ0aHkucGRm0hcLGBlXTlMuZGF0YU8RAbQAAAAAAbQAAgAADE1hY2ludG9zaCBIRAAAAAAAAAAAAAAAAAAAAM4UTTJIKwAAASBK6BMyMDAzX2d1cnVtdXJ0aHkucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIURT0G2mPAAAAAAAAAAAAAEAAwAACSAAAAAAAAAAAAAAAAAAAAADcGRmAAAQAAgAAM4UMRIAAAARAAgAANBtihwAAAABABgBIEroAHs03wB6U3gABcD+AAXAkAACEikAAgBJTWFjaW50b3NoIEhEOlVzZXJzOgBkdzoARGVza3RvcDoAdGhlc2lzOgBwYXBlcnM6AHBkZjoAMjAwM19ndXJ1bXVydGh5LnBkZgAADgAoABMAMgAwADAAMwBfAGcAdQByAHUAbQB1AHIAdABoAHkALgBwAGQAZgAPABoADABNAGEAYwBpAG4AdABvAHMAaAAgAEgARAASADZVc2Vycy9kdy9EZXNrdG9wL3RoZXNpcy9wYXBlcnMvcGRmLzIwMDNfZ3VydW11cnRoeS5wZGYAEwABLwAAFQACAAn//wAAgAbSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXU5TTXV0YWJsZURhdGGjHR8gVk5TRGF0YVhOU09iamVjdNIbHCIjXE5TRGljdGlvbmFyeaIiIF8QD05TS2V5ZWRBcmNoaXZlctEmJ1Ryb290gAEACAARABoAIwAtADIANwBAAEYATQBVAGAAZwBqAGwAbgBxAHMAdQB3AIQAjgCoAK0AtQJtAm8CdAJ/AogClgKaAqECqgKvArwCvwLRAtQC2QAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAALb}}
 
 @incollection{2009_karmarkar,
 	Annote = {Improvement of the rank-based complementation by Schewe (2009) (which is an improvement of Friedgut, Kupferman, Vardi, 2006, which is an improvment of Kupferman, Vardi, 2001).
@@ -64,11 +111,15 @@ Alekto is a software for complementation of B{\"u}chi automata, using an improve
 	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QFHBkZi8yMDEyX2JyZXVlcnMucGRm0hcLGBlXTlMuZGF0YU8RAagAAAAAAagAAgAADE1hY2ludG9zaCBIRAAAAAAAAAAAAAAAAAAAAM4UTTJIKwAAASBK6BAyMDEyX2JyZXVlcnMucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABITpq0G2U4AAAAAAAAAAAAAEAAwAACSAAAAAAAAAAAAAAAAAAAAADcGRmAAAQAAgAAM4UMRIAAAARAAgAANBteMAAAAABABgBIEroAHs03wB6U3gABcD+AAXAkAACEikAAgBGTWFjaW50b3NoIEhEOlVzZXJzOgBkdzoARGVza3RvcDoAdGhlc2lzOgBwYXBlcnM6AHBkZjoAMjAxMl9icmV1ZXJzLnBkZgAOACIAEAAyADAAMQAyAF8AYgByAGUAdQBlAHIAcwAuAHAAZABmAA8AGgAMAE0AYQBjAGkAbgB0AG8AcwBoACAASABEABIAM1VzZXJzL2R3L0Rlc2t0b3AvdGhlc2lzL3BhcGVycy9wZGYvMjAxMl9icmV1ZXJzLnBkZgAAEwABLwAAFQACAAn//wAAgAbSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXU5TTXV0YWJsZURhdGGjHR8gVk5TRGF0YVhOU09iamVjdNIbHCIjXE5TRGljdGlvbmFyeaIiIF8QD05TS2V5ZWRBcmNoaXZlctEmJ1Ryb290gAEACAARABoAIwAtADIANwBAAEYATQBVAGAAZwBqAGwAbgBxAHMAdQB3AIQAjgClAKoAsgJeAmACZQJwAnkChwKLApICmwKgAq0CsALCAsUCygAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAALM}}
 
 @inproceedings{1991_klarlund,
-	Annote = {The first rank-based construction from 2001 by Kupferman and Vardi is based on this paper},
+	Annote = {First to circumvent the need for determinization.
+
+2^O(n log n)
+
+Rank-based construction from 2001 by Kupferman and Vardi is based on this paper.},
 	Author = {Klarlund, Nils},
 	Booktitle = {Foundations of Computer Science, 1991. Proceedings., 32nd Annual Symposium on},
 	Date-Added = {2014-10-22 14:48:16 +0000},
-	Date-Modified = {2014-10-22 14:49:29 +0000},
+	Date-Modified = {2014-10-22 16:24:51 +0000},
 	Doi = {10.1109/SFCS.1991.185391},
 	Keywords = {Construction, Rank-based},
 	Month = {Oct},
@@ -236,10 +287,17 @@ There is a preliminary conference version of this paper from 2004},
 @article{Kupferman:2001,
 	Acmid = {377993},
 	Address = {New York, NY, USA},
-	Annote = {Introduction of the rank-based construction approach},
+	Annote = {Introduction of the rank-based construction approach.
+
+NBW --> complement UCW (universal co-B{\"u}chi automaton)
+UCW --> WAA (weak alternating automaton)
+WAA --> NBW
+
+Implemented in GOAL as "waa".
+},
 	Author = {Kupferman, Orna and Vardi, Moshe Y.},
 	Date-Added = {2014-10-22 09:45:35 +0000},
-	Date-Modified = {2014-10-22 14:50:42 +0000},
+	Date-Modified = {2014-10-22 16:18:28 +0000},
 	Doi = {10.1145/377978.377993},
 	Issn = {1529-3785},
 	Issue_Date = {July 2001},
@@ -754,10 +812,20 @@ Text not accessible},
 	Bdsk-File-1 = {YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJXTlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAFgAdccmVsYXRpdmVQYXRoWWFsaWFzRGF0YV8QF3BkZi8yMDAyX3JvZ2dlbmJhY2gucGRm0hcLGBlXTlMuZGF0YU8RAbQAAAAAAbQAAgAADE1hY2ludG9zaCBIRAAAAAAAAAAAAAAAAAAAAM4UTTJIKwAAASBK6BMyMDAyX3JvZ2dlbmJhY2gucGRmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABID/Az2tGSwAAAAAAAAAAAAEAAwAACSAAAAAAAAAAAAAAAAAAAAADcGRmAAAQAAgAAM4UMRIAAAARAAgAAM9rKisAAAABABgBIEroAHs03wB6U3gABcD+AAXAkAACEikAAgBJTWFjaW50b3NoIEhEOlVzZXJzOgBkdzoARGVza3RvcDoAdGhlc2lzOgBwYXBlcnM6AHBkZjoAMjAwMl9yb2dnZW5iYWNoLnBkZgAADgAoABMAMgAwADAAMgBfAHIAbwBnAGcAZQBuAGIAYQBjAGgALgBwAGQAZgAPABoADABNAGEAYwBpAG4AdABvAHMAaAAgAEgARAASADZVc2Vycy9kdy9EZXNrdG9wL3RoZXNpcy9wYXBlcnMvcGRmLzIwMDJfcm9nZ2VuYmFjaC5wZGYAEwABLwAAFQACAAn//wAAgAbSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXU5TTXV0YWJsZURhdGGjHR8gVk5TRGF0YVhOU09iamVjdNIbHCIjXE5TRGljdGlvbmFyeaIiIF8QD05TS2V5ZWRBcmNoaXZlctEmJ1Ryb290gAEACAARABoAIwAtADIANwBAAEYATQBVAGAAZwBqAGwAbgBxAHMAdQB3AIQAjgCoAK0AtQJtAm8CdAJ/AogClgKaAqECqgKvArwCvwLRAtQC2QAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAALb}}
 
 @incollection{2006_althoff,
+	Annote = {Compares the Safra with the Muller-Schupp construction
+
+Optimisation for Muller-Schupp
+
+Implementation and experimental comparison of the different constructions
+
+According to the GOAL API:
+In the Safra construction: after evolution of the Safra trees, the steps of computing successors and creating sons are exchanged in this version of the Safra construction, as compared to the original Safra construction.
+This small change is present in GOAL as "modifiedsafra".
+Anyway, the only difference in GOAL between safra and modifiedsafra is the exchange of these two steps.},
 	Author = {Althoff, ChristophSchulte and Thomas, Wolfgang and Wallmeier, Nico},
 	Booktitle = {Implementation and Application of Automata},
 	Date-Added = {2014-10-21 17:26:42 +0000},
-	Date-Modified = {2014-10-22 15:51:44 +0000},
+	Date-Modified = {2014-10-22 17:24:36 +0000},
 	Doi = {10.1007/11605157_22},
 	Editor = {Farr{\'e}, Jacques and Litovsky, Igor and Schmitz, Sylvain},
 	Isbn = {978-3-540-31023-5},

@@ -12,11 +12,13 @@ Determinization-based approaches
 Author			Year		Notes					Reference	Complexity		Name in GOAL
 Safra			1988		First matching the (then) lower bound	[3]		2^O(n log n)		safra
 Muller, Schupp		1995		Simpler but worse than Safra		[4]		2^O(n log n)		ms
+Althoff			2006		Like Safra but comp succ <-> crt sons   [11]		-			modifiedsafra
 Piterman		2007		Improvement of Safra's construction	[6]		n^(2n)			piterman
 
 Rank-based approaches
 Author			Year		Notes					Reference	Complexity		Name in GOAL
-Kupferman, Vardi	2001		Proposition of this approach		[5]		2^O(n log n)		-
+Thomas			1999		NBW > WAPA > complement WAPA > NBW	[10]		-			wapa
+Kupferman, Vardi	2001		NBW > complement UCW > WAA > NBW	[5]		2^O(n log n)		waa
 Schewe			2009		Improvment of Kupferman and Vardi's	[9]		O((0.76n)^n)		rank
 
 Slice-based approaches
@@ -35,16 +37,13 @@ References
 [7] Vardi, Wilke: Automata: from logics to algorithms, 2007.
 [8] Kähler, Wilke: Complementation, disambiguation, and determinization of Büchi automata unified, 2008.
 [9] Schewe: Büchi complementation made tight, 2009.
+[10] Thomas: Complementation of Büchi Automata Revisited, 1999.
+[11] Althoff: Observations on Determinization of Bu ̈chi Automata, 2006.
 
 
-Summary
-Listed NBW constructions: 	ramsey, safra, ms, piterman, rank, slice	6
-Not listed NBW constructions:	modifiedsafra, waa, wapa			3
-Total NBW constructions:							9
-
-Other constructions:		kurshan						DBW complementation
-				classic 					NFA, DFA complementation
-				deterministic					Test if Büchi automaton is deterministic (?)
+Other constructions in GOAL:	kurshan				DBW complementation
+				classic 			NFA, DFA complementation
+				deterministic			Test if Büchi automaton is deterministic (?)
 
 
 Acronyms
