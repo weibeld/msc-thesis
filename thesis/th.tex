@@ -4,7 +4,8 @@
 
 % Allow direct typing of ä, ö, ü, for example in "Büchi"
 \usepackage[utf8]{inputenc}
-\usepackage{amssymb}
+\usepackage{amssymb,amsmath}
+\usepackage{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,arrows,shapes,matrix}
 
@@ -48,6 +49,26 @@ The complementation of non-deterministic Büchi automata is hard. It has been pr
 
 % Overview
 
+
+% 2. The Büchi complementation problem
+% 2.1 Preliminaries
+% Used naming convention (NBW, DBW, etc.)
+%   2.1.1 Büchi automata
+%     - Definition
+%     - DBW vs. NBW
+%     - Equivalence with omega-regular languages (NBW)
+%     - DBW weaker than NBW (proof)
+%   2.1.2 Other omega-automata
+%     - Muller, Rabin, Streett, Parity
+%     - McNaughton's Theorem (NBW = DMW)
+%     - Complete picture of equivalences
+%   2.1.2 Complementation of Büchi automata
+%     - NBW closed under complementation (DBW not, proof)
+%     - Example NFA/DFA
+%     - Complementation of DBW (Kurshan)
+%     - Complexity of NBW complementation (lower bounds)
+% 2.2 Review of Büchi Complementation Constructions
+% 2.3 Empirical Performance Investigations
 \chapter{The Büchi Complementation Problem}
 \section{Preliminaries}
 \subsection{Büchi Automata}
@@ -105,7 +126,7 @@ Furthermore, non-deterministic Büchi automata are equivalent to other classes o
 \end{figure}
 
 \subsection{Complementation of Büchi Automata}
-It has been proved by Büchi himself that Büchi automata are closed under complementation [cite Büchi]. That means that for every Büchi automaton, there exists another Büchi automaton accepting the complement language of the initial automaton.
+It has been proved by Büchi himself that Büchi automata are closed under complementation~\cite{buchi1960decision}. That means that for every Büchi automaton, there exists another Büchi automaton accepting the complement language of the initial automaton.
 
 Let us denote by $L(A)$ the language recognised by Büchi automaton $A$. Then the complement language $\overline{L(A)}$ of $L(A)$ is $\overline{L(A)} = \Sigma^\omega \setminus L(A)$.
 
@@ -143,6 +164,10 @@ In the case of finite-word automata, the complementation procedure for DFA provi
 \chapter{Discussion}
 
 \chapter{Conclusions}
+
+
+\bibliographystyle{dwbibstyle}
+\bibliography{../bibliography/buchi_complementation}
 
 
 \end{document}

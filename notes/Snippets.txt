@@ -1,0 +1,2 @@
+The inequivalence of NBW and DBW is the main reason causing the Büchi complementation problem
+--> Niessner, 1997
