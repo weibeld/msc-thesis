@@ -6,7 +6,7 @@ dw-10.10.2014
 Ramsey-based approaches
 Author			Year		Notes					Reference	Complexity		Name in GOAL
 Büchi			1962		Original construction			[1]		2^(2^O(n))		-
-Sistla, Vardi, Wolper	1987		Improvement of Büchi's construction	[2]		2^O(n^2)		ramsey
+Sistla, Vardi, Wolper	1987		Improvement of Büchi's construction	[2]		2^O(n^2) (2^(4n^2))	ramsey
 
 Determinization-based approaches
 Author			Year		Notes					Reference	Complexity		Name in GOAL

@@ -25,4 +25,6 @@
 
 - DBW are not closed under complementation, proof in Thomas, 1999, p. 14 bottom
 
+- Notation for automata with NB, DB, NR, etc.: Safra, On the complexity of omega-automata, 1988
+
 
