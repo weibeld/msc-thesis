@@ -1,4 +1,4 @@
-  %\documentclass[a4paper]{report}
+%\documentclass[a4paper]{report}
 %\usepackage{a4wide}
 \documentclass{scrreprt}
 
@@ -10,6 +10,10 @@
 \usetikzlibrary{automata,positioning,arrows,shapes,matrix}
 
 \newcommand{\om}{{$\omega$}}
+
+% Indentation of second and following lines figure captions. Default indentation
+% in KOMA script is length of "Figure X.X: ".
+\setcapindent{2em}
 
 \tikzset{
   font=\scriptsize\sffamily
@@ -62,11 +66,13 @@ The complementation of non-deterministic Büchi automata is hard. It has been pr
 %     - Muller, Rabin, Streett, Parity
 %     - McNaughton's Theorem (NBW = DMW)
 %     - Complete picture of equivalences
-%   2.1.2 Complementation of Büchi automata
+%   2.1.3 Complementation of Büchi automata
 %     - NBW closed under complementation (DBW not, proof)
 %     - Example NFA/DFA
 %     - Complementation of DBW (Kurshan)
-%     - Complexity of NBW complementation (lower bounds)
+%   2.1.4 Complexity of Büchi Complementation
+%     - Notion of state blow-up
+%     - Lower bounds for the state blow-up
 % 2.2 Review of Büchi Complementation Constructions
 % 2.3 Empirical Performance Investigations
 \chapter{The Büchi Complementation Problem}
@@ -109,43 +115,106 @@ Non-deterministic Büchi automata in turn are equivalent to the \om-regular lang
 
 Furthermore, non-deterministic Büchi automata are equivalent to other classes of \om-automata such as Muller, Rabin, Streett, and Parity automata. Within these classes, determinstic and non-deterministic automata are equivalent. This means that every Büchi automaton can be translated to an equivalent deterministic or non-deterministic Muller, Rabin, Streett, or Parity automaton, and any of these latter automata can be translated to a non-deterministic Büchi automaton. Figure~\ref{equivalences} summarises these expressive relations of Büchi automata.
 
+
+
+\subsection{Other \om-Automata}
+%     - Muller, Rabin, Streett, Parity
+%     - McNaughton's Theorem (NBW = DMW)
+%     - Complete picture of equivalences
+After the introduction of Büchi automata in 1962, several other types of \om-automata have been proposed. The best-known ones are Muller (1963)~\cite{1963_muller}, Rabin (1969)~\cite{rabin1969decidability}, Streett (1982)~\cite{Streett1982121}, and parity (1985)~\cite{1985_mostowski} automata. These \om-automata differ from Büchi automata and among each other only in their acceptance condition.
+
+% Itemize of all acceptance conditions, including Büchi
+
+% For all of them exist deterministic and non-deterministic versions
+% Properties, such as Rabin acceptance condition is dual of Streett
+
+% McNaughtons Theorem (1966) \cite{McNaughton1966}, another proof in \cite{Thomas:1991}: NBW = DMW
+
+% It turns out that all of NMW, DMW, NRW, DRW, NSW, DSW, NPW, DPW are equivalent among each other
+
+% Picture of expressive equivalences
 \begin{figure}[htb]
 \begin{center}
-\begin{tikzpicture}[item/.style={rectangle,draw,text width=3cm}]
-\node[item] (left) {Other \om-auomata};
-\node[item] (middle) [right=of left] {Non-deterministic\\Büchi automata};
-\node[item] (right)  [right=of middle] {\om-regular languages};
-\node[item] (bottom) [below=of middle] {Deterministic\\Büchi automata};
+\begin{tikzpicture}[item/.style={ellipse,draw,text width=2.6cm,align=center}]
+% \node[item] (left) {NBW\\(DBW)};
+% \node [above=of left] {Büchi Automata};
+% \node[item] (middle) [right=of left] {NMW, DMW,\\NRW, DRW,\\NSW, DSW,\\NPW, DPW};
+% \node [above=of middle] {Other \om-Automata};
+% \node[item] (right)  [right=of middle] {\om-Regular\\Languages};
+\matrix[column sep=1.1cm,row sep=0.25cm]{
+\node {Büchi Automata}; & \node {Other \om-Automata}; & & \\
+\node[item] (left) {NBW\\(DBW)}; & \node[item] (middle) {NMW, DMW,\\NRW, DRW,\\NSW, DSW,\\NPW, DPW}; & \node[item] (right) {\om-Regular\\Languages}; &  \\
+};
 \path[<->] (left) edge (middle)
            (middle) edge (right);
-\path[->] (bottom) edge (middle);
 \end{tikzpicture}
-\caption{Expressive relations of Büchi automata.}
+\caption{Non-deterministic Büchi automata (NBW) are expressively equivalent to Muller, Rabin, Streett, and parity automata (both deterministic and non-deterministic), and to the \om-regular languages. Deterministic Büchi automata (DBW) are less expressive than NBW.}
 \label{equivalences}
 \end{center}
 \end{figure}
 
-\subsection{Complementation of Büchi Automata}
-It has been proved by Büchi himself that Büchi automata are closed under complementation~\cite{buchi1960decision}. That means that for every Büchi automaton, there exists another Büchi automaton accepting the complement language of the initial automaton.
 
-Let us denote by $L(A)$ the language recognised by Büchi automaton $A$. Then the complement language $\overline{L(A)}$ of $L(A)$ is $\overline{L(A)} = \Sigma^\omega \setminus L(A)$.
+\subsection{Complementation of Büchi Automata}
+Büchi automata are closed under complementation. This result has been proved by Büchi himself when he introduced Büchi automata in~\cite{buchi1960decision}. Basically, this means that for every Büchi automata $A$, there exists another Büchi automaton $B$ that recognises the complement language of $A$, that is, $L(B) = \overline{L(A)}$.
+
+It is interesting to see that this closure does not hold for the specific case of DBW. That means that while for every DBW a complement Büchi automaton does indeed exist, following from the above closure property for Büchi automata in general, this automaton is not necessarily a DBW. The complement of a DBW may be, and often is, as we will see, a NBW. This result is proved in~\cite{Thomas:1991} (p. 15).
+
+The problem of Büchi complementation consists now in finding a procedure (usually called a construction) that takes as input any Büchi automaton $A$ and outputs another Büchi automaton $B$ with $L(B) = \overline{L(A)}$, as shown below.
 
 \hbox to \hsize{\hfill{
-\begin{tikzpicture}[item/.style={rectangle,draw,text width=2.5cm}]
-\node[] (left) {$A$ with $L(A)$};
-\node[item] (middle) [right=of left] {Complementation algorithm};
-\node[] (right)  [right=of middle] {$B$ with $L(B) = \overline{L(A)}$}; 
+\begin{tikzpicture}[item/.style={rectangle,draw,text width=2.5cm,align=center}]
+\node[] (left) {Büchi Automaton $A$};
+\node[item] (middle) [right=of left] {Complementation construction};
+\node[text width=2.5cm,align=center] (right)  [right=of middle] {Büchi automaton $B$\\$L(B) = \overline{L(A)}$}; 
 \path[->] (left) edge (middle)
           (middle) edge (right);
 \end{tikzpicture}}\hfill}
 
-The problem of Büchi complementation can thus be summarised as follows. Given a Büchi automaton $A$, find a Büchi automaton $B$, such that $L(B) = \overline{L(A}$. For solving this problem we need an algorithm that takes $A$ as input and returns $B$ as output. 
+For complementation of automata in general, construction usually differ depending on whether the input automaton $A$ is deterministic or non-deterministic. Complementation of deterministic automata is often simpler and may sometimes even provide a solution for the complementation of the non-deterministic ones.
 
-As a starting point, let us look at the complementation problem for normal finite state automata on finite words. Normal finite state automata recognise the regular languages and are also closed under complementation. For deterministic finite state automata, a possible complementation algorithm consists in simply inverting the accepting and non-accepting states of the automaton. Inuitively, every word that leaves the input automaton in an accepting state will leave the output automoaton in a non-accepting state, and vice versa. For the case of non-deterministic automata, one can take adavantage of the fact that every non-deterministic automata can be converted to an equivalent deterministic automaton. A standard algorithm for this conversion is the subset-construction, which is described in detail in [cite Hopcroft, Sec. 2.3.5]. The subset-construction basically takes all the subsets of states of the input automaton as states of the output automaton. A possible complementation algorithm for non-deterministic finite state automata consists thus in determinisation by the subset-construction and complementation by switching accepting and non-accepting states.
+To illustrate this, we can briefly look at the complementation of the ordinary finite state automata on finite words (FA). FA are also closed under complementation~\cite{hopcroft2006automata} (p. 133). A DFA can be complemented by simply switching its accepting and non-accepting states~\cite{hopcroft2006automata} (p. 133). Now, since NFA and DFA are equivalent~\cite{hopcroft2006automata} (p. 60), a NFA can be complemented by converting it to an equivalent DFA first, and then complement this DFA. Thus, the complementation construction for DFA provides a solution for the complementation of NFA.
 
-Again, the cases of deterministic and non-deterministic automata are treated separately. For DBW, the method of switching accepting and non-accepting states does not work. Imagine for example that $\rho$ is the run of the word $x \in \Sigma^\omega$ of automaton $A$ (a DBW has exactly one run for every word of $\Sigma^\omega$). If $\textrm{inf}(\rho)$ contains both an accepting and a non-accepting state, then the switching of accepting and non-accepting states has no effect on the acceptance of $x$, as it is accepted in both cases. A working procedure for complementing DBW has been described by Kurshan [cite Kurshan, 1987]. Kurshan's construction is relatively easy and can be described in one sentence: make all states of the input automaton $A$ non-accepting, add another copy of $A$, remove all its accepting states and make the non-accepting states accepting, and finally add transitions from the states of the first copy of $A$ to the corresponding destination states in the second copy of $A$. The resulting automaton is an NBW $B$ that accepts the complement language of the input DBW $A$.
+Returning to Büchi automata, the case is more complicated due to the inequivalence of NBW and DBW. The complementation of DBW is indeed ``easy'', as was the complementation of DFA. There is a construction, introduced in 1987 by Kurshan~\cite{Kurshan198759}, that can complement a DBW to a NBW in polynomial time. The size of the complement NBW is furthermore at most the double of the size of the input DBW.
 
-In the case of finite-word automata, the complementation procedure for DFA provided a solution for the complementationn of NFA, because there is a translation from every NFA to an equivalent DFA. For Büchi automata this is however not the case. As mentioned above, there are NBW for which no equivalent DBW exists. We say that NBW can in general not be determinised.
+If now for every NBW there would exist an equivalent DBW, an obvious solution to the general Büchi complementation problem would be to transform the input automaton to a DBW (if it is not already a DBW) and then apply Kurshan's construction to the DBW. However, as we have seen, this is not the case. There are NBW that cannot be turned into equivalent DBW.
+
+Hence, for NBW, other ways of complementing them have to be found. In the next section we will review the most important of these ``other ways'' that have been proposed in the last 50 years since the introduction of Büchi automata. The Fribourg construction, that we present in Chapter~\ref{fribourg_construction}, is another alternative way of achievin this same aim.
+
+
+\subsection{State Complexity of Büchi Complementation}
+
+Constructions for complementing NBW turned out to be very complex. Especially the blow-up in number of states from the input automaton to the output automaton is significant. For example, the original complementation construction proposed by Büchi~\cite{buchi1960decision} involved a doubly exponential blow-up. That is, if the input automaton has $n$ states, then for some constant $c$ the output automaton has, in the worst case, $c^{c^n}$ states~\cite{PrasadSistla1987217}. If we set $c$ to 2, then an input automaton with six states would result in a complement automaton with about 18 quintillion ($18 \times 10^{18}$) states.
+
+Generally, state blow-up functions, like the $c^{c^n}$ above, mean the absolute worst cases. It is the maximum number of states a construction \emph{can} produce. For by far most input automata of size $n$ a construction will produce much fewer states. Nevertheless, worst case state blow-ups are an important (the most important?) performance measure for Büchi complementation constructions. A main goal in the development of new constructions is to bring this number down.
+
+A question that arises is, how much this number can be brought down? Researchers have investigated this question by trying to establish so called lower bounds. A lower bound is a function for which it is proven that no state blow-up of any construction can be less than it. The first lower bound for Büchi complementation has been established by Michel in 1988 at $n!$~\cite{michel1988}. This means that the state blow-up of any Büchi complementation construction can never be less than $n!$.
+
+There are other notations that are often used for state blow-ups. One has the form $(xn)^n$, where $x$ is a constant. Michel's bound of $n!$ would be about $(0.36n)^n$ in this case~\cite{2006_yan}. We will often use this notation, as it is convenient for comparisons. Another form has 2 as the base and a big-O term in the exponent. In this case, Michel's $n!$ would be $2^{O(n\,log\,n)}$~\cite{2006_yan}.
+
+Michel's lower bound remained valid for almost two decades until in 2006 Yan showed a new lower bound of $(0.76n)^n$~\cite{2006_yan}. This does not mean that Michel was wrong with his lower bound, but just too reserved. The best possible blow-up of a construction can now be only $(0.76n)^n$ and not $(0.36n)^n$ as believed before. In 2009, Schewe proposed a construction with a blow-up of exactly $(0.76n)^n$ (modulo a polynomial factor)~\cite{schewe2009buchi}. He provided thus an upper bound that matches Yan's lower bound. The lower bound of $(0.76n)^n$ can thus not rise any further and seems to be definitve.
+
+
+% \subsection{Complementation of Büchi Automata}
+% It has been proved by Büchi himself that Büchi automata are closed under complementation~\cite{buchi1960decision}. That means that for every Büchi automaton, there exists another Büchi automaton accepting the complement language of the initial automaton.
+
+% Let us denote by $L(A)$ the language recognised by Büchi automaton $A$. Then the complement language $\overline{L(A)}$ of $L(A)$ is $\overline{L(A)} = \Sigma^\omega \setminus L(A)$.
+
+% \hbox to \hsize{\hfill{
+% \begin{tikzpicture}[item/.style={rectangle,draw,text width=2.5cm}]
+% \node[] (left) {$A$ with $L(A)$};
+% \node[item] (middle) [right=of left] {Complementation algorithm};
+% \node[] (right)  [right=of middle] {$B$ with $L(B) = \overline{L(A)}$}; 
+% \path[->] (left) edge (middle)
+%           (middle) edge (right);
+% \end{tikzpicture}}\hfill}
+
+% The problem of Büchi complementation can thus be summarised as follows. Given a Büchi automaton $A$, find a Büchi automaton $B$, such that $L(B) = \overline{L(A}$. For solving this problem we need an algorithm that takes $A$ as input and returns $B$ as output. 
+
+% As a starting point, let us look at the complementation problem for normal finite state automata on finite words. Normal finite state automata recognise the regular languages and are also closed under complementation. For deterministic finite state automata, a possible complementation algorithm consists in simply inverting the accepting and non-accepting states of the automaton. Inuitively, every word that leaves the input automaton in an accepting state will leave the output automoaton in a non-accepting state, and vice versa. For the case of non-deterministic automata, one can take adavantage of the fact that every non-deterministic automata can be converted to an equivalent deterministic automaton. A standard algorithm for this conversion is the subset-construction, which is described in detail in [cite Hopcroft, Sec. 2.3.5]. The subset-construction basically takes all the subsets of states of the input automaton as states of the output automaton. A possible complementation algorithm for non-deterministic finite state automata consists thus in determinisation by the subset-construction and complementation by switching accepting and non-accepting states.
+
+% Again, the cases of deterministic and non-deterministic automata are treated separately. For DBW, the method of switching accepting and non-accepting states does not work. Imagine for example that $\rho$ is the run of the word $x \in \Sigma^\omega$ of automaton $A$ (a DBW has exactly one run for every word of $\Sigma^\omega$). If $\textrm{inf}(\rho)$ contains both an accepting and a non-accepting state, then the switching of accepting and non-accepting states has no effect on the acceptance of $x$, as it is accepted in both cases. A working procedure for complementing DBW has been described by Kurshan [cite Kurshan, 1987]. Kurshan's construction is relatively easy and can be described in one sentence: make all states of the input automaton $A$ non-accepting, add another copy of $A$, remove all its accepting states and make the non-accepting states accepting, and finally add transitions from the states of the first copy of $A$ to the corresponding destination states in the second copy of $A$. The resulting automaton is an NBW $B$ that accepts the complement language of the input DBW $A$.
+
+% In the case of finite-word automata, the complementation procedure for DFA provided a solution for the complementationn of NFA, because there is a translation from every NFA to an equivalent DFA. For Büchi automata this is however not the case. As mentioned above, there are NBW for which no equivalent DBW exists. We say that NBW can in general not be determinised.
 
 \section{Review of Proposed Büchi Complementation Algorithms}
 \subsection{Ramsey-Based Approaches}
@@ -156,6 +225,7 @@ In the case of finite-word automata, the complementation procedure for DFA provi
 \section{Empirical Performance Investigations}
 
 \chapter{The Fribourg Construction}
+\label{fribourg_construction}
 
 \chapter{Performance Investigation of the Fribourg Construction}
 

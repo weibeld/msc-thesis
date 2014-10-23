@@ -984,7 +984,7 @@ FUNCTION {incollection}
       format.publisher.address output
       format.edition output
       format.date "year" output.check
-      format.isbn output
+      %format.isbn output
     }
     { format.incoll.inproc.crossref output.nonnull
       format.chapter.pages output
@@ -1010,7 +1010,7 @@ FUNCTION {inproceedings}
         }
       if$
       format.date "year" output.check
-      format.isbn output
+      %format.isbn output
     }
     { format.incoll.inproc.crossref output.nonnull
       format.pages output
@@ -1121,7 +1121,7 @@ FUNCTION {proceedings}
      }
   if$
       format.date "year" output.check
-  format.isbn output
+  %format.isbn output
   format.note output
   fin.entry
 }

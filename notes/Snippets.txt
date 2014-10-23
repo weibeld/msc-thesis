@@ -1,2 +1,14 @@
 The inequivalence of NBW and DBW is the main reason causing the Büchi complementation problem
 --> Niessner, 1997
+
+Doubly exponential (as in Büchi's original construction) explained in
+--> Sistla, 1987
+
+Introducing papers of Muller, Rabin, Streett, and parity automata
+--> Löding, 1999
+
+Complementation of deterministic Muller, Rabin, Streett, and parity automata
+--> Löding, 1999, p. 4
+
+Michel's n! lower bound
+--> Löding, 1999, p. 4
