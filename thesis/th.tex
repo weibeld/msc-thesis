@@ -11,6 +11,10 @@
 
 \newcommand{\om}{{$\omega$}}
 
+% Make tables less cramped
+{\renewcommand{\arraystretch}{1.15}
+\renewcommand{\tabcolsep}{0.1cm}  
+
 % Indentation of second and following lines figure captions. Default indentation
 % in KOMA script is length of "Figure X.X: ".
 \setcapindent{2em}
@@ -78,42 +82,63 @@ The complementation of non-deterministic Büchi automata is hard. It has been pr
 \chapter{The Büchi Complementation Problem}
 \section{Preliminaries}
 \subsection{Büchi Automata}
-\subsubsection{Definition}
-Informally speaking, a Büchi automaton is a finite state automaton running on input words of infinite length. That is, once started reading a word, a Büchi automaton never stops. A word is accepted by a Büchi automaton, if there exists a run (sequence of states) for it that includes infinite repetitions of at least one accepting state. In other words, if during reading a word a Büchi automaton goes through one or more accepting states infinitely often, the word is accepted, and otherwise it is rejected.
+Büchi automata have been introduced in 1962 by Büchi~\cite{buchi1960decision}. 
 
-More formally, a Büchi automaton $A$ consists of a 5-tuple $A = (\Sigma, Q, q_0, \delta, F)$, the components of which are the following.
+\subsubsection{Definitions}
+Informally speaking, a Büchi automaton is a finite state automaton running on input words of infinite length. That is, once started reading a word, a Büchi automaton never stops. A word is accepted if it results in a run (sequence of states) of the Büchi automaton that includes infinitely many occurrences of at least one accepting state.
+% A word is accepted by a Büchi automaton, if there exists a run (sequence of states) for it that includes infinite repetitions of at least one accepting state. In other words, if during reading a word a Büchi automaton goes through one or more accepting states infinitely often, the word is accepted, and otherwise it is rejected.
+
+More formally, a Büchi automaton $A$ is defined by the 5-tuple $A = (Q, \Sigma, q_0, \delta, F)$ with the following components.
 \begin{itemize}
-\item $\Sigma$: a finite alphabet
 \item $Q$: a finite set of states
+\item $\Sigma$: a finite alphabet
 \item $q_0$: an initial state, $q_0 \in Q$
-\item $\delta$: a transition function $q: Q \times \Sigma \rightarrow 2^Q$ %(mapping combinations of a state and a symbol to zero, one, or more other states)
+\item $\delta$: a transition function, $\delta: Q \times \Sigma \rightarrow 2^Q$ %(mapping combinations of a state and a symbol to zero, one, or more other states)
 \item $F$: a set of accepting states, $F \in 2^Q$
 \end{itemize}
 
-This is so far the same definition as for normal finite state automata. What distinguishes a Büchi automaton from a normal finite state automata is its acceptance condition. To define the Büchi acceptance condition, we first have to define the following notions.
+We denote by $\Sigma^\omega$ the set of all words of infinite length over the alphabet $\Sigma$. A Büchi automaton runs on the elements of $\Sigma^\omega$. In the following, we define the acceptance behaviour of a Büchi automaton $A$ on a word $\alpha \in \Sigma^\omega$.
+
+% A Büchi automaton runs on infinite words over the alphabet $\Sigma$. We denote by $\Sigma^\omega$ the set of all possible words of infinite length (\om-words) over $\Sigma$. 
+
+% What distinguishes a Büchi automaton from a finite state automaton on finite words are its conditions for accepting or rejecting words. In the following, we define the acceptance behaviour of a Büchi automaton.
 
 \begin{itemize}
-\item $\Sigma^\omega$ isthe set of all possible words of infinite length over an alphabet $\Sigma$
-\item A \emph{run} of Büchi automaton $A$ on a word $x \in \Sigma^\omega$ is a sequence of states $q_0q_1q_3\dots$ such that $q_0$ is $A$'s initial state and $\forall i \geq 0: q_{i+1} \in \delta(q_i, x_i)$
-\item $\textrm{inf}(\rho) \in 2^Q$ is the subset of states of $Q$ that occur infinitely often in a run $\rho$
-\item An \emph{accepting run} is a run $\rho$ for which $\textrm{inf}(\rho) \cap F \neq \varnothing$  
+% \item $\Sigma^\omega$ is the set of all possible words of infinite length over alphabet $\Sigma$
+\item A \emph{run} of Büchi automaton $A$ on a word $\alpha \in \Sigma^\omega$ is a sequence of states $q_0q_1q_2\dots$ such that $q_0$ is $A$'s initial state and $\forall i \geq 0: q_{i+1} \in \delta(q_i, \alpha_i)$
+\item $\textrm{inf}(\rho) \in 2^Q$ is the set of states that occur infinitely often in a run $\rho$
+\item A run $\rho$ is accepting if an only if $\textrm{inf}(\rho) \cap F \neq \varnothing$
+\item A Büchi automaton $A$ accepts a word $\alpha \in \Sigma^\omega$ if and only if there is an accepting run of $A$ on $\alpha$
 \end{itemize}
 
-A word $x \in \Sigma^\omega$ is then accepted by a Büchi automaton $A$ if and only if there exists an accepting run of $A$ on $x$.
+The set of all the words that are accepted by a Büchi automaton $A$ is called the \emph{language} $L(A)$ of $A$. Thus, $L(A) \subseteq \Sigma^\omega$. On the other hand, the set of all words of $\Sigma^\omega$ that are rejected by $A$ is called the \emph{complement language} $\overline{L(A)}$ of $A$. The complement language can be defined as $\overline{L(A)} = \Sigma^\omega \setminus L(A)$.
 
-\subsubsection{Deterministic and Non-Deterministic Büchi Automata}
-As for normal finite state automata, there are deterministic and non-deterministic versions of Büchi automata. The difference lies in the transition function. For the non-deterministic case it is $\delta: \Sigma \times Q \rightarrow 2^Q$, but for the deterministic case it is strictly $\delta: \Sigma \times Q \rightarrow Q$. That means, whereas in a non-deterministic Büchi automaton a state $q$ may have zero, one, or more successors on a given symbol $a$ (denoted by $\delta(q,a) \geq 0$), in a deterministic Büchi automaton this number is always exactly one ($\delta(q,a) = 1$).
+Büchi automata are closed under union, intersection, concatenation, and complementation~\cite{1996_vardi}.
 
-The definition of a Büchi automaton given above is thus in fact the definition of a non-deterministic Büchi automaton. This coincides with a convention that we adopt in this thesis. If not explicitly stated, when we say ``Büchi automaton'' we actually mean a non-deterministi Büchi automaton. This is first, because deterministic Büchi automata are a special case of non-deterministic Büchi automata, and second, the problem of complementation that this thesis is about is only significant for the non-deterministic case.
+A deterministic Büchi automaton (DBW) is a special case of a non-determnistic Büchi automaton (NBW). A Büchi automaton is a DBW if $|\delta(q,\alpha)| = 1, \, \forall q \in Q, \forall \alpha \in \Sigma $. That is, every state has for every alphabet symbol exactly one successor state. A DBW can also be defined directly by replacing the transition function $\delta: Q \times \Sigma \rightarrow 2^Q$ with $\delta: Q \times \Sigma \rightarrow Q$ in the above definition.
 
-A Büchi automaton is complete if every state has at least one outgoing transition for every symbol of the alphabet. Formally, this means that $|\delta(q,a)| \geq 1, \forall q \in Q, \forall a \in \Sigma$. Note that deterministic Büchi automata are always complete, and thus only non-deterministic Büchi automata can be incomplete
+\subsubsection{Expressiveness}
+It has been showed by Büchi that NBW are expressively equivalent the \om-regular languages~\cite{buchi1960decision}. That means that every language that is recognised by a NBW is a \om-regular language, and on the other hand, for every \om-regular language there exists a NBW recognising it.
 
-\subsubsection{Equivalences}
-An important property of Büchi automata is that deterministic Büchi automata are less expressive than non-deterministic Büchi automata. That means that there exist non-deterministic Büchi automata for which no deterministic Büchi automata accepting the same language exists.
+However, this equivalence does not hold for DBW. There are \om-regular languages that cannot be recognised by any DBW. A typical example is the language $(0+1)^*1^\omega$. This is the language of all infinite words of 0 and 1 with only finitely many 0. It can be shown that this language can be recognised by a NBW (it is thus a \om-regular language) but not by a DBW~\cite{1996_vardi}\cite{2002_roggenbach}. The class of languages recognised by DBW is thus a strict subset of \om-regular languages recognised by NBW. We say that DBW are less expressive than NBW.
 
-Non-deterministic Büchi automata in turn are equivalent to the \om-regular languages. That means that every language that is recognised by any Büchi automaton is an \om-regular language, and for every \om-regular language there exists a non-deterministic Büchi automaton recognising it.
+An implication of this is that there are NBW for which no DBW recognising the same language exists. Or in other words, there are NBW that cannot be converted to DBW. Such an inequivalence is not the case, for example, for finite state automata on finite words, where every NFA can be converted to a DFA with the subset construction~\cite{hopcroft2006automata}\cite{1959_rabin}. In the case of Büchi automata, this inequivalence is the main cause that Büchi complementation problem is such a hard problem~\cite{niessner1997deterministic} and until today regarded as unsolved. 
 
-Furthermore, non-deterministic Büchi automata are equivalent to other classes of \om-automata such as Muller, Rabin, Streett, and Parity automata. Within these classes, determinstic and non-deterministic automata are equivalent. This means that every Büchi automaton can be translated to an equivalent deterministic or non-deterministic Muller, Rabin, Streett, or Parity automaton, and any of these latter automata can be translated to a non-deterministic Büchi automaton. Figure~\ref{equivalences} summarises these expressive relations of Büchi automata.
+
+
+% \subsubsection{Deterministic and Non-Deterministic Büchi Automata}
+% As for normal finite state automata, there are deterministic and non-deterministic versions of Büchi automata. The difference lies in the transition function. For the non-deterministic case it is $\delta: \Sigma \times Q \rightarrow 2^Q$, but for the deterministic case it is strictly $\delta: \Sigma \times Q \rightarrow Q$. That means, whereas in a non-deterministic Büchi automaton a state $q$ may have zero, one, or more successors on a given symbol $a$ (denoted by $\delta(q,a) \geq 0$), in a deterministic Büchi automaton this number is always exactly one ($\delta(q,a) = 1$).
+
+% The definition of a Büchi automaton given above is thus in fact the definition of a non-deterministic Büchi automaton. This coincides with a convention that we adopt in this thesis. If not explicitly stated, when we say ``Büchi automaton'' we actually mean a non-deterministi Büchi automaton. This is first, because deterministic Büchi automata are a special case of non-deterministic Büchi automata, and second, the problem of complementation that this thesis is about is only significant for the non-deterministic case.
+
+% A Büchi automaton is complete if every state has at least one outgoing transition for every symbol of the alphabet. Formally, this means that $|\delta(q,a)| \geq 1, \forall q \in Q, \forall a \in \Sigma$. Note that deterministic Büchi automata are always complete, and thus only non-deterministic Büchi automata can be incomplete
+
+% \subsubsection{Equivalences}
+% An important property of Büchi automata is that deterministic Büchi automata are less expressive than non-deterministic Büchi automata. That means that there exist non-deterministic Büchi automata for which no deterministic Büchi automata accepting the same language exists.
+
+% Non-deterministic Büchi automata in turn are equivalent to the \om-regular languages. That means that every language that is recognised by any Büchi automaton is an \om-regular language, and for every \om-regular language there exists a non-deterministic Büchi automaton recognising it.
+
+% Furthermore, non-deterministic Büchi automata are equivalent to other classes of \om-automata such as Muller, Rabin, Streett, and Parity automata. Within these classes, determinstic and non-deterministic automata are equivalent. This means that every Büchi automaton can be translated to an equivalent deterministic or non-deterministic Muller, Rabin, Streett, or Parity automaton, and any of these latter automata can be translated to a non-deterministic Büchi automaton. Figure~\ref{equivalences} summarises these expressive relations of Büchi automata.
 
 
 
@@ -121,9 +146,38 @@ Furthermore, non-deterministic Büchi automata are equivalent to other classes o
 %     - Muller, Rabin, Streett, Parity
 %     - McNaughton's Theorem (NBW = DMW)
 %     - Complete picture of equivalences
-After the introduction of Büchi automata in 1962, several other types of \om-automata have been proposed. The best-known ones are Muller (1963)~\cite{1963_muller}, Rabin (1969)~\cite{rabin1969decidability}, Streett (1982)~\cite{Streett1982121}, and parity (1985)~\cite{1985_mostowski} automata. These \om-automata differ from Büchi automata and among each other only in their acceptance condition.
+After the introduction of Büchi automata in 1962, several other types of \om-automata have been proposed. The best-known ones are by Muller (Muller automata, 1963)~\cite{1963_muller}, Rabin (Rabin automata, 1969)~\cite{rabin1969decidability}, Streett (Streett automata, 1982)~\cite{Streett1982121}, and Mostowski (parity automata, 1985)~\cite{1985_mostowski}.
+
+% The best-known ones are Muller (1963)~\cite{1963_muller}, Rabin (1969)~\cite{rabin1969decidability}, Streett (1982)~\cite{Streett1982121}, and parity (1985)~\cite{1985_mostowski} automata. 
+
+All these automata differ from Büchi automata, and among each other, only in their acceptance condition, that is, the condition for accepting or rejecting a run $\rho$. We can write a general definition of \om-automata that covers all of these types as $(Q, \Sigma, q_0, \delta, Acc)$. The only difference to the 5-tuple defining Büchi automata is the last element, $Acc$, which is a general acceptance condition. We list the acceptance condition of all the different \om-automata types below~\cite{1999_loeding}. Note that again a run $\rho$ is a sequence of states, and $\textrm{inf}(\rho)$ is the set of states that occur infinitely often in run $\rho$. 
 
 % Itemize of all acceptance conditions, including Büchi
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Type} & \textbf{Definitions} & \textbf{Run $\rho$ accepted if and only if\dots} \\
+\hline
+Büchi & $F \subseteq Q$ & $\textrm{inf}(\rho) \cap F \neq \varnothing$ \\
+\hline
+Muller & $F \subseteq 2^Q$ & $\textrm{inf}(\rho) \in F$ \\
+\hline
+Rabin & $\{(E_1,F_1),\dots,(E_r,F_r)\},\,E_i, F_i \subseteq Q$ & $\exists i: \textrm{inf}(\rho) \cap E_i = \varnothing \, \wedge \, \textrm{inf}(\rho) \cap F_i \neq \varnothing$ \\
+\hline
+Streett & $\{(E_1,F_1),\dots,(E_r,F_r)\},\,E_i, F_i \subseteq Q$ & $\forall i: \textrm{inf}(\rho) \cap E_i \neq \varnothing \, \vee \, \textrm{inf}(\rho) \cap F_i = \varnothing$ \\
+\hline
+Parity & $c: Q \rightarrow \{1,\dots,k\},\,k \in \mathbb{N}$ & $\textrm{min}\{c(q)\;|\;q \in \textrm{inf}(\rho) \} \; \textrm{mod} \; 2 = 0$ \\
+\hline
+\end{tabular}
+
+In the Muller acceptance condition, the set of infinitely occuring states of a run ($\textrm{inf}(\rho)$) must match a predefined set of states.
+% The Muller acceptance condition is the most general one, and all of the other listed conditions can be expressed as a Muller acceptance condition~\cite{1999_loeding}.
+The Rabin and Streett conditions use pairs of state sets, so-called accepting pairs. The Rabin and Streett conditions are the negations of each other. This allows for easy complementation of deterministic Rabin and Streett automata~\cite{1999_loeding}, which will be used for certain Büchi complementation construction, as we will see in Section\ref{review}. The parity condition assigns a number (color) to each state and accepts a run if the smallest-numbered of the infinitely often occuring states has an even number. For all of these automata there exist non-deterministic and deterministic versions, and we will refer to them as NMW, DMW (for non-deterministic and deterministic Muller automata), and so on.
+
+In 1966, McNaughton made an important proposition, known as \emph{McNaughton's Theorem}~\cite{McNaughton1966}. Another proof given in~\cite{Thomas:1991}. It states that the class of languages recognised by deterministic Muller automata are the \om-regular languages. This means that non-deterministic Büchi automata and deterministic Muller automata are equivalent, and consequently every NBW can be turned into a DMW. This result is the base for the determinisation-based Büchi complementation constructions, as we will see in Section~\ref{det-based}.
+
+It turned out that also all the other types of the just introduced \om-automata, non-deterministic and determinstic, are equivalent among each other~\cite{2002_roggenbach}\cite{2006_klein}\cite{klein2005linear}\cite{1999_loeding}\cite{Thomas:1991}. This means that all the \om-automata mentioned in this thesis, with the exception of DBW, are equivalent and recognise the \om-regular languages. This is illustrated in Figure~\ref{equivalences}
+
+
 
 % For all of them exist deterministic and non-deterministic versions
 % Properties, such as Rabin acceptance condition is dual of Streett
@@ -181,7 +235,7 @@ If now for every NBW there would exist an equivalent DBW, an obvious solution to
 Hence, for NBW, other ways of complementing them have to be found. In the next section we will review the most important of these ``other ways'' that have been proposed in the last 50 years since the introduction of Büchi automata. The Fribourg construction, that we present in Chapter~\ref{fribourg_construction}, is another alternative way of achievin this same aim.
 
 
-\subsection{State Complexity of Büchi Complementation}
+\subsection{Complexity of Büchi Complementation}
 
 Constructions for complementing NBW turned out to be very complex. Especially the blow-up in number of states from the input automaton to the output automaton is significant. For example, the original complementation construction proposed by Büchi~\cite{buchi1960decision} involved a doubly exponential blow-up. That is, if the input automaton has $n$ states, then for some constant $c$ the output automaton has, in the worst case, $c^{c^n}$ states~\cite{PrasadSistla1987217}. If we set $c$ to 2, then an input automaton with six states would result in a complement automaton with about 18 quintillion ($18 \times 10^{18}$) states.
 
@@ -192,6 +246,8 @@ A question that arises is, how much this number can be brought down? Researchers
 There are other notations that are often used for state blow-ups. One has the form $(xn)^n$, where $x$ is a constant. Michel's bound of $n!$ would be about $(0.36n)^n$ in this case~\cite{2006_yan}. We will often use this notation, as it is convenient for comparisons. Another form has 2 as the base and a big-O term in the exponent. In this case, Michel's $n!$ would be $2^{O(n\,log\,n)}$~\cite{2006_yan}.
 
 Michel's lower bound remained valid for almost two decades until in 2006 Yan showed a new lower bound of $(0.76n)^n$~\cite{2006_yan}. This does not mean that Michel was wrong with his lower bound, but just too reserved. The best possible blow-up of a construction can now be only $(0.76n)^n$ and not $(0.36n)^n$ as believed before. In 2009, Schewe proposed a construction with a blow-up of exactly $(0.76n)^n$ (modulo a polynomial factor)~\cite{schewe2009buchi}. He provided thus an upper bound that matches Yan's lower bound. The lower bound of $(0.76n)^n$ can thus not rise any further and seems to be definitve.
+
+Maybe mention note on exponential complexity in \cite{1996_vardi} p. 8.
 
 
 % \subsection{Complementation of Büchi Automata}
@@ -216,11 +272,16 @@ Michel's lower bound remained valid for almost two decades until in 2006 Yan sho
 
 % In the case of finite-word automata, the complementation procedure for DFA provided a solution for the complementationn of NFA, because there is a translation from every NFA to an equivalent DFA. For Büchi automata this is however not the case. As mentioned above, there are NBW for which no equivalent DBW exists. We say that NBW can in general not be determinised.
 
-\section{Review of Proposed Büchi Complementation Algorithms}
+\section{Review of Büchi Complementation Constructions}
+\label{review}
 \subsection{Ramsey-Based Approaches}
+\label{ramsey-based}
 \subsection{Determinisation-Based Approaches}
+\label{det-based}
 \subsection{Rank-Based Approaches}
+\label{rank-based}
 \subsection{Slice-Based Approaches}
+\label{slice-based}
 
 \section{Empirical Performance Investigations}
 
