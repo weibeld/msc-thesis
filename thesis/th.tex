@@ -42,6 +42,9 @@
 \tableofcontents
 
 \chapter{Introduction}
+At the beginning of the 1960s, a Swiss logician named Julius Richard Büchi at Michigan University was looking for a way to prove the decidability of the satisfiability of monadic second order logic with one successor (S1S). Büchi applied a trick that truly founded a new paradigm in the application of logic to theoretical computer science. He thought of interpretations of a S1S formula as infinitly long words of a formal language and designed a type of finite state automaton that accepts such a word if and only if the interpretation it represents satisfies the formula. After proving that every S1S formula can be translated to such an automaton and vice versa (Büchi's Theorem), the satisfiabilty problem of an S1S formula could be reduced to testing the non-emptiness of the corresponding automaton.
+
+This special type of finite state automaton was later called Büchi automaton.
 
 % Context of study
 A Büchi complementation construction takes as input a Büchi automaton $A$ and produces as output another Büchi automaton $B$ which accepts the complement language of the input automaton $A$. Complement language denotes the ``contrary'' language, that is, $B$ must \emph{accept} (over a given alphabet) every word that $A$ \emph{does not} accept, and must in turn \emph{not accept} every word that $A$ \emph{accepts}.
