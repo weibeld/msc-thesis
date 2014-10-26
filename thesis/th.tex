@@ -1,6 +1,9 @@
-%\documentclass[a4paper]{report}
-%\usepackage{a4wide}
-\documentclass{scrreprt}
+\documentclass[a4paper]{report}
+\usepackage{a4wide}
+%\documentclass{scrreprt}
+
+% Circumvent KOMA Script' strict 1:2 top margin to bottom margin relation
+%\usepackage[hscale=0.71,vscale=0.8,vmarginratio={6:8},heightrounded]{geometry}
 
 % Allow direct typing of ä, ö, ü, for example in "Büchi"
 \usepackage[utf8]{inputenc}
@@ -17,7 +20,7 @@
 
 % Indentation of second and following lines figure captions. Default indentation
 % in KOMA script is length of "Figure X.X: ".
-\setcapindent{2em}
+% \setcapindent{2em}
 
 \tikzset{
   font=\scriptsize\sffamily
@@ -82,7 +85,15 @@ The complementation of non-deterministic Büchi automata is hard. It has been pr
 \chapter{The Büchi Complementation Problem}
 \section{Preliminaries}
 \subsection{Büchi Automata}
-Büchi automata have been introduced in 1962 by Büchi~\cite{buchi1960decision}. 
+Büchi automata have been introduced in 1962 by Büchi~\cite{buchi1960decision} in order to show the decidability of monadic second order logic; over the successor structure of the natural numbers~\cite{2012_breuers}.
+
+he had proved the decidability of the monadic-second order theory of the natural numbers with successor func- tion by translating formulas into finite automata~\cite{vardi2007automata} (p. 1)
+
+To check whether a given S1S formulaφ=φ(V0,...,Vm−1)is satisfiable one simply constructs the Büchi automaton which is guaranteed to exist by Büchi’s Theorem and checks this automaton for non-emptiness~\cite{vardi2007automata} (p. 9).
+
+Büchi needed to create a complementation construction (proof the closure under complementation of Büchi automata) in order to prove Büchi's Theorem.
+
+Büchi's Theorem: S1S formulas and Büchi automata are expressively equivalent (there is a NBW for every S1S formula, and there is a S1S formula for every NBW).
 
 \subsubsection{Definitions}
 Informally speaking, a Büchi automaton is a finite state automaton running on input words of infinite length. That is, once started reading a word, a Büchi automaton never stops. A word is accepted if it results in a run (sequence of states) of the Büchi automaton that includes infinitely many occurrences of at least one accepting state.
@@ -120,7 +131,7 @@ A deterministic Büchi automaton (DBW) is a special case of a non-determnistic B
 \subsubsection{Expressiveness}
 It has been showed by Büchi that NBW are expressively equivalent the \om-regular languages~\cite{buchi1960decision}. That means that every language that is recognised by a NBW is a \om-regular language, and on the other hand, for every \om-regular language there exists a NBW recognising it.
 
-However, this equivalence does not hold for DBW. There are \om-regular languages that cannot be recognised by any DBW. A typical example is the language $(0+1)^*1^\omega$. This is the language of all infinite words of 0 and 1 with only finitely many 0. It can be shown that this language can be recognised by a NBW (it is thus a \om-regular language) but not by a DBW~\cite{1996_vardi}\cite{2002_roggenbach}. The class of languages recognised by DBW is thus a strict subset of \om-regular languages recognised by NBW. We say that DBW are less expressive than NBW.
+However, this equivalence does not hold for DBW (Büchi showed it too). There are \om-regular languages that cannot be recognised by any DBW. A typical example is the language $(0+1)^*1^\omega$. This is the language of all infinite words of 0 and 1 with only finitely many 0. It can be shown that this language can be recognised by a NBW (it is thus a \om-regular language) but not by a DBW~\cite{1996_vardi}\cite{2002_roggenbach}. The class of languages recognised by DBW is thus a strict subset of \om-regular languages recognised by NBW. We say that DBW are less expressive than NBW.
 
 An implication of this is that there are NBW for which no DBW recognising the same language exists. Or in other words, there are NBW that cannot be converted to DBW. Such an inequivalence is not the case, for example, for finite state automata on finite words, where every NFA can be converted to a DFA with the subset construction~\cite{hopcroft2006automata}\cite{1959_rabin}. In the case of Büchi automata, this inequivalence is the main cause that Büchi complementation problem is such a hard problem~\cite{niessner1997deterministic} and until today regarded as unsolved. 
 
@@ -276,6 +287,8 @@ Maybe mention note on exponential complexity in \cite{1996_vardi} p. 8.
 \label{review}
 \subsection{Ramsey-Based Approaches}
 \label{ramsey-based}
+The method is called Ramsey-based because its correctness relies on a combinatorial result by Ramsey to obtain a periodic decomposition of the possible behaviors of a Büchi automaton on an infinite word~\cite{2012_breuers}.
+
 \subsection{Determinisation-Based Approaches}
 \label{det-based}
 \subsection{Rank-Based Approaches}

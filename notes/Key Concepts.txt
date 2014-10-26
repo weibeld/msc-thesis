@@ -54,3 +54,25 @@ tomata technique, 2008
 Deterministic Büchi automata are not closed under complementation
 ---------
 Thomas, Automata on infinite objects, 1990, p. 14 bottom
+
+Representations of runs (sequence of states) of an automaton on a word
+-------------
+- Run tree
+- Split tree
+- Reduced split tree
+    - Originate from Muller-Schupp trees, Muller, Schupp, 1995
+    - Muller-Schupp trees explained in Althoff, 2006, p. 3
+    - Reduced split trees formally in Fogarty, 2012, p. 25 (non-acc left, acc right)
+    - Reduced split trees formally in Vardi, Wilke, 2008, pp. 12
+- Run DAG
+	- Definition in Fogarty, 2013, p. 4
+	
+Büchi's Theorem
+---------------
+For every S1S formula there exists a Büchi automaton, and for every Büchi automaton there exists a S1S formula
+--> Vardi, Wilke, 2007, p. 8
+
+S1S
+---
+Monadic second-order logic with one successor
+--> Vadi, Wilke, p. 4

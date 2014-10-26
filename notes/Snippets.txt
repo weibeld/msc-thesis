@@ -12,3 +12,9 @@ Complementation of deterministic Muller, Rabin, Streett, and parity automata
 
 Michel's n! lower bound
 --> Löding, 1999, p. 4
+
+Slice-based approach regardes as a special case of rank-based approach
+--> Breuers, 2010, BSc thesis, p. 7
+
+Büchi invented Büchi automata to proof that satisfiability for S1S is decidable: To check whether a given S1S formulaφ=φ(V0,...,Vm−1)is satisfiable one simply constructs the Büchi automaton which is guaranteed to exist by Büchi’s Theorem and checks this automaton for non-emptiness.
+--> Vardi, Wilke, 2007, p. 9
