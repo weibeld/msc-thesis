@@ -18,3 +18,6 @@ Slice-based approach regardes as a special case of rank-based approach
 
 Büchi invented Büchi automata to proof that satisfiability for S1S is decidable: To check whether a given S1S formulaφ=φ(V0,...,Vm−1)is satisfiable one simply constructs the Büchi automaton which is guaranteed to exist by Büchi’s Theorem and checks this automaton for non-emptiness.
 --> Vardi, Wilke, 2007, p. 9
+
+Bringing together of automata theory and logic by Büchi, Elgot, Rabin in the 60s
+--> Logic and Automata, 2008, Preface
