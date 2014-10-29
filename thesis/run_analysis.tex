@@ -7,13 +7,19 @@
 
 %\usetikzlibrary{automata,positioning,arrows,shapes,matrix}
 \usetikzlibrary{automata}    % Styles 'state', 'initial', 'accepting'
-\usetikzlibrary{positioning} % Function of ([right=of x])
+\usetikzlibrary{positioning} % Function "of" (e.g. [right=of x])
+\usetikzlibrary{backgrounds} % Predefined "background" layer
+
+% TikZ variables
+\def\myvdist{1.2cm}
+\def\myhdist{0.5cm}
 
 % Global tikz settings
 \tikzset{
 semithick, % All lines semithick
 >=stealth, % All arrows with stealth tick
-my state/.style={draw,rectangle,rounded corners=2mm,minimum height=1.75em,minimum width=2em},
+my node/.style={minimum height=1.75em,minimum width=2em,inner sep=1mm},
+my state/.style={draw,my node,rectangle,rounded corners=2mm},
 my accepting/.style={double,double distance=1pt,outer sep=0.9pt,semithick},
 longer1/.style={shorten >=-0.425mm,shorten <=-0.5mm},
 longer2/.style={shorten >=-0.7mm,shorten <=-0.8mm},
@@ -25,31 +31,35 @@ automaton/.style={
   my below/.style={out=295,in=245},
   my above/.style={out=115,in=65},
 },
-my vdist/.code={\def\myvdist{#1}},
-my vdist=1.2cm,
-my hdist/.code={\def\myhdist{#1}},
-my hdist=0.5cm,
-tree/.style={
-  every node/.style={draw,my state},
+states/.style={
+  every node/.style={my node},
+  st/.style={draw,my state},
   acc/.style={my accepting},
+},
+tree/.style={
+  states,
   level distance=\myvdist,
   sibling distance=\myhdist,
 },
 tree example sets/.style={
-  0/.style= {font={$\{q_0\}$}},
-  1/.style= {font={$\{q_1\}$},acc},
-  2/.style= {font={$\{q_2\}$}},
-  02/.style={font={$\{q_0,q_2\}$}},
+  0/.style= {st,font={$\{q_0\}$}},
+  1/.style= {st,acc,font={$\{q_1\}$}},
+  2/.style= {st,font={$\{q_2\}$}},
+  02/.style={st,font={$\{q_0,q_2\}$}},
 },
 tree example no sets/.style={
-  0/.style={font={$q_0$}},
-  1/.style={font={$q_1$},acc},
-  2/.style={font={$q_2$}},
+  0/.style={st,font={$q_0$}},
+  1/.style={st,acc,font={$q_1$}},
+  2/.style={st,font={$q_2$}},
+},
+mtrx/.style={
+  states,
+  row sep={\myvdist,between origins},
+  inner sep=0mm
 },
 dag/.style={
-  acc/.style={my accepting},
+  mtrx,
   ghost/.style={draw=black!20,color=black!20},
-  row sep={\myvdist,between origins},
   column sep=0.75cm
 }
 }
@@ -81,6 +91,9 @@ e/.style={draw=none}]
 
 \begin{document}
 
+%==============================================================================%
+% Split tree
+%==============================================================================%
 \begin{figure}
 \begin{center}
 \automaton
@@ -103,6 +116,56 @@ e/.style={draw=none}]
 \caption{Automaton $A$ and the first five levels of the split tree of the runs of $A$ on the word $a^\omega$.}
 \end{figure}
 
+%==============================================================================%
+% Reduced split tree left-to-right
+%==============================================================================%
+\begin{figure}
+\begin{center}
+\automaton
+\hfill
+\begin{tikzpicture}[tree,tree example sets]
+\Tree
+[.\node[0]{}; [.\node[1]{};  [.\node[2](m){}; [.\node[2]{}; \node[2]{}; ] ] ]
+              [.\node[02]{};   \node[1]{};
+                             [.\node[0]{};      \node[1]{};
+                                              [.\node[0]{}; \node[1]{};
+                                                            \node[0]{}; ] ] ] ]
+\node[draw=none,anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{R}^A_{a^\omega}=$};
+% \begin{scope}[every node/.style={draw=none,xshift=2.75cm}]
+% \Tree
+% [ \edge[draw=none] node[pos=.4]{$a$}; [ \edge[draw=none] node[pos=.4]{$a$}; [ \edge[draw=none] node[pos=.4]{$a$}; [ \edge[draw=none] node[pos=.4]{$a$}; {} ]  ] ] ]
+% \end{scope}
+\end{tikzpicture}
+\symbols
+\end{center}
+\caption{Automaton $A$ and the first five levels of the left-to-right reduced split tree of the runs of $A$ on the word $a^\omega$.}
+\end{figure}
+
+%==============================================================================%
+% Reduced split tree right-to-left
+%==============================================================================%
+\begin{figure}
+\begin{center}
+\automaton
+\hfill
+\begin{tikzpicture}[tree,tree example sets]
+\Tree
+[.\node[0]{}; [.\node[02]{}; [.\node[0](m){}; [.\node[0]{}; \node[0]{};
+                                                            \node[1]{}; ] 
+                                                \node[1]{}; ]
+                               \node[1]{}; ]
+              [.\node[1]{};  [.\node[2]{};    [.\node[2]{}; \node[2]{}; ] ] ] ]
+\node[draw=none,anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{R}^A_{a^\omega}=$};
+\end{tikzpicture}
+\symbols
+\end{center}
+\caption{Automaton $A$ and the first five levels of the right-to-left reduced split tree of the runs of $A$ on the word $a^\omega$.}
+\end{figure}
+
+
+%==============================================================================%
+% Run tree
+%==============================================================================%
 \begin{figure}
 \begin{center}
 
@@ -129,12 +192,16 @@ e/.style={draw=none}]
 \caption{Automaton $A$ and the first five levels of the run tree of the runs of $A$ on the word $a^\omega$.}
 \end{figure}
 
+
+%==============================================================================%
+% Run DAG
+%==============================================================================%
 \begin{figure}
 \begin{center}
 \automaton
 \hfil
 \begin{tikzpicture}[dag,tree example no sets]  
-\matrix[every node/.style={my state}]{
+\matrix{
   \node[0] (00) {}; & \node[1,ghost] (01) {}; & \node[2,ghost] (02) {}; \\
   \node[0] (10) {}; & \node[1] (11) {}; & \node[2] (12) {}; \\
   \node[0] (20) {}; & \node[1] (21) {}; & \node[2] (22) {}; \\
@@ -157,6 +224,43 @@ e/.style={draw=none}]
 \symbols
 \end{center}
 \caption{Automaton $A$ and the first five levels of the run \textsc{dag} of the runs of $A$ on the word $a^\omega$.}
+\end{figure}
+
+
+%==============================================================================%
+% From reduced split tree to subset-tuple slices
+%==============================================================================%
+\begin{figure}
+\begin{center}
+\symbols
+\begin{tikzpicture}[tree,tree example sets,frame/.style={my state,minimum width=4.975cm,minimum height=2.22em,fill=black!5},w/.style={my state,fill=white}]
+\Tree
+[.\node[w]{$\{q_0\}$}; [.\node[w]{$\{q_0,q_2\}$}; [.\node[w](m){$\{q_0\}$}; [.\node[0]{}; \node[0]{};
+                                                            \node[1]{}; ] 
+                                                \node[1]{}; ]
+                               \node[acc,w]{$\{q_1\}$}; ]
+              [.\node[acc,w](a){$\{q_1\}$};  [.\node[w]{$\{q_2\}$};    [.\node[2]{}; \node[2]{}; ] ] ] ]
+\begin{scope}[on background layer]
+\node[frame,anchor=east,xshift=0.5mm] (m) at (a.east) {};
+\node[frame,anchor=center,yshift=\myvdist] (h) at (m.center) {};
+\node[frame,anchor=center,yshift=-\myvdist] (l) at (m.center) {};
+\end{scope}
+\begin{scope}[arrow/.style={xshift=0.5cm,anchor=west}]
+\node[arrow] at (h.east) {$\rightarrow$};
+\node[arrow] at (m.east) {$\rightarrow$};
+\node[arrow] at (l.east) {$\rightarrow$};
+\end{scope}
+\begin{scope}[slice/.style={my state,xshift=3cm},automaton]
+\node[slice] (s1) at (h.east) {$\left(\{q_0\}\right)$};
+\node[slice] (s2) at (m.east) {$\left(\{q_0,q_2\},\{q_1\}\right)$};
+\node[slice] (s3) at (l.east) {$\left(\{q_0\},\{q_1\},\{q_2\}\right)$};
+\path[->] (s1) edge node[right] {$a$} (s2)
+          (s2) edge node[right] {$a$} (s3)
+          (s3) edge[my below,loop] node[below] {$a$} ();
+\end{scope}
+\end{tikzpicture}
+\end{center}
+\caption{From levels of a reduced split tree to the slices of the subset-tuple construction.}
 \end{figure}
 
 

@@ -21,3 +21,6 @@ Büchi invented Büchi automata to proof that satisfiability for S1S is decidabl
 
 Bringing together of automata theory and logic by Büchi, Elgot, Rabin in the 60s
 --> Logic and Automata, 2008, Preface
+
+The width of a tree is defined as the maximum number of vertices occurring at any level.
+--> Muller, Schupp, 1995, p. 16
