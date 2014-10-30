@@ -13,6 +13,7 @@
 \usetikzlibrary{automata,positioning,arrows,shapes,matrix}
 
 \newcommand{\om}{{$\omega$}}
+\newcommand{\c}[1]{\overline{#1}}
 
 % Make tables less cramped
 {\renewcommand{\arraystretch}{1.15}
@@ -347,7 +348,35 @@ Basically, the Fribourg construction proceeds in two stages. First it constructs
 
 As it may be apparent from this short summary, the construction of the lower part is much more involved than the construction of the upper part.
 
-The construction of the upper part takes as input a NBW $A$ and outputs a deterministic automaton $B^\prime$, the upper part of the final complement automaton $B$. The construction of $B^\prime$ is done with a modified subset construction that we explain in the following. 
+\subsection{Construction of the Upper Part}
+The construction of the upper part takes as input a NBW $A$ and outputs a deterministic automaton $B^\prime$ that will be the upper part of the final complement automaton $B$. The construction of $B^\prime$ is in its approach similar to the subset construction. One starts with a $B^\prime$-state representing the initial state of $A$ and then recursively determines and adds for each $B^\prime$-state one successor state per input symbol. The difference to the subset construction lies in the inner structure of the $B^\prime$-states. In the subset construction this would simply be a single set of $A$-states. In the subset-tuple construction, however, a $B^\prime$-state is a tuple of sets of $A$-states. A tuple is an ordered list, so differently phrased, a $B^\prime$-state consists of one or more sets of $A$-states where the order of these sets matters. As we will see, the $A$-states present in a $B^\prime$-state are the same that would result from the subset construction. But while in the subset construction all these states are thrown together in one set, in the subset-tuple construction they are split up in multiple sets where additionally the order of these sets is important. The subset-tuple construction can thus be seen as a modified subset construction that includes additional structure.
+
+The structure of $B^\prime$-states is defined by ``level-clippings'' of reduced split trees, as we explain in a moment. But, talking about reduced split trees, we have to make a decision first. In Section~\ref{r_split_trees} we mentioned that reduced split trees come in equivalent left-to-right and right-to-left versions. The construction has to adopt one of these variants and stick to it. In this thesis we use the right-to-left version. The final complement automata look the same with either version except that the order of the tuples is reversed. Note that the optimisations described in Section~\ref{optmisations} is also based on this ordering and would need to be rephrased for the left-to-right version.
+
+A new $B^\prime$-state $q$, successor on symbol $a$ of an already existing $B^\prime$-state $p$, now is created in the following way. The predecessor $p$ is regarded as a level of a reduced split tree by looking at its sets as the nodes on this level. Then, the next level for the given symbol $a$ is constructed as described in Section~\ref{r_split_tree}. This new level then directly defines $q$ by taking the nodes as the sets of $q$'s tuple and keeping their order. Figure~\ref{tree_to_slices} illustrates this with the example automaton $A$ that we already used before. If a state with a simlar tuple to the just created $q$ already exists in $B^\prime$, then just a transition from $p$ to this state is added (hence the loop in the third state of Figure~\ref{tree_to_slices}). The construction starts with a $B^\prime$-state containing only $A$'s initial state and ends when all states of $B^\prime$ have been processed for all input symbols. In Figure~\ref{tree_to_slices}, the construction is complete, thus the automaton shown at the right is the upper part of the complement of $A$.
+
+If all the $A$-states of a $B^\prime$-state $p$ have no successors on an input symbol $a$, then $p$ will have no $a$-successor in $B^\prime$. This results in the upper part $B^\prime$ being incomplete at the end of the construction. In this case, it has to be made complete by adding a sink state. Furthermore, this sink state has to be accepting.
+
+States of the subset-tuple construction are thus levels of reduced split trees. In the constructions of Varid and Wilke~\cite{vardi2007automata}, and Kähler and Wilke~\cite{2008_kaehler} states are called \emph{slices} of reduced split trees, hence the name slice-based approach.
+
+
+\subsection{Construction of the Lower Part}
+The construction of the lower part takes as input the upper part $B^\prime$ (and the initial automaton $A$) and outputs the final complement automaton $B$ with $L(B) = \c{L(A)}$. The construction of the lower part is basically an extension of the construction of the upper part that is applied to the states of the upper part. The extension consists therein that every set in the states of the lower part is assigned a \emph{colour}. These colours will be used to keep track of certain properties of runs of $B$ that finally allow to decide which states of the lower part of $B$ may be accepting. In this section we will first explain the mechanical construction of $B$ and give the intuition behind it afterwards.
+
+There are three colours that sets of the lower part can have, let us call them 0, 1, and 2. The colour of a set says something about the history of a run up to arriving at this set.
+
+\begin{itemize}
+\item 2: the history of the runs arriving at this set includes a right-turn since leaving the upper part
+\item 1: the history of the runs arriving at this set includes a right-turn since leaving the upper part, but on the level where the run had just completed the right-turn, there was already another set with colour 2
+\item 0: the history of the runs arriving at this set includes no right-turns since leaving the upper part
+\end{itemize}
+
+
+
+\subsection{Optimisations}
+\label{optimisations}
+
+
 
 \chapter{Performance Investigation of the Fribourg Construction}
 

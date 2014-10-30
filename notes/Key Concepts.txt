@@ -60,6 +60,7 @@ Representations of runs (sequence of states) of an automaton on a word
 - Run tree
 - Split tree
 	- First step for reduced split trees, originate also from Muller, Schupp
+	- Subset construction where acc and non-acc states are not mixed, as in Nitsche, 2006 (if each node is taken as a separate state)
 - Reduced split tree
     - Originate from Muller-Schupp trees, Muller, Schupp, 1995
     - Muller-Schupp trees explained in Althoff, 2006, p. 3
