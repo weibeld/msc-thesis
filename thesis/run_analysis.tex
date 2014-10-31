@@ -1,13 +1,15 @@
 \documentclass[a4paper]{article}
 
 \usepackage{a4wide}
+
 \usepackage{tikz}
 \usepackage{tikz-qtree}
 \usepackage{amsmath,amssymb}
 
 %\usetikzlibrary{automata,positioning,arrows,shapes,matrix}
-\usetikzlibrary{automata}    % Styles 'state', 'initial', 'accepting'
-\usetikzlibrary{positioning} % Function "of" (e.g. [right=of x])
+\usetikzlibrary{
+  automata,    % Styles 'state', 'initial', 'accepting'
+  positioning} % Function "of" (e.g. [right=of x])
 \usetikzlibrary{backgrounds} % Predefined "background" layer
 \usetikzlibrary{calc}        % Calculations $...$
 
@@ -19,6 +21,13 @@
 \newcommand{\x}[1]{\widehat{#1}}
 \newcommand{\one}[1]{\overline{#1}}
 \newcommand{\two}[1]{\overline{\overline{#1}}}
+
+% Math strings
+\newcommand{\qm} [1]{\{q_{#1}\}}        % \qm0   --> {q_0}
+\newcommand{\qqm}[2]{\{q_{#1},q_{#2}\}} % \qqm01 --> {q_0,q_1}
+\newcommand{\q}  [1]{$q_{#1}$}          % \q0    --> $q_0$
+\newcommand{\qq} [1]{$\qm{#1}$}         % \qq0   --> ${q_0}$
+\newcommand{\qqq}[2]{$\qqm{#1,#2}$}     % \qqq01 --> ${q_0,q_1}$
 
 % Global tikz settings
 \tikzset{
@@ -39,9 +48,9 @@ automaton/.style={
   node distance=1cm
 },
 states/.style={
-  every node/.style={my node},
-  st/.style={draw,my state},
-  acc/.style={my accepting},
+  %every node/.style={my node},
+  st/.style={my state},
+  acc/.style={my state,my accepting},
 },
 tree/.style={
   states,
@@ -88,15 +97,19 @@ dag/.style={
 }
 
 \newcommand{\symbols}{
-\begin{tikzpicture}[
-level distance=\myvdist,
-l/.style={pos=0.3,font={$a$}},
-e/.style={draw=none}]
+\begin{tikzpicture}[tree,l/.style={pos=0.3,font={$a$}},e/.style={draw=none}]
 \Tree [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; {} ] ] ] ]
 \end{tikzpicture}
 }
 
 \begin{document}
+
+\q0
+\qq0
+\qqq01
+
+$q_0$
+$\{q_0\}$
 
 %==============================================================================%
 % Split tree
@@ -123,6 +136,29 @@ e/.style={draw=none}]
 \caption{Automaton $A$ and the first five levels of the split tree of the runs of $A$ on the word $a^\omega$.}
 \end{figure}
 
+
+%==============================================================================%
+% Reduced split tree left-to-right
+%==============================================================================%
+\begin{figure}
+\begin{center}
+\automaton
+\hfill
+\begin{tikzpicture}[tree,s/.style={my state},a/.style={my state,my accepting}]
+\Tree
+[.\node[s]{\qq0}; [.\node[a]{\qq1};  [.\node[s](m){\qq2}; [.\node[s]{\qq2}; \node[s]{\qq2}; ] ] ]
+              [.\node[s]{\qqq02};   \node[a]{\qq1};
+                             [.\node[s]{\qq0};      \node[a]{\qq1};
+                                              [.\node[s]{\qq0}; \node[a]{\qq1};
+                                                            \node[s]{\qq0}; ] ] ] ]
+\node[draw=none,anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{R}^A_{a^\omega}=$};
+\end{tikzpicture}
+\symbols
+\end{center}
+\caption{XXXXXXX Automaton $A$ and the first five levels of the left-to-right reduced split tree of the runs of $A$ on the word $a^\omega$.}
+\end{figure}
+
+
 %==============================================================================%
 % Reduced split tree left-to-right
 %==============================================================================%
@@ -138,10 +174,6 @@ e/.style={draw=none}]
                                               [.\node[0]{}; \node[1]{};
                                                             \node[0]{}; ] ] ] ]
 \node[draw=none,anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{R}^A_{a^\omega}=$};
-% \begin{scope}[every node/.style={draw=none,xshift=2.75cm}]
-% \Tree
-% [ \edge[draw=none] node[pos=.4]{$a$}; [ \edge[draw=none] node[pos=.4]{$a$}; [ \edge[draw=none] node[pos=.4]{$a$}; [ \edge[draw=none] node[pos=.4]{$a$}; {} ]  ] ] ]
-% \end{scope}
 \end{tikzpicture}
 \symbols
 \end{center}
@@ -276,7 +308,7 @@ e/.style={draw=none}]
 \begin{figure}
 \begin{center}
 \begin{tikzpicture}[automaton]
-\node[state,initial] (0) {$\left(\{q_0\}\right)$};
+\node[state,initial] (0) {$(\qm0)$};
 \node[state]         (1) [right=of 0] {$\left(\{q_0,q_2\},\{q_1\}\right)$};
 \node[state]         (2) [right=of 1] {$\left(\{q_0\},\{q_1\},\{q_2\}\right)$};
 \path[->] (0) edge node[above]{$a$} (1)

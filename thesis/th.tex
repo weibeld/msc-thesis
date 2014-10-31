@@ -5,18 +5,31 @@
 % Circumvent KOMA Script' strict 1:2 top margin to bottom margin relation
 %\usepackage[hscale=0.71,vscale=0.8,vmarginratio={6:8},heightrounded]{geometry}
 
-% Allow direct typing of ä, ö, ü, for example in "Büchi"
-\usepackage[utf8]{inputenc}
+\usepackage[utf8]{inputenc}   % Literal typing of ä, ö, ü
 \usepackage{amssymb,amsmath}
 \usepackage{hyperref}
-\usepackage{slashbox}
+\usepackage{array}            % For \newcolumntype
 \usepackage{tikz}
-\usetikzlibrary{automata,positioning,arrows,shapes,matrix}
+\usepackage{tikz-qtree}
+
+\usetikzlibrary{
+  shapes,
+  arrows,
+  positioning,  % Function "of" (e.g. [right=of x])
+  automata,     % Styles "state", "initial", "accepting"
+  backgrounds,  % Predefined layer named "background"
+  calc          % Calculations $...$
+}
 
 \newcommand{\om}{{$\omega$}}
-%\newcommand{\c}[1]{\overline{#1}}
+\newcommand{\x}[1]{\widehat{#1}}               % Colour -1
+\newcommand{\one}[1]{\overline{#1}}            % Colour  1
+\newcommand{\two}[1]{\overline{\overline{#1}}} % Colour  2
 
-% Make tables less cramped
+% Table column: fixed width, horizontally, vertically centered
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+% Table spacings
 {\renewcommand{\arraystretch}{1.15}
 \renewcommand{\tabcolsep}{0.1cm}  
 
@@ -24,8 +37,97 @@
 % in KOMA script is length of "Figure X.X: ".
 % \setcapindent{2em}
 
+% Used as "TikZ variables"
+\def\myvdist{1.2cm}  % Level distance of tree
+\def\myhdist{0.5cm}  % Sibling distance of tree
+\def\myndist{1cm}    % Node distance for automata
+
+% Math strings
+\newcommand{\q}  [1]{$q_{#1}$}            % \q0    --> $q_0$
+\newcommand{\qq} [1]{$\{q_{#1}\}$}        % \qq0   --> ${q_0}$
+\newcommand{\qqq}[2]{$\{q_{#1},q_{#2}\}$} % \qqq01 --> ${q_0,q_1}$
+\newcommand{\qm} [1]{\{q_{#1}\}}          % \qm0   --> {q_0}
+
 \tikzset{
-  font=\scriptsize\sffamily
+  font=\scriptsize\sffamily,
+  semithick,
+  >=stealth,
+  longer1/.style={
+    shorten >=-0.425mm,
+    shorten <=-0.5mm
+  },
+  longer2/.style={
+    shorten >=-0.7mm,
+    shorten <=-0.8mm
+  },
+  my state/.style={
+    draw,
+    minimum height=1.75em,
+    minimum width=2em,
+    inner sep=1mm,
+    rectangle,
+    rounded corners=2mm
+  },
+  my accepting/.style={
+    double,
+    double distance=1pt,
+    outer sep=0.9pt,
+    semithick
+  },
+  automaton/.style={
+    every state/.style={my state},
+    accepting/.style={my accepting},
+    initial text=,
+    every loop/.style={min distance=6mm,looseness=7},
+    my below/.style={out=295,in=245},
+    my above/.style={out=65,in=115},
+    node distance=\myndist
+  },
+  tree/.style={
+    s/.style={my state},
+    a/.style={my state,my accepting},
+    level distance=\myvdist,
+    sibling distance=\myhdist,
+  },
+  tree example sets/.style={
+    0/.style= {st,font={$\{q_0\}$}},
+    1/.style= {st,acc,font={$\{q_1\}$}},
+    2/.style= {st,font={$\{q_2\}$}},
+    02/.style={st,font={$\{q_0,q_2\}$}},
+  },
+  tree example no sets/.style={
+    0/.style={st,font={$q_0$}},
+    1/.style={st,acc,font={$q_1$}},
+    2/.style={st,font={$q_2$}},
+  },
+  dag/.style={
+    s/.style={my state},
+    a/.style={my state,my accepting},
+    row sep={\myvdist,between origins},
+    column sep=0.75cm,
+    inner sep=0mm,
+    ghost/.style={draw=black!20,color=black!20},
+  }
+}
+
+\newcommand{\automaton}{
+\begin{tikzpicture}[automaton]
+\node[state,initial]   (0)                    {\q0};
+\node[state,accepting] (1) [above right=of 0] {\q1};
+\node[state]           (2) [below right=of 1] {\q2};
+\path[->] (0) edge[my below,loop] node[below]           {$a$} ()
+              edge[longer1]       node[pos=0.3,above](m){$a$} (1)
+              edge                node[below]           {$a$} (2)
+          (1) edge[longer1]       node[pos=0.7,above]   {$a$} (2)
+          (2) edge[my below,loop] node[below]           {$a$} ();
+\node[draw=none,anchor=base,xshift=-1.5cm] at (m.base){$A=$};  
+\end{tikzpicture}
+}
+
+\newcommand{\symbols}{
+\begin{tikzpicture}[tree,l/.style={pos=0.3,font={$a$}},e/.style={draw=none}]
+\Tree [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; {} ] ] ] ]
+\end{tikzpicture}
 }
 
 \begin{document}
@@ -387,27 +489,25 @@ As mentioned, constructing the states of the lower part is done in the same way 
 
 \begin{figure}
 \begin{center}
-\begin{tabular}{|c|c|c|}
-\multicolumn{3}{l}{$p$ has no 2-coloured sets} \\
+\begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
 \hline
-\backslashbox{$c(s_{pred})$}{$s$} & non-accepting & accepting \\
+\raggedright $q_{pred}$: no 2-coloured sets & $s$ non-accepting & $s$ accepting \\
 \hline
-0 & 0 & 2 \\
+$c(s_{pred}) = 0$ & 0 & 2 \\
 \hline
-1 & 2 & 2 \\
+$c(s_{pred}) = 1$ & 2 & 2 \\
 \hline
 \end{tabular}
-\hfil
-\begin{tabular}{|c|c|c|}
-\multicolumn{3}{l}{$p$ has 2-coloured sets} \\
+\vskip1em
+\begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
 \hline
-\backslashbox{$c(s_{pred})$}{$s$} & non-accepting & accepting \\
+\raggedright $q_{pred}$: one or more 2-coloured sets   & $s$ non-accepting & $s$ accepting \\
 \hline
-0 & 0 & 1 \\
+$c(s_{pred}) = 0$ & 0 & 1 \\
 \hline
-1 & 1 & 1 \\
+$c(s_{pred}) = 1$ & 1 & 1 \\
 \hline
-2 & 2 & 2 \\
+$c(s_{pred}) = 2$ & 2 & 2 \\
 \hline
 \end{tabular}
 \end{center}
@@ -422,7 +522,9 @@ The colour rules are in fact simple. The first rows in the two matrices in Figur
 
 \section{Optimisations}
 \label{optimisations}
-
+\subsection{Removal of Non-Accepting States (R2C)}
+\subsection{Merging of Adjacent Sets (M)}
+\subsection{Reduction of 2-Coloured Sets (M2)}
 
 
 \chapter{Performance Investigation of the Fribourg Construction}
