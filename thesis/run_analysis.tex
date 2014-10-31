@@ -9,6 +9,7 @@
 \usetikzlibrary{automata}    % Styles 'state', 'initial', 'accepting'
 \usetikzlibrary{positioning} % Function "of" (e.g. [right=of x])
 \usetikzlibrary{backgrounds} % Predefined "background" layer
+\usetikzlibrary{calc}        % Calculations $...$
 
 % TikZ variables
 \def\myvdist{1.2cm}
@@ -314,5 +315,36 @@ e/.style={draw=none}]
 \caption{The complement automaton $B$.}
 \end{figure}
 
+%==============================================================================%
+% Complement of A
+%==============================================================================%
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[automaton]
+\node[state] (0)              {$(\{q_0\})$};
+\node[state] (1) [below=of 0] {$(\{q_0,q_2\},\{q_1\})$};
+\path[->,densely dotted]
+($(0.south)+(0,1mm)$)
+  edge node[right]{$a$} ($(1.north east)!0.25!(1.north west)-(0,1.75mm)$)
+  edge node{$a$} ($(1.north east)!0.56!(1.north west)-(0,1.75mm)$)
+  edge node[left]{$a$} ($(1.north east)!0.75!(1.north west)-(0,1.75mm)$);
+\end{tikzpicture}
+\hfil
+\begin{tikzpicture}[automaton]
+\node[state] (0)              {$(\{q_0\})$};
+\node[state] (1) [below=of 0] {$(\{q_0,q_2\},\{q_1\})$};
+\path[->,densely dashed]
+  (0.south) edge node[right]{$a$} ($(1.north east)!0.25!(1.north west)$)
+            edge node[left]{$a$}  ($(1.north east)!0.675!(1.north west)$);
+\end{tikzpicture}
+\hfil
+\begin{tikzpicture}[automaton]
+\node[state] (0)              {$(\{q_0\})$};
+\node[state] (1) [below=of 0] {$(\{q_0,q_2\},\{q_1\})$};
+\path[->] (0) edge node[right]{$a$} (1);
+\end{tikzpicture}
+\end{center}
+\caption{Different notions of runs.}
+\end{figure}
 
 \end{document}

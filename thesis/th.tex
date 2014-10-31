@@ -9,11 +9,12 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}
 \usepackage{hyperref}
+\usepackage{slashbox}
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,arrows,shapes,matrix}
 
 \newcommand{\om}{{$\omega$}}
-\newcommand{\c}[1]{\overline{#1}}
+%\newcommand{\c}[1]{\overline{#1}}
 
 % Make tables less cramped
 {\renewcommand{\arraystretch}{1.15}
@@ -363,17 +364,63 @@ States of the subset-tuple construction are thus levels of reduced split trees. 
 \subsection{Construction of the Lower Part}
 The construction of the lower part takes as input the upper part $B^\prime$ (and the initial automaton $A$) and outputs the final complement automaton $B$ with $L(B) = \c{L(A)}$. The construction of the lower part is basically an extension of the construction of the upper part that is applied to the states of the upper part. The extension consists therein that every set in the states of the lower part is assigned a \emph{colour}. These colours will be used to keep track of certain properties of runs of $B$ that finally allow to decide which states of the lower part of $B$ may be accepting. In this section we will first explain the mechanical construction of $B$ and give the intuition behind it afterwards.
 
-There are three colours that sets of the lower part can have, let us call them 0, 1, and 2. The colour of a set says something about the history of a run up to arriving at this set.
+There are three colours that sets of the lower part can have, let us call them 0, 1, and 2. The colour of a set says something about the history of the runs that reach this set. We have to clarify what we mean by run at this point. Conceptually, the subset-tuple construction unifies runs of the input automaton $A$. The construction conceptually includes two abstraction levels of this unification. Figure~\ref{runs} illustrates this. The figure shows three copies of two states of the upper part of the last section. The leftmost pair shows in dotted lines the runs of the original automaton $A$. These runs go from $A$-state to $A$-state, and are the ones that are unified by the construction. The middle part shows the conceptual unification of the $A$-runs to at most two outgoing branches per subset-tuple state, one for the accepting successors and one for the non-accepting successors. These runs go from state set to state set and correspond to the run analysis done with reduced split trees. The rightmost part finally shows the real run of the automaton excerpt. This is the run that is seen from the outside, when the inner structure of the states is now known. It unifies all the $A$-runs to one single run.
 
+% Figure \label{runs}
+
+In the following we will always refer to the notion of run in the middle of Figure~\ref{runs}. That is, the notion that directly corresponds to reduced split trees. This conceptual view unifies and simplifies the $A$-runs as much as possible, but still guards enough information for figuring out a correct acceptance behaviour of the final complement automaton $B$.
+
+A run arriving at a set is thus a branch of a corresponding reduced split tree. It can be obtained by starting at the node corresponding to the set in question and following the edges upwards toward the root of the tree. A given set may occur in many reduced split trees, as there is a reduced split tree for every word of $A$'s alphabet. The set of runs arriving at a set are thus the corresponding branches of all the reduced split tree where the set occurs.
+
+In the construction of the lower part, we are interested in the history of the runs back until the time when they left the upper part. The crucial information is whether this history of a run includes a so-called right-turn. The notion of right-turn can be understood figuratively. In a reduced split tree, a run can be thought of as having at any node $p$ the choice of either going to the accepting child of $p$ or to the non-accepting one. Since in the right-to-left version of reduced split trees accepting children are to the right of non-accepting children, the run literally ``turns right'' when going to the accepting child. Consequently, if a run has a right-turn in its history, then it has visited at least one accepting set since leaving the upper part. On the other hand, if a run has no right-turns in its history, then it has visited no accepting sets since leaving the upper part.
+
+That leads us back to the colours that we use for labelling the sets of the lower part. The meaning of the colours 0, 1, and 2 is the following.
 \begin{itemize}
-\item 2: the history of the runs arriving at this set includes a right-turn since leaving the upper part
-\item 1: the history of the runs arriving at this set includes a right-turn since leaving the upper part, but on the level where the run had just completed the right-turn, there was already another set with colour 2
-\item 0: the history of the runs arriving at this set includes no right-turns since leaving the upper part
+\item 2: the run includes a right-turn in the lower part
+\item 1: the run includes a right-turn in the lower part, but in the $B$-state where the run visited the accepting child, there was already another set with colour 2
+\item 0: the run does not include right-turns in the lower part
 \end{itemize}
 
+The role of colour 0 and colour 2 should be clear from the above explanations. The role colour 1 is more subtle and we will explain it later in this section when we give the intuition behind the selection of the accepting states of $B$. For now, we will complete the description of how to construct the lower part and thereby the final complement automaton $B$.
+
+As mentioned, constructing the states of the lower part is done in the same way as constructing the states of the upper part, with the difference that every set $s$ is assigned a colour. This colour depends on the colour of the predecessor set $s_{pred}$ of $s$ and on whether $s$ itself is an accepting or non-accepting set. Furthermore, there are different rules for the two cases where the $B$-state $p$ containing $s_{pred}$ contains one or more 2-coloured sets or does not contain any 2-coloured sets. Figure~\ref{colours} contains the complete rules for determining the colour of set $s$. Note that states of the upper part are treated as all their sets would have colour 0.
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\multicolumn{3}{l}{$p$ has no 2-coloured sets} \\
+\hline
+\backslashbox{$c(s_{pred})$}{$s$} & non-accepting & accepting \\
+\hline
+0 & 0 & 2 \\
+\hline
+1 & 2 & 2 \\
+\hline
+\end{tabular}
+\hfil
+\begin{tabular}{|c|c|c|}
+\multicolumn{3}{l}{$p$ has 2-coloured sets} \\
+\hline
+\backslashbox{$c(s_{pred})$}{$s$} & non-accepting & accepting \\
+\hline
+0 & 0 & 1 \\
+\hline
+1 & 1 & 1 \\
+\hline
+2 & 2 & 2 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Colour rules.}
+\label{colours}
+\end{figure}
+
+The colour rules are in fact simple. The first rows in the two matrices in Figure~\ref{colours} treat the case where the run was still ``clean'' when it arrived at $s$'s predecessor $s_{pred}$. If now $s$ is the non-accepting child of $s_{pred}$, then the run stays clean and $s$ gets colour 0. But if $s$ is the accepting child, then the run just commits its first right-turn and gets dirty. Depending on whether there is another 2-coloured set in the state, $s$ gets either colour 1 or colour 2. The remaining rows in the matrices of Figure~\ref{colours} express the continuation of ``dirtiness''.
 
 
-\subsection{Optimisations}
+
+
+\section{Optimisations}
 \label{optimisations}
 
 
