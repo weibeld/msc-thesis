@@ -1,4 +1,124 @@
-\documentclass[koma]{thesis}
+\documentclass[a4paper]{report}
+\usepackage{a4wide}
+%\documentclass{scrreprt}
+
+% Circumvent KOMA Script' strict 1:2 top margin to bottom margin relation
+%\usepackage[hscale=0.71,vscale=0.8,vmarginratio={6:8},heightrounded]{geometry}
+
+\usepackage[utf8]{inputenc}   % Literal typing of ä, ö, ü
+\usepackage{amssymb,amsmath}
+\usepackage{hyperref}
+\usepackage{array}            % For \newcolumntype
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+
+\usetikzlibrary{
+  shapes,
+  arrows,
+  positioning,  % Function "of" (e.g. [right=of x])
+  automata,     % Styles "state", "initial", "accepting"
+  backgrounds,  % Predefined layer named "background"
+  calc          % Calculations $...$
+}
+
+\newcommand{\om}{{$\omega$}}
+\newcommand{\x}[1]{\widehat{#1}}               % Colour -1
+\newcommand{\one}[1]{\overline{#1}}            % Colour  1
+\newcommand{\two}[1]{\overline{\overline{#1}}} % Colour  2
+
+% Table column: fixed width, horizontally, vertically centered
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+% Table spacings
+{\renewcommand{\arraystretch}{1.15}
+\renewcommand{\tabcolsep}{0.1cm}  
+
+% Indentation of second and following lines figure captions. Default indentation
+% in KOMA script is length of "Figure X.X: ".
+% \setcapindent{2em}
+
+% Used as "TikZ variables"
+\def\myvdist{1.2cm}  % Level distance of trees
+\def\myhdist{0.5cm}  % Sibling distance of trees
+\def\myndist{1cm}    % Node distance for automata
+
+% Strings
+\newcommand{\qm} [1]{\{q_{#1}\}}        % \qm0   --> {q_0}
+\newcommand{\qqm}[2]{\{q_{#1},q_{#2}\}} % \qqm01 --> {q_0,q_1}
+\newcommand{\q}  [1]{$q{#1}$}           % \q0    --> $q_0$
+\newcommand{\qq} [1]{$\qm{#1}$}         % \qq0   --> ${q_0}$
+\newcommand{\qqq}[2]{$\qqm{#1}{#2}$}    % \qqq01 --> ${q_0,q_1}$
+
+\tikzset{
+  font=\scriptsize\sffamily,
+  semithick,
+  >=stealth,
+  longer1/.style={
+    shorten >=-0.425mm,
+    shorten <=-0.5mm
+  },
+  longer2/.style={
+    shorten >=-0.7mm,
+    shorten <=-0.8mm
+  },
+  my state/.style={
+    draw,
+    minimum height=1.75em,
+    minimum width=2em,
+    inner sep=1mm,
+    rectangle,
+    rounded corners=2mm
+  },
+  my accepting/.style={
+    double,
+    double distance=1pt,
+    outer sep=0.9pt,
+    semithick
+  },
+  automaton/.style={
+    every state/.style={my state},
+    accepting/.style={my accepting},
+    initial text=,
+    every loop/.style={min distance=6mm,looseness=7},
+    my below/.style={out=295,in=245},
+    my above/.style={out=65,in=115},
+    node distance=\myndist
+  },
+  tree/.style={
+    s/.style={my state},
+    a/.style={my state,my accepting},
+    level distance=\myvdist,
+    sibling distance=\myhdist,
+  },
+  dag/.style={
+    s/.style={my state},
+    a/.style={my state,my accepting},
+    row sep={\myvdist,between origins},
+    column sep=0.75cm,
+    inner sep=0mm,
+    ghost/.style={draw=black!20,color=black!20},
+  }
+}
+
+\newcommand{\automaton}{
+\begin{tikzpicture}[automaton]
+\node[state,initial]   (0)                    {\q0};
+\node[state,accepting] (1) [above right=of 0] {\q1};
+\node[state]           (2) [below right=of 1] {\q2};
+\path[->] (0) edge[my below,loop] node[below]           {$a$} ()
+              edge[longer1]       node[pos=0.3,above](m){$a$} (1)
+              edge                node[below]           {$a$} (2)
+          (1) edge[longer1]       node[pos=0.7,above]   {$a$} (2)
+          (2) edge[my below,loop] node[below]           {$a$} ();
+\node[anchor=base,xshift=-1.5cm] at (m.base){$A=$};  
+\end{tikzpicture}
+}
+
+\newcommand{\symbols}{
+\begin{tikzpicture}[tree,l/.style={pos=0.3,font={$a$}},e/.style={draw=none}]
+\Tree [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; [ \edge[e] node[l]{}; {} ] ] ] ]
+\end{tikzpicture}
+}
 
 \begin{document}
 % Title page
@@ -177,7 +297,19 @@ It turned out that also all the other types of the just introduced \om-automata,
 % Picture of expressive equivalences
 \begin{figure}[htb]
 \begin{center}
-\Equivalences
+\begin{tikzpicture}[item/.style={ellipse,draw,text width=2.6cm,align=center}]
+% \node[item] (left) {NBW\\(DBW)};
+% \node [above=of left] {Büchi Automata};
+% \node[item] (middle) [right=of left] {NMW, DMW,\\NRW, DRW,\\NSW, DSW,\\NPW, DPW};
+% \node [above=of middle] {Other \om-Automata};
+% \node[item] (right)  [right=of middle] {\om-Regular\\Languages};
+\matrix[column sep=1.1cm,row sep=0.25cm]{
+\node {Büchi Automata}; & \node {Other \om-Automata}; & & \\
+\node[item] (left) {NBW\\(DBW)}; & \node[item] (middle) {NMW, DMW,\\NRW, DRW,\\NSW, DSW,\\NPW, DPW}; & \node[item] (right) {\om-Regular\\Languages}; &  \\
+};
+\path[<->] (left) edge (middle)
+           (middle) edge (right);
+\end{tikzpicture}
 \caption{Non-deterministic Büchi automata (NBW) are expressively equivalent to Muller, Rabin, Streett, and parity automata (both deterministic and non-deterministic), and to the \om-regular languages. Deterministic Büchi automata (DBW) are less expressive than NBW.}
 \label{equivalences}
 \end{center}
@@ -192,7 +324,14 @@ It is interesting to see that this closure does not hold for the specific case o
 
 The problem of Büchi complementation consists now in finding a procedure (usually called a construction) that takes as input any Büchi automaton $A$ and outputs another Büchi automaton $B$ with $L(B) = \overline{L(A)}$, as shown below.
 
-\hbox to \hsize{\hfill{\Complementation}\hfill}
+\hbox to \hsize{\hfill{
+\begin{tikzpicture}[item/.style={rectangle,draw,text width=2.5cm,align=center}]
+\node[] (left) {Büchi Automaton $A$};
+\node[item] (middle) [right=of left] {Complementation construction};
+\node[text width=2.5cm,align=center] (right)  [right=of middle] {Büchi automaton $B$\\$L(B) = \overline{L(A)}$}; 
+\path[->] (left) edge (middle)
+          (middle) edge (right);
+\end{tikzpicture}}\hfill}
 
 For complementation of automata in general, construction usually differ depending on whether the input automaton $A$ is deterministic or non-deterministic. Complementation of deterministic automata is often simpler and may sometimes even provide a solution for the complementation of the non-deterministic ones.
 
@@ -250,14 +389,6 @@ The simplest of run analyis technique is the run tree. A run tree is a direct un
 
 Figure~\ref{run_tree} shows an example automaton $A$ and the first five levels of the run tree for the word $w = a^\omega$ (infinite repetitions of the symbol $a$). Each branch from the root to one of the leaves represents a possible way for reading the first four positions of $w$. On the right, as a label for all the edges on the corresponding level, is the symbol that causes the depicted transitions.
 
-\begin{figure}
-\begin{center}
-\RunTree
-\end{center}
-\caption{Automaton $A$ and the first five levels of the run tree of the runs of $A$ on the word $a^\omega$.}
-\label{run_tree}
-\end{figure}
-
 ($A$ does not accept any word, it is empty. The only word it could accept is $a^\omega$ which it does not accept.)
 
 We define by the width of a tree the maximum number of vertices occurring at any level~\cite{Muller199569}. Clearly, for \om-words the width of a run tree may become infinite, because there may be an infinite number of levels and each level may have more vertices than the previous one. 
@@ -276,11 +407,23 @@ It turns out that enough information about individual runs to ensure the Büchi 
 \subsection{Split Trees}
 Split trees can be seen as run trees where the accepting and non-accepting descendants of a node $n$ are aggregated in two nodes. We will call the former the \emph{accepting child} and the latter the \emph{non-accepting child} of $n$. Thus in a split tree, every node has at most two descendants (if either the accepting or the non-accepting child is empty, it is not added to the tree), and the nodes represent sets of states rather than individual states. Figure~\ref{split_tree} shows the first five levels of the split tree of automaton $A$ on the word $a^\omega$.
 
+%==============================================================================%
+% Split tree
+%==============================================================================%
 \begin{figure}
 \begin{center}
-\Automaton
-\hfil
-\SplitTree
+\automaton
+\hfill
+\begin{tikzpicture}[tree]
+\Tree
+[.\node[s]{\qq0}; [.\node[a]{\qq1};  [.\node[s](m){\qq2};  [.\node[s]{\qq2};  \node[s]{\qq2}; ] ] ]
+              [.\node[s]{\qqq02}; [.\node[a]{\qq0};  [.\node[s]{\qq2};  \node[s]{\qq2}; ] ]
+                             [.\node[s]{\qqq02}; [.\node[a]{\qq1};  \node[s]{\qq2}; ]
+                                            [.\node[s]{\qqq02}; \node[a]{\qq1};
+                                                           \node[s]{\qqq02}; ] ] ] ]
+\node[anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{S}^A_{a^\omega}=$};
+\end{tikzpicture}
+\symbols
 \end{center}
 \caption{Automaton $A$ and the first five levels of the split tree of the runs of $A$ on the word $a^\omega$.}
 \label{split_tree}
@@ -292,41 +435,11 @@ The order in which the accepting and non-accepting child are
 The notion of split trees (and reduced split trees, see next section) has been introduced by Kähler and Wilke in 2008 for their slice-based complementation construction~\cite{2008_kaehler}, cf.~\cite{fogarty2013unifying}. However, the idea of separating accepting from non-accepting states has already been used earlier, for example in Muller and Schupp's determinisation-based complementation construction from 1995~\cite{Muller199569}. Formal definitions os split trees can be found in~\cite{2008_kaehler}\cite{fogarty2013unifying}.
 
 \subsection{Reduced Split Trees}
-The width of a split tree can still become infinitely large. A reduced split tree limits this width to a finite number with the restriction that on any level a given state may occur at most once. This is in effect the same as saying that if in a split tree there are multiple ways of going from the root to state $q$, then we keep only one of them.
-
-\begin{figure}
-\begin{center}
-\Automaton
-\hfil
-\ReducedSplitTreeLeftRight
-\end{center}
-\caption{Automaton $A$ and the first five levels of the left-to-right reduced split tree of the runs of $A$ on the word $a^\omega$.}
-\label{r_split_tree_lr}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\Automaton
-\hfil
-\ReducedSplitTreeRightLeft
-\end{center}
-\caption{Automaton $A$ and the first five levels of the left-to-right reduced split tree of the runs of $A$ on the word $a^\omega$.}
-\label{r_split_tree_rl}
-\end{figure}
+The width of a split tree can still become infinitely large. A reduced split tree limits this width to a finite number with the restriction that on any level a given state may occur at most once. This is in effect the same as saying that if in a split tree there are multiple ways of going from the root to state $q$, then we keep only one of them. 
 
 
 \subsection{Run DAGs}
-A run DAG (DAG stands for directed acyclic graph) can be seen as a graph in matrix form with one column for every state of $A$ and one row for every position of word $w$. The edges are defined similarly than in run trees. Figure~\ref{run_dag} shows the run DAG of automaton $A$ on the word $w = a^\omega$.
-
-\begin{figure}
-\begin{center}
-\Automaton
-\hfil
-\RunDAG
-\end{center}
-\caption{Automaton $A$ and the first five levels of the run DAG of the runs of $A$ on the word $a^\omega$.}
-\label{run_dag}
-\end{figure} 
+A run DAG (DAG stands for directed acyclic graph) can be seen as a graph in matrix form with one column for every state of $A$ and one row for every position of word $w$. The edges are defined similarly than in run trees. Figure~\ref{run_dag} shows the run DAG of automaton $A$ on the word $w = a^\omega$. 
 
 \section{Review of Büchi Complementation Constructions}
 \label{review}
@@ -356,49 +469,19 @@ The construction of the upper part takes as input a NBW $A$ and outputs a determ
 
 The structure of $B^\prime$-states is defined by ``level-clippings'' of reduced split trees, as we explain in a moment. But, talking about reduced split trees, we have to make a decision first. In Section~\ref{r_split_trees} we mentioned that reduced split trees come in equivalent left-to-right and right-to-left versions. The construction has to adopt one of these variants and stick to it. In this thesis we use the right-to-left version. The final complement automata look the same with either version except that the order of the tuples is reversed. Note that the optimisations described in Section~\ref{optmisations} is also based on this ordering and would need to be rephrased for the left-to-right version.
 
-\begin{figure}
-\begin{center}
-\Slices
-\end{center}
-\caption{From levels of a reduced split tree to the slices of the subset-tuple construction.}
-\label{run_dag}
-\end{figure} 
-
 A new $B^\prime$-state $q$, successor on symbol $a$ of an already existing $B^\prime$-state $p$, now is created in the following way. The predecessor $p$ is regarded as a level of a reduced split tree by looking at its sets as the nodes on this level. Then, the next level for the given symbol $a$ is constructed as described in Section~\ref{r_split_tree}. This new level then directly defines $q$ by taking the nodes as the sets of $q$'s tuple and keeping their order. Figure~\ref{tree_to_slices} illustrates this with the example automaton $A$ that we already used before. If a state with a simlar tuple to the just created $q$ already exists in $B^\prime$, then just a transition from $p$ to this state is added (hence the loop in the third state of Figure~\ref{tree_to_slices}). The construction starts with a $B^\prime$-state containing only $A$'s initial state and ends when all states of $B^\prime$ have been processed for all input symbols. In Figure~\ref{tree_to_slices}, the construction is complete, thus the automaton shown at the right is the upper part of the complement of $A$.
 
 If all the $A$-states of a $B^\prime$-state $p$ have no successors on an input symbol $a$, then $p$ will have no $a$-successor in $B^\prime$. This results in the upper part $B^\prime$ being incomplete at the end of the construction. In this case, it has to be made complete by adding a sink state. Furthermore, this sink state has to be accepting.
 
 States of the subset-tuple construction are thus levels of reduced split trees. In the constructions of Varid and Wilke~\cite{vardi2007automata}, and Kähler and Wilke~\cite{2008_kaehler} states are called \emph{slices} of reduced split trees, hence the name slice-based approach.
 
-\begin{figure}
-\begin{center}
-\UpperPart
-\end{center}
-\caption{Upper part of complement of $A$.}
-\label{upper_part}
-\end{figure} 
-
 
 \subsection{Construction of the Lower Part}
 The construction of the lower part takes as input the upper part $B^\prime$ (and the initial automaton $A$) and outputs the final complement automaton $B$ with $L(B) = \c{L(A)}$. The construction of the lower part is basically an extension of the construction of the upper part that is applied to the states of the upper part. The extension consists therein that every set in the states of the lower part is assigned a \emph{colour}. These colours will be used to keep track of certain properties of runs of $B$ that finally allow to decide which states of the lower part of $B$ may be accepting. In this section we will first explain the mechanical construction of $B$ and give the intuition behind it afterwards.
 
-\begin{figure}
-\begin{center}
-\Complement
-\end{center}
-\caption{The final complement automaton $B$.}
-\label{complement}
-\end{figure} 
-
 There are three colours that sets of the lower part can have, let us call them 0, 1, and 2. The colour of a set says something about the history of the runs that reach this set. We have to clarify what we mean by run at this point. Conceptually, the subset-tuple construction unifies runs of the input automaton $A$. The construction conceptually includes two abstraction levels of this unification. Figure~\ref{runs} illustrates this. The figure shows three copies of two states of the upper part of the last section. The leftmost pair shows in dotted lines the runs of the original automaton $A$. These runs go from $A$-state to $A$-state, and are the ones that are unified by the construction. The middle part shows the conceptual unification of the $A$-runs to at most two outgoing branches per subset-tuple state, one for the accepting successors and one for the non-accepting successors. These runs go from state set to state set and correspond to the run analysis done with reduced split trees. The rightmost part finally shows the real run of the automaton excerpt. This is the run that is seen from the outside, when the inner structure of the states is now known. It unifies all the $A$-runs to one single run.
 
-\begin{figure}
-\begin{center}
-\RunTypes
-\end{center}
-\caption{Different notions of runs.}
-\label{run_types}
-\end{figure} 
+% Figure \label{runs}
 
 In the following we will always refer to the notion of run in the middle of Figure~\ref{runs}. That is, the notion that directly corresponds to reduced split trees. This conceptual view unifies and simplifies the $A$-runs as much as possible, but still guards enough information for figuring out a correct acceptance behaviour of the final complement automaton $B$.
 
