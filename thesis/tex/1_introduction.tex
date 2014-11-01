@@ -1,0 +1,44 @@
+\chapter{Introduction}
+At the beginning of the 1960s, a Swiss logician named Julius Richard Büchi at Michigan University was looking for a way to prove the decidability of the satisfiability of monadic second order logic with one successor (S1S). Büchi applied a trick that truly founded a new paradigm in the application of logic to theoretical computer science. He thought of interpretations of a S1S formula as infinitly long words of a formal language and designed a type of finite state automaton that accepts such a word if and only if the interpretation it represents satisfies the formula. After proving that every S1S formula can be translated to such an automaton and vice versa (Büchi's Theorem), the satisfiabilty problem of an S1S formula could be reduced to testing the non-emptiness of the corresponding automaton.
+
+This special type of finite state automaton was later called Büchi automaton.
+
+% Context of study
+A Büchi complementation construction takes as input a Büchi automaton $A$ and produces as output another Büchi automaton $B$ which accepts the complement language of the input automaton $A$. Complement language denotes the ``contrary'' language, that is, $B$ must \emph{accept} (over a given alphabet) every word that $A$ \emph{does not} accept, and must in turn \emph{not accept} every word that $A$ \emph{accepts}.
+
+Büchi automata are finite automata (that is, having a finite number of states) which operate on infinite words (that is, words that ``never end''). Operating on infinite words, they belong thus to the category \om-automata. An important application of Büchi automata is in model checking which is a formal system verification technique. There, they are used to represent both, the description of the system to be checked for the presence of a correctness property, and (the negation of) this correctness property itself.
+
+In one approach to model checking, the correctness property is directly specified as a Büchi automaton
+One approach to model checking requires that the Büchi automaton representing the correctness property is complemented. It is here that the problem of Büchi complementation has one of its practical applications. 
+
+% Stating the problem, reason the research is worth tackling
+The complementation of non-deterministic Büchi automata is hard. It has been proven to have an exponential lower bound in the number of generated states [cite]. That is, the number of states of the output automaton is, in the worst case, an exponential function of the number of states of the input automaton. However, since the introduction of Büchi automata in the 1960's, significant process in reducing the complexity (in other words, the degree of exponentiality) of the Büchi complementation problem has been made. Some numbers [list complexities of the different constructions].
+
+% Aim and scope
+
+% Significance: advance knowledge, contribute to solutin of practical problem, novel use of a procedure or technique?
+
+% Overview
+
+
+% 2. The Büchi complementation problem
+% 2.1 Preliminaries
+% Used naming convention (NBW, DBW, etc.)
+%   2.1.1 Büchi automata
+%     - Definition
+%     - DBW vs. NBW
+%     - Equivalence with omega-regular languages (NBW)
+%     - DBW weaker than NBW (proof)
+%   2.1.2 Other omega-automata
+%     - Muller, Rabin, Streett, Parity
+%     - McNaughton's Theorem (NBW = DMW)
+%     - Complete picture of equivalences
+%   2.1.3 Complementation of Büchi automata
+%     - NBW closed under complementation (DBW not, proof)
+%     - Example NFA/DFA
+%     - Complementation of DBW (Kurshan)
+%   2.1.4 Complexity of Büchi Complementation
+%     - Notion of state blow-up
+%     - Lower bounds for the state blow-up
+% 2.2 Review of Büchi Complementation Constructions
+% 2.3 Empirical Performance Investigations

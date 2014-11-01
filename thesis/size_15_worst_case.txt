@@ -1,7 +1,0 @@
-(0.76n)^n
-
-n = 15
-
-(0.76*15)^15 = 7.138 * 10^15 = 7.138 quadrillions
-
-1 quadrillion = 10^15 = 10^6*10^9 = 1 million billions

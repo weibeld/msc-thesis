@@ -38,8 +38,8 @@
   \setcapindent{2em} % Indentation in Figure captions
 \fi
 
-\RequirePackage{thesis}
-\RequirePackage{mytikz}
+\RequirePackage{styles/thesis}
+\RequirePackage{styles/drawings}
 
 \endinput % Mandatory
 
