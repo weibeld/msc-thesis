@@ -38,8 +38,21 @@
   \setcapindent{2em} % Indentation in Figure captions
 \fi
 
-\RequirePackage{styles/thesis}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{hyperref}
+\RequirePackage{array}
 \RequirePackage{styles/drawings}
 
-\endinput % Mandatory
+\newcommand{\om}{{$\omega$}}
 
+\newcommand{\Bp}{{$B^\prime$}}
+
+% Table column: fixed width, horizontally, vertically centered
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+% Table spacings
+{\renewcommand{\arraystretch}{1.15}
+\renewcommand{\tabcolsep}{0.1cm}
+
+\endinput % Mandatory
