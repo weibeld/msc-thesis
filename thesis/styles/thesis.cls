@@ -38,10 +38,11 @@
   \setcapindent{2em} % Indentation in Figure captions
 \fi
 
-\RequirePackage[utf8]{inputenc}
+\RequirePackage[utf8]{inputenc}  % Literal typing of ä, ö, ü, etc.
 \RequirePackage{amsmath,amssymb}
 \RequirePackage{hyperref}
-\RequirePackage{array}
+\RequirePackage{array}           % Define new columntypes with \newcolumntype
+\RequirePackage[table]{xcolor}   % Colour table cells with \cellcolor
 \RequirePackage{styles/drawings}
 
 \newcommand{\om}{{$\omega$}}
