@@ -1,12 +1,14 @@
 #!/bin/bash
-# Install the GOAL plugin from the local machine on UBELIX.
+# Install the GOAL plugin from the local machine on UBELIX. The local plugin
+# has to be already compiled.
 # dw-07.10.2014
 
 set -e
 
 # Plugin dirs on local machin and on UBELIX
-plug_local=$(dirname $(which goal))/plugins
-plug_remote=bin/GOAL-20130711/plugins # Relative to $HOME
+#plug_local=$(dirname $(which goal))/plugins
+plug_local=~/Desktop/thesis/goal/plugin/2014-XX-XX/allow_m2_without_m
+plug_remote=bin/GOAL-20141017/plugins # Relative to $HOME
 
 # Run any command on UBELIX
 run_remote() {
@@ -30,4 +32,4 @@ run_remote "tar -xz -f $plug_remote/plugin.tar.gz -C $plug_remote; rm $plug_remo
 
 # Create new archive of the whole GOAL application
 echo "Creating updated GOAL archive on UBELIX..."
-run_remote "tar -cz -f bin/GOAL-20130711.tar.gz -C bin GOAL-20130711"
+run_remote "tar -cz -f bin/GOAL-20141017.tar.gz -C bin GOAL-20141017"

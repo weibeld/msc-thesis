@@ -3,6 +3,7 @@
 # of the DIRECTORY argument. The complementation algorithm and options are
 # deduced from the name of each subdirectory. This script is basically an
 # automated repeated invocation of submit.sh with different arguments.
+#
 # dw-09.10.2014
 
 set -e
@@ -57,9 +58,7 @@ test file "$data"
 subdirs=($(echo $dir/*/)) # Get all subdirs of $dir (with a trailing slash)
 for sub in ${subdirs[@]}; do
   code=$(basename $sub) # $code of the form frib.r.m.foo
-  old_ifs=$IFS; IFS=.
-  tokens=($code)
-  IFS=$old_ifs
+  IFS=. tokens=($code)
   algo=${tokens[0]}
   for t in ${tokens[@]:1:${#tokens[@]}-2}; do algo=$algo" -$t"; done
   submit_full="$submit_opts -d $sub"

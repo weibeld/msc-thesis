@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<!--
+This manifest and the code of this plugin add the subset-tuple Büchi
+complementation algorithm to GOAL: as a menu item in the GUI, and as an
+option to the 'complement' command on the command line.
+Daniel Weibel, 27.05.2014
+-->
+
+<plugin id="ch.unifr.goal.complement" version="0.0.1">
+  
+  <!-- The plugins whose code is accessed by this plugin -->
+  <requires>
+    <import plugin-id="org.svvrl.goal.core" />
+    <import plugin-id="org.svvrl.goal.gui" />
+    <import plugin-id="org.svvrl.goal.cmd" />
+  </requires>
+
+
+  <!-- The location of the code of this plugin -->
+  <runtime>
+    <library id="ch.unifr.goal.complement" path="classes/" type="code">
+      <!-- Uncomment if other plugins need to access the code of this plugin -->
+      <!-- <export prefix="*" /> -->
+    </library>
+  </runtime>
+
+  <!-- Adding the Fribourg Construction to the known complementation construct-
+       ions. This adds the construction to the dropdown list for selecting the
+       default complementation construction in Preferences > Complementation -->
+  <extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="FribourgConstruction">
+    <parameter id="class" value="ch.unifr.goal.complement.FribourgConstruction" />
+    <parameter id="name" value="Fribourg Construction" />
+  </extension>
+
+  <!-- Menu item: Automaton > Complement > Fribourg Construction -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FribourgComplementAction">
+    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+    <parameter id="location" value="first" />
+  </extension>
+
+  <!-- Menu item: Automaton > Complement (Step by Step) > Fribourg Construction -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepFribourgComplementAction">
+    <parameter id="class" value="ch.unifr.goal.complement.StepByStepFribourgComplementAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+    <parameter id="location" value="first" />
+  </extension>
+
+  <!-- Adding Preferences > Complementation > Fribourg Construction for setting
+       options for the algorithm (the same as when starting a construction). -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="FribourgComplementOptionsPanel">
+    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Fribourg Construction?first" />
+  </extension>
+
+  <!-- Extending the command line command 'complement' with an additional
+       algorithm, i.e. 'goal complement -m fribourg' -->
+  <!--<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementCommand" id="FribourgComplementExtension">
+    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementExtension" />
+    <parameter id="name" value="fribourg" />
+  </extension>-->
+
+  <extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="FribourgComplementInterface">
+    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementInterface" />
+    <parameter id="name" value="fribourg" />
+    <parameter id="construction" value="ch.unifr.goal.complement.FribourgConstruction" />
+  </extension>
+
+</plugin>

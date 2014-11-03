@@ -1,38 +1,42 @@
 #!/bin/bash
-# Complement all the automata in a directory.
+# SGE Job Script
+# Complement all the automata in a directory inside a .tar.gz archive with the
+# complementation construction specified as argument. Write result statistics
+# to a file that is to be processed by R.
+#
 # dw-24.09.2014
 
-# Defaults for command line parameters
-default_algo="fribourg -r2ifc -m"
-default_data=~/data/small.tar.gz
-
-# Other frequently edited parameters
+# GOAL version to use
 goal_archive=~/bin/GOAL-20130711.tar.gz
+
+# Defaults for command line parameters
+algo="fribourg -r2ifc -m"
+data_archive=~/data/small.tar.gz
 timeout=600 # Seconds
 memory=1G
 
 usage() {
   echo "USAGE:"
-  echo "    $(basename $0) [-a algorithm] [-d data]"
+  echo "    $(basename $0) [-a algorithm] [-d data] [-t timeout] [-m memory]"
   echo
-  echo "OPTIONS:                            [DEFAULT]"
-  echo "    -a: Algorithm and options       [\"$default_algo\"]"
-  echo "    -d: Data (absolute paths only)  [$default_data]"
+  echo "OPTIONS                                 [DEFAULT]"
+  echo "    -a: Algorithm including options     [\"$algo\"]"
+  echo "    -d: Data (absolute path only)       [$data_archive]"
+  echo "    -t: Timeout (seconds)               [$timeout]"
+  echo "    -m: Max. Java heap size             [$memory]"    
 }
+if [ "$1" == "-h" ]; then usage; exit 0; fi
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then usage; exit 0; fi
-if [ $# -ne 0 ] && [ $# -ne 2 ] && [ $# -ne 4 ]; then echo "Error: invalid number of command line arguments"; exit 1; fi
-
-while getopts ":a:d:" opt; do
+while getopts ":a:d:t:m:" opt; do
   case $opt in
-    a) algo=$OPTARG; ;;
+    a) algo=$OPTARG;         ;;
     d) data_archive=$OPTARG; ;;
-    \?) echo "Error: invalid option: -$OPTARG"; exit 1 ;;
+    t) timeout=$OPTARG;      ;;
+    m) memory=$OPTARG;       ;;
+    \?) echo "Error: invalid option: -$OPTARG";             exit 1 ;;
     :)  echo "Error: option -$OPTARG requires an argument"; exit 1 ;;
   esac
 done
-if [ -z "$algo" ]; then algo=$default_algo; fi
-if [ -z $data_archive ]; then data_archive=$default_data; fi
 
 # Enforce tilde (~) expansion, in case the path was enclosed in quotes
 data_archive=$(eval echo $data_archive)
