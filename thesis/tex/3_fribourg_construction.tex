@@ -15,7 +15,7 @@ As it may be apparent from this short summary, the construction of the lower par
 \end{figure} 
 
 
-\subsection{First Stage: Constructing the Upper Part}
+\section{First Stage: Constructing the Upper Part}
 The first stage of the subset-tuple construction takes as input an NBW $A$ and outputs a deterministic automaton \Bp. This \Bp is the upper part of the final complement automaton $B$ of $A$. The construction of \Bp can be seen as a modified subset construction. The difference to the normal subset construction lies in the inner structure of the constructed states. While in the subset construction a state consists of a subset of the states of the input automaton, a \Bp-state in the subset-tuple construction consists of a \emph{tuple of subsets} of $A$-states. The subsets in a tuple are pairwise disjoint, that is, every $A$-state occurs at most once in a \Bp-state. The $A$-states occurring in a \Bp-state are the same that would result from the classic subset construction. As an example, if applying the subset construction to a state \qq0 results in the state \qqqq012, the subset-tuple construction might yield the state $(\qqm02,\qm1)$ instead.
 
 The structure of \Bp-states is determined by levels of corresponding reduced split trees. Vardi, Kähler, and Wilke refer to these levels as \emph{slices} in their constructions~\cite{vardi2007automata,2008_kaehler}. Hence the name slice-based approach. In the following, we will use the terms levels and slices interchangebly. A slice-based construction can work with either left-to-right or right-to-left reduced split trees. Vardi, Kähler, and Wilke use the left-to-right version in their above cited publications. In this thesis, in contrast, we will use right-to-left reduced split trees, which were also used from the beginning by the authors of the subset-tuple construction.
@@ -76,12 +76,12 @@ For the example automaton $A$ in Figure~\ref{example_automaton}, we would start 
 % \end{figure} 
 
 
-\subsection{Second Stage: Adding the Lower Part}
+\section{Second Stage: Adding the Lower Part}
 The second stage of the subset-tuple construction adds the lower part to the upper part \Bp. The two parts together form the final complement automaton $B$. The lower part is constructed by again applying a modified subset construction to the states of the upper part \Bp. This modified subset construction is an extension of the construction for the upper part. The addition is that each set gets decorated with a colour. These colours later determine which states of the lower part are accepting states.
 
 We divide our discussion of the lower part in two sections. In the following one (\ref{lower_part:steps}), we explain the ``mechanical'' construction of the lower part, the steps that have to be done to arrive at the final complement automaton $B$. In the next section (\ref{lower_part:intuition}) we give the idea and intuition behind the construction and explain why it works.
 
-\subsubsection{The Steps for Constructing the Lower Part}
+\subsection{Construction}
 \label{lower_part:steps}
 As mentioned, every set of the states of the lower part gets a colour. There are three colours and we call them 0, 1, and 2. In the end we have to be able to disinguish the states of the upper part from the states of the lower part. This can be achieved by preliminarily assigning the special colour -1 to every set of the states of the upper part. After that the extended modified subset construction is applied, taking the states of the upper part (except a possible sink state) as the pre-existing states.
 
@@ -139,9 +139,19 @@ We can then continue the construction right with this new state $(\qqm02,\cl2{\q
 
 The construction continues in this way until every state has been processed. The resulting automaton is shown in Figure~\ref{complement}. The last thing that has to be done is to make every state of the lower part that does not contain colour 2 accepting. In our example, this is only one state. The NBW $B$ in Figure~\ref{complement} is the complement of the NBW $A$ in Figure~\ref{example_automaton}, such that $L(B) = \cl1{L(A)}$. This can be easily verified, since $A$ is empty and $B$ is universal (with regard to the single \om-word $a^\omega$).
 
+\subsection{Meaning and Function of the Colours}
 
-\subsubsection{Intuition}
-Generally, the relation between $A$ and its complement $B$ is that a word $w$ is accepted by $B$ if and only if all the runs of $A$ on $w$ are rejecting. Since this condition is on \emph{all} runs of $A$, the construction somehow has to keep track of them. 
+
+\section{Intuition for Correctness}
+The general relation between a non-deterministic automaton $A$ and its complement $B$ is that a word $w$ is accepted by $B$, if and only if all the runs of $A$ on $w$ are rejecting. Of course for the subset-tuple construction, as we have just described it above, this is also true. A formal proof can be found in~\cite{2014_joel_ulrich}. In this section, in contrast, we try to give an intuitive way to understand this correctness. One one hand, there is the question, if there is an accepting run of $B$ on $w$, how can we conclude that all the runs of $A$ on $w$ are rejected?
+
+\begin{itemize}
+\item If there is an accepting run of $B$ on $w$, how can we conclude that all the runs of $A$ on $w$ are rejected?
+\item If all the runs of $A$ on $w$ are rejected, how can we conclude that there must be an accepting run of $B$ on $w$?
+\end{itemize}
+
+
+Since this condition is on \emph{all} runs of $A$, the construction somehow has to keep track of them. 
 \label{lower_part:intuition}
 \begin{figure}
 \begin{center}
