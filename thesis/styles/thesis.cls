@@ -46,6 +46,7 @@
 \RequirePackage{styles/drawings}
 
 \newcommand{\om}{{$\omega$}}
+\newcommand{\aom}{{$a^\omega$}}
 
 \newcommand{\Bp}{{$B^\prime$}}
 

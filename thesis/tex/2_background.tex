@@ -187,6 +187,60 @@ Maybe mention note on exponential complexity in \cite{1996_vardi} p. 8.
 % In the case of finite-word automata, the complementation procedure for DFA provided a solution for the complementationn of NFA, because there is a translation from every NFA to an equivalent DFA. For Büchi automata this is however not the case. As mentioned above, there are NBW for which no equivalent DBW exists. We say that NBW can in general not be determinised.
 
 \section{Run Analysis}
+A deterministic automaton has exactly one run on every word. A non-deterministic automaton, on the other hand, may have multiple runs on a given word. The analysis of all runs of a word, in some form or another, an integral part of Büchi complemenation constructions. Remember that a non-deterministic automaton accepts a word if there is \emph{at least one} accepting run. Consequently, a word is rejected if only if \emph{all} the runs are rejecting. That is, if $B$ is the complement Büchi automaton of $A$, then $B$ has to accept a word $w$ if and only if \emph{all} the runs of $A$ on $w$ are rejecting. For constructing the complement $B$, we have thus to consider all the possible runs of $A$ on every word.
+
+There are two main data structures that are used for analysing the runs of a non-deterministic automaton on a word. These are trees and DAGs (directed acyclic graphs)~\cite{2014_wilke}. In this section, we present both of them. We put however emphasis on trees, as they are used by the subset-tuple construction presented in Chapter~\ref{fribourg_construction}.
+
+\begin{figure}
+\begin{center}
+\Automaton
+\end{center}
+\caption{Example NBW $A$ that will be used in different places throughout this thesis. The alphabet of $A$ consists of the single symbol $a$, consequently, $A$ can only process the single \om-word $a^\omega$. This word is rejected by $A$, so the automaton is empty.}
+\label{automaton}
+\end{figure}
+
+The one tree data-structure that truly represents \emph{all} the runs of an automaton on a word are run trees. The other variants of trees that we present in this section are basically derivations of run trees that sacrifice information about individual runs, by merging or discarding some of them, at the benefit of becoming more concise. Figure~\ref{run_tree} shows the first few levels of the run tree of the example automaton $A$ from Figure~\ref{automaton} on the word \aom.
+
+\begin{figure}
+\begin{center}
+\RunTree
+\end{center}
+\caption{Automaton $A$ and the first five levels of the run tree of the runs of $A$ on the word $a^\omega$.}
+\label{run_tree}
+\end{figure}
+
+In a run tree, every vertex represents a single state and has a descendant for every $a$-successor of this state, if $a$ is the current symbol of the word. A run is thus represented as a branch of the run tree. In particular, there is a one-to-one mapping between branches of a run tree and runs of the automaton on the given word.
+
+We mentioned that the other tree variants that we talk about in this section,  split trees and reduced split trees, make run trees more compact by not keeping information about individual runs anymore. They thereby relinquish the one-to-one mapping between branches of the tree and runs. Let us look at one extreme of this aggregation of runs which is done by the subset construction. This will motivate the definition of split trees, and at the same time shows why the subset construction fails for determinising NBW~\footnote{The NBW that \emph{can} be turned into DBW.}.
+
+For determinising an automaton $A$, the subset construction in effect merges all the diverse runs of $A$ on word $w$ to one single run by merging all the states on a level of the corresponding run tree to one single state. This state will be a state of the output automaton $B$, and is labelled with the set of $A$-states it includes. Figure~\ref{subset_construction_tree} shows this effect with our example automaton from Figure~\ref{automaton} and the word \aom. 
+
+\begin{figure}
+\begin{center}
+\SubsetConstructionTree
+\end{center}
+\caption{Automaton $A$ and the first five levels of the run tree of the runs of $A$ on the word $a^\omega$.}
+\label{subset_construction_tree}
+\end{figure}
+
+Clearly, this form of tree created by the subset construction is the most concise form a run tree can be brought to. However, almost all information about individual runs in $A$ has been lost. All that can be said by looking at the structure in Figure~\ref{subset_construction_tree} is that there must be at least one continued $A$-run on \aom (all the other runs visiting the other $A$-states on each level, might be discontinued). But which states a possible continued run visits cannot be deduced.
+
+This lack of identification $A$-runs is the reason why the subset construction fails for determinising Büchi automata. Note that a $B$-state of the subset construction is accepting if the set of $A$-states it represents contains at least one accepting $A$-state. For our example, this means that the state \qqqq012 is accepting (this is also indicated in Figure~\ref{subset_construction_tree}). This state is visited infinitely often by the unified run on \aom. Hence, the DBW $B$, resulting from applying the subset construction to the NBW $A$, accepts \aom while $A$ does not accept it.
+
+By looking closer at the trees in Figure~\ref{subset_construction_tree} and~\ref{run_tree}, the reason for this problem becomes apparent. If we look for example at the second level of the subset-construction tree we can deduce that there must be an $A$-run that visits the accepting $A$-state \q1. Let us call this run $r_{q_1}$. However, at the third level, we cannot say anything about $r_{q_1}$ anymore, whether it visits one of the non-accepting states or again \q1 on the third level, or whether it even ended at the second level. In turn, what we know on the third level in our example is that there is again an $A$-run, $r_{q_1}^\prime$, that visits \q1. However, whether $r_{q_1}^\prime$ is $r_{q_1}$, and in turn the future of $r_{q_1}^\prime$ cannot be deduced. In our example we end up with the situation that there are infintiely many visits to \q1 in the unifed $B$-run, but we don't know if the reaon for this are one or more $A$-runs that visit \q1 infinitely often, or infinitely man $A$-runs where each one visits \q1 only finitely often (the way it is in our example). In the first case, it would be correct ot accept the $B$-run, in the second case however it would be wrong as the input automaton $A$ does not accept the word. The subset construction does not distinguish these two cases and hence the determinised automaton $B$ may accept words that the input automaton $A$ rejects. In general, the language of an output DBW of the subset construction is a superset of the language of the input NBW.
+
+
+
+If we look closer at $B$'s run on \aom, we see that the accepting $A$-state \q1 is indeed visited infinitely often by the unification of $A$-runs that the $B$-run represents (\q1 occurs on every but the first level of the run tree in Figure~\ref{run_tree}). However, the conclusion that in this case there is an $A$-run that visits \q1 infinitely often (the Büchi acceptance condition) is wrong. The infinite visits of a $B$-run to an accepting $A$-state $q$ can have three reasons.
+\begin{itemize}
+\item A finite or infinite number of $A$-runs visits $q$ infinitely often each
+\item A infinite number of $A$-runs visits $q$ finitely often each
+\end{itemize}
+In the first case it is correct to accept the $B$-run because there must be an $A$-run that visits $q$ infinitely often.
+
+
+
+\section{Run Analysis}
 In a deterministic automaton every word has exactly one run. In a non-deterministic automaton, howevever, a given word may have multiple runs. The analysis of the different runs of a given word on an automaton plays an important role in the complementation of Büchi automata. There are several techniques for analysing the runs of a word that we present in this section.
 
 \subsection{Run Trees}

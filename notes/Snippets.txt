@@ -5,7 +5,7 @@ Doubly exponential (as in Büchi's original construction) explained in
 --> Sistla, 1987
 
 Introducing papers of Muller, Rabin, Streett, and parity automata
---> Löding, 1999
+--> Löding, 1999, Wilke, 2014, p. 5
 
 Complementation of deterministic Muller, Rabin, Streett, and parity automata
 --> Löding, 1999, p. 4
@@ -24,3 +24,15 @@ Bringing together of automata theory and logic by Büchi, Elgot, Rabin in the 60
 
 The width of a tree is defined as the maximum number of vertices occurring at any level.
 --> Muller, Schupp, 1995, p. 16
+
+Traditionally five type of omega-automata acceptance condition: Büchi, Muller, Rabin, Streett, and parity
+--> Wilke, 2014, p. 5
+
+Two structures for analysing all runs of a Büchi automaton: DAGs and trees
+--> Wilke, 2014, p. 14
+
+Proof that a Büchi autoamaton accepts a word if and only if the corresponding reduced split tree has a path with infinitely many left or right turns.
+--> Wilke, 2014, p. 18
+
+A reduced split tree is an infinite (binary) tree of finite width
+--> Wilke, 2014, p. 19

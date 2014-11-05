@@ -1,35 +1,67 @@
 #!/bin/bash
-# Install the GOAL plugin from the local machine on UBELIX. The local plugin
-# has to be already compiled.
-# dw-07.10.2014
+# Install a plugin from the local machine at a GOAL installation on UBELIX.
+# The local plugin has to be already compiled. The local plugin and the remote
+# GOAL installation can be specifed with command line options. If they are
+# absent, the script uses default values.
+#
+# dw-03.11.2014
 
 set -e
 
-# Plugin dirs on local machin and on UBELIX
-#plug_local=$(dirname $(which goal))/plugins
-plug_local=~/Desktop/thesis/goal/plugin/2014-XX-XX/allow_m2_without_m
-plug_remote=bin/GOAL-20141017/plugins # Relative to $HOME
+# Default values
+plugin=$(dirname $(which goal))/plugins/ch.unifr.goal.complement
+goal_remote=bin/GOAL-20141017
 
-# Run any command on UBELIX
-run_remote() {
-  ssh dw07r324@submit.unibe.ch "$1"
+usage() {
+  echo "USAGE:"
+  echo "    $(basename $0) [-p plugin] [-g GOAL]"
+  echo
+  echo "ARGUMENTS:                            [DEFAULT]"
+  echo "    -p: Plugin directory              [<GOAL>/plugins/ch.unifr.goal.complement]"
+  echo "    -g: GOAL directory on UBELIX      [$goal_remote]"
+  echo
+  echo "NOTE:"
+  echo "    GOAL directory can be specified relative to UBELIX home directory"
 }
+if [ "$1" == -h ]; then usage; exit 0; fi
 
-# Pack local plugin and copy to UBELIX
-echo "Copying new plugin to UBELIX..."
-packed=$plug_local/plugin.tar.gz
-tar -cz -f $packed -C $plug_local ch.unifr.goal.complement
-put.sh $packed $plug_remote >/dev/null
-rm $packed
+while getopts ":p:g:" opt; do
+  case $opt in
+    p) plugin=$OPTARG;      ;;
+    g) goal_remote=$OPTARG; ;;
+    \?) echo "Error: invalid option: -$OPTARG";             exit 1 ;;
+    :)  echo "Error: option -$OPTARG requires an argument"; exit 1 ;;
+  esac
+done
 
-# Delete old plugin on UBELIX
-echo "Deleting old plugin on UBELIX..."
-run_remote "rm -rf $plug_remote/ch.unifr.goal.complement"
+dest=$goal_remote/plugins
+
+echo "Installing"
+echo "    $plugin"
+echo "at"
+echo "    $dest"
+echo "on UBELIX... "
+
+# Pack plugin
+plugin_parent=$(dirname $plugin)
+plugin_name=$(basename $plugin)
+tar=$(mktemp -t plugin)
+tar -cz -f $tar -C $plugin_parent $plugin_name >/dev/null
+
+# Copy packed plugin to UBELIX
+tar_remote=$dest/$plugin_name.tar.gz
+put.sh $tar $tar_remote >/dev/null
+
+# Delete existing plugin on UBELIX. We assume that the plugin to replace has
+# the same name as the plugin to install.
+run.sh "rm -rf $dest/$plugin_name"
 
 # Unpack new plugin
-echo "Installing new plugin on UBELIX..."
-run_remote "tar -xz -f $plug_remote/plugin.tar.gz -C $plug_remote; rm $plug_remote/plugin.tar.gz"
+run.sh "tar -xz -f $tar_remote -C $dest; rm $tar_remote"
 
-# Create new archive of the whole GOAL application
-echo "Creating updated GOAL archive on UBELIX..."
-run_remote "tar -cz -f bin/GOAL-20141017.tar.gz -C bin GOAL-20141017"
+# Create new archive of the whole GOAL installation
+goal_parent=$(dirname $goal_remote)
+goal=$(basename $goal_remote)
+run.sh "tar -cz -f $goal_parent/$goal.tar.gz -C $goal_parent $goal"
+
+echo Done

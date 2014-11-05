@@ -33,7 +33,7 @@
 \newcommand{\q}  [1]{$q_{#1}$}          % \q0    --> $q_0$
 \newcommand{\qq} [1]{$\qm{#1}$}         % \qq0   --> ${q_0}$
 \newcommand{\qqq}[2]{$\qqm{#1}{#2}$}    % \qqq01 --> ${q_0,q_1}$
-\newcommand{\qqqq}[3]{\{$q_{#1},q_{#2},q_{#3}\}$} % \qqqq012 --> ${q_0,q_1,q_2}$
+\newcommand{\qqqq}[3]{$\{q_{#1},q_{#2},q_{#3}\}$} % \qqqq012 --> ${q_0,q_1,q_2}$
 
 % Add colour decoration to string. Must be used in math mode.
 \newcommand{\cl}[2]{
@@ -153,17 +153,43 @@
 }
 
 %==============================================================================%
-% Split tree
+% Subset-construction tree
+%==============================================================================%
+\newcommand{\SubsetConstructionTree}{
+\begin{tikzpicture}[tree]
+\Tree
+[.\node{\qq0}; [.\node[a]{\qqqq012}; [.\node[a]{\qqqq012}; [.\node[a]{\qqqq012}; \node[a]{\qqqq012}; ] ] ] ]
+\end{tikzpicture}
+\LevelSymbols
+}
+
+% %==============================================================================%
+% % Split tree (left-to-right)
+% %==============================================================================%
+% \newcommand{\SplitTree}{
+% \begin{tikzpicture}[tree]
+% \Tree
+% [.\node{\qq0}; [.\node[a]{\qq1};  [.\node(m){\qq2};  [.\node{\qq2};  \node{\qq2}; ] ] ]
+%               [.\node{\qqq02}; [.\node[a]{\qq1};  [.\node{\qq2};  \node{\qq2}; ] ]
+%                              [.\node{\qqq02}; [.\node{\qq1};  \node{\qq2}; ]
+%                                             [.\node{\qqq02}; \node[a]{\qq1};
+%                                                            \node{\qqq02}; ] ] ] ]
+% \node[anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{S}^A_{a^\omega}=$};
+% \end{tikzpicture}
+% \LevelSymbols
+% }
+
+%==============================================================================%
+% Split tree (right-to-left)
 %==============================================================================%
 \newcommand{\SplitTree}{
 \begin{tikzpicture}[tree]
 \Tree
-[.\node{\qq0}; [.\node[a]{\qq1};  [.\node(m){\qq2};  [.\node{\qq2};  \node{\qq2}; ] ] ]
-              [.\node{\qqq02}; [.\node[a]{\qq0};  [.\node{\qq2};  \node{\qq2}; ] ]
-                             [.\node{\qqq02}; [.\node{\qq1};  \node{\qq2}; ]
-                                            [.\node{\qqq02}; \node[a]{\qq1};
-                                                           \node{\qqq02}; ] ] ] ]
-\node[anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{S}^A_{a^\omega}=$};
+[.\node{\qq0}; [.\node{\qqq02};  [.\node{\qqq02};  [.\node{\qqq02};  \node{\qqq02};
+                                                                     \node[a]{\qq1}; ]
+                                                   [.\node[a]{\qq1}; \node{\qq2}; ] ]
+                                 [.\node[a]{\qq1}; [.\node{\qq2};    \node{\qq2}; ] ] ]
+               [.\node[a]{\qq1}; [.\node{\qq2};    [.\node{\qq2};    \node{\qq2}; ] ] ] ]
 \end{tikzpicture}
 \LevelSymbols
 }

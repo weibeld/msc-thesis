@@ -4,6 +4,6 @@
 
 FILE_OR_FOLDER=$1
 
-DEST='dw07r324@submit.unibe.ch:~'"/$2"
+DEST="dw07r324@submit.unibe.ch:$2"
 
 scp -r $FILE_OR_FOLDER $DEST
