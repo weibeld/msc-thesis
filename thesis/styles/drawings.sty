@@ -163,26 +163,26 @@
 \LevelSymbols
 }
 
-% %==============================================================================%
-% % Split tree (left-to-right)
-% %==============================================================================%
-% \newcommand{\SplitTree}{
-% \begin{tikzpicture}[tree]
-% \Tree
-% [.\node{\qq0}; [.\node[a]{\qq1};  [.\node(m){\qq2};  [.\node{\qq2};  \node{\qq2}; ] ] ]
-%               [.\node{\qqq02}; [.\node[a]{\qq1};  [.\node{\qq2};  \node{\qq2}; ] ]
-%                              [.\node{\qqq02}; [.\node{\qq1};  \node{\qq2}; ]
-%                                             [.\node{\qqq02}; \node[a]{\qq1};
-%                                                            \node{\qqq02}; ] ] ] ]
-% \node[anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{S}^A_{a^\omega}=$};
-% \end{tikzpicture}
-% \LevelSymbols
-% }
+%==============================================================================%
+% Split tree (left-to-right)
+%==============================================================================%
+\newcommand{\SplitTreeLeftRight}{
+\begin{tikzpicture}[tree]
+\Tree
+[.\node{\qq0}; [.\node[a]{\qq1};  [.\node(m){\qq2};  [.\node{\qq2};  \node{\qq2}; ] ] ]
+              [.\node{\qqq02}; [.\node[a]{\qq1};  [.\node{\qq2};  \node{\qq2}; ] ]
+                             [.\node{\qqq02}; [.\node{\qq1};  \node{\qq2}; ]
+                                            [.\node{\qqq02}; \node[a]{\qq1};
+                                                           \node{\qqq02}; ] ] ] ]
+\node[anchor=base,xshift=-1.5cm] at (m.base) {$\mathcal{S}^A_{a^\omega}=$};
+\end{tikzpicture}
+\LevelSymbols
+}
 
 %==============================================================================%
 % Split tree (right-to-left)
 %==============================================================================%
-\newcommand{\SplitTree}{
+\newcommand{\SplitTreeRightLeft}{
 \begin{tikzpicture}[tree]
 \Tree
 [.\node{\qq0}; [.\node{\qqq02};  [.\node{\qqq02};  [.\node{\qqq02};  \node{\qqq02};

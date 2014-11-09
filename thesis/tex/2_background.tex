@@ -42,6 +42,8 @@ The set of all the words that are accepted by a Büchi automaton $A$ is called t
 
 Büchi automata are closed under union, intersection, concatenation, and complementation~\cite{1996_vardi}.
 
+Continued/discontinued runs
+
 A deterministic Büchi automaton (DBW) is a special case of a non-determnistic Büchi automaton (NBW). A Büchi automaton is a DBW if $|\delta(q,\alpha)| = 1, \, \forall q \in Q, \forall \alpha \in \Sigma $. That is, every state has for every alphabet symbol exactly one successor state. A DBW can also be defined directly by replacing the transition function $\delta: Q \times \Sigma \rightarrow 2^Q$ with $\delta: Q \times \Sigma \rightarrow Q$ in the above definition.
 
 \subsubsection{Expressiveness}
@@ -229,6 +231,60 @@ This lack of identification $A$-runs is the reason why the subset construction f
 
 By looking closer at the trees in Figure~\ref{subset_construction_tree} and~\ref{run_tree}, the reason for this problem becomes apparent. If we look for example at the second level of the subset-construction tree we can deduce that there must be an $A$-run that visits the accepting $A$-state \q1. Let us call this run $r_{q_1}$. However, at the third level, we cannot say anything about $r_{q_1}$ anymore, whether it visits one of the non-accepting states or again \q1 on the third level, or whether it even ended at the second level. In turn, what we know on the third level in our example is that there is again an $A$-run, $r_{q_1}^\prime$, that visits \q1. However, whether $r_{q_1}^\prime$ is $r_{q_1}$, and in turn the future of $r_{q_1}^\prime$ cannot be deduced. In our example we end up with the situation that there are infintiely many visits to \q1 in the unifed $B$-run, but we don't know if the reaon for this are one or more $A$-runs that visit \q1 infinitely often, or infinitely man $A$-runs where each one visits \q1 only finitely often (the way it is in our example). In the first case, it would be correct ot accept the $B$-run, in the second case however it would be wrong as the input automaton $A$ does not accept the word. The subset construction does not distinguish these two cases and hence the determinised automaton $B$ may accept words that the input automaton $A$ rejects. In general, the language of an output DBW of the subset construction is a superset of the language of the input NBW.
 
+This raises the question how the subset construction can be minimally modified such that the output automaton is equivalent to the input automaton. One solution is to not mix accepting and non-accepting $A$-states in the $B$-states. That is, instead of creating one $B$-state that contains all the $A$-states, as in the subset construction, one creates two $B$-states where one contains the accepting $A$-states and the other the non-accepting $A$-states. Such a construction has been formalised in~\cite{UltesNitsche2007107}. The output automaton $B$ is then not deterministic, but it is equivalent to $A$. The type of run analysis trees that correspond to this refined subset construction are split trees. Figure~\ref{split_tree} shows the first five levels of the split tree of our example automaton $A$ on the word \aom. 
+
+\begin{figure}
+\begin{center}
+\SplitTreeRightLeft
+\end{center}
+\caption{Automaton $A$ and the first five levels of the split tree of the runs of $A$ on the word $a^\omega$.}
+\label{split_tree}
+\end{figure}
+
+Let us see why the splitted subset construction produces output automata that are equivalent to the input automata. For this equivalence to hold, a branch of a reduced split tree must include infinitely many accepting vertices if and only if there is an $A$-run that visits at least one accepting $A$-state infinitely often. For an infinite branch of a split tree, there must be at least one continued $A$-run. If this infinite branch includes infinitely many accepting vertices, then this $A$-run must infinitely many times go trough an accepting $A$-state. This is certain, because an accepting vertex in a split tree contains \emph{only} accepting $A$-states. Since there are only finitely many accepting $A$-states, the $A$-run must visit at least one of them infinitely often. On the other hand, if an $A$-run includes infinite visits to an accepting state, then this results in a branch of the split tree with infinitely many accepting vertices, since every $A$-run must be ``contained'' in a branch of the split tree.
+
+Split trees can be seen as run trees where some of the branches are contracted to unified branches. In particular, a split tree unifies as many branches as possible, such that the resulting tree still correctly represents the Büchi acceptance of all the runs included in a unified branch. This can form the basis for constructions that transform an NBW to another equivalent NBW. Split trees are for example the basis for Muller-Schupp trees in Muller and Schupp's Büchi determinisation construction~\cite{Muller199569}, cf.~\cite{2006_althoff}.
+
+It turns out that split trees can be compacted even more. The resulting kind of tree is called reduced split tree. In a reduced split tree, each $A$-state occurs at most once on every level. Figure~\ref{reduced_split_tree} shows the reduced split tree corresponding to the split tree in Figure~\ref{split_tree}. As can be seen, only one occurrence of each $A$-state on each level is kept, the other are discarded. To allow this, however, the order of the accepting and non-accepting siblings in the tree matters. Either the accepting child is always put to the right of the non-accepting child (as in our example in Figure~\ref{reduced_split_tree}, or vice versa. We call the former variant a right-to-left reduced split tree, and the latter a left-to-right reduced split tree. In this thesis, we will mainly adopt the right-to-left version.
+
+A reduced split tree is constructed like a split tree, with the following restrictions.
+\begin{itemize}
+\item For determining the vertices on level $n+1$, the parent vertices on level $n$ have to be processed from right to left
+\item From every child vertex on level $n+1$, subtract the $A$-states that occur in some vertex to the right of it on level $n+1$
+\item Put the accepting child to the right of the non-accepting child on level $n+1$
+\end{itemize}
+
+% Fixed witdth
+A very important property of reduced split trees is that they have a fixed width. The width of a tree is the maximal number of vertices on a level. For reduced split trees, this is the number of states of the input automaton $A$. As we will see, the subset-tuple construction (like other slice-based constructions) uses levels of a reduced split tree as states othe output automaton, and the limited size of these levels ensures an upper bound on the number of states these constructions can create.
+
+% We delete runs, we keep the "greedy" runs
+By deleting $A$-states from a level of a reduced split tree, we actually delete $A$-runs that reach the same $A$-state on the same substring of the input word. For example, in the split tree in Figure~\ref{split_tree} we see that there are at least for $A$-runs on the string $aaaa$ from the inital state \q0 to \q2. The reduced split tre in Figure~\ref{reduced_split_tree}, however, contains only one run on $aaaa$ from \q0 to \q2, namely the rightmost branch of the tree. The information about all the other runs is lost. This single run that is kept is very special and, as we will see shorty, it represents the deleted runs. We will call this run the \emph{greedy run}. The reason for calling it greedy is that it visits an accepting state earlier than any of the deleted runs. In a right-to-left reduced split tree, the greedy run is always the rightmost of the runs from the root to a certain $A$-state on a certain level. In left-to-right reduced split tree, the greedy run would in turn be the leftmost of these runs.
+
+% Proof that if any of the deleted runs would be accepting, then the greedy run is accepting
+We mentioned that the greedy run somehow represents the deleted runs. More precisely, the relation is as follows and has been proved in~\cite{vardi2007automata}: if any of the deleted runs is a prefix of a run that is Büchi-accepted (that is, an infinite run visiting infinitely many accepting $A$-states), then the greedy run is so too. That means that if the greedy cannot be expanded to a Büchi-accepting run, then none of the deleted runs could be either. Conversely, if any of the deleted runs could become Büchi-accepting, then the greedy run can so too. So, the greedy run is sufficient to indicate the existence or non-existence of a Büchi-accepting run with this prefix, and it is safe to delete all the other runs.
+
+
+
+
+ The difference is that in a reduced split tree every $A$-state occurs at most once on every level. All the other occurrences of this state are then discarded. To allow this, however, there is a restriction on the order of the accepting and non-accepting child of every vertex. Either the accepting child must always be to the left of the non-accepting child, or vice versa. In the former case, we call the tree a left-to-right reduced split tree, in the latter case a right-to-left reduced split tree. The tree shown in Figure~\ref{reduced_split_tree} is a right-to-left reduced split tree.
+
+
+
+ This means that in a reduced split tree, some runs are discarded, in particular runs that lead to the same state on the same level. For example, in the split tree in Figure~\ref{split_tree}, there are four runs from \q0 to \q2 on the fifth level. In the reduced split tree in Figure~\ref{reduced_split_tree}, however, there is only one run from \q0 to \q2 on the fifth level. The other three runs have been discarded.
+
+\begin{figure}
+\begin{center}
+\ReducedSplitTreeRightLeft
+\end{center}
+\caption{Automaton $A$ and the first five levels of the reduced split tree of the runs of $A$ on the word $a^\omega$.}
+\label{reduced_split_tree}
+\end{figure}
+
+To construct level $n+1$ based on level $n$ of a right-to-left reduced split tree, one has to process all the vertices of level $n$ from right to left. For each vertex one creates the accepting and non-accepting child, as in the construction of the normal split tree, but then removes from these two sets of $A$-states all the $A$-states that already occur in some of the existing vertices to the right on level $n+1$. Then, the accepting child is put to the right of the non-accepting child on level $n+1$.
+
+
+
+
 
 
 If we look closer at $B$'s run on \aom, we see that the accepting $A$-state \q1 is indeed visited infinitely often by the unification of $A$-runs that the $B$-run represents (\q1 occurs on every but the first level of the run tree in Figure~\ref{run_tree}). However, the conclusion that in this case there is an $A$-run that visits \q1 infinitely often (the Büchi acceptance condition) is wrong. The infinite visits of a $B$-run to an accepting $A$-state $q$ can have three reasons.
@@ -278,7 +334,7 @@ Split trees can be seen as run trees where the accepting and non-accepting desce
 \begin{center}
 \Automaton
 \hfil
-\SplitTree
+\SplitTreeRightLeft
 \end{center}
 \caption{Automaton $A$ and the first five levels of the split tree of the runs of $A$ on the word $a^\omega$.}
 \label{split_tree}
