@@ -193,10 +193,11 @@ A deterministic automaton has exactly one run on every word. A non-deterministic
 
 There are two main data structures that are used for analysing the runs of a non-deterministic automaton on a word. These are trees and DAGs (directed acyclic graphs)~\cite{2014_wilke}. In this section, we present both of them. We put however emphasis on trees, as they are used by the subset-tuple construction presented in Chapter~\ref{fribourg_construction}.
 
+\subsection{From Run Trees to Split Trees}
+
 \begin{figure}
-\begin{center}
+\centering
 \Automaton
-\end{center}
 \caption{Example NBW $A$ that will be used in different places throughout this thesis. The alphabet of $A$ consists of the single symbol $a$, consequently, $A$ can only process the single \om-word $a^\omega$. This word is rejected by $A$, so the automaton is empty.}
 \label{automaton}
 \end{figure}
@@ -204,9 +205,8 @@ There are two main data structures that are used for analysing the runs of a non
 The one tree data-structure that truly represents \emph{all} the runs of an automaton on a word are run trees. The other variants of trees that we present in this section are basically derivations of run trees that sacrifice information about individual runs, by merging or discarding some of them, at the benefit of becoming more concise. Figure~\ref{run_tree} shows the first few levels of the run tree of the example automaton $A$ from Figure~\ref{automaton} on the word \aom.
 
 \begin{figure}
-\begin{center}
+\centering
 \RunTree
-\end{center}
 \caption{Automaton $A$ and the first five levels of the run tree of the runs of $A$ on the word $a^\omega$.}
 \label{run_tree}
 \end{figure}
@@ -218,9 +218,8 @@ We mentioned that the other tree variants that we talk about in this section,  s
 For determinising an automaton $A$, the subset construction in effect merges all the diverse runs of $A$ on word $w$ to one single run by merging all the states on a level of the corresponding run tree to one single state. This state will be a state of the output automaton $B$, and is labelled with the set of $A$-states it includes. Figure~\ref{subset_construction_tree} shows this effect with our example automaton from Figure~\ref{automaton} and the word \aom. 
 
 \begin{figure}
-\begin{center}
+\centering
 \SubsetConstructionTree
-\end{center}
 \caption{Automaton $A$ and the first five levels of the run tree of the runs of $A$ on the word $a^\omega$.}
 \label{subset_construction_tree}
 \end{figure}
@@ -234,9 +233,8 @@ By looking closer at the trees in Figure~\ref{subset_construction_tree} and~\ref
 This raises the question how the subset construction can be minimally modified such that the output automaton is equivalent to the input automaton. One solution is to not mix accepting and non-accepting $A$-states in the $B$-states. That is, instead of creating one $B$-state that contains all the $A$-states, as in the subset construction, one creates two $B$-states where one contains the accepting $A$-states and the other the non-accepting $A$-states. Such a construction has been formalised in~\cite{UltesNitsche2007107}. The output automaton $B$ is then not deterministic, but it is equivalent to $A$. The type of run analysis trees that correspond to this refined subset construction are split trees. Figure~\ref{split_tree} shows the first five levels of the split tree of our example automaton $A$ on the word \aom. 
 
 \begin{figure}
-\begin{center}
+\centering
 \SplitTreeRightLeft
-\end{center}
 \caption{Automaton $A$ and the first five levels of the split tree of the runs of $A$ on the word $a^\omega$.}
 \label{split_tree}
 \end{figure}
@@ -245,7 +243,16 @@ Let us see why the splitted subset construction produces output automata that ar
 
 Split trees can be seen as run trees where some of the branches are contracted to unified branches. In particular, a split tree unifies as many branches as possible, such that the resulting tree still correctly represents the Büchi acceptance of all the runs included in a unified branch. This can form the basis for constructions that transform an NBW to another equivalent NBW. Split trees are for example the basis for Muller-Schupp trees in Muller and Schupp's Büchi determinisation construction~\cite{Muller199569}, cf.~\cite{2006_althoff}.
 
+\subsection{Reduced Split Trees}
+
 It turns out that split trees can be compacted even more. The resulting kind of tree is called reduced split tree. In a reduced split tree, each $A$-state occurs at most once on every level. Figure~\ref{reduced_split_tree} shows the reduced split tree corresponding to the split tree in Figure~\ref{split_tree}. As can be seen, only one occurrence of each $A$-state on each level is kept, the other are discarded. To allow this, however, the order of the accepting and non-accepting siblings in the tree matters. Either the accepting child is always put to the right of the non-accepting child (as in our example in Figure~\ref{reduced_split_tree}, or vice versa. We call the former variant a right-to-left reduced split tree, and the latter a left-to-right reduced split tree. In this thesis, we will mainly adopt the right-to-left version.
+
+\begin{figure}
+\centering
+\ReducedSplitTreeRightLeft
+\caption{Automaton $A$ and the first five levels of the reduced split tree of the runs of $A$ on the word $a^\omega$.}
+\label{reduced_split_tree}
+\end{figure}
 
 A reduced split tree is constructed like a split tree, with the following restrictions.
 \begin{itemize}
@@ -263,36 +270,17 @@ By deleting $A$-states from a level of a reduced split tree, we actually delete 
 % Proof that if any of the deleted runs would be accepting, then the greedy run is accepting
 We mentioned that the greedy run somehow represents the deleted runs. More precisely, the relation is as follows and has been proved in~\cite{vardi2007automata}: if any of the deleted runs is a prefix of a run that is Büchi-accepted (that is, an infinite run visiting infinitely many accepting $A$-states), then the greedy run is so too. That means that if the greedy cannot be expanded to a Büchi-accepting run, then none of the deleted runs could be either. Conversely, if any of the deleted runs could become Büchi-accepting, then the greedy run can so too. So, the greedy run is sufficient to indicate the existence or non-existence of a Büchi-accepting run with this prefix, and it is safe to delete all the other runs.
 
-
-
-
- The difference is that in a reduced split tree every $A$-state occurs at most once on every level. All the other occurrences of this state are then discarded. To allow this, however, there is a restriction on the order of the accepting and non-accepting child of every vertex. Either the accepting child must always be to the left of the non-accepting child, or vice versa. In the former case, we call the tree a left-to-right reduced split tree, in the latter case a right-to-left reduced split tree. The tree shown in Figure~\ref{reduced_split_tree} is a right-to-left reduced split tree.
-
-
-
- This means that in a reduced split tree, some runs are discarded, in particular runs that lead to the same state on the same level. For example, in the split tree in Figure~\ref{split_tree}, there are four runs from \q0 to \q2 on the fifth level. In the reduced split tree in Figure~\ref{reduced_split_tree}, however, there is only one run from \q0 to \q2 on the fifth level. The other three runs have been discarded.
+\subsection{Run DAGs}
+DAGs (directed acyclic graphs) are, after trees, the second form for analysing the runs of a non-deterministic automaton on a given word. A run DAG has the form of a matrix with one column for each $A$-state and a row for each position in the word. The directed edges go from the vertices on one row to the vertices on the next row (drawn below) according to the transitions in the automaton on the current input symbol. Figure~\ref{run_dag} shows the first five rows of the run DAG of the example automaton in Figure~\ref{automaton} on the word \aom. 
 
 \begin{figure}
-\begin{center}
-\ReducedSplitTreeRightLeft
-\end{center}
-\caption{Automaton $A$ and the first five levels of the reduced split tree of the runs of $A$ on the word $a^\omega$.}
-\label{reduced_split_tree}
+\centering
+\RunDAG
+\caption{Automaton $A$ and the first five levels of the run DAG of the runs of $A$ on the word $a^\omega$.}
+\label{run_dag}
 \end{figure}
 
-To construct level $n+1$ based on level $n$ of a right-to-left reduced split tree, one has to process all the vertices of level $n$ from right to left. For each vertex one creates the accepting and non-accepting child, as in the construction of the normal split tree, but then removes from these two sets of $A$-states all the $A$-states that already occur in some of the existing vertices to the right on level $n+1$. Then, the accepting child is put to the right of the non-accepting child on level $n+1$.
-
-
-
-
-
-
-If we look closer at $B$'s run on \aom, we see that the accepting $A$-state \q1 is indeed visited infinitely often by the unification of $A$-runs that the $B$-run represents (\q1 occurs on every but the first level of the run tree in Figure~\ref{run_tree}). However, the conclusion that in this case there is an $A$-run that visits \q1 infinitely often (the Büchi acceptance condition) is wrong. The infinite visits of a $B$-run to an accepting $A$-state $q$ can have three reasons.
-\begin{itemize}
-\item A finite or infinite number of $A$-runs visits $q$ infinitely often each
-\item A infinite number of $A$-runs visits $q$ finitely often each
-\end{itemize}
-In the first case it is correct to accept the $B$-run because there must be an $A$-run that visits $q$ infinitely often.
+Like run trees, run DAGs represent all the runs of an automaton on a given word. However, run DAGs are more compact than run trees. The rank-based complementation constructions are based on run DAGs. 
 
 
 

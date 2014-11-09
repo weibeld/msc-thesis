@@ -47,13 +47,16 @@
 }
 
 % Variables
-\def\myvdist{1.2cm}  % Level distance of trees
-\def\myhdist{0.5cm}  % Sibling distance of trees
-\def\myndist{1cm}    % Node distance for automata
+% \def\myvdist{1.2cm}  % Level distance of trees
+% \def\myhdist{0.5cm}  % Sibling distance of trees
+% \def\myndist{1cm}    % Node distance for automata
+\def\myvdist{0.8cm}     % Level distance of trees
+\def\myhdist{0.35cm}  % Sibling distance of trees
+\def\myndist{0.75cm}  % Node distance for automata
 
 \tikzset{
-  %font=\scriptsize\sffamily,
-  font=\sffamily,
+  font=\scriptsize\sffamily,
+  %font=\sffamily,
   semithick,
   >=stealth,
   longer1/.style={
@@ -69,17 +72,24 @@
   },
   my state/.style={
     draw,
-    minimum height=1.75em,
-    minimum width=2em,
-    inner sep=1mm,
-    rectangle,
-    rounded corners=2mm
+    % minimum height=1.75em,
+    % minimum width=2em,
+    % inner sep=1mm,
+    %rounded corners=2mm,
+    minimum height=1.25em,
+    minimum width=1.5em,
+    inner sep=0.5mm,
+    rounded corners=1.5mm,
+    rectangle
   },
   my accepting/.style={
     double,
-    double distance=1pt,
-    outer sep=0.9pt,
-    semithick
+    % double distance=1pt,
+    % outer sep=0.9pt,
+    % semithick
+    double distance=0.8pt,
+    outer sep=0.7pt,
+    %semithick
   },
   automaton/.style={
     every state/.style={my state},
@@ -100,7 +110,8 @@
     mtrx,
     a/.style={my accepting},
     row sep={\myvdist,between origins},
-    column sep=0.75cm,
+    %column sep=0.75cm,
+    column sep=0.5cm,
     inner sep=0mm,
     ghost/.style={draw=black!20,color=black!20}
   }
