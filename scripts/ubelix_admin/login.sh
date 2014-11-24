@@ -1,3 +1,3 @@
 #!/bin/bash
 
-ssh dw07r324@submit.unibe.ch
+ssh -X dw07r324@submit.unibe.ch

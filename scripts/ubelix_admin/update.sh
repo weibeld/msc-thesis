@@ -10,14 +10,14 @@ set -e
 
 # Default values
 plugin=$(dirname $(which goal))/plugins/ch.unifr.goal.complement
-goal_remote=bin/GOAL-20141017
+goal_remote=bin/GOAL-20141117
 
 usage() {
   echo "USAGE:"
   echo "    $(basename $0) [-p plugin] [-g GOAL]"
   echo
   echo "ARGUMENTS:                            [DEFAULT]"
-  echo "    -p: Plugin directory              [<GOAL>/plugins/ch.unifr.goal.complement]"
+  echo "    -p: Local plugin directory        [<GOAL>/plugins/ch.unifr.goal.complement]"
   echo "    -g: GOAL directory on UBELIX      [$goal_remote]"
   echo
   echo "NOTE:"
