@@ -1,9 +1,0 @@
-Porting of the plugin code written for GOAL 2013-07-11 to GOAL 2014-10-16
-
-dw-16.10.2014
-
-1. Replace FribourgComplementExtension.java with FribourgComplementInterface.java
-
-2. In plugin.xml, replace <extension point-id="ComplementCommand" ...> with <extension point-id="ComplementConstructionInterface" ...>
-
-3. In FribourgConstruction.java, replace ComplementConstruction with AbstractComplementConstruction. This is because ComplementConstruction is now an interface and AbstractComplementConstruction is an implementing class.
