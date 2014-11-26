@@ -7,10 +7,10 @@
 # dw-24.09.2014
 
 # GOAL version to use
-goal_archive=~/bin/GOAL-20130711.tar.gz
+goal_archive=~/bin/GOAL-20141117.tar.gz
 
 # Defaults for command line parameters
-algo="fribourg -r2ifc -m"
+algo="fribourg -m1"
 data_archive=~/data/small.tar.gz
 timeout=600 # Seconds
 memory=1G
@@ -61,7 +61,7 @@ cp $goal_archive $TMP/tmp.tar.gz
 goal_dir=$TMP/GOAL
 mkdir $goal_dir
 tar xzf $TMP/tmp.tar.gz -C $goal_dir --strip-components 1 && rm $TMP/tmp.tar.gz
-goal=$goal_dir/goal
+goal=$goal_dir/gc
 
 # Set maximum and initial Java heap size. JVMARGS is read by the $goal script.
 export JVMARGS="-Xmx$memory -Xms$memory"

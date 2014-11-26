@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# Compiles and installs a JPF (Java Plugin Framework) plugin for GOAL. Can be 
-# executed from anywhere. Assumes that the name of the plugin directory is equal
-# to the Java package name of the plugin.
+# Compiles and installs a JPF (Java Plugin Framework) plugin for GOAL.
 #
-# A typical JPF plugin has the structure:
+# A typical plugin has the form:
 # ch.unifr.goal.myplugin/   # Plugin direcory
 #     plugin.xml            # JPF plugin manifest
 #     sources/
@@ -20,28 +18,45 @@
 
 set -e # Exit if any command returns a non-zero status (i.e. error)
 
-if [ $# -lt 2 ] || [ $# -gt 3 ]; then
-  echo "USAGE:"
-  echo "    $(basename $0) PLUGIN_DIR GOAL_DIR [-c]"
-  echo "DESCRIPTION:"
-  echo "    Compiles the GOAL plugin in PLUGIN_DIR and installs it under GOAL_DIR."
-  echo "    With the -c option, the plugin is only compiled but not installed."
-  echo "NOTE:"
+# Default values
+PLUGIN_DIR=$th/goal/plugin/2014-11-17/ch.unifr.goal.complement
+GOAL_DIR=$(dirname $(which goal))
+COMPILEONLY=false
+
+usage() {
+  echo "USAGE"
+  echo "    $(basename $0) [-p PLUGIN] [-g GOAL] [-c]"
+  echo
+  echo "DESCRIPTION"
+  echo "    Compiles the specified plugin and installs it to the specified GOAL."
+  echo
+  echo "ARGUMENTS                 [DEFAULT]"
+  echo "    -p  Plugin directory  [\$th/goal/plugin/2014-11-17/ch.unifr.goal.complement]"
+  echo "    -g  GOAL directory    [\$(dirname \$(which goal))]"
+  echo "    -c  Compile only"
+  echo
+  echo "NOTE"
   echo "    Compiler warning \"bootstrap class path not set in conjunction with"
   echo "    -source 1.6\" can be removed with \"javac -Xbootclasspath:\" in script."
   exit 0
-fi
+}
+if [ "$1" = -h ]; then usage; exit; fi
+
+while getopts ":p:g:c" opt; do
+  case $opt in
+    p) PLUGIN_DIR=${OPTARG%/}; ;;
+    g) GOAL_DIR=${OPTARG%/};   ;;
+    c) COMPILEONLY=true;       ;;
+    \?) echo "Error: invalid option: -$OPTARG";             exit 1 ;;
+    :)  echo "Error: option -$OPTARG requires an argument"; exit 1 ;;
+  esac
+done
 
 test_dir() {
   if [ ! -d "$1" ]; then echo "Error: $1 is not a valid directory"; exit 1; fi
 }
 
-# Root directory of the plugin to install
-PLUGIN_DIR=$(sed 's/\/$//' <<<"$1")
 test_dir "$PLUGIN_DIR"
-
-# GOAL installation directory
-GOAL_DIR=$(sed 's/\/$//' <<<"$2")
 test_dir "$GOAL_DIR"
 
 # Get path to the directory containing the source files, relative to the plugin
@@ -95,7 +110,7 @@ else
 fi
 echo "Done"
 
-if [ "$3" == -c ]; then exit 0; fi
+[ $COMPILEONLY == true ] && exit
 
 # Installation
 # ------------

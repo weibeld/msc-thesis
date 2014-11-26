@@ -41,7 +41,7 @@ ramsey		Ramsey-Based								GUI defaults
 
 5)
 safra		Safra's									GUI defaults
--htl		Use Schewe history trees instead of Safra trees				off
+-ht		Use Schewe history trees instead of Safra trees				off
 -atl		Simplify accepting true loops						off
 -sa		Mark nodes that have only accepting successors green			off
 

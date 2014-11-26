@@ -20,7 +20,7 @@ cp ~/bin/GOAL-20130711.tar.gz $TMP/tmp.tar.gz
 goal_dir=$TMP/GOAL
 mkdir $goal_dir
 tar xzf $TMP/tmp.tar.gz -C $goal_dir --strip-components 1 && rm $TMP/tmp.tar.gz
-goal=$goal_dir/goal
+goal=$goal_dir/gc
 
 # Set Java heap size for GOAL.
 export JVMARGS="-Xmx6G -Xms6G"

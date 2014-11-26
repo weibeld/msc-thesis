@@ -126,8 +126,8 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
       int before = in.getStateSize();
       StateReducer.removeUnreachable(in);
       StateReducer.removeDead(in);
-      int after = before - in.getStateSize();
-      step("Removing unreachable and dead states: removed " + after + " state" + (after==1?"":"s") + ".");
+      int removed = before - in.getStateSize();
+      step("Removing unreachable and dead states: removed " + removed + " state" + (removed==1?"":"s") + ".");
       somethingToPreprocess = true;
     }
 
@@ -371,11 +371,11 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
 
     // If the -r option is set, remove unreachable and dead states
     if (options.isR()) {
-      int before = in.getStateSize();
-      StateReducer.removeUnreachable(in);
-      StateReducer.removeDead(in);
-      int after = before - in.getStateSize();
-      step("Removing unreachable and dead states: removed " + after + " state" + (after==1?"":"s") + ".");
+      int before = out.getStateSize();
+      StateReducer.removeUnreachable(out);
+      StateReducer.removeDead(out);
+      int removed = before - out.getStateSize();
+      step("Removing unreachable and dead states: removed " + removed + " state" + (removed==1?"":"s") + ".");
       somethingToPostprocess = true;
     }
 

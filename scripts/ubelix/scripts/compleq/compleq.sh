@@ -7,10 +7,11 @@
 
 set -e
 
-goal_archive=~/bin/GOAL-20141017.tar.gz # GOAL version to use
-goal_batch=~/scripts/compleq.gs # Batch script to execute by GOAL
+# To adapt if necessary
+goal_archive=~/bin/GOAL-20141117.tar.gz # GOAL version to use
+goal_batch=~/scripts/compleq/compleq.gs # Batch script to execute by GOAL
 
-# Default values
+# Default values for command line options
 algo="fribourg -r"
 runs=5
 memory=2G
@@ -61,7 +62,7 @@ cp $goal_archive $TMP/tmp.tar.gz
 goal_dir=$TMP/GOAL
 mkdir $goal_dir
 tar xzf $TMP/tmp.tar.gz -C $goal_dir --strip-components 1 && rm $TMP/tmp.tar.gz
-goal=$goal_dir/goal
+goal=$goal_dir/gc
 
 # Limit Java heap (prevent that GOAL uses more memory than allocated to the job)
 export JVMARGS="-Xmx$memory -Xms$memory"

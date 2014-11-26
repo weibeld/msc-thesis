@@ -1,18 +1,19 @@
 GOAL versions
 
-						2013-07-11		2014-08-08		2014-10-16
+						2013-07-11		2014-08-08		2014-10-16			2014-11-17
 
-Invalid options in complement command		Error			Invalid option is	Error
+Invalid options in complement command		Error			Invalid option is	Error				Error
 (goal complement -m safra -atl -XXX)					ignored, no error
 
-Message panel growth in				Yes			Yes			No
+Message panel growth in				Yes			Yes			No				No
 step-by-step complementation
 
-Recognition of shell variables			No			No			No
-in GOAL scripts ($n = `$RANDOM`;)
+Recognition of shell variables			No			No			No				Yes
+in GOAL scripts ($n = `echo $RANDOM`;)
 
-Complement options as variable in scripts	Error			Error			OK, syntax is:
-(complement -m safra $opts in.gff)		(too many arguments)	(too many arguments)	-m safra --option $opts in.gff
+Complement options as variable in scripts	Error			Error			OK, syntax is:			OK, syntax is:
+(complement -m safra $opts in.gff)		(too many arguments)	(too many arguments)	-m safra --option $opts in.gff  -m safra --option $opts in.gff
+																(compl. constr. options can't be named -m, -o, -s, -t)
 
-Complement options literally in scripts		OK			OK			OK	
+Complement options literally in scripts		OK			OK			OK				OK	
 (complement -m safra -macc -r in.gff)

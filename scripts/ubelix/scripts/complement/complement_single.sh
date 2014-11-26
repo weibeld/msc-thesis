@@ -77,7 +77,7 @@ if [ "$OUT" = "" ]; then
 fi
 
 # The GOAL command we are going to execute
-C="goal complement -m $ALGO $OPTS -o $OUT $IN"
+C="gc complement -m $ALGO $OPTS -o $OUT $IN"
 # Execution of the command including measurement of the execution time
 if [ $OS = "Linux" ]; then
   TIME_BEFORE=$(date +%s%N) # Current time in nanoseconds
