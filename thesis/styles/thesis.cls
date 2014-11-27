@@ -47,8 +47,8 @@
 
 \newcommand{\om}{{$\omega$}}
 \newcommand{\aom}{{$a^\omega$}}
-
 \newcommand{\Bp}{{$B^\prime$}}
+\newcommand{\tec}[1]{\textsf{#1}}
 
 % Table column: fixed width, horizontally, vertically centered
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}

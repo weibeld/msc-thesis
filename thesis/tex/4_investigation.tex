@@ -7,7 +7,7 @@ In this chapter we come to the core of this thesis, the empirical investigation 
 \section{The GOAL Tool}
 \label{goal}
 \subsection{Overview}
-GOAL stands for Graphical Tool for Omega-Automata and Logics and has been developed at the National University of Taiwan since 2007~\cite{2007_goal,2008_goal_ext}. The tool is based on the three pillars, \om-automata, temporal logic formulas, and games. It allows to create instances of each of these notions, and manipulate them in a multitude of ways. Relevant for our purposes are the \om-automata capabilites of GOAL.
+GOAL stands for Graphical Tool for Omega-Automata and Logics and has been developed at the National University of Taiwan since 2007~\cite{2007_goal,2008_goal_ext}. The tool is based on the three pillars, \om-automata, temporal logic formulas, and games. It allows to create instances of each of these types, and manipulate them in a multitude of ways. Relevant for our purposes are the \om-automata capabilites of GOAL.
 
 With GOAL, one can create Büchi, Muller, Rabin, Streett, parity, generalised Büchi, and co-Büchi automata, either by manually defining them, or by having them randomly generated. It is then possible to perform a plethora of operations on these automata. The entirety of provided operations are too many to list, but they include containment testing, equivalence testing, minimisation, determinisation, conversions to other \om-automata types, product, intersection, and, of course, complementation.
 
@@ -28,7 +28,7 @@ An important design concept of GOAL is modularity. GOAL uses the Java Plugin Fra
 GOAL provides a couple of extensions points, such as \textit{Codec}, \textit{Layout}, or \textit{Complementation Construction}. An extension for \textit{Codec}, for example, allows to add the handling of a new file format which GOAL can read from and write to. With an extension for \textit{Layout} one can add a new layout algorithm for laying out automata in the graphical interface. And an extension to \textsf{Complementation Construction} allows to add a new complementation construction to GOAL. This is how we added the Fribourg construction to GOAL, as we will further explain in Section~\ref{implementation}.
 
 \subsection{Büchi Complementation}
-There are a couple of Büchi complementation constructions preimplemented in GOAL. Table~\ref{goal_constructions} summarises them, showing for each one its name on the graphical interface and in the command line mode, and the reference to the paper introducing it. As can be seen, the most important representants of all the four approaches (Ramsey-based, determinisation-based, rank-based, and slice-based, see Chapter~\ref{background}) are present. Note that in addition to the listed constructions, GOAL also contains Kurshan's construction and classic complementation. These are for complementing DBW and NFA/DFA, respectively, and thus not relevant to us.
+There are a couple of Büchi complementation constructions preimplemented in GOAL. Table~\ref{goal_constructions} summarises them, showing for each one its name on the graphical interface and in the command line mode, and the reference to the paper introducing it. As can be seen, the most important representants of all the four approaches (Ramsey-based, determinisation-based, rank-based, and slice-based, see Chapter~\ref{background}) are present. In addition to the listed constructions, GOAL also contains Kurshan's construction and classic complementation. These are for complementing DBW and NFA/DFA, respectively, and thus not relevant to us.
 
 \begin{table}
 \caption{The complementation constructions implemented in GOAL (version 2014-11-17).}
@@ -62,7 +62,9 @@ Slice-based construction & slice & Kähler, Wilke (2008) \cite{2008_kaehler} \\
 \label{goal_constructions}
 \end{table}
 
-Complementation constructions in GOAL can define a set of options that can be set by the user. In the graphical interface this is done via a dialog window, in the command line mode via command line arguments. Figure~\ref{goal_complementation_options} shows the options dialog of the Safra-Piterman construction. Complementation options allow to play with different configurations and variants of a construction, and we will make use of them for including the optimsations presented in Chapter~\ref{fribourg_construction} to the implementation of the Fribourg construction.
+One of the constructions can be set as the default complementation construction. It is then possible to invoke this construction with the shortcut Ctrl-Alt-C. Furthemore, the default complementation constructions will be used for the containment and equivalence operations on Büchi automata, as they include complementation.
+
+Complementation constructions in GOAL can define a set of options that can be set by the user. In the graphical interface this is done at the start of the operations via a dialog window, in the command line mode the options are specified as command line arguments. Figure~\ref{goal_complementation_options} shows the options dialog of the Safra-Piterman construction. Complementation options allow to play with different configurations and variants of a construction, and we will make use of them for including the optimsations presented in Chapter~\ref{fribourg_construction} to our implementation of the Fribourg construction.
 
 
 \begin{figure}
@@ -73,14 +75,64 @@ Complementation constructions in GOAL can define a set of options that can be se
 \end{center}
 \end{figure}
 
-For most complementation constructions (all listed in Table~\ref{goal_constructions} except the Ramsey-based construction) there is also a step-by-step execution version.
+For most complementation constructions (all listed in Table~\ref{goal_constructions} except the Ramsey-based construction) there is also a version for step-by-step execution. In this case, the constructions define so-called steps and stages, through which the user can iterate independently. This is a great way for understanding how a complementation construction works, and for investigating specific cases in order to potentially further improve the construction. 
 
 
 \section{Implementation of the Fribourg Construction}
 \label{implementation}
+We implemented the Fribourg construction, including its optimsations, in Java as a plugin for GOAL. This means that after installing out plugin to an existing GOAL installation\footnote{As the plugin interfaces of GOAL have recently changed, the can be used only for GOAL versions 2014-11-17 and newer.}, the Fribourg construction will be an integral part of GOAL and can be used in the same way as any other pre-existing complementation construction.
+
+\subsection{Options for the Fribourg Construction}
+To keep the Fribourg construction flexible, we made use of options. The three optimisations described in Section~\ref{optimisations} are presented to the user as selectable options. Additionally, we included several further options. Table~\ref{goal_fribourg_options} lists them all. For convenience, we use for each options a short code name, which is also used as the option name in the command line mode.
+
+\begin{table}
+\caption{The options for the Fribourg construction.}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Code & Description \\ \hline
+m1 & Component merging optimisation \\ \hline
+m2 & Single 2-coloured component optimisation \\ \hline
+r2c & Deleting states with rightmost colour 2, if automaton is complete \\ \hline
+c & Make input automaton complete \\ \hline
+macc & Maximise accepting states of input automaton \\ \hline
+r & Remove unreachable and dead states from output automaton \\ \hline
+rr & Remove unreachable and dead states from input automaton \\ \hline
+b & Use the ``bracket notation'' for state labels \\ \hline
+\end{tabular}
+\end{center}
+\label{goal_fribourg_options}
+\end{table}
+
+The first three items in Table~\ref{goal_fribourg_options}, m1, m2, and r2c, correspond to the optimisations M1, M2, and R2C, described in Section~\ref{optimisations}. As the M2 optimisation requires M1, our implementation makes sure that the m2 option can only be selected if also the m1 option is selected. The \tec{c} option, for making the input automaton complete before starting the actual construction, is intended to be used with the \tec{r2c} option. In this way, the R2C optimisation can be forced to apply. This idea results from previous work that investigated whether making the input automaton complete plus the application of the R2C optimisation brings an improvement over the bare Fribourg constructoin~\cite{2013_bsc_goettel}. The result was negative, that is, the construction performs worse with this variant on practical cases. Also note that using the \tec{c} option alone, very likely decreases the performance of the construction, because the automaton is made bigger if it is not complete.
+
+The \tec{macc} and \tec{r} options are common among the other complementation constructions in GOAL. The first one, \tec{macc}, maximises the accepting set of the input automaton. That means, it makes as many states accepting as possible without changing the automaton's language. This should help to make the complement automaton smaller. The \tec{r} options prunes unreachable and dead states from the complement automaton. Unreachable states are states that cannot be reached from the initial states, and dead states are states from where no accepting state can be reached. Clearly, all the runs containing an unreachable or dead state are not accepting, and thus these states can be removed from the automaton without changing its language. The complement automaton can in this way be made smaller. The \tec{rr} option in turn removes the unreachable and dead states from the \emph{input} automaton. That is, it makes the input automaton smaller, before the actual construction starts, what theoretically results in smaller complement automaton.
+
+Finally, the \tec{b} option affects just the display of the state labels of the complement automaton. It uses an alternative notation which uses different kinds of brackets, instead of the explicit colour number, to indicate the colours of sets. In particular, 2-coloured sets are indicated by square brackets, 1-coloured sets by round parenthesis, and 0-coloured sets by curly braces. Sets of states of the upper part of the automaton are enclosed by circumflexes. This notation, although being very informal, has proven to be very convenient during the development of the construction.
+
+\subsection{Correctness of the Implementation}
+Of course it is needed to test whether our implementation produces correct results. That is, are the output automata really the complements of the input automata? We chose doing so with an empirical approach, taking one of the pre-existing complementation constructions in GOAL as the ``ground truth''. We can then perform what we call complementation-equivalence tests. We take a random Büchi automaton and complement it with the ground-truth construction. We then complement the same automaton with our implementation of the Fribourg construction, and check whether the two complement automata are equivalent. Provided that the ground-truth construction is correct, we can show in this way that our construction is correct for this specific case.
+
+We performed complementation-equivalence tests for the Fribourg construction with different option combinations. In particular, we tested the configurations \tec{m1}, \tec{m1}+\tec{m2}, \tec{c}+\tec{r2c}, \tec{macc}, \tec{r}, \tec{rr}, and the construction without any options. For each configuration we tested 1000 random automata of size 4 and with an alphabet of size 2 to 4. As the ground-truth construction we chose the Safra-Piterman construction. In all cases the complement of the Fribourg construction was equivalent to the complement of the Safra-Piterman construction.
+
+Doubtlessly, it would be desirable to test more, and especially bigger and more diverse automata. However, by doing so one would quickly face practical problems due to long complementation times with bigger automata and larger alphabets, and high memory usage. For our current purpose, however, the tests we did are enough for us to be confident that our implementation is correct.
+
+
+\subsection{Plugin Availability and Installation}
+When we developed the plugin, we aimed for a complete as possible integration with GOAL. We integrated the Friboug construction in the graphical, as well as in the command line interface. We added a step-by-step execution of the construction in the graphical interface. We provided that customised option configurations can be persistently saved, and reset to the defaults at any time. We also integrated the Fribourg construction in the GOAL preferences menu so that it can be selected as the default complementation construction. In this way, it can be invoked with a key-shortcut and it will also be used for the containment and equivalence operations. Our goal is that once the plugin is installed, the Fribourg construction is as seamlessly integrated in GOAL as all the other pre-existing complementation construction.
+
+The complete integration allows us to publish the plugin so that it can be used by other GOAL users. At the time of this writing, the plugin is accessible at \url{http://goal.s3.amazonaws.com/Fribourg.tar.gz} and also over the GOAL website\footnote{http://goal.im.ntu.edu.tw/}. The installation is done by simply extracting the archive file and copying the contained folder to the \tec{plugins/} folder in the GOAL system tree. No compilation is necessary. The same plugin and the same installation procedure works FOR Linux, Mac OS X, Microsoft Windows, and other operating systems that run GOAL.
+
+Since between the 2014-08-08 and 2014-11-17 releases of GOAL certain parts of the plugin interfaces have changed, and we adapted our plugin accordingly, the currently maintained version of the plugin works only with GOAL versions 2014-11-17 or newer. It is thus essential for any GOAL user to update to this version in order to use our plugin.
+
 
 \section{Experiment Idea}
 \label{experiment_idea}
+Having presented the execution environment (GOAL) and our implementation itself, we can now return to the core of this chapter, which is the empirical performance investigation of the Fribourg construction.
+
+
+
 
 \section{Experiment Setup}
 \label{experiment_setup}
+
