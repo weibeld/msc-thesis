@@ -130,6 +130,19 @@ Since between the 2014-08-08 and 2014-11-17 releases of GOAL certain parts of th
 \label{experiment_idea}
 Having presented the execution environment (GOAL) and our implementation itself, we can now return to the core of this chapter, which is the empirical performance investigation of the Fribourg construction.
 
+The idea is to have a test set of automata that is then complemented by different configurations of the Fribourg construction, and by other complementation constructions. By assessing the size of the produced complement automata, it is then possible to make a ranking of the different configurations and constructions.
+
+\subsection{Test Data}
+
+For our set of sample automata, we chose to adopt the test set that has been created and used for another empirical performance comparison of Büchi complementation constructions by Tsai et al.~\cite{2010_tsai} (the first author, Tsai, being the main author of GOAL). This test set consists of 11000 automata of size 15, and 11000 automata of size 20. Each set of 11000 automata consists of 110 groups containing 100 automata each. The 110 groups result from the cartesian product of 11 transitions densities and 10 acceptance densities.
+
+At this point, we have to explain the notions of transition and acceptance densitiy, as they are defined in~\cite{2010_tsai} and also implemented in GOAL. The transition density defines the number of transitions in an automaton. In particular, if the transition density is $t$ and the automaton has $n$ states, then the automaton contains $tn$ transitions for every symbol of the alphabet. In other words, the transition density is the average number of outgoing (and incoming) transitions of a state for each symbol of the alphabet. The transition densities in the test set range from 1 to 3 in steps of 0.2, that is, there are the 11 instances 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0. The acceptance density in turn is the percentage of states that are accepting states. It is thus a number between 0 and 1. In the test set, the 10 acceptance density classes range from 0.1 to 1.0 in steps of 0.1.
+
+Each of the 110 transition density and acceptance density combination groups contains thus 100 automata. These automata were generated at random with the random automata generator of GOAL. The alphabet size of all the automata is 2. According to Tsai et al.~The alphabet size of all the automata is 2 According to Tsai et al. this test set generates a large class of complementation problems ranging from easy to hard~\cite{2010_tsai}. The test set is available on the GOAL website\footnote{http://goal.im.ntu.edu.tw/}. At the time of this writing, the direct link to the data is \url{http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?media=goal:ciaa2010_automata.tar.gz}.
+
+The reason that we chose this existing test set, instead of for example generating our own one, is that it has been previously used and is thus an established reference point. As it is commonly accepted in disciplines that rely on performance measurements via test sets (for example artificial intelligence), we also think that it is imporant that there is established test data that can be used as an objective benchmark. This is to avoid that self-made test data is biased toward the technology whose performance is to evaluate. By using the test set of Tsai et al., we are taking a step in this direction. Furthermore, the experiments conducted by Tsai et al. are similar to our ones, so there might be to notice interesting parallels or differences in the results. The same test set has also been used by an earlier performance investigation of the Fribourg construction in~\cite{2013_bsc_goettel}.
+
+\subsection{Internal and External Comparison}
 
 
 
