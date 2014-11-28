@@ -96,7 +96,7 @@ cat >$out <<EOF
 # Timeout (CPU time):        ${timeout}s
 EOF
 # Column titles (and order)
-echo -e "states${s}zstates${s}t_out${s}m_out${s}real_t${s}tcpu_t${s}ucpu_t${s}scpu_t${s}dt${s}da${s}file" >>$out
+echo -e "states${s}t_out${s}m_out${s}real_t${s}tcpu_t${s}ucpu_t${s}scpu_t${s}dt${s}da${s}file" >>$out
 
 compl=$TMP/complement.gff
 compl_reduced=$TMP/reduced_complement.gff
@@ -137,10 +137,10 @@ for filename in $data/*.gff; do
   # Successful execution
   else
     states=$(grep "sid=" $compl | wc -l | tr -d ' ')
-    $goal reduce $compl >$compl_reduced # Remove unreachable and dead states
-    states_reduced=$(grep "sid=" $compl_reduced | wc -l | tr -d ' ')
-    #states_reduced=X
-    zstates=$(($states-$states_reduced))
+    # $goal reduce $compl >$compl_reduced # Remove unreachable and dead states
+    # states_reduced=$(grep "sid=" $compl_reduced | wc -l | tr -d ' ')
+    # states_reduced=X
+    # zstates=$(($states-$states_reduced))
   fi
 
   # Times
@@ -165,7 +165,7 @@ for filename in $data/*.gff; do
   da=$(echo $file | egrep -o "a[0-9].[0-9]" | sed 's/^a//')
 
   # Write line to out file
-  echo -e ${states}${s}${zstates}${s}${t_out}${s}${m_out}${s}${real}${s}${tot_cpu}${s}${user_cpu}${s}${sys_cpu}${s}${dt}${s}${da}${s}${file} >>$out
+  echo -e ${states}${s}${t_out}${s}${m_out}${s}${real}${s}${tot_cpu}${s}${user_cpu}${s}${sys_cpu}${s}${dt}${s}${da}${s}${file} >>$out
 done
 
 # Copy result files from local scratch to job directory
