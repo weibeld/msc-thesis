@@ -11,10 +11,10 @@ usage() {
   echo "OPTIONS                     [DEFAULT]"
   echo "    -m: Memory              [4G]"
   echo "    -c: CPU time            [01:00:00]"
-  echo "    -d: Execution directory [SCRIPT_DIR]"
+  echo "    -d: Execution directory [\$(pwd)]"
   echo "    -o: STDOUT file         [stdout]"
   echo "    -e: STDERR file         [stderr]"
-  echo "    -q: Queue               [all.q]"
+  echo "    -q: Queue               [short.q]"
   echo "    -s: Scratch             [off]        (set to e.g. [2G] to activate)"
   echo "    -p: Parallel env. SMP   [off]        (set to e.g. [2] slots to activate)"
   echo "    -n: E-mail notification [n]"
@@ -58,11 +58,11 @@ shift # $@ contains job script arguments (if any)
 
 if [ -z $memory ]; then memory=4G; fi
 if [ -z $cpu_time ]; then cpu_time=01:00:00; fi
-if [ -z $dir ]; then dir=$(dirname $script); else dir=$(eval echo $dir); test directory $dir; fi
+if [ -z $dir ]; then dir=$(pwd); else dir=$(eval echo $dir); test directory $dir; fi
 if [ -z $out_file ]; then out_file=stdout; fi
 if [ -z $err_file ]; then err_file=stderr; fi
 if [ -z $notification ]; then notification=n; fi
-if [ -z $queue ]; then queue=all.q; fi
+if [ -z $queue ]; then queue=short.q; fi
 
 if [ -z $scratch_size ]; then scratch_size=off; fi
 if [ $scratch_size == off ]; then scratch=""
