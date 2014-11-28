@@ -20,7 +20,7 @@ usage() {
   echo "    $(basename $0) [-a algorithm] [-d data] [-t timeout] [-m memory]"
   echo
   echo "OPTIONS                                 [DEFAULT]"
-  echo "    -a: Algorithm including options     [\"$algo\"]"
+  echo "    -a: Algorithm (including options)   [\"$algo\"]"
   echo "    -d: Data (absolute path only)       [$data_archive]"
   echo "    -t: Timeout (seconds)               [$timeout]"
   echo "    -m: Max. Java heap size             [$memory]"    
@@ -101,6 +101,11 @@ echo -e "states${s}t_out${s}m_out${s}real_t${s}tcpu_t${s}ucpu_t${s}scpu_t${s}dt$
 compl=$TMP/complement.gff
 compl_reduced=$TMP/reduced_complement.gff
 stderr=$TMP/tmp.stderr
+
+# Log inits
+job_start=$(date +%s)
+echo "$(d): Start ($job_start)" >$log
+
 for filename in $data/*.gff; do
   file=$(basename $filename)
 
@@ -167,6 +172,18 @@ for filename in $data/*.gff; do
   # Write line to out file
   echo -e ${states}${s}${t_out}${s}${m_out}${s}${real}${s}${tot_cpu}${s}${user_cpu}${s}${sys_cpu}${s}${dt}${s}${da}${s}${file} >>$out
 done
+
+# Log end
+job_end=$(date +%s)
+echo "$(d): End ($job_end)" >>$log
+total_sec=$(($job_end-$job_start))
+hours=$(($total_sec/3600))
+rem_sec=$(($total_sec%3600))
+min=$(($rem_sec/60))
+sec=$(($rem_sec%60))
+echo "Duration (wallclock):" >>$log
+echo "    ${hours}h ${min}min ${sec}sec" >>$log
+echo "    ${total_sec}sec" >>$log
 
 # Copy result files from local scratch to job directory
 cp $out $log .

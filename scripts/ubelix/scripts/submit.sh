@@ -15,8 +15,8 @@ usage() {
   echo "    -o: STDOUT file         [stdout]"
   echo "    -e: STDERR file         [stderr]"
   echo "    -q: Queue               [short.q]"
-  echo "    -s: Scratch             [off]        (set to e.g. [2G] to activate)"
-  echo "    -p: Parallel env. SMP   [off]        (set to e.g. [2] slots to activate)"
+  echo "    -s: Scratch             [1G]       (set to 'off' to disable)"
+  echo "    -p: Parallel env. SMP   [4]        (set to 'off' to disable)"
   echo "    -n: E-mail notification [n]"
   echo "        b: E-mail is sent at beginning of job"
   echo "        e: E-mail is sent at end of job"
@@ -32,7 +32,7 @@ test() {
   if [ ${path:0:1} != "/" ]; then echo "Error: must specify absolute path ($path)"; exit 1; fi
 }
 
-if [ $# -eq 0 ]; then usage; exit 0; fi
+if [ $# -eq 0 ] || [ "$1" = -h ]; then usage; exit 0; fi
 
 while getopts ":m:c:d:o:e:q:s:p:n:" opt; do
   case $opt in
@@ -64,12 +64,12 @@ if [ -z $err_file ]; then err_file=stderr; fi
 if [ -z $notification ]; then notification=n; fi
 if [ -z $queue ]; then queue=short.q; fi
 
-if [ -z $scratch_size ]; then scratch_size=off; fi
-if [ $scratch_size == off ]; then scratch=""
+if [ -z $scratch_size ]; then scratch_size=1G; fi
+if [ $scratch_size = off ]; then scratch=""
 else scratch="-l scratch=1,scratch_size=$scratch_size,scratch_files=1M "; fi
 
-if [ -z $slots ]; then slots=off; fi
-if [ $slots == off ]; then pe=""
+if [ -z $slots ]; then slots=4; fi
+if [ $slots = off ]; then pe=""
 else pe="-pe smp $slots -R y "; fi
 
 job=$(basename $dir)
