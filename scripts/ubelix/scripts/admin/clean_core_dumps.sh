@@ -9,6 +9,6 @@ dirs=($(echo $prefix/*/))
 # $dir is dirname with trailing slash
 for dir in ${dirs[@]}; do
   echo "Cleaning $dir"
-  rm -f $dir*
+  rm -f ${dir}core.*
 done
 

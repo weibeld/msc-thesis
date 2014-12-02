@@ -1,16 +1,17 @@
 #!/bin/bash
-# SGE Job Script (use with 4G memory)
+# SGE Job Script (use with 5G memory)
 # Test for all the automata in a .tar.gz archive whether they are universal
 # (accept all the possible words over an alphabet) or not. The test is done
 # by complementation and testing of the complement for emptiness. If the
 # complement is empty, the inital automaton is universal. As the complementation
-# construction, we use piterman with all the optimisations. The results are used
-# for the analysis of the test set of the 11'000 automata of Tsai et al.
+# construction, we use slice with all the optimisations. We know from the
+# comparison experiments that slice complements the 11'000 automata (size 15)
+# without a timeout (maximum CPU time 116s) or memory out (with 1GB Java heap).
+#
 # dw-28.11.2014
 
 goal_archive=~/bin/GOAL-20141117.tar.gz # GOAL executables
 data_archive=~/data/15.tar.gz           # Default data
-memory=2G                               # Java heap size (must be enough!)
 
 usage() {
   echo "USAGE:"
@@ -66,16 +67,17 @@ EOF
 # Column headers
 echo -e "univ\tfile" >>$out
 
-# Set maximum and initial Java heap size. We don't set a timeout. We want all
-# tasks to finish. This should be possible with piterman and our test set.
-export JVMARGS="-Xmx$memory -Xms$memory"
-algo="piterman -eq -macc -sim -ro -r"
+# Set Java heap size. We don't set a timeout. We want all tasks to finish. This
+# should be possible with slice and 2G Java heap (at least for the size 15 set).
+export JVMARGS="-Xmx2G -Xms2G"
+algo="slice -p -macc -ro -madj -eg -r"
+#algo="piterman -eq -macc -sim -ro -r" # Previously used but had memory out
 complement=$TMP/complement.gff
 errors=$TMP/err
 
 # Test if something has been written to stderr (e.g. memory excess)
 test_errors() {
-  [ -s $errors ] && echo Error >>$out && exit 1
+  if [ -s $errors ]; then cat $errors >>$out; cp $out .; exit 1; fi
 }
 
 # Iterate through all the automata and do the universality test

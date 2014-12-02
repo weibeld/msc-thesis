@@ -4,6 +4,9 @@
 # complementation construction specified as argument. Write result statistics
 # to a file that is to be processed by R.
 #
+# Out and log file in home directory. Needed to observe the progress of rank
+# that takes so long (did not finish in 72 hours -> 2014-11-28).
+#
 # dw-24.09.2014
 
 # GOAL version to use
@@ -73,8 +76,11 @@ if [ -n "$err" ]; then echo "GOAL error: $err"; exit 1; fi
 rm $TMP/tmp.gff
 
 # Out file and log file
-out=$TMP/$JOB_NAME.out
-log=$TMP/$JOB_NAME.log
+# out=$TMP/$JOB_NAME.out
+# log=$TMP/$JOB_NAME.log
+out=$JOB_NAME.out
+log=$JOB_NAME.log
+touch I_AM_STILL_RUNNING
 
 # Out file elements
 na=NA    # Default string for R's NA ("not available")
@@ -110,7 +116,8 @@ i=0 # Counter
 for filename in $data/*.gff; do
   file=$(basename $filename)
   ((i+=1))
-  echo "$i. $(d): $file" >>$log
+  echo "$(d): $file" >>$log
+
   # Complementation command execution
   # ----------------------------------------------------------------------------
   ulimit -S -t $timeout
@@ -188,4 +195,5 @@ echo "Duration (wallclock): ${hours}h ${min}min ${sec}sec" >>$log
 echo "                      ${total_sec}sec" >>$log
 
 # Copy result files from local scratch to job directory
-cp $out $log .
+#cp $out $log .
+mv I_AM_STILL_RUNNING I_AM_FINISHED
