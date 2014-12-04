@@ -54,7 +54,3 @@ intersect(c,d)
 union(c,d)
 setdiff(c,d)  # What is in c but not in d?
 setequal(c,d)
-
-
-
-

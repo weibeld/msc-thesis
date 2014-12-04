@@ -14,38 +14,38 @@ algo="fribourg -m1"
 data_archive=~/data/small.tar.gz
 timeout=600 # Seconds
 memory=1G
+use_working_dir=false
 
 usage() {
   echo "USAGE:"
   echo "    $(basename $0) [-a algorithm] [-d data] [-t timeout] [-m memory]"
   echo
-  echo "OPTIONS                                 [DEFAULT]"
+  echo "OPTIONS                                 [DEFAULT VALUE]"
   echo "    -a: Algorithm (including options)   [\"$algo\"]"
   echo "    -d: Data (absolute path only)       [$data_archive]"
   echo "    -t: Timeout (seconds)               [$timeout]"
-  echo "    -m: Max. Java heap size             [$memory]"    
+  echo "    -m: Max. Java heap size             [$memory]"
+  echo "    -o: Out and log file in working dir (instead of local scratch)"
 }
 if [ "$1" == "-h" ]; then usage; exit 0; fi
 
-while getopts ":a:d:t:m:" opt; do
+while getopts ":a:d:t:m:o" opt; do
   case $opt in
     a) algo=$OPTARG;         ;;
     d) data_archive=$OPTARG; ;;
     t) timeout=$OPTARG;      ;;
     m) memory=$OPTARG;       ;;
+    o) use_working_dir=true; ;;
     \?) echo "Error: invalid option: -$OPTARG";             exit 1 ;;
     :)  echo "Error: option -$OPTARG requires an argument"; exit 1 ;;
   esac
 done
 
-# Enforce tilde (~) expansion, in case the path was enclosed in quotes
-data_archive=$(eval echo $data_archive)
-
 # Test for absolute path and file existence
 test_file() {
   path=$1
   if [ ! -f $path ]; then echo "Error: \"$path\" is not a valid file"; exit 1; fi
-  if [ ${path:0:1} != "/" ]; then echo "Error: must specify absolute paths"; exit 1; fi
+  if [ ${path:0:1} != / ]; then echo "Error: must specify absolute paths"; exit 1; fi
 }
 test_file $data_archive
 test_file $goal_archive
@@ -73,8 +73,14 @@ if [ -n "$err" ]; then echo "GOAL error: $err"; exit 1; fi
 rm $TMP/tmp.gff
 
 # Out file and log file
-out=$TMP/$JOB_NAME.out
-log=$TMP/$JOB_NAME.log
+if [ $use_working_dir = true ]; then
+  out=$JOB_NAME.out # in current working dir (GPFS home)
+  log=$JOB_NAME.log
+  touch I_AM_STILL_RUNNING
+else 
+  out=$TMP/$JOB_NAME.out # in local scratch
+  log=$TMP/$JOB_NAME.log
+fi
 
 # Out file elements
 na=NA    # Default string for R's NA ("not available")
@@ -104,7 +110,7 @@ stderr=$TMP/tmp.stderr
 
 # Log inits
 job_start=$(date +%s)
-echo "$(d): Start ($job_start)" >$log
+echo "Start: $(d) ($job_start)" >$log
 i=0 # Counter
 
 for filename in $data/*.gff; do
@@ -178,7 +184,7 @@ done
 
 # Log end
 job_end=$(date +%s)
-echo "$(d): End ($job_end)" >>$log
+echo "End: $(d) ($job_end)" >>$log
 total_sec=$(($job_end-$job_start))
 hours=$(($total_sec/3600))
 rem_sec=$(($total_sec%3600))
@@ -188,4 +194,7 @@ echo "Duration (wallclock): ${hours}h ${min}min ${sec}sec" >>$log
 echo "                      ${total_sec}sec" >>$log
 
 # Copy result files from local scratch to job directory
-cp $out $log .
+if [ $use_working_dir = true ]
+then mv I_AM_STILL_RUNNING I_AM_FINISHED
+else cp $out $log .
+fi
