@@ -58,36 +58,59 @@ effective.samples <- function(...) {
   frames.reduced
 }
 
-boxplot.states <- function(...,labels=NULL,height=NULL) {
+stripchart.states <- function(...,labels=NULL,xmin=0,file="~/Desktop/stripchart.pdf",lmargin=6) {
+  # Start PDF graphics device
+  pdf(file,width=10,height=7)
+  # Draw stripchart
+  graphics.params()
+  par(mar=c(4.5,lmargin,1.5,1.5)) # Increase left margin
+  par(pin=c(4,3))
+  par(pty="m")
+  vectors <- list()
+  for (frame in list(...))
+    vectors[[length(vectors)+1]] <- frame[frame$states >= xmin,"states"]
+  stripchart(vectors,method="jitter",jitter=0.3,pch=1,group.names=labels,las=1,xlab="Number of states")
+  # Close graphics device (saves graphic to file)
+  dev.off()
+}
+
+# Create boxplots of multiple experiments (number of states of complements)
+# in a single chart.
+boxplot.states <- function(...,labels=NULL,ymax=NULL,file="~/Desktop/boxplot.pdf") {
+  # Start PDF graphics device
+  pdf(file)
+  # Draw boxplot
   vectors <- list()
   for (frame in list(...)) vectors[[length(vectors)+1]] <- frame$states
-  if (!is.null(height)) height <- c(0,height)
-  boxplot(vectors,outline=FALSE,names=labels,ylim=height,ylab="Complement size")
-  # Add additional text
+  if (!is.null(ymax)) ymax <- c(0,ymax)
+  boxplot(vectors,outline=FALSE,names=labels,ylim=ymax,ylab="Complement size")
+  # Add additional elements
   text <- character()
   text.pos <- numeric()
   means <- numeric()
   for (vector in vectors) {
     info <- boxplot.stats(vector)
-
+    # Parameters of this boxplot
     outliers.number <- length(info$out)
     outliers.percent <- 100*outliers.number/info$n
     outliers.max <- max(info$out)
     upper.whisker <- info$stats[5]
-    means <- c(means,mean(vector,na.rm=TRUE))
-
-    text <- c(text, paste0(outliers.number, " outliers (",f(outliers.percent),"%)\nMax. ",outliers.max))
+    # Add to structure for all boxplots
+    text <- c(text, paste0(outliers.number, " outliers (",f(outliers.percent),"%)\nMax. ",i(outliers.max)))
     text.pos <- c(text.pos, upper.whisker)
+    means <- c(means,mean(vector,na.rm=TRUE))
   }
-  text(text.pos,text,pos=3,cex=0.675)
+  text(text.pos,text,pos=3,cex=0.675) # pos=3 == above
   points(means,pch=19)
+  # Close graphics device (saves graphic to file)
+  dev.off()
 }
 
 # Create histogram of number of states of complement automata of an experiment.
 hist.states <- function(df,xmax=10000,ymax=2000,binsize=100,
     title="Histogram",xlabel="Number of states",ylabel="Complements",
     file="~/Desktop/histogram.pdf") {
-  # PDF device driver
+  # Start PDF graphics device
   pdf(file)
   # Draw histogram
   binbreaks <- seq(from=0,to=100000,by=binsize)
@@ -103,13 +126,13 @@ hist.states <- function(df,xmax=10000,ymax=2000,binsize=100,
   lineheight <- 500
   lines(x=c(perc95,perc95),y=c(0,lineheight))
   text(x=perc95,y=lineheight+50,paste0("95th percentile (",f(perc95),")"),cex=textsize)
-  # Save to file
+  # Close graphics device (saves graphic to file)
   dev.off()
 }
 
 # Create a (draft) histogram for any data vector.
 hist.generic <- function(vector,xmax,ymax,binsize,file="~/Desktop/histogram.pdf") {
-  # PDF device driver
+  # Start PDF graphics device
   pdf(file)
   # Draw histogram
   binbreaks <- seq(from=0,to=100000,by=binsize)
@@ -122,7 +145,7 @@ hist.generic <- function(vector,xmax,ymax,binsize,file="~/Desktop/histogram.pdf"
   text(x=median,y=0,paste0("Median (",f(median),")"),cex=textsize,col="blue",pos=1,offset=0.25)
   abline(v=perc95,col="red")
   text(x=perc95,y=0,paste0("95th percentile (",f(perc95),")"),cex=textsize,col="red",pos=1,offset=0.25)
-  # Save to file
+  # Shut down graphics device, saves graphic to file
   dev.off()
 }
 
@@ -135,7 +158,19 @@ complexity <- function(n, m) {
   write(paste0("(",x,"n)^n"), file="")
 }
 
-# Format a number to <dec> decimal places. Returns a character value (string).
-f <- function(n,dec=1) {
-  format(round(n,dec),nsmall=dec)
+# Set global graphics parameters that apply to all graphics.
+graphics.params <- function() {
+  par(mar=c(4.5,4.5,1.5,1.5),pty="s")
+}
+
+# Format a floating point number for printing. Returns a string.
+f <- function(n,dec=1,mark=",") {
+  if (n < 10000) mark <- "" # Thousands marks only for numbers >= 10'000
+  formatC(n,format="f",digits=dec,big.mark=mark)
+}
+
+# Format an integer for printing. Returns a string.
+i <- function(n,mark="'") {
+  if (n < 10000) mark <- "" # Thousands marks only for numbers >= 10'000
+  formatC(n,format="d",big.mark=mark)
 }
