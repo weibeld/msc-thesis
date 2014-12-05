@@ -58,8 +58,33 @@ effective.samples <- function(...) {
   frames.reduced
 }
 
+boxplot.states <- function(...,labels=NULL,height=NULL) {
+  vectors <- list()
+  for (frame in list(...)) vectors[[length(vectors)+1]] <- frame$states
+  if (!is.null(height)) height <- c(0,height)
+  boxplot(vectors,outline=FALSE,names=labels,ylim=height,ylab="Complement size")
+  # Add additional text
+  text <- character()
+  text.pos <- numeric()
+  means <- numeric()
+  for (vector in vectors) {
+    info <- boxplot.stats(vector)
+
+    outliers.number <- length(info$out)
+    outliers.percent <- 100*outliers.number/info$n
+    outliers.max <- max(info$out)
+    upper.whisker <- info$stats[5]
+    means <- c(means,mean(vector,na.rm=TRUE))
+
+    text <- c(text, paste0(outliers.number, " outliers (",f(outliers.percent),"%)\nMax. ",outliers.max))
+    text.pos <- c(text.pos, upper.whisker)
+  }
+  text(text.pos,text,pos=3,cex=0.675)
+  points(means,pch=19)
+}
+
 # Create histogram of number of states of complement automata of an experiment.
-histogram <- function(df,xmax=10000,ymax=2000,binsize=100,
+hist.states <- function(df,xmax=10000,ymax=2000,binsize=100,
     title="Histogram",xlabel="Number of states",ylabel="Complements",
     file="~/Desktop/histogram.pdf") {
   # PDF device driver
@@ -83,7 +108,7 @@ histogram <- function(df,xmax=10000,ymax=2000,binsize=100,
 }
 
 # Create a (draft) histogram for any data vector.
-histogram.generic <- function(vector,xmax,ymax,binsize,file="~/Desktop/histogram.pdf") {
+hist.generic <- function(vector,xmax,ymax,binsize,file="~/Desktop/histogram.pdf") {
   # PDF device driver
   pdf(file)
   # Draw histogram
