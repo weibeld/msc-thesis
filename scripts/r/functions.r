@@ -58,31 +58,56 @@ effective.samples <- function(...) {
   frames.reduced
 }
 
-stripchart.states <- function(...,labels=NULL,xmin=0,file="~/Desktop/stripchart.pdf",lmargin=6) {
-  # Start PDF graphics device
-  pdf(file,width=10,height=7)
-  # Draw stripchart
-  graphics.params()
-  par(mar=c(4.5,lmargin,1.5,1.5)) # Increase left margin
-  par(pin=c(4,3))
-  par(pty="m")
+#==============================================================================#
+# Graphics functions
+# Draw different kinds of plots from the Büchi complementation data.
+#==============================================================================#
+
+stripchart.states <- function(df,...,labels=NULL,min=5000,lmargin=6,xaxp=NULL,width=4,height=4,
+  file="~/Desktop/stripchart.pdf") {
+  # Start graphics device and set graphics params
+  pdf(file,width=width,height=height,pointsize=8)
+  global.params()
+  
+  #par(ps=5)
+  #par(lwd=0.5)
+  # Increase left margin
+  m <- par("mar")
+  m[2] <- lmargin
+  par(mar=m) 
+  # Prepare data
   vectors <- list()
-  for (frame in list(...))
-    vectors[[length(vectors)+1]] <- frame[frame$states >= xmin,"states"]
-  stripchart(vectors,method="jitter",jitter=0.3,pch=1,group.names=labels,las=1,xlab="Number of states")
+  if (class(df) != "list") df <- list(df)
+  for (frame in df)
+    vectors[[length(vectors)+1]] <- frame[frame$states>=min,"states"]
+  # Draw stripchart
+  par(xaxs="r")
+  if (is.null(xaxp)) xaxt <- NULL else xaxt <- "n"
+  stripchart(vectors,group.names=labels,method="jitter",pch=1,las=1,lwd=par("lwd"),xaxt=xaxt,...)
+  if (!is.null(xaxp)) {
+    ticks <- axTicks(1,xaxp)
+    tick.labels <- formatC(ticks,format="d",big.mark=" ")
+    axis(1,at=ticks,labels=tick.labels,lwd=par("lwd"))
+  }
+  # grid(lty="solid",col="black",ny=NA)
+  #abline(v=c(10000,25000,45000))
+  # axis(side=2,at=1:4,labels=labels)
   # Close graphics device (saves graphic to file)
   dev.off()
 }
 
 # Create boxplots of multiple experiments (number of states of complements)
 # in a single chart.
-boxplot.states <- function(...,labels=NULL,ymax=NULL,file="~/Desktop/boxplot.pdf") {
-  # Start PDF graphics device
-  pdf(file)
-  # Draw boxplot
+boxplot.states <- function(...,labels=NULL,ymax=NULL,width=7,height=7,
+    file="~/Desktop/boxplot.pdf") {
+  # Start graphics device and set graphics params
+  pdf(file,width=width,height=height)
+  global.params()
+  # Prepare data
   vectors <- list()
   for (frame in list(...)) vectors[[length(vectors)+1]] <- frame$states
   if (!is.null(ymax)) ymax <- c(0,ymax)
+  # Draw boxplot
   boxplot(vectors,outline=FALSE,names=labels,ylim=ymax,ylab="Complement size")
   # Add additional elements
   text <- character()
@@ -109,11 +134,12 @@ boxplot.states <- function(...,labels=NULL,ymax=NULL,file="~/Desktop/boxplot.pdf
 # Create histogram of number of states of complement automata of an experiment.
 hist.states <- function(df,xmax=10000,ymax=2000,binsize=100,
     title="Histogram",xlabel="Number of states",ylabel="Complements",
-    file="~/Desktop/histogram.pdf") {
-  # Start PDF graphics device
+    file="~/Desktop/histogram.pdf",width=7,height=7) {
+  # Start graphics device and set graphics params
   pdf(file)
-  # Draw histogram
+  global.params()
   binbreaks <- seq(from=0,to=100000,by=binsize)
+  # Draw histogram
   hist(df$states,breaks=binbreaks,xlim=c(0,xmax),ylim=c(0,ymax),main=title,
     xlab=xlabel,ylab=ylabel)
   # Add additional lines and text
@@ -132,10 +158,11 @@ hist.states <- function(df,xmax=10000,ymax=2000,binsize=100,
 
 # Create a (draft) histogram for any data vector.
 hist.generic <- function(vector,xmax,ymax,binsize,file="~/Desktop/histogram.pdf") {
-  # Start PDF graphics device
+  # Start graphics device and set graphics params
   pdf(file)
-  # Draw histogram
+  global.params()
   binbreaks <- seq(from=0,to=100000,by=binsize)
+  # Draw histogram
   hist(vector,breaks=binbreaks,xlim=c(0,xmax),ylim=c(0,ymax))
   # Draw median and 95th percentile line
   median <- median(vector)
@@ -159,8 +186,8 @@ complexity <- function(n, m) {
 }
 
 # Set global graphics parameters that apply to all graphics.
-graphics.params <- function() {
-  par(mar=c(4.5,4.5,1.5,1.5),pty="s")
+global.params <- function() {
+  par(mar=c(4,4,1,1),bty="o",mgp=c(2.4,0.9,0),mex=1,tcl=-0.5,lwd=0.75,bg="green")
 }
 
 # Format a floating point number for printing. Returns a string.
