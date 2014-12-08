@@ -1,30 +1,38 @@
 #!/bin/bash
-# SGE Job Script (use with 5G memory)
-# Test for all the automata in a .tar.gz archive whether they are universal
-# (accept all the possible words over an alphabet) or not. The test is done
-# by complementation and testing of the complement for emptiness. If the
-# complement is empty, the inital automaton is universal. As the complementation
-# construction, we use slice with all the optimisations. We know from the
-# comparison experiments that slice complements the 11'000 automata (size 15)
-# without a timeout (maximum CPU time 116s) or memory out (with 1GB Java heap).
+# SGE Job Script
+# Test all the automata in a tar.gz archive for universality. An automaton is
+# universal if it accepts every word over a given alphabet. The test is done
+# by complementation and testing for emptiness. If the complement of an auto-
+# maton A is empty, then A itself is universal.
+# As the complementation construction we take slice -p -ro -madj -eg -macc -r,
+# because we know from other experiments that slice -p -ro -madj -eg can com-
+# plement the 11'000 automata in the size 15 test set without a timeout or
+# memory out (timeout 600s, memory limit 1G Java heap).
+# For the size 15 test set, 1G Java heap is enough for slice. However, experi-
+# ments have shown that for the size 20 test set, 2G are not enough, so try this
+# with 4G Java heap. Run the SGE job thus with 7G memory.
 #
 # dw-28.11.2014
 
 goal_archive=~/bin/GOAL-20141117.tar.gz # GOAL executables
 data_archive=~/data/15.tar.gz           # Default data
+memory=1G                               # Default Java heap size
+algo="slice -p -macc -ro -madj -eg -r"  # Complementation construction
 
 usage() {
   echo "USAGE:"
   echo "    $(basename $0) [-d data]"
   echo
   echo "ARGUMENTS                               [DEFAULT]"
-  echo "    -d: Data (absolute path only)       [$data_archive]"  
+  echo "    -d: Data (absolute path only)       [$data_archive]"
+  echo "    -m: Max. Java heap size             [$memory]"
 }
 if [ "$1" == "-h" ]; then usage; exit; fi
 
-while getopts ":d:" opt; do
+while getopts ":d:m:" opt; do
   case $opt in
     d) data_archive=$OPTARG; ;;
+    m) memory=$OPTARG;       ;;
     \?) echo "Error: invalid option: -$OPTARG";             exit 1 ;;
     :)  echo "Error: option -$OPTARG requires an argument"; exit 1 ;;
   esac
@@ -51,15 +59,23 @@ mkdir $goal_dir
 tar xzf $TMP/tmp.tar.gz -C $goal_dir --strip-components 1 && rm $TMP/tmp.tar.gz
 goal=$goal_dir/gc
 
-# Result file
-out=$TMP/$JOB_NAME.out
+# Nice date
+d() { date "+%F %H:%M:%S"; }
+
+# Result and log files (in working directory on network file system)
+out=$JOB_NAME.out
+log=$JOB_NAME.log
+touch I_AM_STILL_RUNNING
 
 # Result file header
 cat >$out <<EOF
-# Starting date:             $(date "+%F %H:%M:%S")
+# Starting date:             $(d)
+# Cluster job name:          $JOB_NAME
 # Cluster job ID:            $JOB_ID
 # Cluster node:              $HOSTNAME
 # Cluster queue:             $QUEUE
+# Test method:               complement(A) -> A'; emptiness(A')
+# Complementation algorithm: $algo
 # Data:                      $(basename $data_archive)
 # Memory limit (Java heap):  $memory
 # Timeout (CPU time):        No timeout
@@ -67,21 +83,27 @@ EOF
 # Column headers
 echo -e "univ\tfile" >>$out
 
-# Set Java heap size. We don't set a timeout. We want all tasks to finish. This
-# should be possible with slice and 2G Java heap (at least for the size 15 set).
-export JVMARGS="-Xmx2G -Xms2G"
-algo="slice -p -macc -ro -madj -eg -r"
-#algo="piterman -eq -macc -sim -ro -r" # Previously used but had memory out
+# Set Java heap size
+export JVMARGS="-Xmx$memory -Xms$memory"
+
+# File to write complement automaton to (to test for emptiness)
 complement=$TMP/complement.gff
+# File to write stderr of the GOAL command to (to test for memory out)
 errors=$TMP/err
 
-# Test if something has been written to stderr (e.g. memory excess)
+# Test if something has been written to file $errors (e.g. memory out)
 test_errors() {
-  if [ -s $errors ]; then cat $errors >>$out; cp $out .; exit 1; fi
+  if [ -s $errors ]; then cat $errors >>$log; exit 1; fi
 }
 
-# Iterate through all the automata and do the universality test
+# Initialise log file
+job_start=$(date +%s)
+echo "Start: $(d) ($job_start)" >$log
+i=0  # Counter
+
+# Real work. Iterate through all the automata and do the universality test.
 for automaton in $data/*.gff; do
+  echo "$((i+=1)). $(d): $(basename $automaton)" >>$log
   $goal complement -m $algo $automaton >$complement 2>$errors
   test_errors
   if [ $($goal emptiness $complement 2>$errors) = true ]
@@ -90,5 +112,16 @@ for automaton in $data/*.gff; do
   echo -e "$universal\t$(basename $automaton)" >>$out
 done
 
+# Finalize log file
+job_end=$(date +%s)
+echo "End: $(d) ($job_end)" >>$log
+total_sec=$(($job_end-$job_start))
+hours=$(($total_sec/3600))
+rem_sec=$(($total_sec%3600))
+min=$(($rem_sec/60))
+sec=$(($rem_sec%60))
+echo "Duration (wallclock): ${hours}h ${min}min ${sec}sec" >>$log
+echo "                      ${total_sec}sec" >>$log
+
 # Copy result file from local scratch to job directory
-cp $out .
+mv I_AM_STILL_RUNNING I_AM_FINISHED

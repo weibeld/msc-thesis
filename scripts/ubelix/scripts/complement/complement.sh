@@ -93,6 +93,7 @@ d() { date "+%F %H:%M:%S"; }
 # Out file header
 cat >$out <<EOF
 # Starting date:             $(d)
+# Cluster job name:          $JOB_NAME
 # Cluster job ID:            $JOB_ID
 # Cluster node:              $HOSTNAME
 # Cluster queue:             $QUEUE

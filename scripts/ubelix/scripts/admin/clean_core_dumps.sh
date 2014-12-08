@@ -1,5 +1,7 @@
 #!/bin/bash
-# Empty all sub-directories of the directory given as argument.
+# Delete all core dump files in all the subdirectories. Subdirectories
+# relative to either the dir given as argument, or the current dir if no
+# argument given.
 
 if [ -n "$1" ]; then prefix=$(sed 's/\/$//' <<< $1)
 else prefix="."; fi
