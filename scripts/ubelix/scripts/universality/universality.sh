@@ -4,20 +4,20 @@
 # universal if it accepts every word over a given alphabet. The test is done
 # by complementation and testing for emptiness. If the complement of an auto-
 # maton A is empty, then A itself is universal.
-# As the complementation construction we take slice -p -ro -madj -eg -macc -r,
-# because we know from other experiments that slice -p -ro -madj -eg can com-
-# plement the 11'000 automata in the size 15 test set without a timeout or
-# memory out (timeout 600s, memory limit 1G Java heap).
-# For the size 15 test set, 1G Java heap is enough for slice. However, experi-
-# ments have shown that for the size 20 test set, 2G are not enough, so try this
-# with 4G Java heap. Run the SGE job thus with 7G memory.
+# As the complementation algorithm we take fribourg -m1 -r2c -macc -r -rr,
+# because we know from other experiments that firbourg -m1 can complement both
+# the 15 and the 20 test set with 1G Java heap without memory outs. Before, we
+# tried already piterman with 1G and slice with 4G Java heap, but they all had
+# memory outs with the 20 test set. We don't set a timeout because we want all
+# tasks to finish.
+# To be on the safe side, allocate 2G Java heap and run the job with 5G memory.
 #
 # dw-28.11.2014
 
 goal_archive=~/bin/GOAL-20141117.tar.gz # GOAL executables
-data_archive=~/data/15.tar.gz           # Default data
-memory=1G                               # Default Java heap size
-algo="slice -p -macc -ro -madj -eg -r"  # Complementation construction
+data_archive=~/data/20.tar.gz           # Default data
+memory=2G                               # Default Java heap size
+algo="fribourg -m1 -r2c -macc -r -rr"   # Complementation construction
 
 usage() {
   echo "USAGE:"
@@ -25,7 +25,7 @@ usage() {
   echo
   echo "ARGUMENTS                               [DEFAULT]"
   echo "    -d: Data (absolute path only)       [$data_archive]"
-  echo "    -m: Max. Java heap size             [$memory]"
+  echo "    -m: Java heap size             [$memory]"
 }
 if [ "$1" == "-h" ]; then usage; exit; fi
 

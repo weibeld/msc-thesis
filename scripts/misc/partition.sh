@@ -79,12 +79,15 @@ done
 # For copying the files in $part_files to $part dir, we could simply do
 # cp $part_files $part_dir. However, there's the problem that if $part_file is
 # very big, then the argument list of cp might exceed the maximally allowed
-# argument list length of the shell. The error message "-bash: /bin/ls: Argument
-# list too long" would appear. getconf ARG_MAX shows the limit of the argument
-# list (in bytes).
-# xargs reads from stdin and feeds chunks, that are guaranteed to be smaller
-# than ARG_MAX, to the command supplied as argument (in our case cp). This
-# solves the problem of exceeding ARG_MAX. The option -J defines a token (%)
-# with which one can define where every chunk from stdin will be put before
-# executing the command. In our case, every chunk of $part_files is put at the
-# place of the % in "cp % $part_dir", and then cp is executed.
+# argument list length for new processes (ARG_MAX). The error message "-bash:
+# /bin/ls: Argument list too long" appears. getconf ARG_MAX shows this limit
+# (in bytes). This limit only applies for *new processes* started by the shell.
+# It is imposed by the exec() system call. echo is a shell builtin and thus no
+# new process is started. That's why we can do "echo $part_files" but not
+# "cp $part_files" (on ARG_MAX: http://www.in-ulm.de/~mascheck/various/argmax/).
+# xargs reads from stdin and feeds chunks, that are smaller than ARG_MAX, to the 
+# command supplied as argument (in our case cp). This solves the problem of
+# exceeding ARG_MAX. The option -J defines a token (%) that will be replaced by
+# every chunk from stdin in the following command string. In our case, every
+# chunk of $part_files is put at the place of the % in "cp % $part_dir", and
+# then cp is executed.

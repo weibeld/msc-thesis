@@ -120,7 +120,7 @@ for filename in $data/*.gff; do
   echo "$i. $(d): $file" >>$log
   # Complementation command execution
   # ----------------------------------------------------------------------------
-  ulimit -S -t $timeout
+  #ulimit -S -t $timeout
   { time $goal complement -m $algo $filename; } 1>$compl 2>$stderr
   # If timeout:
   #   - exit code 152
@@ -129,7 +129,7 @@ for filename in $data/*.gff; do
   # If memory out:
   #   - exit code 0
   #   - to stderr: Exception in thread "Thread-1" java.lang.OutOfMemoryError: Java heap space ...
-  ulimit -S -t unlimited
+  #ulimit -S -t unlimited
 
   # States, timeout, memory-out
   # ----------------------------------------------------------------------------

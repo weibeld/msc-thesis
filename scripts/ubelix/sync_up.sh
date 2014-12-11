@@ -1,18 +1,14 @@
 #!/bin/bash
-# Push scripts folder in current directory to ~/scripts on UBELIX. For security,
-# keep backup of ~/scripts on UBELIX in ~/.scripts. The script must be executed
-# from a directory that contains a subdirectory named "scripts".
+# Push directory ./scripts fo to ~/scripts on UBELIX. For safety, keep backup
+# of ~/scripts on UBELIX in ~/.scripts. This script must be executed from the
+# directory that contains the scripts folder to sync up.
 #
 # dw-04.11.2014
 
-echo "Copying"
-echo "    $(pwd)/scripts"
-echo "to"
-echo "    ~/scripts"
-echo "on UBELIX..."
+echo -n "Syncing UBELIX ~/scripts with local ./scripts directory... "
 
 run.sh "rm -rf .scripts; mv scripts .scripts &>/dev/null"
 put.sh scripts >/dev/null
 
-echo Done
+echo done
 

@@ -63,75 +63,101 @@ effective.samples <- function(...) {
 # Draw different kinds of plots from the Büchi complementation data.
 #==============================================================================#
 
-stripchart.states <- function(df,...,labels=NULL,min=5000,lmargin=6,xaxp=NULL,width=4,height=4,
-  file="~/Desktop/stripchart.pdf") {
-  # Start graphics device and set graphics params
-  pdf(file,width=width,height=height,pointsize=8)
-  global.params()
-  
-  #par(ps=5)
-  #par(lwd=0.5)
-  # Increase left margin
-  m <- par("mar")
-  m[2] <- lmargin
-  par(mar=m) 
-  # Prepare data
-  vectors <- list()
-  if (class(df) != "list") df <- list(df)
-  for (frame in df)
-    vectors[[length(vectors)+1]] <- frame[frame$states>=min,"states"]
-  # Draw stripchart
-  par(xaxs="r")
-  if (is.null(xaxp)) xaxt <- NULL else xaxt <- "n"
-  stripchart(vectors,group.names=labels,method="jitter",pch=1,las=1,lwd=par("lwd"),xaxt=xaxt,...)
-  if (!is.null(xaxp)) {
-    ticks <- axTicks(1,xaxp)
-    tick.labels <- formatC(ticks,format="d",big.mark=" ")
-    axis(1,at=ticks,labels=tick.labels,lwd=par("lwd"))
-  }
-  # grid(lty="solid",col="black",ny=NA)
-  #abline(v=c(10000,25000,45000))
-  # axis(side=2,at=1:4,labels=labels)
-  # Close graphics device (saves graphic to file)
-  dev.off()
+Draw <- function(what, width=NULL, height=NULL, pointsize=NULL, dev="quartz",
+                 dev.new=TRUE, dev.off=TRUE, file="~/Desktop/out.pdf", ...) {
+  Init(dev, dev.new, width, height, pointsize, file)
+
+  if      (what == "stripchart") Stripchart(...)
+  else if (what == "boxplot")    Boxplot(...)
+  else if (what == "hist")       Hist(...)
+
+  Finish(dev, dev.off)
 }
 
-# Create boxplots of multiple experiments (number of states of complements)
-# in a single chart.
-boxplot.states <- function(...,labels=NULL,ymax=NULL,width=7,height=7,
-    file="~/Desktop/boxplot.pdf") {
-  # Start graphics device and set graphics params
-  pdf(file,width=width,height=height)
-  global.params()
-  # Prepare data
-  vectors <- list()
-  for (frame in list(...)) vectors[[length(vectors)+1]] <- frame$states
-  if (!is.null(ymax)) ymax <- c(0,ymax)
-  # Draw boxplot
-  boxplot(vectors,outline=FALSE,names=labels,ylim=ymax,ylab="Complement size")
-  # Add additional elements
-  text <- character()
-  text.pos <- numeric()
-  means <- numeric()
-  for (vector in vectors) {
-    info <- boxplot.stats(vector)
-    # Parameters of this boxplot
-    outliers.number <- length(info$out)
-    outliers.percent <- 100*outliers.number/info$n
-    outliers.max <- max(info$out)
-    upper.whisker <- info$stats[5]
-    # Add to structure for all boxplots
-    text <- c(text, paste0(outliers.number, " outliers (",f(outliers.percent),"%)\nMax. ",i(outliers.max)))
-    text.pos <- c(text.pos, upper.whisker)
-    means <- c(means,mean(vector,na.rm=TRUE))
+Stripchart <- function(data, ..., labels=NULL, lmar=NULL, xaxp=NULL) {
+  # Increase left margin if desired
+  if (!is.null(lmar)) {
+    m <- par("mar")
+    m[2] <- lmar
+    par(mar=m)
   }
-  text(text.pos,text,pos=3,cex=0.675) # pos=3 == above
-  points(means,pch=19)
-  # Close graphics device (saves graphic to file)
-  dev.off()
+  # Draw stripchart. lwd sets line width of axes.
+  stripchart(x, group.names=labels, las=1, method="jitter", pch=1, xaxt="n",
+             lwd=par("lwd"), ...)
+  # Add x-axis (according to user specification, if !is.null(xaxp)
+  tick.pos <- axTicks(1, axp=xaxp)
+  tick.labels <- Format(tick.pos, t="d")
+  axis(1, at=tick.pos, labels=tick.labels, lwd=par("lwd"))
 }
 
-# Create histogram of number of states of complement automata of an experiment.
+
+Boxplot <- function(data, ..., labels=NULL, out=FALSE, out.text=TRUE, mean=TRUE) {
+  # Ensure data is in list form
+  if (class(data) != "list") data <- list(data)
+
+  # Draw boxplot diagram
+  boxplot(data, names=labels, outline=out, xaxt="n", yaxt="n", ...)
+
+  # Add customised axes
+  axis(1, at=seq(1,length(data)), labels=labels, lwd=par("lwd"))
+  axis(2, at=axTicks(2), labels=Format(axTicks(2), t="d"), lwd=par("lwd"))
+
+  # Additional elements for each boxplot
+  i <- 1    
+  for (x in data) {
+    # Text with number of outliers
+    if (out.text) {
+      info <- boxplot.stats(x)
+      out.nb <- length(info$out)
+      out.perc <- 100*out.nb/info$n
+      out.max <- max(info$out)
+      text <- paste0(out.nb, " outliers (",Format(out.perc, t="f"),"%)\n",
+                     "Max. ",Format(out.max,t="d", all.marks=FALSE))
+      upper.whisker <- info$stats[5]
+      text(x=i, y=upper.whisker, labels=text, pos=3, cex=0.675)
+    }
+    # Dot showing mean value
+    if (mean) {
+      points(x=i, y=mean(x, na.rm=TRUE), pch=19)
+    }
+    i <- i+1
+  }
+}
+
+Hist <- function(data, ..., lmar=NULL, lines=NULL, cex.lines=1, xaxp=NULL, yaxp=NULL) {
+  # Increase left margin if desired
+  if (!is.null(lmar)) {
+    m <- par("mar")
+    m[2] <- lmar
+    par(mar=m)
+  }
+
+  hist(data, main=NULL, axes=FALSE, ...)
+  box()
+  axis(1, at=axTicks(1, xaxp), labels=Format(axTicks(1, xaxp)), lwd=par("lwd"))
+  axis(2, at=axTicks(2, yaxp), labels=Format(axTicks(2, yaxp)), lwd=par("lwd"))
+
+  if (!is.null(lines)) {
+    for (line in lines) {
+      x <- line[[1]]
+      str <- line[[2]]
+      y <- line[[3]]
+      # abline(v=x)
+      # box.w <- strwidth(str, cex=cex.lines) + strwidth("m", cex=cex.lines)
+      # box.h <- strheight(str, cex=cex.lines) * 2
+      # rect(xleft=x-box.w/2, ybottom=y-box.h/2, xright=x+box.w/2, ytop=y+box.h/2, col="white", border="black")
+      # text(x, y, str, cex=cex.lines)
+      # end.x <- x + ((par("usr")[2] - par("usr")[1]) / 20)
+      # end.y <- y + ((par("usr")[4] - par("usr")[3]) / 40)
+      end.x <- x + strwidth("MN")
+      end.y <- y + strheight("M") * 0.8
+      lines(c(x, x, end.x), c(0, y, end.y))
+      text(end.x, end.y, str, pos=4, cex=cex.lines, offset=0.2)
+    }
+  } 
+}
+
+
 hist.states <- function(df,xmax=10000,ymax=2000,binsize=100,
     title="Histogram",xlabel="Number of states",ylabel="Complements",
     file="~/Desktop/histogram.pdf",width=7,height=7) {
@@ -185,19 +211,46 @@ complexity <- function(n, m) {
   write(paste0("(",x,"n)^n"), file="")
 }
 
-# Set global graphics parameters that apply to all graphics.
-global.params <- function() {
-  par(mar=c(4,4,1,1),bty="o",mgp=c(2.4,0.9,0),mex=1,tcl=-0.5,lwd=0.75,bg="green")
+# Custom initialisation with default values of PDF graphics device driver
+Init <- function(dev, dev.new, width, height, pointsize, file) {
+
+  if (dev.new) {
+    # Default values for all graphics devices
+    if (is.null(width))     width     <- 4
+    if (is.null(height))    height    <- 4
+    if (is.null(pointsize)) pointsize <- 8
+
+    # Start appropriate graphics device driver
+    
+    if (dev == "pdf")
+      pdf(file=file, width=width, height=height, pointsize=pointsize)
+    else if (dev == "quartz")
+      quartz(width=width, height=height, pointsize=pointsize)
+  }
+
+  # Set default graphics parameters
+  par(mar=c(4,4,1,1))
+  par(mgp=c(2.4,0.9,0))
+  par(bty="o")
+  par(lwd=0.5)
+  par(las=1)
 }
 
-# Format a floating point number for printing. Returns a string.
-f <- function(n,dec=1,mark=",") {
-  if (n < 10000) mark <- "" # Thousands marks only for numbers >= 10'000
-  formatC(n,format="f",digits=dec,big.mark=mark)
+Finish <- function(dev, dev.off) {
+  if (dev.off && dev != "quartz") dev.off()
 }
 
-# Format an integer for printing. Returns a string.
-i <- function(n,mark="'") {
-  if (n < 10000) mark <- "" # Thousands marks only for numbers >= 10'000
-  formatC(n,format="d",big.mark=mark)
+# Format floats (t="f") or integers (t="d") for printing.
+Format <- function(n, t="d", dec=1, mark=",", all.marks=TRUE) {
+  res <- numeric()
+  if (!all.marks) {
+    for (scalar in n) {
+      m <- ifelse(scalar<10000, "", mark)
+      res <- c(res, formatC(scalar, format=t, digits=dec, big.mark=m))
+    }
+  }
+  else {
+    res <- formatC(n,format=t, digits=dec, big.mark=mark)
+  }
+  res
 }
