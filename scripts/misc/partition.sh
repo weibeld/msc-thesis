@@ -3,7 +3,7 @@
 # n can be chosen by the user. If, for example, n=5, then there will be 5 part-
 # itions of size 2200, with Partition 1 containing automata 1 to 2200,
 # Partition 2 automata 2201 to 4400, etc. (based on the file listing of ls).
-# Creates every partition as a .tar.gz file.
+# Every partition is put in a folder, packed as a .tar.gz file.
 #
 # Daniel Weibel, 07.12.2014
 
@@ -51,9 +51,11 @@ cd $indir   # It's easier to do everything with basenames only
 files=$(ls) # The basenames of all the files in the test set (file list)
 
 for i in $(seq 1 $n); do
-  echo -n "Creating partition $i of $n... "
+  # Padded version of i, e.g. if n=10 and i=9, then i_padded=09
+  digits=$(($(echo -n $n | wc -c))) i_padded=$(printf "%0${digits}d" $i)
+  echo -n "Creating partition $i_padded of $n... "
   # Directory containing the partition, will be zipped
-  part_dir=$outdir/$(basename $indir).${i}_of_$n
+  part_dir=$outdir/$(basename $indir).${i_padded}_of_$n
   mkdir $part_dir
   # The first n-1 partitions
   if [[ $i -lt $n ]]; then

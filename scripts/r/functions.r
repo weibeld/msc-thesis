@@ -14,93 +14,123 @@
 #
 # Daniel Weibel, 04.12.2014
 
-read <- function(file) {
+# Read in an .out file of the Büchi complementation experiments as a data frame
+Read <- function(file) {
   read.table(file=file, header=TRUE, sep="\t")
 }
 
-timeouts <- function(df) {
+# Count the number of timeouts in a data frame
+Timeouts <- function(df) {
   table(df$t_out)
 }
-timeouts.show <- function(df) {
+
+# Show all the rows having a timeout
+TimeoutsShow <- function(df) {
   df[df$t_out == "Y",]
 }
 
-memouts <- function(df) {
+# Count the number of memory outs in a data frame
+Memouts <- function(df) {
   table(df$m_out)
 }
-memouts.show <- function(df) {
+
+# Show all the rows with a memory out
+MemoutsShow <- function(df) {
   df[df$m_out == "Y",]
 }
 
-summary.states <- function(df) {
-  summary(df$states, na.rm=TRUE)
-}
-
-summary.cputime <- function(df) {
-  summary(df$tcpu_t)
-}
-
-summary.realtime <- function(df) {
-  summary(df$real_t)
-}
-
-# Returns the data frames passed as arguments in reduced form, that is, contain-
-# ing only the effective samples. What is returned is a list containing the
-# reduced data frames in the same order as they were passed as arguments.
-effective.samples <- function(...) {
-  frames <- list(...)
-  mask <- logical(nrow(frames[[1]])) # Logical vector initialised with all FALSE
-  for (frame in frames)
+# Determine the effective samples of the data frames passed as arguments. That
+# is, all those complementation taks that have been completed in ALL the data
+# frames passed as argument. Returns the data frames passed as argument (in a
+# list) containing only the effective samples.
+EffectiveSamples <- function(df) {
+  mask <- logical(nrow(df[[1]])) # Logical vector initialised with all FALSE
+  for (frame in df)
     mask <- mask | is.na(frame$states)
-  frames.reduced <- list()
-  for (frame in frames)
-    frames.reduced[[length(frames.reduced)+1]] <- frame[!mask,]
-  frames.reduced
+  df.reduced <- list()
+  for (frame in df)
+    df.reduced[[length(df.reduced)+1]] <- frame[!mask,]
+  df.reduced
 }
 
+# Outputs m = (xn)^n
+# m: states of output automaton
+# n: states of input automaton
+Complexity <- function(n, m) {
+  x <- m^(1/n)/n  # x = nth_root(m)/n
+  x <- round(x, digits=3)
+  write(paste0("(",x,"n)^n"), file="")
+}
+
+test <- function(v, func=median, args) {
+  func(v)
+}
+
+
+
 #==============================================================================#
-# Graphics functions
-# Draw different kinds of plots from the Büchi complementation data.
+# Graphics drawing framework
+# Draw different kinds of graphics in a uniform way.
 #==============================================================================#
 
-Draw <- function(what, width=NULL, height=NULL, pointsize=NULL, dev="quartz",
+# User interface function. Uniformly sets graphics device driver parameters
+Draw <- function(what, data, width=NULL, height=NULL, pointsize=NULL, dev="quartz",
                  dev.new=TRUE, dev.off=TRUE, file="~/Desktop/out.pdf", ...) {
   Init(dev, dev.new, width, height, pointsize, file)
 
-  if      (what == "stripchart") Stripchart(...)
-  else if (what == "boxplot")    Boxplot(...)
-  else if (what == "hist")       Hist(...)
+  if      (what == "stripchart") Stripchart(data, ...)
+  else if (what == "boxplot")    Boxplot(data, ...)
+  else if (what == "hist")       Hist(data, ...)
+  else if (what == "persp")      Persp(data, ...)
 
   Finish(dev, dev.off)
 }
 
-Stripchart <- function(data, ..., labels=NULL, lmar=NULL, xaxp=NULL) {
-  # Increase left margin if desired
-  if (!is.null(lmar)) {
-    m <- par("mar")
-    m[2] <- lmar
-    par(mar=m)
+Persp <- function(df, x="da", y="dt", z="states", func=median, func.args=list(), matrix.only=FALSE, ...) {
+  x.classes <- as.numeric(names(table(df[[x]])))
+  y.classes <- as.numeric(names(table(df[[y]])))
+  values <- numeric()
+  for (x.class in x.classes) {
+    for (y.class in y.classes) {
+      class.data <- df[df[[x]] == x.class & df[[y]] == y.class, z]
+      values <- c(values, do.call(func, c(list(class.data), func.args)))
+    }
   }
-  # Draw stripchart. lwd sets line width of axes.
-  stripchart(x, group.names=labels, las=1, method="jitter", pch=1, xaxt="n",
-             lwd=par("lwd"), ...)
-  # Add x-axis (according to user specification, if !is.null(xaxp)
-  tick.pos <- axTicks(1, axp=xaxp)
-  tick.labels <- Format(tick.pos, t="d")
-  axis(1, at=tick.pos, labels=tick.labels, lwd=par("lwd"))
+  m <- matrix(values, nrow=length(x.classes), ncol=length(y.classes), byrow=TRUE,
+              dimnames=list(x.classes, y.classes))
+  if (matrix.only) return(m)
+   persp(x=x.classes, y=y.classes, z=m, expand=.25,
+         ticktype="detailed", nticks=11, cex.axis=0.75, ...)
+  #image(x=x.classes, y=y.classes, z=m)
+  #heatmap(m)
+  #contour(x=x.classes, y=y.classes, z=m, ...)
 }
 
+Stripchart <- function(data, ..., labels=NULL, lmar=NULL, xaxp=NULL) {
+  # Increase left margin if desired
+  SetLeftMargin(lmar)
 
-Boxplot <- function(data, ..., labels=NULL, out=FALSE, out.text=TRUE, mean=TRUE) {
+  # Draw stripchart and axes. lwd sets line width of axes.
+  stripchart(data, group.names=labels, las=1, method="jitter", pch=1, xaxt="n",
+             lwd=par("lwd"), ...)
+  xticks <- axTicks(1, axp=xaxp)
+  Axis(1, at=xticks, labels=xticks)
+}
+  
+
+Boxplot <- function(data, ..., labels=NULL, out=FALSE, out.text=TRUE, out.cex=1, mean=TRUE, yaxp=NULL, lmar=NULL) {
   # Ensure data is in list form
   if (class(data) != "list") data <- list(data)
 
-  # Draw boxplot diagram
-  boxplot(data, names=labels, outline=out, xaxt="n", yaxt="n", ...)
+  # Increase left margin if desired
+  SetLeftMargin(lmar)
 
-  # Add customised axes
-  axis(1, at=seq(1,length(data)), labels=labels, lwd=par("lwd"))
-  axis(2, at=axTicks(2), labels=Format(axTicks(2), t="d"), lwd=par("lwd"))
+  # Draw boxplot and axes
+  boxplot(data, outline=out, axes=FALSE, ...)
+  box()
+  Axis(1, at=seq(1,length(data)), labels=labels, numbers=FALSE)
+  yticks <- axTicks(2, axp=yaxp)
+  Axis(2, at=yticks, labels=yticks)
 
   # Additional elements for each boxplot
   i <- 1    
@@ -111,10 +141,10 @@ Boxplot <- function(data, ..., labels=NULL, out=FALSE, out.text=TRUE, mean=TRUE)
       out.nb <- length(info$out)
       out.perc <- 100*out.nb/info$n
       out.max <- max(info$out)
-      text <- paste0(out.nb, " outliers (",Format(out.perc, t="f"),"%)\n",
-                     "Max. ",Format(out.max,t="d", all.marks=FALSE))
+      text <- paste0(out.nb, " outliers (",Format(out.perc, "f"),"%)\n",
+                     "Max. ",Format(out.max))
       upper.whisker <- info$stats[5]
-      text(x=i, y=upper.whisker, labels=text, pos=3, cex=0.675)
+      text(x=i, y=upper.whisker, labels=text, pos=3, cex=out.cex)
     }
     # Dot showing mean value
     if (mean) {
@@ -124,91 +154,44 @@ Boxplot <- function(data, ..., labels=NULL, out=FALSE, out.text=TRUE, mean=TRUE)
   }
 }
 
-Hist <- function(data, ..., lmar=NULL, lines=NULL, cex.lines=1, xaxp=NULL, yaxp=NULL) {
+Hist <- function(data, ..., lmar=NULL, marks=NULL, marks.cex=1, xaxp=NULL, yaxp=NULL) {
   # Increase left margin if desired
+  SetLeftMargin(lmar)
+
+  # Draw histogram and axes
+  hist(data, main=NULL, axes=FALSE, ...)
+  box()
+  Axis(1, at=axTicks(1, xaxp), labels=axTicks(1, xaxp))
+  Axis(2, at=axTicks(2, yaxp), labels=axTicks(2, yaxp))
+
+  # Add lines indicating interesting values, e.g. median
+  if (!is.null(marks)) {
+    for (mark in marks) {
+      x <- mark[[1]]
+      y <- mark[[2]]
+      str <- mark[[3]]
+      end.x <- x + strwidth("MN")
+      end.y <- y + strheight("M") * 0.8
+      lines(c(x, x, end.x), c(0, y, end.y))
+      text(end.x, end.y, str, pos=4, cex=marks.cex, offset=0.2)
+    }
+  } 
+}
+
+# Wrapper of axis(). Always adapt line width (lwd) and always format tick labels
+# which are numbers.
+Axis <- function(side, at, labels, numbers=TRUE, ...) {
+  if (numbers) labels <- Format(labels)
+  axis(side=side, at=at, labels=labels, lwd=par("lwd"), ...)
+}
+
+# Convenience function to set left margin of graphics
+SetLeftMargin <- function(lmar) {
   if (!is.null(lmar)) {
     m <- par("mar")
     m[2] <- lmar
     par(mar=m)
   }
-
-  hist(data, main=NULL, axes=FALSE, ...)
-  box()
-  axis(1, at=axTicks(1, xaxp), labels=Format(axTicks(1, xaxp)), lwd=par("lwd"))
-  axis(2, at=axTicks(2, yaxp), labels=Format(axTicks(2, yaxp)), lwd=par("lwd"))
-
-  if (!is.null(lines)) {
-    for (line in lines) {
-      x <- line[[1]]
-      str <- line[[2]]
-      y <- line[[3]]
-      # abline(v=x)
-      # box.w <- strwidth(str, cex=cex.lines) + strwidth("m", cex=cex.lines)
-      # box.h <- strheight(str, cex=cex.lines) * 2
-      # rect(xleft=x-box.w/2, ybottom=y-box.h/2, xright=x+box.w/2, ytop=y+box.h/2, col="white", border="black")
-      # text(x, y, str, cex=cex.lines)
-      # end.x <- x + ((par("usr")[2] - par("usr")[1]) / 20)
-      # end.y <- y + ((par("usr")[4] - par("usr")[3]) / 40)
-      end.x <- x + strwidth("MN")
-      end.y <- y + strheight("M") * 0.8
-      lines(c(x, x, end.x), c(0, y, end.y))
-      text(end.x, end.y, str, pos=4, cex=cex.lines, offset=0.2)
-    }
-  } 
-}
-
-
-hist.states <- function(df,xmax=10000,ymax=2000,binsize=100,
-    title="Histogram",xlabel="Number of states",ylabel="Complements",
-    file="~/Desktop/histogram.pdf",width=7,height=7) {
-  # Start graphics device and set graphics params
-  pdf(file)
-  global.params()
-  binbreaks <- seq(from=0,to=100000,by=binsize)
-  # Draw histogram
-  hist(df$states,breaks=binbreaks,xlim=c(0,xmax),ylim=c(0,ymax),main=title,
-    xlab=xlabel,ylab=ylabel)
-  # Add additional lines and text
-  median <- median(df$states)
-  perc95 <- quantile(df$states,0.95)
-  textsize=0.75
-  lineheight <- 1750
-  lines(x=c(median,median),y=c(0,lineheight))
-  text(x=median,y=lineheight+50,paste0("Median (",f(median),")"),cex=textsize)
-  lineheight <- 500
-  lines(x=c(perc95,perc95),y=c(0,lineheight))
-  text(x=perc95,y=lineheight+50,paste0("95th percentile (",f(perc95),")"),cex=textsize)
-  # Close graphics device (saves graphic to file)
-  dev.off()
-}
-
-# Create a (draft) histogram for any data vector.
-hist.generic <- function(vector,xmax,ymax,binsize,file="~/Desktop/histogram.pdf") {
-  # Start graphics device and set graphics params
-  pdf(file)
-  global.params()
-  binbreaks <- seq(from=0,to=100000,by=binsize)
-  # Draw histogram
-  hist(vector,breaks=binbreaks,xlim=c(0,xmax),ylim=c(0,ymax))
-  # Draw median and 95th percentile line
-  median <- median(vector)
-  perc95 <- quantile(vector,0.95)
-  textsize=0.75
-  abline(v=median,col="blue")
-  text(x=median,y=0,paste0("Median (",f(median),")"),cex=textsize,col="blue",pos=1,offset=0.25)
-  abline(v=perc95,col="red")
-  text(x=perc95,y=0,paste0("95th percentile (",f(perc95),")"),cex=textsize,col="red",pos=1,offset=0.25)
-  # Shut down graphics device, saves graphic to file
-  dev.off()
-}
-
-# Outputs m = (xn)^n
-# m: states of output automaton
-# n: states of input automaton
-complexity <- function(n, m) {
-  x <- m^(1/n)/n  # x = nth_root(m)/n
-  x <- round(x, digits=3)
-  write(paste0("(",x,"n)^n"), file="")
 }
 
 # Custom initialisation with default values of PDF graphics device driver
