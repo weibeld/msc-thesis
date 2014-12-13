@@ -1,4 +1,4 @@
-# Functions for analysing the results of the Büchi complementation experiments.
+# Functions for analysing the results of the B??chi complementation experiments.
 # Input files are the .out files of the experiments (to be read with function
 # read("file.out")).
 #
@@ -14,7 +14,7 @@
 #
 # Daniel Weibel, 04.12.2014
 
-# Read in an .out file of the Büchi complementation experiments as a data frame
+# Read in an .out file of the B??chi complementation experiments as a data frame
 Read <- function(file) {
   read.table(file=file, header=TRUE, sep="\t")
 }
@@ -43,7 +43,8 @@ MemoutsShow <- function(df) {
 # is, all those complementation taks that have been completed in ALL the data
 # frames passed as argument. Returns the data frames passed as argument (in a
 # list) containing only the effective samples.
-EffectiveSamples <- function(df) {
+EffectiveSamples <- function(...) {
+  df <- list(...)
   mask <- logical(nrow(df[[1]])) # Logical vector initialised with all FALSE
   for (frame in df)
     mask <- mask | is.na(frame$states)
@@ -81,30 +82,125 @@ Draw <- function(what, data, width=NULL, height=NULL, pointsize=NULL, dev="quart
   if      (what == "stripchart") Stripchart(data, ...)
   else if (what == "boxplot")    Boxplot(data, ...)
   else if (what == "hist")       Hist(data, ...)
-  else if (what == "persp")      Persp(data, ...)
+  else if (what == "dim3")       Dim3(data, ...)
 
   Finish(dev, dev.off)
 }
 
-Persp <- function(df, x="da", y="dt", z="states", func=median, func.args=list(), matrix.only=FALSE, ...) {
-  x.classes <- as.numeric(names(table(df[[x]])))
-  y.classes <- as.numeric(names(table(df[[y]])))
-  values <- numeric()
-  for (x.class in x.classes) {
-    for (y.class in y.classes) {
-      class.data <- df[df[[x]] == x.class & df[[y]] == y.class, z]
-      values <- c(values, do.call(func, c(list(class.data), func.args)))
+# Plots for three-dimensional data. Includes persp, image, contour, and heatmap
+# plots. The data to plot is determined by three columns (x.var, y.var, z.var)
+# of a data frame (df). The assumptions on this data frame are the following:
+# the values of x.var and y.var divide the data frame in |x.var| * |y.var|
+# classes. That is, there must be one or more rows (classes) in the data frame
+# for every combination of the x.var and y.var values. Each of these xy
+# classes has a z-value. This z-value is a function of the values of the z.var
+# column. (This function can be specified (func). The first argument to func
+# will be a vector of the z.var values and further argments can be specified as
+# a list with func.args.) What results is a three-dimensional data relation with
+# a set of x-values, a set of y-value, and a z-value for every combination of x
+# and y-values. This data relation is then plotted as either a persp, image,
+# contour, or heatmap plot (type). The reason that all these different plots
+# are in the same wrapper function is that they are all based on the same
+# data structure: a matrix where the row indices are taken as the x-values, the
+# column indices as the y-values, and the cells as the z-values. This bare
+# matrix can be returned with matrix.only=TRUE
+Dim3 <- function(df, type="persp", x.var="da", y.var="dt", z.var="states", func=median, func.args=list(), matrix.only=FALSE, ...) {
+  # Create matrix
+  row.indices <- as.numeric(names(table(df[[x.var]])))
+  col.indices <- as.numeric(names(table(df[[y.var]])))
+  cells <- numeric()
+  for (r in row.indices) {
+    for (c in col.indices) {
+      data <- df[df[[x.var]] == r & df[[y.var]] == c, z.var]
+      cells <- c(cells, do.call(func, c(list(data), func.args)))
     }
   }
-  m <- matrix(values, nrow=length(x.classes), ncol=length(y.classes), byrow=TRUE,
-              dimnames=list(x.classes, y.classes))
-  if (matrix.only) return(m)
-   persp(x=x.classes, y=y.classes, z=m, expand=.25,
-         ticktype="detailed", nticks=11, cex.axis=0.75, ...)
-  #image(x=x.classes, y=y.classes, z=m)
-  #heatmap(m)
-  #contour(x=x.classes, y=y.classes, z=m, ...)
+  mat <- matrix(cells, nrow=length(row.indices), ncol=length(col.indices), byrow=TRUE,
+                dimnames=list(row.indices, col.indices))
+
+  # Return matrix and exit
+  if (matrix.only) return(mat)
+
+  if      (type == "persp") {
+    # Good values: shade=0.75, theta=70, expand=0.25, nticks=11
+    persp(x=row.indices, y=col.indices, z=mat, ticktype="detailed", ...)
+  }
+  else if (type == "image") {
+    image(x=row.indices, y=col.indices, z=mat, ...)
+  }
+  else if (type == "contour") {
+    image(x=row.indices, y=col.indices, z=mat, ...)
+  }
+  else if (type == "heatmap") {
+    heatmap(mat, ...)
+  }
 }
+
+
+
+
+# Add an axis to a persp plot. One of x, y, and z must be a vector of length
+# at least 2 containing the min and max values of the corresponding dimension.
+# The other two of x, y, z, must be a single numeric value specifying where in
+# the corresponding dimension the axis is to be drawn. Example for drawing
+# a red x-axis: PerspAxis(x=range(x.values), y=min(y.values), z=0, pmat=pmat,
+# col="red").
+PerspAxis <- function(p, ...) {
+  x <- p[[1]]; y <- p[[2]]; z <- p[[3]]; pmat <- p[[4]]
+  lines(trans3d(x, y, z, pmat), ...)
+}
+
+PerspAxisLabel <- function(p, label="Move me", ...) {
+  x <- p[[1]]; y <- p[[2]]; z <- p[[3]]; pmat <- p[[4]]
+  if      (length(x) > 1) x <- (min(x) + max(x)) / 2
+  else if (length(y) > 1) y <- (min(y) + max(y)) / 2
+  else if (length(z) > 1) z <- (min(z) + max(z)) / 2
+  text(trans3d(x, y, z, pmat), labels=label, ...)
+}
+
+PerspTicks <- function(p, tickl.len=strwidth("M"), tick.dir=1, ...) {
+  l <- PerspInnerOuter(p, tick.len, tick.dir)
+  # Connect tick points of inner and outer line
+  segments(l$inner$x, l$inner$y, l$outer$x, l$outer$y, ...)
+}
+
+PerspTickLabels <- function(p, labels=NULL, tick.len=strwidth("M"), tick.dir=1, format.par=list(), ...) {
+  x <- p[[1]]; y <- p[[2]]; z <- p[[3]]
+  if (is.null(labels)) {
+    if      (length(x) > 1) labels <- x
+    else if (length(y) > 1) labels <- y
+    else if (length(z) > 1) labels <- z
+  }
+  labels <- do.call(Format, c(list(labels), format.par))
+  l <- PerspInnerOuter(p, tick.len, tick.dir)
+  text(l$outer$x, l$outer$y, labels, ...)
+}
+
+# Helper function for PerspTicks and PerspTickLabels
+PerspInnerOuter <- function(p, tick.len, tick.dir) {
+  x <- p[[1]]; y <- p[[2]]; z <- p[[3]]; pmat <- p[[4]]
+  # Inner line (similar to axis). Containing start points of ticks.
+  inner <- trans3d(x, y, z, pmat)
+  # Set distance from outer line to inner line in appropriate dimension
+  if (length(tick.dir) < 2) tick.dir[2] <- 0
+  if      (length(x) > 1) {
+    y <- y + (tick.len * tick.dir[1])
+    z <- z + (tick.len * tick.dir[2])
+  }
+  else if (length(y) > 1) {
+    x <- x + (tick.len * tick.dir[1])
+    z <- z + (tick.len * tick.dir[2])
+  }
+  else if (length(z) > 1) {
+    x <- x + (tick.len * tick.dir[1])
+    y <- y + (tick.len * tick.dir[2])
+  }
+  # Outer line (parallel to inner line). Containing end points of ticks.
+  outer <- trans3d(x, y, z, pmat)
+  # Return list of the two lines
+  list(inner=inner, outer=outer)
+}
+
 
 Stripchart <- function(data, ..., labels=NULL, lmar=NULL, xaxp=NULL) {
   # Increase left margin if desired
@@ -217,6 +313,7 @@ Init <- function(dev, dev.new, width, height, pointsize, file) {
   par(bty="o")
   par(lwd=0.5)
   par(las=1)
+  par(xpd=TRUE) # Allow plotting outside of plot region
 }
 
 Finish <- function(dev, dev.off) {
@@ -225,6 +322,7 @@ Finish <- function(dev, dev.off) {
 
 # Format floats (t="f") or integers (t="d") for printing.
 Format <- function(n, t="d", dec=1, mark=",", all.marks=TRUE) {
+  n <- as.numeric(n)
   res <- numeric()
   if (!all.marks) {
     for (scalar in n) {
