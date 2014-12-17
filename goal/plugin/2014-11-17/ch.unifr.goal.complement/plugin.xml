@@ -68,4 +68,11 @@ Daniel Weibel, 27.05.2014
     <parameter id="construction" value="ch.unifr.goal.complement.FribourgConstruction" />
   </extension>
 
+
+  <!-- Command for testing if automaton is complete -->
+  <!-- <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CompleteCommand">
+    <parameter id="class" value="ch.unifr.goal.complement.CompleteCommand"/>
+    <parameter id="name" value="complete"/>
+  </extension> -->
+
 </plugin>

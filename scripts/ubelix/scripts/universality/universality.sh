@@ -4,28 +4,31 @@
 # universal if it accepts every word over a given alphabet. The test is done
 # by complementation and testing for emptiness. If the complement of an auto-
 # maton A is empty, then A itself is universal.
+#
 # As the complementation algorithm we take fribourg -m1 -r2c -macc -r -rr,
-# because we know from other experiments that firbourg -m1 can complement both
-# the 15 and the 20 test set with 1G Java heap without memory outs. Before, we
-# tried already piterman with 1G and slice with 4G Java heap, but they all had
-# memory outs with the 20 test set. We don't set a timeout because we want all
-# tasks to finish.
-# To be on the safe side, allocate 2G Java heap and run the job with 5G memory.
+# because we know from other experiments that fribourg -m1 can complement both
+# the 15 and the 20 test set with 1G Java heap without memory outs.
+#
+# The size 15 test set is no problem, but the size 20 test set frequently has
+# memory outs. In particular, there were memory outs with piterman 2G, slice 4G,
+# and fribourg 2G. The best is to use the highmem.q with e.g. 16G memory limit.
+# We don't set a timeout, because we want all tasks to finish.
 #
 # dw-28.11.2014
 
 goal_archive=~/bin/GOAL-20141117.tar.gz # GOAL executables
 data_archive=~/data/20.tar.gz           # Default data
-memory=2G                               # Default Java heap size
-algo="fribourg -m1 -r2c -macc -r -rr"   # Complementation construction
+memory=16G                              # Default Java heap size
+algo="fribourg -m1 -r2c -macc -r -rr"   # Default complementation construction
 
 usage() {
   echo "USAGE:"
-  echo "    $(basename $0) [-d data]"
+  echo "    $(basename $0) [-d data] [-m memory] [-a algo]"
   echo
   echo "ARGUMENTS                               [DEFAULT]"
   echo "    -d: Data (absolute path only)       [$data_archive]"
-  echo "    -m: Java heap size             [$memory]"
+  echo "    -m: Java heap size                  [$memory]"
+  echo "    -a: Complementation construction    [$algo]"
 }
 if [ "$1" == "-h" ]; then usage; exit; fi
 
@@ -33,6 +36,7 @@ while getopts ":d:m:" opt; do
   case $opt in
     d) data_archive=$OPTARG; ;;
     m) memory=$OPTARG;       ;;
+    a) algo=$OPTARG;         ;;
     \?) echo "Error: invalid option: -$OPTARG";             exit 1 ;;
     :)  echo "Error: option -$OPTARG requires an argument"; exit 1 ;;
   esac
