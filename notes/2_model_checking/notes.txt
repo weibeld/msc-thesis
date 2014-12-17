@@ -1,0 +1,17 @@
+The system is considered to be “correct” whenever it satisfies all properties. Correctness is always relative to a specification
+--> Principles of Model Checking, p. 22
+
+Formal methods: the applied mathematics for modeling and analyzing ICT systems
+--> Principles of Model Checking, p 26
+
+Verification vs. validation
+--> Principles of Model Checking, p. 31 bottom, p. 32 top
+
+Successful model checking examples in practice
+--> Principles of Model Checking, p. 36
+
+From transitions systems (descriptions of systems) to languages
+--> Principles of Model Checking, p. 116
+
+There are linear-time properties which are neither safety nor liveness properties, and safety and liveness properties are disjoint.
+--> Principles of Model Checking, p. 141 bottom, p. 142 top, p. 145

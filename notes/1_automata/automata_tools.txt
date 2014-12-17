@@ -1,0 +1,50 @@
+ JFLAP
+-----
+Java Formal Languages and Automata Package. Intendd as a pedagogical tool.
+Graphical tool with different functionality on three levels:
+1) Regular languages: DFAs, NFAs, regular grammars, regular expressions, conversions (e.g. NFA->DFA, NFA->regex, NFA->regular grammar), equivalence testing, running automaton on input words (step by step, traces, etc.)
+2) Context-free languages:pushdown automata, context-free grammars, conversions (e.g. pushdown automaton->context-free grammar, context-free grammar->pushdown automaton)
+3) Recursively enumerable languages: turing machines, unrestricted grammars
+http://www.jflap.org/
+
+
+GOAL
+----
+Graphical Tool for Omega-Automata and Logics.
+Allows various operations on LTL formulas and their corresponding omega-automata.
+Omega-automata: creating automata with Büchi, Muller, Rabin, Streett, and Paritiy acceptance conditions, input testing, equivalence testing, conversions between the different omega types, determinization (different procedures), complementation (different procedures)
+LTL formulas: translate to different omega automata types.
+Built-in access to the Büchi Store
+http://goal.im.ntu.edu.tw/wiki/doku.php
+
+
+Büchi Store
+-----------
+Online repository with hundreds of LTL formulas, their corresponding omega-automata (in all the different types, Büchi, Muller, etc.) and their equivalences and complements.
+http://buchi.im.ntu.edu.tw/
+
+
+FAT
+---
+Finite Automaton Tool
+NFAs, DFAs, determination, complementation, minimisation, intersection, union.
+http://cl-informatik.uibk.ac.at/software/fat/index.php
+
+
+Visual Automata Simulator
+-------------------------
+Drawing of NFAs, DFAs, and Turing machines, input testing, and converting NFA to DFA.
+http://www.cs.usfca.edu/~jbovet/vas.html
+
+
+NFA to DFA
+----------
+Web-based. Convert NFA to DFA with subset construction.
+http://hackingoff.com/compilers/nfa-to-dfa-conversion
+
+
+Finite State Machine Designer
+-----------------------------
+Web-based. Simply draw automata and export them as PNG, SVG, or LaTeX.
+http://madebyevan.com/fsm/
+

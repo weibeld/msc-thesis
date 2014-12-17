@@ -1,0 +1,7 @@
+Complexity of the construction without, with M1, and with M1 and M2 optimisations:
+
+fribourg:		(1.59n)^n
+
+fribourg M1:		(1.195n)^n
+
+fribourg M1 M2:		(0.86n)^n, but Joel is not sure if it is calculated correctly. With another calculation, it could also be (0.76n)^n (the lower bound).

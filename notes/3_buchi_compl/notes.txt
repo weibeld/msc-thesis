@@ -1,0 +1,150 @@
+
+
+The inequivalence of NBW and DBW is the main reason causing the Büchi complementation problem
+--> Niessner, 1997
+
+Doubly exponential (as in Büchi's original construction) explained in
+--> Sistla, 1987
+
+Introducing papers of Muller, Rabin, Streett, and parity automata
+--> Löding, 1999, Wilke, 2014, p. 5
+
+Complementation of deterministic Muller, Rabin, Streett, and parity automata
+--> Löding, 1999, p. 4
+
+Michel's n! lower bound
+--> Löding, 1999, p. 4
+
+Slice-based approach regardes as a special case of rank-based approach
+--> Breuers, 2010, BSc thesis, p. 7
+
+Büchi invented Büchi automata to proof that satisfiability for S1S is decidable: To check whether a given S1S formulaφ=φ(V0,...,Vm−1)is satisfiable one simply constructs the Büchi automaton which is guaranteed to exist by Büchi’s Theorem and checks this automaton for non-emptiness.
+--> Vardi, Wilke, 2007, p. 9
+
+Bringing together of automata theory and logic by Büchi, Elgot, Rabin in the 60s
+--> Logic and Automata, 2008, Preface
+
+The width of a tree is defined as the maximum number of vertices occurring at any level. 
+--> Muller, Schupp, 1995, p. 16
+
+Traditionally five type of omega-automata acceptance condition: Büchi, Muller, Rabin, Streett, and parity
+--> Wilke, 2014, p. 5
+
+Two structures for analysing all runs of a Büchi automaton: DAGs and trees
+--> Wilke, 2014, p. 14
+
+Proof that a Büchi autoamaton accepts a word if and only if the corresponding reduced split tree has a path with infinitely many left or right turns.
+--> Wilke, 2014, p. 18
+
+A reduced split tree is an infinite (binary) tree of finite width
+--> Wilke, 2014, p. 19
+
+Büchi Automata
+--------------
+Nondeterministic (main interest)
+Deterministic Büchi automata are less expressive than nondeterministic ones
+Source: Safra, 1988 (2), p. 2
+
+Muller Automata
+---------------
+Deterministic (main interest)
+Source: Safra, 1988 (2), p. 2
+
+Acceptance Conditions of Omega-Automata
+---------------------------------------
+- Büchi: at least one accepting state in the set of infinitely visited states
+- Muller: whole set of infinitely visited states must be one of the designated sets
+- Rabin: for at least one pair of sets of states, on state in the first set is visited infinitely, and none in the second set is visited infinitely often
+- Streett: for all sets of pairs, if at least one state of the first set is visited infinitely often, then at least one state of the second set must be visited infinitely often
+Source: Safra, 1988 (2), p. 4
+
+McNaughton's Theorem
+--------------------
+Languages accepted by det. Muller == Languages accepted by nondet. Büchi automata
+== regular w-languages
+--> NBW can be converted to DMW
+Source: Safra, 1988 (2), p. 2
+McNaughton, R.: Testing and generating infinite sequences by a finite automaton, 1966
+
+w-Regular Languages
+-------------------
+All the languages accepted by:
+Nondeterministic.
+- Büchi automata
+Deterministic and nondeterministic:
+- Muller automata
+- Rabin automata
+- Streett automata
+- Parity automata
+Source: http://en.wikipedia.org/wiki/Omega_automaton
+The class of w-languages recognised by deterministic Büchi automata is weaker, i.e. there are languages that can be recognised by a nondeterministic Büchi automaton, but not by a deterministic one.
+
+Lower bound of determinization of NBW
+------------------------------
+Michel, Complementation is more difficult with automata on infinite words, 1988
+2^O(n log n) = (0.36n)^n = n!
+
+Lower bound of complementation of NBW
+------------------------------
+Michel, Complementation is more difficult with automata on infinite words, 1988
+2^O(n log n) = (0.36n)^n = n!
+Yan, Lower bounds for complementation of omega-automata via the full au-
+tomata technique, 2008
+(0.76n)^n
+
+Deterministic Büchi automata are not closed under complementation
+---------
+Thomas, Automata on infinite objects, 1990, p. 14 bottom
+
+Representations of runs (sequence of states) of an automaton on a word
+-------------
+- Run tree
+- Split tree
+	- First step for reduced split trees, originate also from Muller, Schupp
+	- Subset construction where acc and non-acc states are not mixed, as in Nitsche, 2006 (if each node is taken as a separate state)
+- Reduced split tree
+    - Originate from Muller-Schupp trees, Muller, Schupp, 1995
+    - Muller-Schupp trees explained in Althoff, 2006, p. 3
+    - Reduced split trees formally in Fogarty, 2012, p. 25 (non-acc left, acc right)
+    - Reduced split trees formally in Vardi, Wilke, 2008, pp. 12
+- Run DAG
+	- Definition in Fogarty, 2013, p. 4
+	
+Büchi's Theorem
+---------------
+For every S1S formula there exists a Büchi automaton, and for every Büchi automaton there exists a S1S formula
+--> Vardi, Wilke, 2007, p. 8
+
+S1S
+---
+Monadic second-order logic with one successor
+--> Vadi, Wilke, p. 4
+
+- Non-deterministic finite state automata and the subset-construction have been introducec by Rabin and Scott, 1959
+
+- The McNaughton's Theorem says that a NBW can be converted into a deterministic Muller automaton (DMW), see Althoff, 2006
+
+- A DRW is a special case of a DMW (Althoff, 2006)
+
+- Rabin and Streett automata are dual, i.e. if a given automaton A is interpreted as a Rabin automaton Ar and as a Streett automaton As, then L(Ar) = complement(L(As)). See Klein, Msc Thesis, 2005, Sec. 2.6.1
+
+- The Safra construction (Safra, 1988) is a determinisation procedure for NBW. It converts an NBW to a DRW
+
+- Safra construction is described in:
+	- Roggenbach, 2002
+	- Klein, 2006
+	- Klein, 2005, MSc thesis
+	- Althoff, 2006
+	
+- In 1988, Michel gave a lower bound of n! =~ (n/e)^n =~ (0.36n)^n or in big-O 2^O(n log n) for complementing NBW
+	- Michel, Complementation is more difficult with automata on infinite words, 1988. NOT ACCESSIBLE
+	- Löding, Optimal bounds for the transformation of omega-automata, 1999
+	
+- In 2006, Yan gave a lower bound of (0.76n)^n for complementing NBW
+	- Yan, Lower Bounds for Complementation of ω-Automata Via the Full Automata Technique, 2006
+
+- A proof that DBW are less expressive than NBW is given in Roggenbach, 2002
+
+- DBW are not closed under complementation, proof in Thomas, 1999, p. 14 bottom
+
+- Notation for automata with NB, DB, NR, etc.: Safra, On the complexity of omega-automata, 1988
