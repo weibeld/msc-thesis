@@ -70,9 +70,28 @@ Daniel Weibel, 27.05.2014
 
 
   <!-- Command for testing if automaton is complete -->
-  <!-- <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CompleteCommand">
+  <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CompleteCommand">
     <parameter id="class" value="ch.unifr.goal.complement.CompleteCommand"/>
     <parameter id="name" value="complete"/>
-  </extension> -->
+    <parameter id="help">
+      <value>
+<![CDATA[ <dl>
+<dt>NAME</dt>
+  <dd>complete - Test if an automaton is complete.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>complete FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Return "true" if the input automaton is complete, and "false" otherwise.
+  An automaton is complete if every state has at least one outgoing transition
+  for every symbol of the alphabet.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>complete aut.gff</pre></dd>
+</dl> ]]>
+    </value>
+  </parameter>
+</extension>
 
 </plugin>

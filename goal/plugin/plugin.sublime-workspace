@@ -336,6 +336,22 @@
 			}
 		},
 		{
+			"file": "2014-11-17/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/CompleteCommand.java",
+			"settings":
+			{
+				"buffer_size": 2219,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/dw/Desktop/thesis/scripts/misc/macc.gs",
+			"settings":
+			{
+				"buffer_size": 2617,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "2014-11-17/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
 			"settings":
 			{
@@ -356,6 +372,22 @@
 			"settings":
 			{
 				"buffer_size": 20536,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Applications/GOAL.app/Contents/Resources/Java/plugins/org.svvrl.goal.cmd/plugin.xml",
+			"settings":
+			{
+				"buffer_size": 77011,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "2014-11-17/ch.unifr.goal.complement/plugin.xml",
+			"settings":
+			{
+				"buffer_size": 4264,
 				"line_ending": "Unix"
 			}
 		}
@@ -400,6 +432,10 @@
 	},
 	"file_history":
 	[
+		"/Users/dw/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/Users/dw/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/Users/dw/Library/Application Support/Sublime Text 2/Packages/User/JSON.sublime-settings",
+		"/Users/dw/Desktop/thesis/scripts/plugin/build.sh",
 		"/Users/dw/Desktop/thesis/scripts/ubelix_admin/update.sh",
 		"/Users/dw/Desktop/thesis/goal/plugin/migration/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementExtension.java.out",
 		"/Users/dw/Desktop/thesis/goal/plugin/rewrite_3/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgOptions.java",
@@ -414,7 +450,6 @@
 		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementOptionsPanel.java",
 		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
 		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java",
-		"/Users/dw/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
 		"/Users/dw/Desktop/thesis/goal/plugin/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction.java.out",
 		"/Applications/GOAL.app/Contents/Resources/Java/plugins/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
 		"/Applications/GOAL.app/Contents/Resources/Java/plugins/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/StepByStepFribourgComplementAction_.java",
@@ -456,7 +491,6 @@
 		"/Users/dw/Desktop/prototype/config/routes.rb",
 		"/Users/dw/Desktop/prototype/app/controllers/registrations_controller.rb",
 		"/Users/dw/Desktop/prototype/.profile.d/nailgun_for_goal.sh",
-		"/Users/dw/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
 		"/Users/dw/Desktop/prototype/.buildpacks",
 		"/Users/dw/Desktop/prototype/app/controllers/automaton.rb",
 		"/Users/dw/Desktop/prototype/app/views/automata/_editor_1.html.erb",
@@ -525,6 +559,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"isComplete",
 			"arg",
 			"isRightmost",
 			"addLeftmost",
@@ -651,8 +686,7 @@
 			"makeCompleteKey",
 			"makeCompleteCheckBox",
 			"getStates",
-			"Set",
-			"FSA"
+			"Set"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -695,7 +729,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -710,8 +744,8 @@
 						"selection":
 						[
 							[
-								396,
-								396
+								274,
+								241
 							]
 						],
 						"settings":
@@ -786,8 +820,8 @@
 						"selection":
 						[
 							[
-								3293,
-								3293
+								2808,
+								2752
 							]
 						],
 						"settings":
@@ -845,13 +879,163 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 552.0,
+						"translation.y": 387.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
+					"file": "2014-11-17/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/CompleteCommand.java",
+					"settings":
+					{
+						"buffer_size": 2219,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1549,
+								1549
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Java/Java.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 234.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Users/dw/Desktop/thesis/scripts/misc/macc.gs",
+					"settings":
+					{
+						"buffer_size": 2617,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "2014-11-17/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgComplementAction.java",
 					"settings":
 					{
@@ -921,13 +1105,13 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 11.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 5,
 					"file": "2014-11-17/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgOptions.java",
 					"settings":
 					{
@@ -1003,7 +1187,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 6,
 					"file": "2014-11-17/ch.unifr.goal.complement/sources/ch/unifr/goal/complement/FribourgConstruction.java",
 					"settings":
 					{
@@ -1014,8 +1198,8 @@
 						"selection":
 						[
 							[
-								5441,
-								5441
+								720,
+								683
 							]
 						],
 						"settings":
@@ -1072,8 +1256,160 @@
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 9.0,
-						"translation.y": 1955.0,
+						"translation.x": 0.0,
+						"translation.y": 45.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/Applications/GOAL.app/Contents/Resources/Java/plugins/org.svvrl.goal.cmd/plugin.xml",
+					"settings":
+					{
+						"buffer_size": 77011,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7563,
+								7563
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 3.0,
+						"translation.y": 3821.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "2014-11-17/ch.unifr.goal.complement/plugin.xml",
+					"settings":
+					{
+						"buffer_size": 4264,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4216,
+								4216
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 8.0,
+						"translation.y": 687.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

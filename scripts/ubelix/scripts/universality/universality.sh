@@ -32,7 +32,7 @@ usage() {
 }
 if [ "$1" == "-h" ]; then usage; exit; fi
 
-while getopts ":d:m:" opt; do
+while getopts ":d:m:a:" opt; do
   case $opt in
     d) data_archive=$OPTARG; ;;
     m) memory=$OPTARG;       ;;
