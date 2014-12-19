@@ -11,3 +11,5 @@
 *.class
 testset
 test_set
+GOAL.app
+api

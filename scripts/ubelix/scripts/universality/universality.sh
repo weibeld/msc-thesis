@@ -5,7 +5,7 @@
 # by complementation and testing for emptiness. If the complement of an auto-
 # maton A is empty, then A itself is universal.
 #
-# As the complementation algorithm we take fribourg -m1 -r2c -macc -r -rr,
+# As the complementation algorithm we take fribourg -m1 -r2c -macc -rr,
 # because we know from other experiments that fribourg -m1 can complement both
 # the 15 and the 20 test set with 1G Java heap without memory outs.
 #
@@ -19,7 +19,7 @@
 goal_archive=~/bin/GOAL-20141117.tar.gz # GOAL executables
 data_archive=~/data/20.tar.gz           # Default data
 memory=16G                              # Default Java heap size
-algo="fribourg -m1 -r2c -macc -r -rr"   # Default complementation construction
+algo="fribourg -m1 -r2c -macc -rr"      # Default complementation construction
 
 usage() {
   echo "USAGE:"

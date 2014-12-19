@@ -19,8 +19,8 @@
 set -e # Exit if any command returns a non-zero status (i.e. error)
 
 # Default values
-PLUGIN_DIR=$th/goal/plugin/2014-11-17/ch.unifr.goal.complement
-GOAL_DIR=$(dirname $(which goal))
+PLUGIN_DIR=$th/plugin/2014-11-17/ch.unifr.goal.complement
+GOAL_DIR=$th/goal/GOAL.app/Contents/Resources/Java
 COMPILEONLY=false
 
 usage() {
@@ -31,8 +31,8 @@ usage() {
   echo "    Compiles the specified plugin and installs it to the specified GOAL."
   echo
   echo "ARGUMENTS                 [DEFAULT]"
-  echo "    -p  Plugin directory  [\$th/goal/plugin/2014-11-17/ch.unifr.goal.complement]"
-  echo "    -g  GOAL directory    [\$(dirname \$(which goal))]"
+  echo "    -p  Plugin directory  [$PLUGIN_DIR]"
+  echo "    -g  GOAL directory    [$GOAL_DIR]"
   echo "    -c  Compile only"
   echo
   echo "NOTE"
