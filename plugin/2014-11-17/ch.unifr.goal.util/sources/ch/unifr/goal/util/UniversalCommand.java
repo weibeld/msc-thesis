@@ -7,13 +7,18 @@ package ch.unifr.goal.util;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collection;
+import java.util.ListIterator;
 import org.svvrl.goal.core.aut.State;
 import org.svvrl.goal.core.aut.Automaton;
+import org.svvrl.goal.core.aut.fsa.FSA;
 import org.svvrl.goal.cmd.Context;
 import org.svvrl.goal.cmd.Expression;
 import org.svvrl.goal.cmd.CommandExpression;
 import org.svvrl.goal.cmd.EvaluationException;
 import org.svvrl.goal.cmd.CmdUtil;
+
+import org.svvrl.goal.cmd.ComplementExpression;
+import org.svvrl.goal.core.aut.fsa.Emptiness;
 
 import org.svvrl.goal.core.aut.fsa.Emptiness;
 import org.svvrl.goal.core.aut.fsa.Complementation; // static method complement(FSA aut): Complements a FSA by the default complementation construction
@@ -34,60 +39,53 @@ import org.svvrl.goal.core.aut.fsa.Complementation; // static method complement(
  */
 public class UniversalCommand extends CommandExpression {
 
-  /* Argument specifying the automaton to test */
+  // Argument specifying automaton
   Expression autArg;
+
+  // Information deduced from args specifying complementation construction
+  String           complConstr;
+  List<Expression> complOpts        = new LinkedList<Expression>();
+  boolean          useDefComplOpts = false;
 
   String expandedOpts = "Expanded options:\n";
   List<Object> exprOpts = new LinkedList<Object>();
 
+  ComplementExpression complCmd;
+
   /* Constructor: parse command line arguments
    * args: command line arguments
-   * E.g. goal universal -a -b aut.gff --> args: ["-a", "-b", "aut.gff"] */
+   * goal universal -m rank -s a.gff --> args: ["-m", "rank", "-s", "a.gff"] */
   public UniversalCommand(List<Expression> args) throws EvaluationException{
     super(args);
-    int argc = args.size();
-    /* All but the last argument are taken as options */
-    List<Expression> optArgs = args.subList(0, argc - 1);
-    /* The last argument specifies the automaton to test */
-    autArg = args.get(argc - 1);
 
-    for (Expression a : args) {
-      expandedOpts += a.toString() + " ";
-    }
-    
-
-    // /* Parse options. Currently, the command has no options. */
-    // for (int i = 0; i < optArgs.size(); i++) {
-    //   String arg = optArgs.get(i).toString();
-    //   if (arg.equals("--option")) {
-    //     //exprOpts.addAll(CmdUtil.castAsCollection(optArgs.get(++i)));
-    //   }
-    //   else {
-    //     exprOpts.add(optArgs.get(i));
-    //   }
-    //   // Test if opt is an allowed option
-    //   //throw new EvaluationException();
+    complCmd = new ComplementExpression(args);
+    // int argc = args.size();
+    // // Last arg specifies automaton
+    // autArg = args.get(argc - 1);
+    // // Parse other args
+    // ListIterator<Expression> iter = args.subList(0, argc - 1).listIterator();
+    // while (iter.hasNext()) {
+    //   Expression e = iter.next();
+    //   String     s = e.toString();
+    //   if      (s.equals("-m"))  complConstr      = iter.next().toString();
+    //   else if (s.equals("-s"))  useDefComplOpts  = true;
+    //   else                      complOpts.add(e);
     // }
 
-    // for (Object item : exprOpts) {
-    //   Expression e = (Expression) item;
-    //   expandedOpts += e.toString() + " ";
+    // ListIterator<Expression> iter = args.listIterator();
+    // while (iter.hasNext()) {
+    //   Expression e = iter.next();
+    //   expandedOpts += e.toString() + " | ";
     // }
   }
 
-  // private String expandVar(Expression var) {
-  //   String res = "";
-  //   Collection coll = CmdUtil.castAsCollection(var);
-  //   for (Object c : coll) {
-  //     res += c.toString();
-  //   }
-  //   return res;
-  // }
-
   /* Test if the specified automaton is complete. Returns the string "true" or
-   * "false" which is sent to stdout. */
+   * "false" which is sent to stdout.
+   * Context ctx: contains all variable names and their values of the script
+   * where the universal command is executed. */
   @Override
   public Object eval(Context ctx) throws EvaluationException {
+    FSA compl = (FSA) complCmd.eval(ctx);
     /* Evaluate the automaton argument. It may be:
      *   - A filename on the command line
      *   - A variable containing a filename in a script
@@ -95,10 +93,17 @@ public class UniversalCommand extends CommandExpression {
      *   - A filename in a script
      * castOrLoadAutomaton handles all these cases (if the arg is a filename
      * tries all the known codecs) and decodes the argument as an Automaton. */
-    // Automaton aut = CmdUtil.castOrLoadAutomaton(autArg.eval(ctx));
+    // Evaluate expression. If autArg is a variable, expand it. Result is either
+    // a filename or a string or script-internal representatio of an automaton.
+    // Object o = autArg.eval(ctx);
+    // Create an Automaton object from the automaton specification o
+    // Automaton aut = CmdUtil.castOrLoadAutomaton(o);
+
+    
+
     // if (isComplete(aut)) return "true";
     // else                 return "false";
-    return expandedOpts;
+    return CmdUtil.encodeEditableAsString(compl);
   }
 
 

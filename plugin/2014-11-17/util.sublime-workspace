@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"default",
+				"defaultComplOpts"
+			],
+			[
+				"List",
+				"ListIterator"
+			],
+			[
 				"PLUGIN",
 				"PLUGIN_ROOT"
 			],
@@ -323,7 +331,7 @@
 			"file": "ch.unifr.goal.util/sources/ch/unifr/goal/util/UniversalCommand.java",
 			"settings":
 			{
-				"buffer_size": 4419,
+				"buffer_size": 4565,
 				"line_ending": "Unix"
 			}
 		},
@@ -674,7 +682,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -682,15 +690,15 @@
 					"file": "ch.unifr.goal.util/sources/ch/unifr/goal/util/UniversalCommand.java",
 					"settings":
 					{
-						"buffer_size": 4419,
+						"buffer_size": 4565,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								2899,
+								2899
 							]
 						],
 						"settings":
@@ -748,7 +756,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 617.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

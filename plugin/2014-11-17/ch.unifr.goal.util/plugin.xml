@@ -3,21 +3,26 @@
 
 <plugin id="ch.unifr.goal.util" version="0.0.1">
   
-  <!-- The plugins whose code is accessed by this plugin -->
+  <!-- Other plugins whose code is accessed by this plugin -->
   <requires>
     <import plugin-id="org.svvrl.goal.core" />
     <import plugin-id="org.svvrl.goal.cmd" />
   </requires>
 
 
-  <!-- The location of the code of this plugin -->
+  <!-- Location of this plugin's code -->
   <runtime>
     <library id="ch.unifr.goal.util" path="classes/" type="code">
-      <!-- <export prefix="*" /> --> <!-- If other plugins need to access code of this plugin -->
+      <!-- <export prefix="*" /> --> <!-- If other plugins need to access this plugins's code -->
     </library>
   </runtime>
 
-  <!-- Command line command for testing if an automaton is complete -->
+
+  <!--***********************************************************************-->
+  <!-- Complete: test an automaton for completeness                          -->
+  <!--***********************************************************************-->
+
+  <!-- Command line command -->
   <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CompleteCommand">
     <parameter id="class" value="ch.unifr.goal.util.CompleteCommand"/>
     <parameter id="name" value="complete"/>
@@ -38,11 +43,17 @@
 <dt>EXAMPLE</dt>
   <dd><pre>complete aut.gff</pre></dd>
 </dl> ]]>
-    </value>
-  </parameter>
-</extension>
+      </value>
+    </parameter>
+  </extension>
 
-<!-- Command line command for testing if an automaton is universal -->
+
+
+  <!--***********************************************************************-->
+  <!-- Universal: test if the language of an automaton is universal          -->
+  <!--***********************************************************************-->
+
+  <!-- Command line command -->
   <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="UniversalCommand">
     <parameter id="class" value="ch.unifr.goal.util.UniversalCommand"/>
     <parameter id="name" value="universal"/>
@@ -53,18 +64,25 @@
   <dd>universal - Test if an automaton is universal.</dd>
 
 <dt>SYNOPSIS</dt>
-  <dd>complete FILE_OR_LVAL</dd>
+  <dd>universal [-m COMPLEMENTATION_ALGORITHM | ARGS_FOR_COMPLEMENTATION_ALGORITHM]
+            FILE_OR_LVAL</dd>
 
 <dt>DESCRIPTION</dt>
-  <dd>Return "true" if the input automaton is complete, and "false" otherwise.
-  An automaton is complete if every state has at least one outgoing transition
-  for every symbol of the alphabet.</dd>
+  <dd>Return "true" if the language of the input automaton is universal, and "false"
+  otherwise. A language over alphabet S is universal if it equals S star, that
+  is, if it contains all possible words over S. The test is done by complement-
+  ation and emptiness testing. The input automaton is universal if and only if
+  its complement is empty. By default, the current default complementation
+  construction is used, but the user can choose another one with the -m option
+  (same syntax as the "complement" command).</dd>
 
 <dt>EXAMPLE</dt>
-  <dd><pre>complete aut.gff</pre></dd>
+  <dd><pre>universal a.gff</pre></dd>
+  <dd><pre>universal -m slice a.gff</pre></dd>
+  <dd><pre>universal -m slice -p -ro -madj a.gff</pre></dd>
 </dl> ]]>
-    </value>
-  </parameter>
-</extension>
+      </value>
+    </parameter>
+  </extension>
 
 </plugin>

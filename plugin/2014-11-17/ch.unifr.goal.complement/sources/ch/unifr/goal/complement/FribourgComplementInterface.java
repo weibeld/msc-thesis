@@ -35,7 +35,7 @@ public class FribourgComplementInterface extends AbstractComplementConstructionI
     // fying them on the command line. This is a convention that is followed
     // by the other existing algorithms in GOAL.
     boolean c=false, r2ifc=false, m=false, m2=false, b=false, macc=false, r=false, rr=false;
-    for (Expression a : args) { // args contains e.g. [-m, -macc, -r]
+    for (Expression a : args) { // args contains e.g. ["-m", "-macc", "-r"]
       String arg = a.toString();
       if (arg.equals(cCode))          c     = true;
       else if (arg.equals(r2ifcCode)) r2ifc = true;
