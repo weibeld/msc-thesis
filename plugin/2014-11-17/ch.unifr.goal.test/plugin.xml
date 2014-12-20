@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<!--============================================================================
+  A command line command for performing quick tests (modify source code ->
+  recompile plugin -> run command).
+
+  Requires GOAL version 2014-11-17 or above.
+
+  Author: Daniel Weibel <daniel.weibel@unifr.ch>, 20 Dec. 2014
+=============================================================================-->
+
+<plugin id="ch.unifr.goal.test" version="0.0.1">
+  
+  <!--==========================================================================
+    Other plugins whose code is accessed by this plugin
+  ===========================================================================-->
+  <requires>
+    <import plugin-id="org.svvrl.goal.core" />
+    <import plugin-id="org.svvrl.goal.cmd" />
+  </requires>
+
+
+  <!--==========================================================================
+    Declare plugin's code
+  ===========================================================================-->
+  <runtime>
+    <library id="ch.unifr.goal.test" path="classes/" type="code">
+      <!-- <export prefix="*" /> --> <!-- If other plugins need to access this plugins's code -->
+    </library>
+  </runtime>
+
+
+ <!--==========================================================================
+    EXTENSIONS
+  ===========================================================================-->
+
+  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    MyTest: command line command for quick tests
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="MyTestCommand">
+    <parameter id="class" value="ch.unifr.goal.test.MyTestCommand"/>
+    <parameter id="name"  value="mytest"/>
+    <parameter id="help">
+      <value>
+<![CDATA[ <dl>
+<dt>NAME</dt>
+  <dd>mytest - My internal tests.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>mytest</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Bla bla bla</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>mytest</pre></dd>
+</dl> ]]>
+      </value>
+    </parameter>
+  </extension>
+
+</plugin>

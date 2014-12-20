@@ -82,7 +82,7 @@ GUI=$GOAL_DIR/plugins/org.svvrl.goal.gui
 # Compilation
 # -----------
 CLASSPATH=$CORE/classes:$CMD/classes:$GUI/classes
-echo -n "Compiling sources... "
+echo -n "Compiling plugin $PLUGIN_NAME... "
 # The GOAL binaries, as obtained from the GOAL website, have been compiled for
 # Java 1.6. This mean that the code for an additional plugin has to be compiled
 # for Java 1.6 as well. (I encountered runtime problems when compiling the
@@ -114,5 +114,5 @@ echo "Done"
 
 # Installation
 # ------------
-echo "Installing plugin at $GOAL_DIR/plugins"
+echo "Installing in $GOAL_DIR/plugins"
 cp -r $PLUGIN_DIR $GOAL_DIR/plugins

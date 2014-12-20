@@ -1,16 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 
-<!--
-This manifest and the code of this plugin add the subset-tuple Büchi
-complementation algorithm to GOAL: as a menu item in the GUI, and as an
-option to the 'complement' command on the command line.
-Daniel Weibel, 27.05.2014
--->
+<!--============================================================================
+  Fribourg Büchi complementation construction. Fully integrated in GUI and
+  command line.
+
+  Requires GOAL version 2014-11-17 or above.
+
+  Author: Daniel Weibel <daniel.weibel@unifr.ch>, 20 Dec. 2014
+=============================================================================-->
 
 <plugin id="ch.unifr.goal.complement" version="0.0.1">
   
-  <!-- The plugins whose code is accessed by this plugin -->
+  <!--==========================================================================
+    Other plugins whose code is accessed by this plugin
+  ===========================================================================-->
   <requires>
     <import plugin-id="org.svvrl.goal.core" />
     <import plugin-id="org.svvrl.goal.gui" />
@@ -18,80 +22,51 @@ Daniel Weibel, 27.05.2014
   </requires>
 
 
-  <!-- The location of the code of this plugin -->
+  <!--==========================================================================
+    Declare plugin's code
+  ===========================================================================-->
   <runtime>
     <library id="ch.unifr.goal.complement" path="classes/" type="code">
-      <!-- Uncomment if other plugins need to access the code of this plugin -->
-      <!-- <export prefix="*" /> -->
+      <!-- <export prefix="*" /> --> <!-- If other plugins need to access this plugin's code -->
     </library>
   </runtime>
 
-  <!-- Adding the Fribourg Construction to the known complementation construct-
-       ions. This adds the construction to the dropdown list for selecting the
-       default complementation construction in Preferences > Complementation -->
+
+  <!--==========================================================================
+    EXTENSIONS
+  ===========================================================================-->
+
+  <!-- Add construction to ComplementRepository -->
   <extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="FribourgConstruction">
     <parameter id="class" value="ch.unifr.goal.complement.FribourgConstruction" />
-    <parameter id="name" value="Fribourg Construction" />
+    <parameter id="name"  value="Fribourg Construction" />
   </extension>
 
-  <!-- Menu item: Automaton > Complement > Fribourg Construction -->
-  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FribourgComplementAction">
-    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementAction" />
-    <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
-    <parameter id="location" value="first" />
-  </extension>
-
-  <!-- Menu item: Automaton > Complement (Step by Step) > Fribourg Construction -->
-  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepFribourgComplementAction">
-    <parameter id="class" value="ch.unifr.goal.complement.StepByStepFribourgComplementAction" />
-    <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
-    <parameter id="location" value="first" />
-  </extension>
-
-  <!-- Adding Preferences > Complementation > Fribourg Construction for setting
-       options for the algorithm (the same as when starting a construction). -->
-  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="FribourgComplementOptionsPanel">
-    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementOptionsPanel"/>
-    <parameter id="location" value="/Complementation/Fribourg Construction?first" />
-  </extension>
-
-  <!-- Extending the command line command 'complement' with an additional
-       algorithm, i.e. 'goal complement -m fribourg' -->
-  <!--<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementCommand" id="FribourgComplementExtension">
-    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementExtension" />
-    <parameter id="name" value="fribourg" />
-  </extension>-->
-
+  <!-- Command line option "-m fribourg" to "complement" command -->
   <extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="FribourgComplementInterface">
-    <parameter id="class" value="ch.unifr.goal.complement.FribourgComplementInterface" />
-    <parameter id="name" value="fribourg" />
+    <parameter id="class"        value="ch.unifr.goal.complement.FribourgComplementInterface" />
+    <parameter id="name"         value="fribourg" />
     <parameter id="construction" value="ch.unifr.goal.complement.FribourgConstruction" />
   </extension>
 
+  <!-- Menu item in Automaton > Complement -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FribourgComplementAction">
+    <parameter id="class"     value="ch.unifr.goal.complement.FribourgComplementAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+    <parameter id="location"  value="first" />
+  </extension>
 
-  <!-- Command for testing if automaton is complete -->
-  <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CompleteCommand">
-    <parameter id="class" value="ch.unifr.goal.complement.CompleteCommand"/>
-    <parameter id="name" value="complete"/>
-    <parameter id="help">
-      <value>
-<![CDATA[ <dl>
-<dt>NAME</dt>
-  <dd>complete - Test if an automaton is complete.</dd>
+  <!-- Menu item in Automaton > Complement (Step by Step) -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepFribourgComplementAction">
+    <parameter id="class"     value="ch.unifr.goal.complement.StepByStepFribourgComplementAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+    <parameter id="location"  value="first" />
+  </extension>
 
-<dt>SYNOPSIS</dt>
-  <dd>complete FILE_OR_LVAL</dd>
-
-<dt>DESCRIPTION</dt>
-  <dd>Return "true" if the input automaton is complete, and "false" otherwise.
-  An automaton is complete if every state has at least one outgoing transition
-  for every symbol of the alphabet.</dd>
-
-<dt>EXAMPLE</dt>
-  <dd><pre>complete aut.gff</pre></dd>
-</dl> ]]>
-    </value>
-  </parameter>
-</extension>
+  <!-- Options panel in Preferences > Complementation -->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="FribourgComplementOptionsPanel">
+    <parameter id="class"    value="ch.unifr.goal.complement.FribourgComplementOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Fribourg Construction?first" />
+  </extension>
 
 </plugin>
