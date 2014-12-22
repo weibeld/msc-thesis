@@ -1,25 +1,15 @@
-# Functions for analysing the results of the B??chi complementation experiments.
-# Input files are the .out files of the experiments (to be read with function
-# read("file.out")).
+#==============================================================================#
+# Collection of R functions for analysis of experiment data.
 #
-# For creating an R package, the steps are:
-# 1. In R: package.skeleton(name="myPackage", path="path/to/pkg/dir")
-#    Creates directory path/to/pkg/dir/myPackage
-# 2. Edit myPackage/DESCRIPTION
-#    Edit content of myPackage/R/ and myPackage/man/
-# 3. R CMD check   myPackage (check if package is ok, optional)
-# 4. R CMD install myPackage (install package in system's R library)
-#    For keeping formatting: R CMD INSTALL --with-keep.source myPackage
-# 5. Load package with libary(myPackage)
-#
-# Daniel Weibel, 04.12.2014
+# Author: Daniel Weibel <daniel.weibel@unifr.ch>, Sep. 2014 - Dec. 2014
+#==============================================================================#
 
 
 #==============================================================================#
-# Data frame manipulation functions
+# Data frame manipulation and general purpose functions
 #==============================================================================#
 Read <- function(file) {
-  # Read in a .out file a s a data frame
+  # Read in an experiment .out file a s a data frame
   #----------------------------------------------------------------------------#
   read.table(file=file, header=TRUE, sep="\t")
 }
@@ -63,11 +53,37 @@ Complexity <- function(n, m) {
   write(paste0("(",x,"n)^n"), file="")
 }
 
+Format <- function(n, t=1, dec=1, mark=",", all.marks=TRUE) {
+  # Format a vector of integers or floats for printing
+  # Args:
+  #   n:         Numeric or character vector (representing numbers) of any size
+  #   t:         Formatting type. 1=integer, 2=float
+  #   dec:       Number of digits after the decimal point (if t=2)
+  #   mark:      Character to use for the thousand-separator
+  #   all.marks: Use thousand-separator for all numbers >= 1000 (TRUE), or only
+  #              for numbers >= 10'000 (FALSE)
+  # Returns:
+  #   A character vector containing the formatted numbers.
+  #----------------------------------------------------------------------------#
+  n <- as.numeric(n)
+  format <- ifelse(t == 1, "d", "f")
+  if (all.marks)
+    return(formatC(n, format=format, digits=dec, big.mark=mark))
+  # If thousand-separator only for numbers >= 10'000:
+  res <- character()
+  for (scalar in n) {
+    res <- c(res, formatC(scalar, format=format, digits=dec,
+             big.mark=ifelse(scalar < 10000, "", mark)))
+  }
+  res
+}
+
+
 #==============================================================================#
 # Small graphics drawing framework
 # Draw different kinds of graphics in a uniform way.
 #==============================================================================#
-Draw <- function(what, data, width=NULL, height=NULL, pointsize=NULL,
+Draw <- function(what, data, width=4, height=4, pointsize=8,
                  dev="quartz", dev.new=TRUE, dev.off=TRUE,
                  file="~/Desktop/out.pdf", ...) {
   # Entry point to the small graphics framework.
@@ -82,41 +98,24 @@ Draw <- function(what, data, width=NULL, height=NULL, pointsize=NULL,
   #   file:      Name of file to save graphics driver output to
   #   ...:       Arguments to underlying graphics functions
   #----------------------------------------------------------------------------#
-  Init(dev, dev.new, width, height, pointsize, file)
+  if (dev.new) {
+    if (dev == "pdf")
+      pdf(width=width, height=height, pointsize=pointsize, file=file)
+    else if (dev == "quartz")
+      quartz(width=width, height=height, pointsize=pointsize)
+    # Common graphics parameters
+    par(mar=c(4,4,1,1))
+    par(mgp=c(2.4,0.9,0))
+    par(bty="o")
+    par(lwd=0.5)
+    par(las=1)
+    par(xpd=TRUE)  # Allow plotting outside of plot region
+  }
   if      (what == "stripchart") Stripchart(data, ...)
   else if (what == "boxplot")    Boxplot(data, ...)
   else if (what == "hist")       Hist(data, ...)
   else if (what == "dim3")       Dim3(data, ...)
-  Finish(dev, dev.off)
-}
 
-# Custom initialisation with default values of PDF graphics device driver
-Init <- function(dev, dev.new, width, height, pointsize, file) {
-
-  if (dev.new) {
-    # Default values for all graphics devices
-    if (is.null(width))     width     <- 4
-    if (is.null(height))    height    <- 4
-    if (is.null(pointsize)) pointsize <- 8
-
-    # Start appropriate graphics device driver
-    
-    if (dev == "pdf")
-      pdf(file=file, width=width, height=height, pointsize=pointsize)
-    else if (dev == "quartz")
-      quartz(width=width, height=height, pointsize=pointsize)
-  }
-
-  # Set default graphics parameters
-  par(mar=c(4,4,1,1))
-  par(mgp=c(2.4,0.9,0))
-  par(bty="o")
-  par(lwd=0.5)
-  par(las=1)
-  par(xpd=TRUE) # Allow plotting outside of plot region
-}
-
-Finish <- function(dev, dev.off) {
   if (dev.off && dev != "quartz") dev.off()
 }
 
@@ -131,7 +130,7 @@ Stripchart <- function(data, labels=NULL, lmar=NULL, xaxp=NULL, ...) {
   #   ...:    Arguments for stripchart()
   #----------------------------------------------------------------------------#
   SetLeftMargin(lmar)
-  stripchart(data, group.names=labels, las=1, method="jitter", pch=1, xaxt="n",
+  stripchart(data, group.names=labels, method="jitter", pch=1, xaxt="n",
              lwd=par("lwd"), ...)  # lwd sets line width of axes
   xticks <- axTicks(1, axp=xaxp)
   Axis(1, at=xticks, labels=xticks)
@@ -142,15 +141,15 @@ Boxplot <- function(data, labels=NULL, out=FALSE, out.text=TRUE, out.cex=1,
                     mean=TRUE, yaxp=NULL, lmar=NULL, ...) {
   # Wrapper for boxplot()
   # Args:
-  #   data: Data to plot
-  #   labels: Labels for the individual boxplots
-  #   out: Draw outliers
+  #   data:     Data to plot
+  #   labels:   Labels for the individual boxplots
+  #   out:      Draw outliers
   #   out.text: Add text stating number of outliers
-  #   out.cex: Size of text stating number of outliers
-  #   mean: Add dot showing mean
-  #   lmar: Size of left margin of graphics
-  #   yaxp: Graphical parameter yaxp specifying ticks of y-axis
-  #   ...: Arguments for boxplot()
+  #   out.cex:  Size of text stating number of outliers
+  #   mean:     Add dot showing mean
+  #   lmar:     Size of left margin of graphics
+  #   yaxp:     Graphical parameter yaxp specifying ticks of y-axis
+  #   ...:      Arguments for boxplot()
   #----------------------------------------------------------------------------#
   if (!is.list()) data <- list(data)  # We need data in list form
   SetLeftMargin(lmar)
@@ -193,9 +192,9 @@ Hist <- function(data, lmar=NULL, lines=NULL, lines.cex=1, xaxp=NULL, yaxp=NULL,
   #          comp 2: y-position of end of vertical line
   #          comp 3: Label for line
   #   lines.cex: Text size of labels of vertical lines
-  #   xaxp: Graphical parameter xaxp specifying x-axis ticks
-  #   yaxp: Graphical parameter yaxp specifying y-axis ticks
-  #   ...: Arguments for hist()
+  #   xaxp:  Graphical parameter xaxp specifying x-axis ticks
+  #   yaxp:  Graphical parameter yaxp specifying y-axis ticks
+  #   ...:   Arguments for hist()
   #----------------------------------------------------------------------------#
   SetLeftMargin(lmar)
   hist(data, main=NULL, axes=FALSE, ...)
@@ -214,23 +213,6 @@ Hist <- function(data, lmar=NULL, lines=NULL, lines.cex=1, xaxp=NULL, yaxp=NULL,
   } 
 }
 
-# Plots for three-dimensional data. Includes persp, image, contour, and heatmap
-# plots. The data to plot is determined by three columns (x.var, y.var, z.var)
-# of a data frame (df). The assumptions on this data frame are the following:
-# the values of x.var and y.var divide the data frame in |x.var| * |y.var|
-# classes. That is, there must be one or more rows (classes) in the data frame
-# for every combination of the x.var and y.var values. Each of these xy
-# classes has a z-value. This z-value is a function of the values of the z.var
-# column. (This function can be specified (func). The first argument to func
-# will be a vector of the z.var values and further argments can be specified as
-# a list with func.args.) What results is a three-dimensional data relation with
-# a set of x-values, a set of y-value, and a z-value for every combination of x
-# and y-values. This data relation is then plotted as either a persp, image,
-# contour, or heatmap plot (type). The reason that all these different plots
-# are in the same wrapper function is that they are all based on the same
-# data structure: a matrix where the row indices are taken as the x-values, the
-# column indices as the y-values, and the cells as the z-values. This bare
-# matrix can be returned with matrix.only=TRUE
 Dim3 <- function(df, type, x.var="da", y.var="dt", z.var="states",
                  func=median, func.args=list(), matrix.only=FALSE, ...) {
   # Draw plots for three-dimensional data. Wrapper for persp(), image(),
@@ -287,15 +269,13 @@ Dim3 <- function(df, type, x.var="da", y.var="dt", z.var="states",
 
 
 Axis <- function(...) {
-  # Add an axis to a normal two-dimensional plot. Adapts line width by default.
-  # Args:
-  #   ...: Arguments to axis()
+  # Wrapper for axis() with adapted line width by default
   #----------------------------------------------------------------------------#
   axis(..., lwd=par("lwd"))
 }
 
 SetLeftMargin <- function(lmar) {
-  # Set left margin of a graphics
+  # Set left margin for current graphics device driver
   # Args:
   #   lmar: Size of left margin. If NULL, nothing is done.
   #----------------------------------------------------------------------------#
@@ -306,28 +286,14 @@ SetLeftMargin <- function(lmar) {
   }
 }
 
-# Format floats (t="f") or integers (t="d") for printing.
-Format <- function(n, t="d", dec=1, mark=",", all.marks=TRUE) {
-  n <- as.numeric(n)
-  res <- numeric()
-  if (!all.marks) {
-    for (scalar in n) {
-      m <- ifelse(scalar<10000, "", mark)
-      res <- c(res, formatC(scalar, format=t, digits=dec, big.mark=m))
-    }
-  }
-  else {
-    res <- formatC(n,format=t, digits=dec, big.mark=mark)
-  }
-  res
-}
+
 
 #==============================================================================#
 # Custom axes, axis ticks, and axis labels for persp plot
 # All function take a list a of the following form as their argument:
 #   a[[1]]: Ticks of x-axis (if drawing x-axis), or x-position of other axis
-#   a[[2]]: Ticks of y-axis (if drawing x-axis), or y-position of other axis
-#   a[[3]]: Ticks of z-axis (if drawing x-axis), or z-position of other axis
+#   a[[2]]: Ticks of y-axis (if drawing y-axis), or y-position of other axis
+#   a[[3]]: Ticks of z-axis (if drawing z-axis), or z-position of other axis
 #   a[[4]]: Perspective matrix (pmat) returned by persp
 #==============================================================================#
 PerspAxis <- function(a, ...) {
