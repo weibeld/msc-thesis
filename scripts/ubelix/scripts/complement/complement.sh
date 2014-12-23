@@ -14,7 +14,8 @@ algo="fribourg -m1"
 data_archive=~/data/small.tar.gz
 timeout=600 # Seconds
 memory=1G
-use_working_dir=false
+working_dir=true   # Out an log file in working dir which is usually on GPFS
+print_header=true  # If partitioned test set: first part. "true", others "false"
 
 usage() {
   echo "USAGE:"
@@ -25,17 +26,19 @@ usage() {
   echo "    -d: Data (absolute path only)       [$data_archive]"
   echo "    -t: Timeout (seconds)               [$timeout]"
   echo "    -m: Max. Java heap size             [$memory]"
-  echo "    -o: Out and log file in working dir (instead of local scratch)"
+  echo "    -o: Out and log file in working dir [$working_dir]"
+  echo "    -h: Print column header in out file [$print_header]"
 }
-if [ "$1" == "-h" ]; then usage; exit 0; fi
+if [[ "$1" = -h ]] && [[ $# -eq 1 ]]; then usage; exit; fi
 
-while getopts ":a:d:t:m:o" opt; do
+while getopts ":a:d:t:m:o:h:" opt; do
   case $opt in
     a) algo=$OPTARG;         ;;
     d) data_archive=$OPTARG; ;;
     t) timeout=$OPTARG;      ;;
     m) memory=$OPTARG;       ;;
-    o) use_working_dir=true; ;;
+    o) working_dir=$OPTARG;  ;;
+    h) print_header=$OPTARG; ;;
     \?) echo "Error: invalid option: -$OPTARG";             exit 1 ;;
     :)  echo "Error: option -$OPTARG requires an argument"; exit 1 ;;
   esac
@@ -73,7 +76,7 @@ if [ -n "$err" ]; then echo "GOAL error: $err"; exit 1; fi
 rm $TMP/tmp.gff
 
 # Out file and log file
-if [ $use_working_dir = true ]; then
+if [ $working_dir = true ]; then
   out=$JOB_NAME.out # in current working dir (GPFS home)
   log=$JOB_NAME.log
   touch I_AM_STILL_RUNNING
@@ -102,8 +105,10 @@ cat >$out <<EOF
 # Memory limit (Java heap):  $memory
 # Timeout (CPU time):        ${timeout}s
 EOF
-# Column titles (and order)
+# Column header (used by R)
+if [[ "$print_header" = true ]]; then
 echo -e "states${s}t_out${s}m_out${s}real_t${s}tcpu_t${s}ucpu_t${s}scpu_t${s}dt${s}da${s}file" >>$out
+fi
 
 compl=$TMP/complement.gff
 compl_reduced=$TMP/reduced_complement.gff
@@ -195,7 +200,7 @@ echo "Duration (wallclock): ${hours}h ${min}min ${sec}sec" >>$log
 echo "                      ${total_sec}sec" >>$log
 
 # Copy result files from local scratch to job directory
-if [ $use_working_dir = true ]
+if [ $working_dir = true ]
 then mv I_AM_STILL_RUNNING I_AM_FINISHED
 else cp $out $log .
 fi

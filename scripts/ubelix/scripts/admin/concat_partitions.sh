@@ -1,0 +1,44 @@
+#!/bin/bash
+#==============================================================================#
+# Concatenate the out files in all the subdirectories of the current directory
+# (partitions of the test set) to a master out file in the current directory.
+#
+# Due to an error, all the partition out files may have a column header line.
+# This is not good for R, which requires only one column header at the top of
+# the file. The -H option allows to fix this by outcommenting the column headers
+# of all but the first partition files. In a newer version of complement.sh, an
+# option for not printing the column  header has been added.
+#
+# Author: Daniel Weibel <daniel.weibel@unifr.ch>, Dec. 2014
+#==============================================================================#
+
+usage() {
+  echo "USAGE:"
+  echo "    $(basename $0) [-H]"
+  echo "DESCRIPTION"
+  echo "    Concatenate .out files in subdirs of current directory to a master"
+  echo "    .out file in current directory."
+  echo "OPTIONS"
+  echo "    -H: Remove column header from all but first partition file"
+}
+[[ "$1" = -h ]] && usage && exit
+
+dirs=(*/)  # Array with all subdirectory names
+
+master=$(basename $(pwd)).out
+echo "Creating $master"
+echo -n "" >$master
+
+i=1
+for dir in ${dirs[@]}; do
+  partition=${dir}${dir%/}.out  # Out files have same name as directory
+  # Append partition out file to master. Outcomment header line if needed.
+  if [[ "$1" = -H ]] && [[ $i -gt 1 ]]; then
+    echo "Concatenating $partition (removing header)"
+    cat $partition | sed 's/^states/# states/' >>$master  # Outcommment header
+  else
+    echo "Concatenating $partition"
+    cat $partition >>$master
+  fi
+  ((i+=1))
+done

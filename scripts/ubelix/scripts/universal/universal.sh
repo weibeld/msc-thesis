@@ -1,25 +1,22 @@
 #!/bin/bash
+#==============================================================================#
 # SGE Job Script
-# Test all the automata in a tar.gz archive for universality. An automaton is
-# universal if it accepts every word over a given alphabet. The test is done
-# by complementation and testing for emptiness. If the complement of an auto-
-# maton A is empty, then A itself is universal.
+# Test automata for universality. We use the "universal" command provided by
+# the plugin ch.unifr.goal.util.
 #
-# As the complementation algorithm we take fribourg -m1 -r2c -macc -rr,
-# because we know from other experiments that fribourg -m1 can complement both
-# the 15 and the 20 test set with 1G Java heap without memory outs.
+# For the size 20 test set, the required resources might be very high, depending
+# on the complementation construction used for the "universal" command. Regard-
+# ing memory, 4G is not enough (observed memouts with piterman 2G, fribourg 2G,
+# slice 4G). Using something like 16G is recommendd. Regarding time, fribourg
+# didn't finish in 96 hours real time (there's no timeout for individual tasks).
 #
-# The size 15 test set is no problem, but the size 20 test set frequently has
-# memory outs. In particular, there were memory outs with piterman 2G, slice 4G,
-# and fribourg 2G. The best is to use the highmem.q with e.g. 16G memory limit.
-# We don't set a timeout, because we want all tasks to finish.
-#
-# dw-28.11.2014
+# Author: Daniel Weibel <daniel.weibel@unifr.ch>, Nov. 2014 - Dec. 2014
+#==============================================================================#
 
 goal_archive=~/bin/GOAL-20141117.tar.gz # GOAL executables
-data_archive=~/data/20.tar.gz           # Default data
+data_archive=~/data/20.tar.gz           # Default data (automata to test)
 memory=16G                              # Default Java heap size
-algo="fribourg -m1 -r2c -macc -rr"      # Default complementation construction
+algo="piterman -eq -ro"                 # Default complementation construction
 
 usage() {
   echo "USAGE:"
@@ -66,10 +63,10 @@ goal=$goal_dir/gc
 # Nice date
 d() { date "+%F %H:%M:%S"; }
 
-# Result and log files (in working directory on network file system)
+# Result and log files on GPFS to see progress
 out=$JOB_NAME.out
 log=$JOB_NAME.log
-touch I_AM_STILL_RUNNING
+touch I_AM_STILL_RUNNING  # Signalise current state
 
 # Result file header
 cat >$out <<EOF
@@ -78,7 +75,7 @@ cat >$out <<EOF
 # Cluster job ID:            $JOB_ID
 # Cluster node:              $HOSTNAME
 # Cluster queue:             $QUEUE
-# Test method:               complement(A) -> A'; emptiness(A')
+# Test method:               "universal" command of plugin ch.unifr.goal.util 
 # Complementation algorithm: $algo
 # Data:                      $(basename $data_archive)
 # Memory limit (Java heap):  $memory
@@ -90,30 +87,25 @@ echo -e "univ\tfile" >>$out
 # Set Java heap size
 export JVMARGS="-Xmx$memory -Xms$memory"
 
-# File to write complement automaton to (to test for emptiness)
-complement=$TMP/complement.gff
-# File to write stderr of the GOAL command to (to test for memory out)
-errors=$TMP/err
-
-# Test if something has been written to file $errors (e.g. memory out)
-test_errors() {
-  if [ -s $errors ]; then cat $errors >>$log; exit 1; fi
-}
+# Files to capture stdout and stderr of GOAL "universal" command
+stderr=$TMP/stderr
+stdout=$TMP/stdout
 
 # Initialise log file
 job_start=$(date +%s)
 echo "Start: $(d) ($job_start)" >$log
-i=0  # Counter
+i=0  # Counter counting tasks
 
 # Real work. Iterate through all the automata and do the universality test.
-for automaton in $data/*.gff; do
-  echo "$((i+=1)). $(d): $(basename $automaton)" >>$log
-  $goal complement -m $algo $automaton >$complement 2>$errors
-  test_errors
-  if [ $($goal emptiness $complement 2>$errors) = true ]
-  then test_errors; universal=Y
-  else test_errors; universal=N; fi
-  echo -e "$universal\t$(basename $automaton)" >>$out
+for aut in $data/*.gff; do
+  echo "$((i+=1)). $(d): $(basename $aut)" >>$log
+  $goal universal -m $algo $aut 1>$stdout 2>$stderr
+  if [[ -s $stderr ]]; then cat $stderr >>$log; exit 1; fi
+  if [[ $(cat $stdout) = true ]]
+    then universal=Y 
+    else universal=N
+  fi
+  echo -e "$universal\t$(basename $aut)" >>$out
 done
 
 # Finalize log file
@@ -127,5 +119,4 @@ sec=$(($rem_sec%60))
 echo "Duration (wallclock): ${hours}h ${min}min ${sec}sec" >>$log
 echo "                      ${total_sec}sec" >>$log
 
-# Copy result file from local scratch to job directory
 mv I_AM_STILL_RUNNING I_AM_FINISHED

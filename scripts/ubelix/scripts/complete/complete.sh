@@ -92,7 +92,7 @@ for aut in $data/*.gff; do
     then complete=Y 
     else complete=N
   fi
-  echo -e "$cmpl\t$(basename $aut)" >>$out
+  echo -e "$complete\t$(basename $aut)" >>$out
 done
 
 # Finalize log file
