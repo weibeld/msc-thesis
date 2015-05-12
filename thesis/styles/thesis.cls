@@ -32,7 +32,7 @@
 %==============================================================================%
 \ifstandard
   \LoadClass[a4paper]{report}
-  \RequirePackage{a4wide}
+  %\RequirePackage{a4wide}
 \else
   \LoadClass{scrreprt}
   \setcapindent{2em} % Indentation in Figure captions
@@ -43,6 +43,8 @@
 \RequirePackage{hyperref}
 \RequirePackage{array}           % Define new columntypes with \newcolumntype
 \RequirePackage[table]{xcolor}   % Colour table cells with \cellcolor
+\RequirePackage{minitoc}
+\RequirePackage{graphicx}
 \RequirePackage{styles/drawings}
 
 \newcommand{\om}{{$\omega$}}

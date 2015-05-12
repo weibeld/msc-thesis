@@ -5,6 +5,8 @@
 *.dbj
 *.out
 *.toc
+*.maf
+*.mtc*
 *.gem
 *.rbc
 .DS_Store

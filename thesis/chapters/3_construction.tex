@@ -1,0 +1,194 @@
+
+The Fribourg construction draws from several ideas: the subset construction, run analysis based on reduced split trees, and Kurshan's construction~\cite{Kurshan198759} for complementing DBW. Following the classification we used in Section~\ref{review}, it is a slice-based construction. Some of its formalisations are similar to the slice-based construction by Vardi and Wilke~\cite{vardi2007automata}, however, the Fribourg construction has been developed independently. Furthermore, as we will see in Chapter~\ref{results}, the empirical performance of Vardi and Wilke's construction and the Fribourg construction differ considerably, in favour of the latter.
+
+Basically, the Fribourg construction proceeds in two stages. First it constructs the so-called upper part of the complement automaton, and then adds to it its so-called lower part. These terms stem from the fact that it is often convenient to draw the lower part below the previously drawn upper part. The partitioning in these two parts is inspired by Kurshan's complementation construction for DBW. The upper part of the Fribourg construction contains no accepting states and is intended to model the finite ``start phase'' of a run. At every state of the upper part, a run has the non-deterministic choice to either stay in the upper part or to move to the lower part. Once in the lower part, a run must stay there forever (or until it ends if it is discontinued). That is, the lower part models the infinite ``after-start phase'' of a run. The lower part now includes accepting states in a sophisticated way so that at least one run on word $w$ will be accepted if and only if all the runs of the input NBW on $w$ are rejected.
+
+As it may be apparent from this short summary, the construction of the lower part is much more involved than the construction of the upper part.
+
+\begin{figure}
+\begin{center}
+\Automaton
+\caption{Example automaton $A$}
+\label{example_automaton}
+\end{center}
+\end{figure} 
+
+
+\section{First Stage: Constructing the Upper Part}
+The first stage of the subset-tuple construction takes as input an NBW $A$ and outputs a deterministic automaton \Bp. This \Bp is the upper part of the final complement automaton $B$ of $A$. The construction of \Bp can be seen as a modified subset construction. The difference to the normal subset construction lies in the inner structure of the constructed states. While in the subset construction a state consists of a subset of the states of the input automaton, a \Bp-state in the subset-tuple construction consists of a \emph{tuple of subsets} of $A$-states. The subsets in a tuple are pairwise disjoint, that is, every $A$-state occurs at most once in a \Bp-state. The $A$-states occurring in a \Bp-state are the same that would result from the classic subset construction. As an example, if applying the subset construction to a state \qq0 results in the state \qqqq012, the subset-tuple construction might yield the state $(\qqm02,\qm1)$ instead.
+
+The structure of \Bp-states is determined by levels of corresponding reduced split trees. Vardi, Kähler, and Wilke refer to these levels as \emph{slices} in their constructions~\cite{vardi2007automata,2008_kaehler}. Hence the name slice-based approach. In the following, we will use the terms levels and slices interchangebly. A slice-based construction can work with either left-to-right or right-to-left reduced split trees. Vardi, Kähler, and Wilke use the left-to-right version in their above cited publications. In this thesis, in contrast, we will use right-to-left reduced split trees, which were also used from the beginning by the authors of the subset-tuple construction.
+
+Figure~\ref{levels_to_states} shows how levels of a right-to-left reduced split tree map to states of the subset-tuple construction. In essence, each node of a level is represented as a set in the state, and the order of the nodes determines the order of the sets in the tuple. [INFORMATION ABOUT ACC AND NON-ACC IS NEEDED IN THE LOWER PART BUT IMPLICIT IN THE STATES OF A]. To determine the successor of a state, say $(\qqm02,\qm1)$, one can regard this state as level of a reduced split tree, determine the next level and map this new level to a state. In the example of Figure~\ref{levels_to_states}, the successor of $(\qqm02,\qm1)$ is determined in this way to $(\qm0,\qm1,\qm2)$.
+
+\begin{figure}
+\begin{center}
+\Slices
+\caption{Mapping from levels of a reduced split tree, to states of the subset-tuple construction.}
+\label{levels_to_states}
+\end{center}
+\end{figure} 
+
+Apart from this special way of determining successor states, the construction of \Bp proceeds similarly as the subset construction. One small further difference is that if at the end of determining a successor for every state in \Bp, the automaton is not complete, it must be made complete with an \emph{accepting} sink state. The steps for constructing \Bp from $A$ can be summarised as follows.
+
+\begin{itemize}
+\item Start with the state $(\qm0)$ if \q0 is the initial state of $A$
+\item Determine for each state in \Bp a successor for every input symbol
+\item It at the end \Bp is not complete, make it complete with an accepting sink state
+\end{itemize}
+
+For the example automaton $A$ in Figure~\ref{example_automaton}, we would start with $(\qm0)$, determine $(\qqm02,\qm1)$ as its $a$-successor, whose $a$-successor in turn we determine a $(\qm0,\qm1,\qm2)$. The $a$-successor of $(\qm0,\qm1,\qm2)$ is $(\qm0,\qm1,\qm2)$ again what results in a loop. Figure~\ref{upper_part} shows the final upper part \Bp of $A$.
+
+\begin{figure}
+\begin{center}
+\UpperPart
+\caption{Upper part \Bp of example automaton $A$.}
+\label{upper_part}
+\end{center}
+\end{figure} 
+
+
+% The construction of the upper part takes as input a NBW $A$ and outputs a deterministic automaton $B^\prime$ that will be the upper part of the final complement automaton $B$. The construction of $B^\prime$ is in its approach similar to the subset construction. One starts with a $B^\prime$-state representing the initial state of $A$ and then recursively determines and adds for each $B^\prime$-state one successor state per input symbol. The difference to the subset construction lies in the inner structure of the $B^\prime$-states. In the subset construction this would simply be a single set of $A$-states. In the subset-tuple construction, however, a $B^\prime$-state is a tuple of sets of $A$-states. A tuple is an ordered list, so differently phrased, a $B^\prime$-state consists of one or more sets of $A$-states where the order of these sets matters. As we will see, the $A$-states present in a $B^\prime$-state are the same that would result from the subset construction. But while in the subset construction all these states are thrown together in one set, in the subset-tuple construction they are split up in multiple sets where additionally the order of these sets is important. The subset-tuple construction can thus be seen as a modified subset construction that includes additional structure.
+
+% The structure of $B^\prime$-states is defined by ``level-clippings'' of reduced split trees, as we explain in a moment. But, talking about reduced split trees, we have to make a decision first. In Section~\ref{r_split_trees} we mentioned that reduced split trees come in equivalent left-to-right and right-to-left versions. The construction has to adopt one of these variants and stick to it. In this thesis we use the right-to-left version. The final complement automata look the same with either version except that the order of the tuples is reversed. Note that the optimisations described in Section~\ref{optimisations} is also based on this ordering and would need to be rephrased for the left-to-right version.
+
+% \begin{figure}
+% \begin{center}
+% \Slices
+% \end{center}
+% \caption{From levels of a reduced split tree to the slices of the subset-tuple construction.}
+% \label{levels_to_states}
+% \end{figure} 
+
+% A new $B^\prime$-state $q$, successor on symbol $a$ of an already existing $B^\prime$-state $p$, now is created in the following way. The predecessor $p$ is regarded as a level of a reduced split tree by looking at its sets as the nodes on this level. Then, the next level for the given symbol $a$ is constructed as described in Section~\ref{r_split_tree}. This new level then directly defines $q$ by taking the nodes as the sets of $q$'s tuple and keeping their order. Figure~\ref{tree_to_slices} illustrates this with the example automaton $A$ that we already used before. If a state with a simlar tuple to the just created $q$ already exists in $B^\prime$, then just a transition from $p$ to this state is added (hence the loop in the third state of Figure~\ref{tree_to_slices}). The construction starts with a $B^\prime$-state containing only $A$'s initial state and ends when all states of $B^\prime$ have been processed for all input symbols. In Figure~\ref{tree_to_slices}, the construction is complete, thus the automaton shown at the right is the upper part of the complement of $A$.
+
+% If all the $A$-states of a $B^\prime$-state $p$ have no successors on an input symbol $a$, then $p$ will have no $a$-successor in $B^\prime$. This results in the upper part $B^\prime$ being incomplete at the end of the construction. In this case, it has to be made complete by adding a sink state. Furthermore, this sink state has to be accepting.
+
+% States of the subset-tuple construction are thus levels of reduced split trees. In the constructions of Varid and Wilke~\cite{vardi2007automata}, and Kähler and Wilke~\cite{2008_kaehler} states are called \emph{slices} of reduced split trees, hence the name slice-based approach.
+
+% \begin{figure}
+% \begin{center}
+% \UpperPart
+% \end{center}
+% \caption{Upper part of complement of $A$.}
+% \label{upper_part}
+% \end{figure} 
+
+
+\section{Second Stage: Adding the Lower Part}
+The second stage of the subset-tuple construction adds the lower part to the upper part \Bp. The two parts together form the final complement automaton $B$. The lower part is constructed by again applying a modified subset construction to the states of the upper part \Bp. This modified subset construction is an extension of the construction for the upper part. The addition is that each set gets decorated with a colour. These colours later determine which states of the lower part are accepting states.
+
+We divide our discussion of the lower part in two sections. In the following one (\ref{lower_part:steps}), we explain the ``mechanical'' construction of the lower part, the steps that have to be done to arrive at the final complement automaton $B$. In the next section (\ref{lower_part:intuition}) we give the idea and intuition behind the construction and explain why it works.
+
+\subsection{Construction}
+\label{lower_part:steps}
+As mentioned, every set of the states of the lower part gets a colour. There are three colours and we call them 0, 1, and 2. In the end we have to be able to disinguish the states of the upper part from the states of the lower part. This can be achieved by preliminarily assigning the special colour -1 to every set of the states of the upper part. After that the extended modified subset construction is applied, taking the states of the upper part (except a possible sink state) as the pre-existing states.
+
+At first, the extended modified subset construction determines the successor tuple (without the colours) of an existing state in the same way as the construction of the upper part. We will refer to the state being created as $p$ and to the existing state as $p_{pred}$. Then, one of the colours 0, 1, or 2 is determined for each set $s$ of $p$. We denote the colour of $s$ as $c(s)$. The choice of $c(s)$ depends on three factors.
+\begin{itemize}
+\item Whether $p_{pred}$ has a set with colour 2 or not
+\item The colour of the predecessor set $s_{pred}$ of $s$
+\item Whether $s$ is an accepting or non-accepting set
+\end{itemize}
+The predecessor set $s_{pred}$ is the set of $p_{pred}$ that in the corresponding reduced split tree is the parent node of the node corresponding to $s$. Figure~\ref{colours} shows the values of $c(s)$ for all possible situations as two matrices. There is one matrix for the two cases of factor 1 above ($p_{pred}$ has colour 2 or not) and the other two factors are laid out along the rows and columns of either matrix. Note that $c(s_{pred}) = -1$ is only present in the upper matrix, because in this case $p_{pred}$ is a state of the upper part and cannot contain colour 2.
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
+\hline
+\cellcolor{black!20}\raggedright $p_{pred}$ has no sets with colour 2 & $s$ non-accepting & $s$ accepting \\
+\hline
+$c(s_{pred}) = -1$ & 0 & 2 \\
+\hline
+$c(s_{pred}) = 0$ & 0 & 2 \\
+\hline
+$c(s_{pred}) = 1$ & 2 & 2 \\
+\hline
+\end{tabular}
+\vskip1em
+\begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
+\hline
+\cellcolor{black!20}\raggedright $p_{pred}$ has set(s) with colour 2   & $s$ non-accepting & $s$ accepting \\
+\hline
+$c(s_{pred}) = 0$ & 0 & 1 \\
+\hline
+$c(s_{pred}) = 1$ & 1 & 1 \\
+\hline
+$c(s_{pred}) = 2$ & 2 & 2 \\
+\hline
+\end{tabular}
+\caption{Colour rules.}
+\label{colours}
+\end{center}
+\end{figure}
+
+We will use the following notation to denote the colour of $s$: $\cl^{s}$ if $c(s) = -1$, $s$ if $c(s) = 0$, $\cl1{s}$ if $c(s) = 1$, and $\cl2{s}$ if $c(s) = 2$. Let us look now at a concrete example of this construction. We will add the lower part to the upper part \Bp in Figure~\ref{upper_part}, and thereby complete the complementation of the example automaton $A$ in Figure~\ref{example_automaton}.
+
+First of all, we assign colour $-1$ all the sets of the states of \Bp. We might then start processing the state $(\cl^{\qm0})$, let us call it $p_{pred}$. The resulting successor tuple, without the colours, of $p_{pred}$ is, as in the upper part, $(\qqm02,\qm1)$. We now have to determine the colours of the sets \qqq02 and \qq1. Since $p_{pred}$ does not contain any 2-coloured sets, we need only to consult the upper matrix in Figure~\ref{colours}. For \qq1, the predecessor set is $\cl^{\qm1}$ with colour $-1$. Furthermore \qq1 is accepting. So, the colour of \qq1 is 2, because we end up in the first-row, second-column cell of the upper matrix ($M_1(1,2)$). The other set, \qqq02, in turn is non-accepting, so its colour is 0 ($M_1(1,1)$). The successor state of $(\cl^{\qm0})$ is thus $(\qqm02,\cl2{\qm1})$.
+
+We can then continue the construction right with this new state $(\qqm02,\cl2{\qm1})$, and call it $p_{pred}$ in turn. The successing tuple without the colours of $p_{pred}$ is $(\qm0,\qm1,\qm2)$. Since $p_{pred}$ contains a set with colour 2, we have to consult the lower matrix of Figure~\ref{colours} to determine the colours of \qq0, \qq1, and \qq2. For \qq2, we end up with colour 2 ($M_2(3,1)$), because its predecessor set, which is $\cl2{\qm1}$, has colour 2. \qq1 gets colour 1 as it is accepting and its predecessor set, \qqq02, has colour 0 ($M_2(1,2)$). \qq0, which has the same predecessor set, gets colour 0, because it is non-accepting ($M_2(1,1)$). The successor state of $(\qqm02,\cl2{\qm1})$ is thus $(\qm0,\cl1{\qm1},\cl2{\qm2})$.
+
+\begin{figure}
+\begin{center}
+\Complement
+\caption{The final complement automaton $B$.}
+\label{complement}
+\end{center}
+\end{figure} 
+
+The construction continues in this way until every state has been processed. The resulting automaton is shown in Figure~\ref{complement}. The last thing that has to be done is to make every state of the lower part that does not contain colour 2 accepting. In our example, this is only one state. The NBW $B$ in Figure~\ref{complement} is the complement of the NBW $A$ in Figure~\ref{example_automaton}, such that $L(B) = \cl1{L(A)}$. This can be easily verified, since $A$ is empty and $B$ is universal (with regard to the single \om-word $a^\omega$).
+
+\subsection{Meaning and Function of the Colours}
+
+
+\section{Intuition for Correctness}
+The general relation between a non-deterministic automaton $A$ and its complement $B$ is that a word $w$ is accepted by $B$, if and only if all the runs of $A$ on $w$ are rejecting. Of course for the subset-tuple construction, as we have just described it above, this is also true. A formal proof can be found in~\cite{2014_joel_ulrich}. In this section, in contrast, we try to give an intuitive way to understand this correctness. One one hand, there is the question, if there is an accepting run of $B$ on $w$, how can we conclude that all the runs of $A$ on $w$ are rejected?
+
+\begin{itemize}
+\item If there is an accepting run of $B$ on $w$, how can we conclude that all the runs of $A$ on $w$ are rejected?
+\item If all the runs of $A$ on $w$ are rejected, how can we conclude that there must be an accepting run of $B$ on $w$?
+\end{itemize}
+
+
+Since this condition is on \emph{all} runs of $A$, the construction somehow has to keep track of them. 
+\label{lower_part:intuition}
+\begin{figure}
+\begin{center}
+\RunTypes
+\caption{Different notions of runs.}
+\label{run_types}
+\end{center}
+\end{figure}
+
+% The construction of the lower part takes as input the upper part $B^\prime$ (and the initial automaton $A$) and outputs the final complement automaton $B$ with $L(B) = \cl1{L(A)}$. The construction of the lower part is basically an extension of the construction of the upper part that is applied to the states of the upper part. The extension consists therein that every set in the states of the lower part is assigned a \emph{colour}. These colours will be used to keep track of certain properties of runs of $B$ that finally allow to decide which states of the lower part of $B$ may be accepting. In this section we will first explain the mechanical construction of $B$ and give the intuition behind it afterwards.
+
+% There are three colours that sets of the lower part can have, let us call them 0, 1, and 2. The colour of a set says something about the history of the runs that reach this set. We have to clarify what we mean by run at this point. Conceptually, the subset-tuple construction unifies runs of the input automaton $A$. The construction conceptually includes two abstraction levels of this unification. Figure~\ref{runs} illustrates this. The figure shows three copies of two states of the upper part of the last section. The leftmost pair shows in dotted lines the runs of the original automaton $A$. These runs go from $A$-state to $A$-state, and are the ones that are unified by the construction. The middle part shows the conceptual unification of the $A$-runs to at most two outgoing branches per subset-tuple state, one for the accepting successors and one for the non-accepting successors. These runs go from state set to state set and correspond to the run analysis done with reduced split trees. The rightmost part finally shows the real run of the automaton excerpt. This is the run that is seen from the outside, when the inner structure of the states is now known. It unifies all the $A$-runs to one single run.
+
+% In the following we will always refer to the notion of run in the middle of Figure~\ref{runs}. That is, the notion that directly corresponds to reduced split trees. This conceptual view unifies and simplifies the $A$-runs as much as possible, but still guards enough information for figuring out a correct acceptance behaviour of the final complement automaton $B$.
+
+% A run arriving at a set is thus a branch of a corresponding reduced split tree. It can be obtained by starting at the node corresponding to the set in question and following the edges upwards toward the root of the tree. A given set may occur in many reduced split trees, as there is a reduced split tree for every word of $A$'s alphabet. The set of runs arriving at a set are thus the corresponding branches of all the reduced split tree where the set occurs.
+
+% In the construction of the lower part, we are interested in the history of the runs back until the time when they left the upper part. The crucial information is whether this history of a run includes a so-called right-turn. The notion of right-turn can be understood figuratively. In a reduced split tree, a run can be thought of as having at any node $p$ the choice of either going to the accepting child of $p$ or to the non-accepting one. Since in the right-to-left version of reduced split trees accepting children are to the right of non-accepting children, the run literally ``turns right'' when going to the accepting child. Consequently, if a run has a right-turn in its history, then it has visited at least one accepting set since leaving the upper part. On the other hand, if a run has no right-turns in its history, then it has visited no accepting sets since leaving the upper part.
+
+% That leads us back to the colours that we use for labelling the sets of the lower part. The meaning of the colours 0, 1, and 2 is the following.
+% \begin{itemize}
+% \item 2: the run includes a right-turn in the lower part
+% \item 1: the run includes a right-turn in the lower part, but in the $B$-state where the run visited the accepting child, there was already another set with colour 2
+% \item 0: the run does not include right-turns in the lower part
+% \end{itemize}
+
+% The role of colour 0 and colour 2 should be clear from the above explanations. The role colour 1 is more subtle and we will explain it later in this section when we give the intuition behind the selection of the accepting states of $B$. For now, we will complete the description of how to construct the lower part and thereby the final complement automaton $B$.
+
+% As mentioned, constructing the states of the lower part is done in the same way as constructing the states of the upper part, with the difference that every set $s$ is assigned a colour. This colour depends on the colour of the predecessor set $s_{pred}$ of $s$ and on whether $s$ itself is an accepting or non-accepting set. Furthermore, there are different rules for the two cases where the $B$-state $p$ containing $s_{pred}$ contains one or more 2-coloured sets or does not contain any 2-coloured sets. Figure~\ref{colours} contains the complete rules for determining the colour of set $s$. Note that states of the upper part are treated as all their sets would have colour 0.
+
+
+% The colour rules are in fact simple. The first rows in the two matrices in Figure~\ref{colours} treat the case where the run was still ``clean'' when it arrived at $s$'s predecessor $s_{pred}$. If now $s$ is the non-accepting child of $s_{pred}$, then the run stays clean and $s$ gets colour 0. But if $s$ is the accepting child, then the run just commits its first right-turn and gets dirty. Depending on whether there is another 2-coloured set in the state, $s$ gets either colour 1 or colour 2. The remaining rows in the matrices of Figure~\ref{colours} express the continuation of ``dirtiness''.
+
+
+
+
+\section{Optimisations}
+\label{optimisations}
+\subsection{Removal of Non-Accepting States (R2C)}
+\subsection{Merging of Adjacent Sets (M1)}
+\subsection{Reduction of 2-Coloured Sets (M2)}

@@ -1,0 +1,1 @@
+complement_batch.sh -c 72:00:00 -q mpi.q -n ea ~/data/15.tar.gz 600 1G

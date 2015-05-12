@@ -4,36 +4,81 @@
 % Option 'koma'    : class {scrreprt}
 %                    textwidth: 5.7874 inches = 14.7cm (with default DIV=10)
 
+\usepackage[a4paper,width=160mm,top=28mm,bottom=28mm,bindingoffset=0mm]{geometry}
 
-\begin{document}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\fancyhead{}                          % Clear default header settings
+\fancyhead[L]{\nouppercase\leftmark}  % Current chapter on left
+\fancyfoot{}                          % Clear default footer settings
+\fancyfoot[C]{\thepage}               % Page number in the middle
+
+%\renewcommand{\footrulewidth}{0.4pt}
+
+\newcommand{\id}[1]{\textsf{#1}}
 
 \title{Performance Investigations of a Subset-Tuple Büchi Complementation Construction}
 \author{Daniel Weibel}
 \date{\today}
+
+\begin{document}
 \maketitle
 
-% \begin{abstract}
-% This will be the abstract.
-% \end{abstract}
+
+
+\begin{abstract}
+This will be the abstract.
+\end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
 \begin{abstract}
 First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsche and Joel Allred to bring me to the topic of this thesis in the first place, and for the many enlightening discussions and explanations. A very special thank goes to Ming-Hsien Tsai, the main author of the GOAL tool, from the National Taiwan University. Without his very prompt and patient responses to my many questions regarding implementation details of GOAL, the plugin would not have been possible in its current form. I also would like to thank Michael Rolli and Nico Färber from the Grid Admin Team of the University of Bern for their very friendly and helpful responses to my questions about the Linux cluster where the experiments of this thesis have been executed.
 \end{abstract}
 
+\dominitoc
 \tableofcontents
 
-% \input{tex/1_introduction.tex}
+\chapter{Introduction}
+\label{chap_intro}
+\newpage
+\input{chapters/1_introduction.tex}
 
-%\input{tex/2_background.tex}
+\chapter{The Büchi Complementation Problem}
+\label{chap_background}
+\minitoc
+\newpage
+\input{chapters/2_background.tex}
 
-%\input{tex/3_fribourg_construction.tex}
+\chapter{The Fribourg Construction}
+\label{chap_construction}
+\minitoc
+\newpage
+\input{chapters/3_construction.tex}
 
-\input{tex/4_investigation.tex}
+\chapter{Performance Investigation of the Fribourg Construction}
+\label{chap_investigation}
+\minitoc
+\newpage
+\input{chapters/4_investigation.tex}
 
-% \input{tex/5_results_and_discussion.tex}
+\chapter{Results and Discussion}
+\label{chap_results}
+\minitoc
+\newpage
+\input{chapters/5_results.tex}
 
-% \input{tex/6_conclusions.tex}
+\chapter{Conclusions}
+\label{chap_conclusions}
+\newpage
+\input{chapters/6_conclusions.tex}
+
+\appendix
+\chapter{Plugin Installation and Usage}
+\label{appendix_a}
+\input{chapters/appendix_a.tex}
+
+
 
 \bibliographystyle{styles/bibstyle}
 \bibliography{../bib/buchi_compl}

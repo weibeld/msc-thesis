@@ -88,7 +88,7 @@ fi
 # Out file elements
 na=NA    # Default string for R's NA ("not available")
 y=Y; n=N # Signaling timeout and memory-out
-s="\t"   # Column separator
+s=","    # Column separator
 
 # Nice date
 d() { date "+%F %H:%M:%S"; }
