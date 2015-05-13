@@ -338,6 +338,14 @@
 				"buffer_size": 2228,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "ch.unifr.goal.util/plugin.xml",
+			"settings":
+			{
+				"buffer_size": 3098,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "",
@@ -514,6 +522,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"==========================================================================",
 			"isComplete",
 			"arg",
 			"isRightmost",
@@ -640,8 +649,7 @@
 			"delRight2Key",
 			"makeCompleteKey",
 			"makeCompleteCheckBox",
-			"getStates",
-			"Set"
+			"getStates"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -758,7 +766,35 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 197.0,
+						"translation.y": 191.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "ch.unifr.goal.util/plugin.xml",
+					"settings":
+					{
+						"buffer_size": 3098,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3088,
+								3088
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

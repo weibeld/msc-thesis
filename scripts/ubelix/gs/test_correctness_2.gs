@@ -3,7 +3,10 @@
 #
 # $ goal batch compl_equiv_2.gs <folder>
 #
+# EDIT May 2015: no rewrite/cleaning done on this file yet
+#
 # dw-08.10.2014
+#------------------------------------------------------------------------------#
 
 $folder = $1;
 

@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Empty all subdirectories of the current dir, or the dir given as argument.
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Nov. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+if [[ -n "$1" ]]; then
+  base=${1%/}
+else
+  base=.
+fi
+
+# All subdirectories of the base directory (includes trailing slash)
+subdirs=($base/*/)
+
+for dir in ${subdirs[@]}; do
+  echo "Cleaning ${dir%/}"
+  rm -f $dir*
+done
+

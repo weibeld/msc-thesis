@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Submit a complementation job for each subdirectory of the current directory.
+# The complementation construction and options are encoded in the subdirectory
+# names by n fields separated by periods. The meaning of the fields is:
+#
+#   - Field 1:        construction name
+#   - Field 2 to n-1: construction options
+#   - Field n:        arbitrary, is ignored by this script (but must be present)
+#
+# Example: fribourg.r2c.m1.m1.the_ultimative_run
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Oct. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+usage() {
+cat <<EOF
+USAGE
+    ${0##*/} [SUBMIT_OPTIONS] DATA TIMEOUT MEMORY
+
+DESCRIPTION
+    Execute the 'complement' job in each subdirectory of the current directory. 
+    The construction and options must be encoded in the names of these subdirs,
+    as n fields separated by periods:
+      - Field 1:        construction name
+      - Field 2 to n-1: construction options
+      - Field n:        arbitrary, is ignored (but must be present)
+    Example: fribourg.r2c.m1.m1.the_ultimative_run
+
+ARGUMENTS
+    DATA, TIMEOUT, MEMORY: passed to 'complement'
+    SUBMIT_OPTIONS:        passed to 'submit', see 'submit --help'
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+# Print error message to stderr and exit
+abort() {
+  echo -e "${0##*/}: $1" >&2
+  exit 1
+}
+
+# Test for file existence and absolute path
+check() {
+  path=$1
+  [[ ! -e "$path"  ]] && abort "invalid file or directory: $path"
+  [[ "$path" != /* ]] && abort "must specify absolute path: $path"
+}
+
+a=($@)                            # Put all command line args in array
+size=${#a[@]}                     # Number of arguments
+submit_opts=("${a[@]:0:$size-3}") # All args except the last three
+data=${a[$size-3]}                # Third-last argument
+timeout=${a[$size-2]}             # Second-last argument
+memory=${a[$size-1]}              # Last argument
+
+check "$data"
+
+# Get all subdirs of current dir (including a trailing slash)
+subdirs=($(pwd)/*/)
+
+# Execute 'complement' in every subdir, extract algo from directory name
+for sub in "${subdirs[@]}"; do
+  name=$(basename $sub)
+  ifs=$IFS; IFS=.; fields=($name); IFS=$ifs
+  algo=${fields[0]}
+  for t in ${fields[@]:1:${#fields[@]}-2}; do algo=$algo" -$t"; done
+  submit "${submit_opts[@]}" -d "${sub%/}" ~/submit/complement -a "$algo" -d "$data" -t "$timeout" -m "$memory"
+done

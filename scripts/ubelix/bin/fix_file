@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# Remove the strange character sequence that Sun Grid Engine writes at the end
+# of stdout files, if the job script terminated with an 'exit' command.
+#
+# It is either this sequence of 7 characters: 033 [ H 033 [ 2 J
+# Or this sequence of 6 characters:           033 [ H 033 [ J
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Nov. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+sed -i 's/\o033\[H\o033\[2*J$//' "$1"

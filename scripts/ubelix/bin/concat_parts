@@ -1,5 +1,5 @@
 #!/bin/bash
-#==============================================================================#
+#
 # Concatenate the out files in all the subdirectories of the current directory
 # (partitions of the test set) to a master out file in the current directory.
 #
@@ -9,8 +9,8 @@
 # of all but the first partition files. In a newer version of complement.sh, an
 # option for not printing the column  header has been added.
 #
-# Author: Daniel Weibel <daniel.weibel@unifr.ch>, Dec. 2014
-#==============================================================================#
+# Daniel Weibel <daniel.weibel@unifr.ch> Dec. 2014 - May 2015
+#------------------------------------------------------------------------------#
 
 usage() {
   echo "USAGE:"

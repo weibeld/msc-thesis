@@ -1,0 +1,127 @@
+#!/bin/bash
+#
+# Wrapper script for the qsub command
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+# Default values for OPTIONS
+memory=4G
+cpu_time=01:00:00
+dir=$(pwd)
+notification=n
+queue=short.q
+scratch=1G
+slots=4
+
+usage() {
+cat <<EOF
+USAGE
+    ${0##*/} [OPTIONS] JOB_SCRIPT [JOB_SCRIPT_ARGS]
+
+DESCRIPTION
+    Submit jobs to Sun Grid Engine. This is just a wrapper around 'qsub'.
+
+OPTIONS                                             [DEFAULT]
+    -m: Memory limit                                [$memory]
+    -c: CPU time limit                              [$cpu_time]
+    -d: Execution directory                         [\$(pwd)]
+    -q: Queue                                       [$queue]
+    -s: Scratch size (set to 0 to disable scratch)  [$scratch]
+    -p: Number of slots (CPU cores)                 [$slots]
+    -n: E-mail notification                         [$notification]
+        b: E-mail is sent at beginning of job
+        e: E-mail is sent at end of job
+        a: E-mail is sent when job is aborted or rescheduled
+        s: E-mail is sent when job is suspended
+        n: No e-mails are sent
+
+JOB_SCRIPT
+    Absolute path to job script to submit
+
+JOB_SCRIPT_ARGS
+    Arguments for JOB_SCRIPT
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+# Print error message to stderr and exit
+abort() {
+  echo -e "${0##*/}: $1" >&2
+  exit 1
+}
+
+# Test for file existence and absolute path
+check() {
+  path=$1
+  [[ ! -e "$path"  ]] && abort "invalid file or directory: $path"
+  [[ "$path" != /* ]] && abort "must specify absolute path: $path"
+}
+
+# getopts reads until first argument not starting with -, which is JOB_SCRIPT
+while getopts ":m:c:d:q:s:p:n:" opt; do
+  case $opt in
+    m) memory=$OPTARG       ;;
+    c) cpu_time=$OPTARG     ;;
+    d) dir=${OPTARG%/}      ;;
+    q) queue=$OPTARG        ;;
+    s) scratch=$OPTARG      ;;
+    p) slots=$OPTARG        ;;
+    n) notification=$OPTARG ;;
+    \?) abort "invalid option: -$OPTARG"             ;;
+    :)  abort "option -$OPTARG requires an argument" ;;
+  esac
+done
+
+check "$dir"
+
+# Capture JOB_SCRIPT
+shift $(($OPTIND-1))
+job_script=$1
+check "$job_script"
+
+# Capture JOB_SCRIPT_ARGS
+shift
+job_script_args=("$@")
+
+# Set up 'qsub' options for scratch
+if [[ "$scratch" = 0 ]]; then
+  scratch_arg=""
+else
+  scratch_arg="-l scratch=1,scratch_size=$scratch,scratch_files=1M"
+fi
+
+# Set up 'qsub options for the parallel environment SMP (slots)
+if [[ "$slots" -eq 1 ]]; then
+  slots_arg=""
+else
+  slots_arg="-pe smp $slots -R y "
+fi
+
+# Build 'qsub' command and write it to a file, so that it can be sourced later
+cat <<EOF >"$dir"/qsub
+qsub -wd "$dir" \\
+     -q $queue \\
+     -l h_cpu=$cpu_time,h_vmem=$memory \\
+     $scratch_arg \\
+     $slots_arg \\
+     -V \\
+     -M daniel.weibel@unifr.ch \\
+     -m $notification \\
+     -o stdout \\
+     -e stderr \\
+     -N $(basename $dir) \\
+EOF
+
+# Add job script to file
+echo -n  "     \"$job_script\" " >>"$dir"/qsub
+
+# Add job script args. Args that contain spaces mut be enclosed in quotes.
+for a in "${job_script_args[@]}"; do
+  [[ $(wc -w <<< "$a") -gt 1 ]] && a=$(sed -e 's/^/\"/' -e 's/$/\"/' <<< "$a")
+  echo -n "$a " >>"$dir"/qsub
+done
+echo >>"$dir"/qsub
+
+# Source the file to execute the qsub command
+source "$dir"/qsub

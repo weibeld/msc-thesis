@@ -1,8 +1,14 @@
 #!/bin/bash
+#
+# Sun Grid Engine job script
+#
 # Perform the complementation-equivalence test on all the automata in the
 # specified folder.
 #
+# EDIT May 2015: no rewrite/cleaning done on this file yet
+#
 # dw-14.10.2014
+#------------------------------------------------------------------------------#
 
 folder=$(sed 's/\/$//' <<<"$1")
 
@@ -13,7 +19,7 @@ cp -r $folder/*.gff $data
 
 # Copy GOAL script to local scratch
 batch=$TMP/batch.gs
-cp ~/scripts/compl_equiv_2.gs $batch
+cp ~/scripts/compl_equiv_2.gs $batch  # See ~/gs/test_correctness_2.gs
 
 # Copy GOAL to local scratch
 cp ~/bin/GOAL-20130711.tar.gz $TMP/tmp.tar.gz

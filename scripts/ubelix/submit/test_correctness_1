@@ -1,15 +1,20 @@
 #!/bin/bash
-# SGE Job Script
-# Complementation-equivalence test on random automata. Writes to stdout. Assumes
-# that stdout file is named "stdout".
+#
+# Sun Grid Engine job script
+#
+# Complementation-equivalence test on random automata. Generates random automata
+# on the fly. Writes to stdout. Assumes ythat stdout file is named "stdout".
+#
+# EDIT May 2015: no rewrite/cleaning done on this file yet
 #
 # dw-03.11.2014
+#------------------------------------------------------------------------------#
 
 set -e
 
 # To adapt if necessary
 goal_archive=~/bin/GOAL-20141117.tar.gz # GOAL version to use
-goal_batch=~/scripts/compleq/compleq.gs # Batch script to execute by GOAL
+goal_batch=~/scripts/compleq/compleq.gs # See ~/gs/test_correctness.gs
 
 # Default values for command line options
 algo="fribourg -r"

@@ -10,7 +10,11 @@
 #                           <states_max>
 #                           <sym_min>
 #                           <sym_max>
+#
+# EDIT May 2015: no rewrite/cleaning done on this file yet
+#
 # dw-11.09.2014
+#------------------------------------------------------------------------------#
 
 $algo = $1;  # Complementation construction
 $opts = $2;  # Options to the construction (may be an empty string)

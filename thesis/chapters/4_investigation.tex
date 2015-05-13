@@ -120,6 +120,11 @@ The complete integration allows us to publish the plugin so that it can be used 
 Since between the 2014-08-08 and 2014-11-17 releases of GOAL certain parts of the plugin interfaces have changed, and we adapted our plugin accordingly, the currently maintained version of the plugin works only with GOAL versions 2014-11-17 or newer. It is thus essential for any GOAL user to update to this version in order to use our plugin.
 
 \section{Verification of the Implementation}
+
+See UBELIX/jobs/2014-11-25
+
+Can we do a complement-equivalence test with all the 11,000 automata of size 15 in the test set?
+
 Of course it is needed to test whether our implementation produces correct results. That is, are the output automata really the complements of the input automata? We chose doing so with an empirical approach, taking one of the pre-existing complementation constructions in GOAL as the ``ground truth''. We can then perform what we call complementation-equivalence tests. We take a random Büchi automaton and complement it with the ground-truth construction. We then complement the same automaton with our implementation of the Fribourg construction, and check whether the two complement automata are equivalent. Provided that the ground-truth construction is correct, we can show in this way that our construction is correct for this specific case.
 
 We performed complementation-equivalence tests for the Fribourg construction with different option combinations. In particular, we tested the configurations \tec{m1}, \tec{m1}+\tec{m2}, \tec{c}+\tec{r2c}, \tec{macc}, \tec{r}, \tec{rr}, and the construction without any options. For each configuration we tested 1000 random automata of size 4 and with an alphabet of size 2 to 4. As the ground-truth construction we chose the Safra-Piterman construction. In all cases the complement of the Fribourg construction was equivalent to the complement of the Safra-Piterman construction.
@@ -179,6 +184,11 @@ Summarising, for the internal tests we are going to carry out runs of the follow
 
 
 \section{External Tests}
+\textbf{Justification why to use only piterman, slice, and rank}$\\$
+UBELIX/jobs/2014-10-09: $\\$
+Made test with complementing the first 10 of the size 15 test set with all constructions, and only piterman, slice, and rank (and safra) completed all of them. $\\$
+See Tsai (2011)~\cite{2011_tsai} page 5: they compared ramsey, piterman, rank, and slice. But ramsey couldn't complement any of the 11,000 automata of size 15. $\\$
+Ramsey, piterman, rank, and slice are representative for the four main complementatio approaches: Ramsey-based, determinization-based, rank-based, and slice-based.
 
 
 
