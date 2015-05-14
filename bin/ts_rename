@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# Rename the files in the test set of GOAL automata from the paper "State of
+# Büchi Complementation" (2011). The test set is available here:
+# http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?media=goal:ciaa2010_automata.tar.gz
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+set -e
+
+usage() {
+cat <<EOF
+Usage:
+ ${0##*/} dir
+
+Description:
+ Rename the files from the original GOAL testset:
+ Original filename structure: new-s-15-r-1.00-f-0.10--1-of-100.gff
+ New filename structure:      s15_t1.0_a0.1_001.gff
+
+Argument:
+ dir: directory containing the original test set automata
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+[[ -z "$1" ]] && echo "${0##*/}: missing argument 'dir'" && exit 1
+
+dir=${1%/}
+
+for file in "$dir"/*.gff; do
+  # Remove the executable flag that the test set files have by default
+  chmod -x "$file"
+
+  # Original filename structure: new-s-15-r-1.00-f-0.10--1-of-100.gff
+  oldname=$(basename $file)
+
+  # Tokenize old file name by dashes
+  ifs=$IFS; IFS=-
+  f=($oldname)
+  IFS=$ifs
+  # f[0]: new  | f[1]: s    | f[2]: 15 | f[3]: r  | f[4]: 1.00
+  # f[5]: f    | f[6]: 0.10 | f[7]:    | f[8]: 1  | f[9]: of   | f[10]: 100.gff
+
+  # New filename structure: s15_t1.0_a0.1_001.gff
+  newname="s${f[2]}_t$(printf %.1f ${f[4]})_a$(printf %.1f ${f[6]})_$(printf %03d ${f[8]}).gff"
+
+  # Rename
+  mv "$file" $(dirname "$file")/"$newname"
+done

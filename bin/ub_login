@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# Log in to an interactive SSH session on UBELIX
+
+# Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+usage() {
+cat <<EOF
+Usage:
+ ${0##*/}
+
+Description:
+ Log in to UBELIX over SSH
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+ssh dw07r324@submit.unibe.ch

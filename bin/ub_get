@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Downoad a file or directory from UBELIX to the current directory. Directories
+# are downloaded recursively.
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+usage() {
+cat <<EOF
+Usage:
+ ${0##*/} path
+
+Description:
+ Download the file or directory specified by 'path' to the current directory
+ on the local machine.
+
+Argument:
+ path: path to file or directory on UBELIX (absolute or relative to HOME)
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+[[ -z "$1" ]] && echo "${0##*/}: missing argument 'path'" && exit 1
+
+scp -r dw07r324@submit.unibe.ch:"$1" .

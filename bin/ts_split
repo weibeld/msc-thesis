@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+#
+# Split the files in directory 'input_dir' into 'parts' partitions and save
+# each partition in a separate directory in 'output_dir'.
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Dec. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+set -e
+
+usage() {
+cat <<EOF
+Usage:
+ ${0##*/} -p parts -i input_dir [-o output_dir]
+
+Description:
+ Split the files in directory 'input_dir' into 'parts' partitions and save
+ each partition in a separate directory in 'output_dir'.
+
+Arguments:
+ -p: an integer >= 1
+ -i: directory containing the files to split
+ -o: directory where to save the splitted parts (default is current directory)
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+# Print error message to stderr and exit
+abort() {
+  echo -e "${0##*/}: $1" >&2
+  exit 1
+}
+
+while getopts ":p:i:o:" opt; do
+  case $opt in
+    p) p=$OPTARG          ;;
+    i) indir=${OPTARG%/}  ;;
+    o) outdir=${OPTARG%/} ;;
+    \?) abort "invalid option: -$OPTARG"             ;;
+    :)  abort "option -$OPTARG requires an argument" ;;
+  esac
+done
+
+# Check arguments
+[[ ! "$p" -gt 0   ]] && abort "'$p' is not a valid number"
+[[ -z "$indir"    ]] && abort "must set option '-i input_dir'"
+[[ ! -d "$indir"  ]] && abort "'$indir' is not a valid directory"
+outdir=${outdir:-$(pwd)}
+[[ ! -d "$outdir" ]] && abort "'$outdir' is not a valid directory"
+
+# It's convenient to do everything from within the input directory
+cd "$indir"
+
+echo "Total $(($(ls | wc -l))) files"
+
+# Size of the first p-1 partitions (total/p is integer division and discards
+# the decimal part if the result is not an integer). The last partition will
+# contain all the remaining files, which may differ from 'size'.
+size=$(($(ls | wc -l) / $p))
+
+# List of all the files in the input directory, one per line
+filenames=$(ls)
+
+# Pad a number with 0s to the number of digits of 'p'
+d=$(($(echo -n $p | wc -c)))
+pad() {
+  printf "%0${d}d" "$1"
+}
+
+# For all of the 'p' partitions, copy the corresponding files to directory 'dir'
+for i in $(seq 1 $p); do
+  ii=$(pad "$i")
+  echo -n "Partition $ii of $p: "
+
+  dir="$outdir"/$(basename "$indir")."$ii"_of_"$p"
+  mkdir -p "$dir"
+
+  # The first p-1 partitions
+  if [[ "$i" -lt "$p" ]]; then
+    echo "$filenames" | sed -n "1,$size p" | xargs -J % cp % "$dir"
+    filenames=$(echo "$filenames" | sed "1,$size d")
+    echo "$size files"
+
+  # The last partition
+  else
+    echo "$filenames" | xargs -J % cp % "$dir"
+    echo "$(($(wc -l <<<"$filenames"))) files"
+  fi
+done
+
+# Note on ARG_MAX and xargs:
+# 'cp a lot of files destination' fails if there are really *a lot of files*
+# on the command line. This maximum size of command line arguments is ARG_MAX,
+# and it can be checked with 'getconf ARG_MAX' (bytes). To circumvent this
+# problem, we use 'echo a lot of files | xargs -J % cp % destination'. 'xargs'
+# executes 'cp % destination' on our behalf by taking care that '%' (a place-
+# holder) never exceeds ARG_MAX.
+# ARG_MAX applies only to commands that start new processes with the exec()
+# system call. 'echo' is a shell builtin, and thus is not affected by ARG_MAX.
+# That's why we can do 'echo a lot of files', but not 'cp a lot of files dest'.
+# Source http://www.in-ulm.de/~mascheck/various/argmax/

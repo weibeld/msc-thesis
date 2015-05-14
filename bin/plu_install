@@ -1,0 +1,112 @@
+#!/bin/bash
+#
+# Compile and install a GOAL plugin
+#
+# A GOAL plugin (Java Plugin Framework, JPF) has the following structure:
+# ch.unifr.example/
+#     plugin.xml
+#     sources/
+#         ch/unifr/example/<.java files>
+#     classes/
+#         ch/unifr/example/<.class files>
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> May 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+set -e 
+
+usage() {
+cat <<EOF
+Usage:
+ ${0##*/} -p plugin -g GOAL [-c]
+
+Description:
+ Compiles the specified plugin and installs it in the specified GOAL.
+
+Arguments:
+ -p: path to the root directory of a GOAL plugin
+ -g: path to the root directory of a GOAL directory tree
+ -c: If set, only compiles the plugin, but does not install it
+
+Note:
+ The compilation might produce the following compiler warning:
+
+     "bootstrap class path not set in conjunction with -source 1.6"
+
+ This shouldn't do any harm, but it can be removed by setting 'xbootclasspath'
+ in the script to an appropriate value according to your system.
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+# Print error message to stderr and exit
+abort() {
+  echo -e "${0##*/}: $1" >&2
+  exit 1
+}
+
+while getopts ":p:g:c" opt; do
+  case $opt in
+    p) p=${OPTARG%/} ;;
+    g) g=${OPTARG%/} ;;
+    c) c=true        ;;
+    \?) abort "invalid option: -$OPTARG"             ;;
+    :)  abort "option -$OPTARG requires an argument" ;;
+  esac
+done
+
+# Check options
+[[ -z "$p"   ]] && abort "must set option '-p plugin'"
+[[ -z "$g"   ]] && abort "must set option '-g GOAL'"
+[[ ! -d "$p" ]] && abort "$p is not a valid directory"
+[[ ! -d "$g" ]] && abort "$g is not a valid directory"
+
+# The standard GOAL plugins
+core="$g"/plugins/org.svvrl.goal.core
+cmd="$g"/plugins/org.svvrl.goal.cmd
+gui="$g"/plugins/org.svvrl.goal.gui
+
+# The standard GOAL plugins are zipped in a fresh GOAL installation, but must
+# be unzipped to be accessible by the Java compiler.
+[[ ! -d "$core" ]] && unzip "$core".zip -d "$core" >/dev/null && rm "$core".zip
+[[ ! -d "$cmd"  ]] && unzip "$cmd".zip  -d "$cmd"  >/dev/null && rm "$cmd".zip
+[[ ! -d "$gui"  ]] && unzip "$gui".zip  -d "$gui"  >/dev/null && rm "$gui".zip
+
+# Get path to sources of the plugin. Pper convention the root directory of a
+# plugin is named after the Java package name of the  plugin. E.g. plugin
+# ch.unifr.example has sources in ch.unifr.example/sources/ch/unifr/example
+sources="$p"/sources/$(basename "$p" | tr . /)
+
+# Xbootclasspath issue:
+# The GOAL binaries, as obtained from the GOAL website, have been compiled for
+# Java 1.6. This mean that the code for an additional plugin has to be compiled
+# for Java 1.6 as well. Otherwise, there might be runtime problems. Compiling
+# for Java 1.6 is done by setting '-source 1.6' and '-target 1.6' for 'javac'.
+# If '-source 1.6' is set, then the addtional option '-Xbootclasspath:' should
+# be set to a rt.jar file of a Java 1.6 runtime environment. If this is not
+# done, a compiler warning results. It seems however that the compilation still
+# works correctly if '-Xbootclasspath:' is not set, but it can be set for
+# convenience with the following variable.
+xbootclasspath="-Xbootclasspath:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar"
+#xbootclasspath=
+
+echo Compiling
+
+# Compile sources
+javac -classpath "$core"/classes:"$cmd"/classes:"$gui"/classes \
+  $xbootclasspath \
+  -source 1.6 \
+  -target 1.6 \
+  -d "$p"/classes \
+  "$sources"/*.java
+
+# If 'compile only', exit now
+[[ -n "$c" ]] && exit
+
+echo Installing
+
+# Remove old version of the plugin, if it exists
+rm -rf "$p"/plugins/$(basename "$p")
+
+# Install new version of the plugin
+cp -r "$p" "$g"/plugins

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Structure label-on="Transition" type="FiniteStateAutomaton">
+    <Name/>
+    <Description/>
+    <Alphabet type="Propositional">
+        <prop>p</prop>
+        <prop>q</prop>
+        <prop>r</prop>
+    </Alphabet>
+    <StateSet>
+        <State sid="0">
+            <x>167</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>105</y>
+        </State>
+        <State sid="1">
+            <x>167</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>205</y>
+        </State>
+        <State sid="2">
+            <x>67</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>155</y>
+        </State>
+    </StateSet>
+    <InitialStateSet>
+        <StateID>0</StateID>
+    </InitialStateSet>
+    <TransitionSet>
+        <Transition tid="11">
+            <from>0</from>
+            <to>1</to>
+            <label>p q ~r</label>
+            <name/>
+            <description/>
+        </Transition>
+        <Transition tid="21">
+            <from>0</from>
+            <to>0</to>
+            <label>p ~r</label>
+        </Transition>
+        <Transition tid="23">
+            <from>1</from>
+            <to>0</to>
+            <label>~p</label>
+        </Transition>
+        <Transition tid="22">
+            <from>0</from>
+            <to>2</to>
+            <label>r</label>
+        </Transition>
+        <Transition tid="25">
+            <from>2</from>
+            <to>2</to>
+            <label>True</label>
+        </Transition>
+        <Transition tid="24">
+            <from>1</from>
+            <to>1</to>
+            <label>~p q</label>
+        </Transition>
+    </TransitionSet>
+    <Acc type="Buchi">
+        <StateID>2</StateID>
+    </Acc>
+</Structure>

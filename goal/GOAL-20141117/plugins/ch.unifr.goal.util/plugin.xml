@@ -1,29 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 
-<!--============================================================================
-  Various useful commands. Currently only command line versions. Probably add
-  GUI access in future work.
+<!--
+  Miscellaneous useful commands. Currently, they are only accessible from the
+  command line, but a interface in the GUI could be added in future work.
 
-  Requires GOAL version 2014-11-17 or above.
+  Requires GOAL version 2014-11-17 or later.
 
-  Author: Daniel Weibel <daniel.weibel@unifr.ch>, 20 Dec. 2014
-=============================================================================-->
+  Daniel Weibel <daniel.weibel@unifr.ch> Dec. 2014 - May 2015
+-->
 
 <plugin id="ch.unifr.goal.util" version="0.0.1">
   
-  <!--==========================================================================
-    Other plugins whose code is accessed by this plugin
-  ===========================================================================-->
+  <!-- Other plugins whose code is accessed by this plugin-->
   <requires>
     <import plugin-id="org.svvrl.goal.core" />
     <import plugin-id="org.svvrl.goal.cmd" />
   </requires>
 
 
-  <!--==========================================================================
-    Declare plugin's code
-  ===========================================================================-->
+  <!-- Declare plugin's code -->
   <runtime>
     <library id="ch.unifr.goal.util" path="classes/" type="code">
       <!-- <export prefix="*" /> --> <!-- If other plugins need to access this plugins's code -->
@@ -31,13 +27,12 @@
   </runtime>
 
 
- <!--==========================================================================
-    EXTENSIONS
-  ===========================================================================-->
+ <!-- EXTENSIONS -->
 
-  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  <!--
     Complete: test an automaton for completeness
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  -->
+
   <!-- Command line command -->
   <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CompleteCommand">
     <parameter id="class" value="ch.unifr.goal.util.CompleteCommand"/>
@@ -66,9 +61,10 @@
   </extension>
 
 
-  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  <!--
     Universal: test if the language of an automaton is universal
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  -->
+
   <!-- Command line command -->
   <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="UniversalCommand">
     <parameter id="class" value="ch.unifr.goal.util.UniversalCommand"/>
@@ -104,6 +100,5 @@
       </value>
     </parameter>
   </extension>
-
 
 </plugin>

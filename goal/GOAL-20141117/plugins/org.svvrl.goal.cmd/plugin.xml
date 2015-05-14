@@ -1,0 +1,1861 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="org.svvrl.goal.cmd" version="2014.11.17" vendor="GOAL Development Team"
+        class="org.svvrl.goal.cmd.CmdPlugin">
+<requires>
+  <import plugin-id="org.svvrl.goal.core" plugin-version="2014.11.17" />
+  <import plugin-id="org.svvrl.goal.gui" plugin-version="2014.11.17" />
+</requires>
+<runtime>
+	<library id="core" path="classes/" type="code">
+		<export prefix="*"/>
+	</library>
+</runtime>
+
+
+
+<!-- Extensions -->
+<extension-point id="CommandExpression">
+  <parameter-def id="class" />                                      <!-- the class of the CommandExpression to be added -->
+  <parameter-def id="name" />                                       <!-- the unique command name -->
+  <parameter-def id="full name" multiplicity="none-or-one" />       <!-- the full name of the command -->
+  <parameter-def id="help" />                                       <!-- the help message -->
+</extension-point>
+<extension-point id="CommandExtension">
+  <parameter-def id="class" />                                      <!-- the class of the CommandExtension to be added -->
+  <parameter-def id="name" multiplicity="none-or-one" />            <!-- the unique command name -->
+  <parameter-def id="full name" multiplicity="none-or-one" />       <!-- the full name of the command -->
+  <parameter-def id="help" multiplicity="none-or-one" />            <!-- the help message -->
+</extension-point>
+<extension-point id="ComplementConstructionInterface">
+  <parameter-def id="class" />                                      <!-- the class of the interface -->
+  <parameter-def id="default for" multiplicity="none-or-one" />
+  <parameter-def id="name" multiplicity="none-or-one" />            <!-- the unique name of the provided complementation construction -->
+  <parameter-def id="construction" multiplicity="none-or-one" />    <!-- the class of the provided complementation construction -->
+  <parameter-def id="help" multiplicity="none-or-one" />            <!-- the help message -->
+</extension-point>
+<extension-point id="GameSolverInterface">
+  <parameter-def id="class" />                                      <!-- the class of the interface -->
+  <parameter-def id="name" />                                       <!-- the unique name of the solver -->
+  <parameter-def id="solver" />                                     <!-- the class of the provided solver -->
+  <parameter-def id="description" />                                <!-- the unique name of the solver -->
+  <parameter-def id="help" />                                       <!-- the unique name of the solver -->
+</extension-point>
+
+
+
+<!-- ConsoleHandler -->
+<extension plugin-id="org.svvrl.goal.core" point-id="ConsoleHandler" id="CmdHandler">
+  <parameter id="class" value="org.svvrl.goal.cmd.CmdHandler"/>
+  <parameter id="priority" value="10" />
+</extension>
+
+
+
+<!-- Command Expressions and Command Extensions -->
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="AccCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.AccCommand"/>
+  <parameter id="name" value="acc"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>acc - Maximize or minimize Buchi acceptance condition of a finite state
+        automaton. Note that this operation will be applied directly on the
+        input automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>acc [-max | -min] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Maximize or minimize Buchi acceptance condition of a finite state automaton.<br/>
+  <br/>
+  <table><tr valign='top'><td>-max</td> <td>Maximize the Buchi acceptance condition.</td></tr>
+  <tr valign='top'><td>-min</td> <td>Minimize the Buchi acceptance condition.</td></tr>
+  </table></dd>
+<dt>EXAMPLE</dt>
+<dd>  <pre>acc -max $aut;</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="AlphabetCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.AlphabetCommand"/>
+  <parameter id="name" value="alphabet"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>alphabet - Manipulate the alphabet of an automaton or a game.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>alphabet -s [ -ap ] FILE_OR_LVAL</dd>
+  <dd>alphabet -e EXPR [ -ap ] FILE_OR_LVAL</dd>
+  <dd>alphabet -c EXPR [ -ap ] FILE_OR_LVAL</dd>
+  <dd>alphabet -r EXPR [ -ap ] FILE_OR_LVAL</dd>
+  <dd>alphabet -a EXPR [-R | -A | -S EXPR | -P EXPR | -ap ] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Manipulate the alphabet of an automaton (or a game). This operation is
+  directly applied to the input automaton. The returned value is always the new
+  alphabet of the automaton (or the new atomic propositions if -ap is present).<br/>
+  <br/>
+  <table><tr valign='top'><td>-s</td> <td>Simply return the alphabet of the input automaton or game.</td></tr>
+  <tr valign='top'><td>-ap</td> <td>Return the atomic propositions (or classical symbols) instead of
+      the alphabet.</td></tr>
+  <tr valign='top'><td>-e</td> <td>Expand the alphabet by a list of propositions.</td></tr>
+  <tr valign='top'><td>-c</td> <td>Contract the alphabet by removing a list of propositions.</td></tr>
+  <tr valign='top'><td>-r</td> <td>Rename the propositions based on a map from a proposition to its new name.</td></tr>
+  <tr valign='top'><td>-a</td> <td>Abstract the alphabet based on a map from a predicate to its definition.</td></tr>
+  <tr valign='top'><td>-R</td> <td>Retain the transition symbols in alphabet abstraction.</td></tr>
+  <tr valign='top'><td>-A</td> <td>Only annotate the transitions with properties specified by -S and -P.</td></tr>
+  <tr valign='top'><td>-S</td> <td>Specify the name of the property that will store the symbols on the
+     transitions in alphabet abstraction.</td></tr>
+  <tr valign='top'><td>-P</td> <td>Specify the name of the property that will store the evaluations of the
+     predicates in alphabet abstraction.</td></tr>
+  </table></dd>
+<dt>EXAMPLE</dt>
+<dd><pre>  alphabet -e "r" aut.gff
+  alphabet -c "p" aut.gff
+  alphabet -r "p=&gt;r,q=&gt;s" aut.gff
+  alphabet -a "r=&gt;p/\q" aut.gff
+  alphabet -a "r=&gt;p/\q" -A -P "Predicates" aut.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="AperiodicCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.AperiodicCommand"/>
+  <parameter id="name" value="aperiodic"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>aperiodic - Test the aperiodicity of an automaton or a language.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>aperiodic [-A | -a | -s] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Return "true" if (1) -A is specified and the input automaton is aperiodic or
+  (2) -A is not specified and the language of the automaton is aperiodic.
+  Return "false" otherwise.<br/>
+  <br/>
+  <table><tr valign='top'><td>-A</td> <td>Test the aperiodicity of the automaton rather than the language of the
+     automaton. By default, this command tests the aperiodicity of the language
+     of the input automaton.</td></tr>
+  <tr valign='top'><td>-a</td> <td>Test the aperiodicity of the automaton first. By default, this option is
+     off.</td></tr>
+  <tr valign='top'><td>-s</td> <td>Skip rejected strings. By default, this option is off.</td></tr>
+  </table></dd>
+<dt>EXAMPLE</dt>
+  <dd><pre>aperiodic -a -s aut.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="BatchCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.BatchCommand"/>
+  <parameter id="name" value="batch"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>batch - Execute a script.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>batch FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Execute the statement in a GOAL script. If the argument is not a file, it
+  will be parsed as a statement.</dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  batch script
+  batch "echo Hello; echo World;"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ClassificationCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ClassificationCommand"/>
+  <parameter id="name" value="classification"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>classification - Classify an automaton or a QPTL formula based on the
+  Manna-Pnueli Temporal Hierarchy.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>classification [-c | -t | -s] [FILE_OR_LVAL | FORMULA_OR_LVAL]</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Classify an automaton or a QPTL formula based on the Manna-Pnueli temporal
+  hierarchy.<br/>
+  <br/>
+  <table><tr valign='top'><td>-c</td> <td>Use DCW instead of DMW to construct DBW. By default, this options is off.</td></tr>
+  <tr valign='top'><td>-t</td> <td>Classify in a top-down manner. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-s</td> <td>Return classes of the Temporal Hierarchy such that a class &kappa; is returned
+     if and only if the QPTL formula is a standard &kappa;-formula.</td></tr>
+</table></dd>
+<dt>EXAMPLE</dt>
+  <dd><pre>classification "[](p U q) U q"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+  
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CloneCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.CloneCommand"/>
+  <parameter id="name" value="clone"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>clone - Make a clone of an object.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>clone EXPR</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Make a clone of an object.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>clone $aut;</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CloseCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.CloseCommand"/>
+  <parameter id="name" value="close"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>close - Close a GOAL window.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>close [-f] INT_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Close the GOAL window with a specified index.<br/>
+  <br/>
+  <table><tr valign='top'><td>-f</td> <td>Close the window without saving changes.</td></tr>
+</table></dd>
+<dt>EXAMPLE</dt>
+  <dd><pre>close 1</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExtension" id="ComplementExtension">
+  <parameter id="class" value="org.svvrl.goal.cmd.ComplementExtension"/>
+  <parameter id="name" value="complement"/>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ConcatenationCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ConcatenationCommand"/>
+  <parameter id="name" value="concatenation"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>concatenation - Concatenate an NFW and an &omega;-automaton or objects as a string.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>concatenation [-o FILE_OR_LVAL] FILE_OR_LVAL FILE_OR_LVAL</dd>
+  <dd>concatenation [-g EXPR] LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Concatenate an NFW and an &omega;-automaton such that the result accepts the
+  concatenation of the language of the NFW and the language of the omega
+  automaton. This command can also be used to concatenate the string
+  representations of objects.<br/>
+  <br/>
+  <table><tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr>
+  <tr valign='top'><td>-g</td> <td>The glue between each string representation of the objects.</td></tr>
+  </table></dd>
+<dt>EXAMPLE</dt>
+<dd><pre>  concatenation -o c.gff a.gff b.gff
+  concatenation -g ", " $objs</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ContainmentCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ContainmentCommand"/>
+  <parameter id="name" value="containment"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>containment - Check whether an automaton is contained in another.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>containment [-m CONTAINMENT_ALG] [-macc | -pre | -sim | -rand ]
+              FILE_OR_LVAL FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check whether the first input automaton is contained in the second one.
+  Return "(true, null)" if it is the case, and "(false, CE)" otherwise where
+  CE is a counterexample.<br/>
+  <br/>
+  <table><tr valign='top'><td>-m</td> <td>Specify the algorithm used for checking containment. The value can be
+     naive, ms, safra, modifiedsafra, piterman, slice. By
+     default, naive is be used.</td></tr>
+  <tr valign='top'><td>-macc</td> <td>Maximize the acceptance sets of the input automata. This option applies
+        to ms, safra, modifiedsafra, piterman, and slice. By default, this
+        option is off.</td></tr>
+  <tr valign='top'><td>-pre</td> <td>Simplify the input automata by simulation relations. This option applies
+       to ms, safra, modifiedsafra, piterman, and slice. By default, this
+       option is off.</td></tr>
+  <tr valign='top'><td>-sim</td> <td>Utilize the simulation relation between the input automata. This option
+       applies to safra, modifiedsafra, ms, piterman, and slice. By default,
+       this option is off.</td></tr>
+  <tr valign='top'><td>-rand</td> <td>Apply random search. This option applies to ms, safra, modifiedsafra,
+        piterman, and slice. By default, this option is off.</td></tr>
+</table></dd>
+<dt>EXAMPLE</dt>
+<dd><pre>  containment a.gff b.gff
+  containment -m piterman a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ConvertCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ConvertCommand"/>
+  <parameter id="name" value="convert"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>convert - Convert an automaton into another type of automaton, a regular
+  expression, an &omega;-regular expression, or a game, or convert a game into
+  a game of another type.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>convert [-t AUTOMATON_TYPE | -o FILE_OR_LVAL] FILE_OR_LVAL</dd>
+  <dd>convert [-t GAME_TYPE | -o FILE_OR_LVAL] FILE_OR_LVAL</dd>
+  <dd>convert [-t ALPHABET_TYPE | -o FILE_OR_LVAL] FILE_OR_LVAL</dd>
+  <dd>convert -t game -p FILE_OR_LVAL [-o FILE_OR_LVAL] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Convert an automaton into another type of automaton, a regular expression,
+  or an &omega;-regular expression, or convert a game into another type of game.<br/>
+  <br/>
+  <table><tr valign='top'><td>-t</td> <td>Specify the target type of the automaton or game to be converted.</td></tr>
+  <tr><td>-o</td> <td>Write the result to the specified file.</td></tr>
+  <tr><td>-p</td> <td>Specify the propositions controlled by Player %GamePlayer.P0%. The expacted value of
+     this argument is a string of comma-separated propositions.</td></tr>
+</table></dd>
+<dt>EXAMPLE</dt>
+<dd><pre>  convert -t nbw -o output.gff input.gff
+  convert -t re nfw.gff
+  convert -t ore nbw.gff
+  convert -t npg game.gff
+  convert -t game -p "ack1,ack2" dpw.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="DeterministicCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.DeterministicCommand"/>
+  <parameter id="name" value="deterministic"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>deterministic - Test if an automaton is syntactically deterministic or
+  semantically deterministic. By default, syntactic determinism is tested.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>deterministic [-t EXPR] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>By default, return "true" if the input automaton is syntactically
+  deterministic, or "false" otherwise. If "-t semantics" is specified, return
+  "true" if the input automaton is semantically deterministic.
+  <br/>
+  <table><tr valign='top'><td>-t</td> <td>The argument can be either "syntax" or "semantics" which specify whether
+     syntactic determinism or semantic determinism is tested.</td></tr></table>
+  </dd>
+<dt>EXAMPLE</dt>
+  <dd><pre>deterministic abc.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="DeterminizationCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.DeterminizationCommand"/>
+  <parameter id="name" value="determinization"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>determinization - Determinize a nondeterministic automaton to an equivalent
+  deterministic automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>determinization [-m DETERMINIZATION_ALG | -o FILE_OR_LVAL] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Compute the determinization of the input automaton. The type of the resulting
+  automaton depends on the algorithm you choose. When the algorithm is landweber
+  or bk09, the returned automaton may be null if the input automaton is not
+  DBW-recognizable.<br/>
+  <br/>
+  <table><tr valign='top'><td>-m</td> <td>Choose the determinization algorithm. Below is a list of available
+     parameters and their corresponding determinization algorithms:<br/><ul>
+       <li>classic: determinizing a classic automaton to a deterministic classic
+         automaton.</li>
+       <li>safra: Safra's Construction for determinizing NBW to DRW.</li>
+       <li>modifiedsafra: Modified Safra's Construction for determinizing NBW to
+         DRW.</li>
+       <li>ms: Muller-Schupp Construction for determinizing NBW to DRW.</li>
+       <li>piterman: Safra-Piterman Construction for determinizing NBW to DPW.</li>
+       <li>landweber: Landweber's Construction for determinizing DMW to DBW.</li>
+       <li>bk09: The construction through DCW in [BK09].</li>
+</ul>
+     By default, classic will be used for classic automaton and Safra's
+     construction will be used for B&uuml;chi automaton.</td></tr>
+  <tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr>
+  <tr valign='top'><td>-ht</td> <td>Use Schewe's history trees. This option is available for Safra's
+       construction and Safra-Piterman construction. Some optimizations for
+       Safra's construction may not be implemented for history trees. By
+       default, this option is off.</td></tr>
+  <tr valign='top'><td>-atl</td> <td>Apply the heuristic of simplifying accepting true loops.
+       This options applies to the Safra's construction and the modified
+       Safra's construction. By default, this options is off.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  determinization -m classic -o b.gff a.gff
+  determinization -m safra -o b.gff a.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="EchoCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.EchoCommand"/>
+  <parameter id="name" value="echo"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>echo - Output objects on the screen.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>echo [ -n | -spin | -unicode ] [ EXPR ... ]</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Output an expression on the screen.<br/>
+  <br/>
+  <table><tr valign='top'><td>-n</td> <td>Do not output the trailing newline.</td></tr>
+  <tr valign='top'><td>-spin</td> <td>Output a formula in SPIN format.</td></tr>
+  <tr valign='top'><td>-unicode</td> <td>Output a formula in unicode.</td></tr>
+</table></dd>
+<dt>EXAMPLE</dt>
+  <dd><pre>echo "Hello World!"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="EmptinessCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.EmptinessCommand"/>
+  <parameter id="name" value="emptiness"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>emptiness - Check emptiness of an automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>emptiness FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Return "true" if the input automaton is empty, and "false" otherwise.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>emptiness abc.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="EquivalenceCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.EquivalenceCommand"/>
+  <parameter id="name" value="equivalence"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>equivalence - Check whether two automata accept the same language.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>equivalence FILE_OR_LVAL FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check whether the first input automaton and the second one accept the same
+  language. Return "true" if it is the case, and "false" otherwise.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>equivalence a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="GenerateCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.GenerateCommand"/>
+  <parameter id="name" value="generate"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>generate - Generate a finite state automaton, QPTL formulae, an integer, or
+  a floating point number randomly.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>generate -t fsa [-a EXPR | -A EXPR | -m EXPR | -s EXPR | -n EXPR | -pt EXPR |
+                  -ps EXPR | -pa EXPR | -dt EXPR | -da EXPR | -r | -S]</dd>
+  <dd>generate -t game [-a EXPR | -A EXPR | -m EXPR | -s EXPR | -n EXPR | -pt EXPR |
+                  -ps EXPR | -pa EXPR | -dt EXPR | -da EXPR | -pr | -r | -S]</dd>
+  <dd>generate -t qptl [-l EXPR | -n EXPR | -r | -of | -mcp | -w EXPR EXPR EXPR |
+                  -plain | -spin] EXPR</dd>
+  <dd>generate -t int EXPR [ EXPR ]</dd>
+  <dd>generate -t float EXPR [ EXPR ]</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Randomly generate a finite state automaton, QPTL formulae, an integer, or
+  a floating point number. When generating random integers or random floating
+  point numbers, the range of the random numbers must be specified as (1) a
+  minimal number (inclusive) and a maximal number (exclusive), or (2) a maximal
+  number (exclusive), in which case the minimal number will be 0 (inclusive).<br/>
+  <br/>
+  <table><tr valign='top'><td>-a</td> <td>Specify the type of the structure. The type can be nfw, nrew, nbw,
+     ncw, ngbw, nmw, nrw, nsw, npw, ntbw, ntgbw, ntmw,
+     ntrw, ntsw, ntpw, dfw, drew, dbw, dcw, dgbw, dmw,
+     drw, dsw, dpw, dtbw, dtgbw, dtmw, dtrw, dtsw, or dtpw
+     for finite state automata. The type can be nfg, nreg, nbg, ncg,
+     ngbg, nmg, nrg, nsg, npg, dfg, dreg, dbg, dcg, dgbg,
+     dmg, drg, dsg, or dpg for games. The default automaton type is nbw
+     while the default game type is nbg.</td></tr>
+  <tr valign='top'><td>-A</td> <td>Specify the alphabet type. The type can be propositional or
+     classical. The default type is propositional alphabet.</td></tr>
+  <tr valign='top'><td>-m</td> <td>Specify the generation model of transitions and acceptance condition. The
+     model can be probability or density. The default model is probability.</td></tr>
+  <tr valign='top'><td>-s</td> <td>Specify the desired number of states in the generated omega automaton.
+     The default value is 5.</td></tr>
+  <tr valign='top'><td>-n</td> <td>Specify the number of atomic propositions. The default value is
+     2 (atomic propositions). In random formulae generation, each atomic
+     proposition will occur at least once in each formula.</td></tr>
+  <tr valign='top'><td>-pt</td> <td>Specify the probability of whether there should be transitions
+      from one state to another state. The value of the probability should
+      be in the range from 0 to 1. By default, the probability is decided
+      randomly every time.</td></tr>
+  <tr valign='top'><td>-ps</td> <td>Specify the probability of labeling a symbol on a transition.
+      Assume there n states, the alphabet size is m, the probability
+      specified by -pt is p1, and  the probability specified by -ps is p2.
+      The expected number of transitions is (n * n * p1) * (m * p2).</td></tr>
+  <tr valign='top'><td>-pa</td> <td>Specify the probability of adding a state to an acceptance set.</td></tr>
+  <tr valign='top'><td>-dt</td> <td>Specify the transition density. The default value is 0.</td></tr>
+  <tr valign='top'><td>-da</td> <td>Specify the acceptance density. The default value is 0.</td></tr>
+  <tr valign='top'><td>-pr</td> <td>Specify the ratio of (player 0 states / player 1 states).</td></tr>
+  <tr valign='top'><td>-r</td> <td>In random automata generation, this means to count the number of states
+     after removing unreachable and dead states. Note that if this option is
+     on, it will take longer to generate an automaton. In random formulae
+     generation, this means to allow repeated formulae generated. By default,
+     GOAL does not generate the same formula twice.</td></tr>
+  <tr valign='top'><td>-S</td> <td>Count the number of states after applying simulation simplification.
+     Note that if this option is on, it will take longer to generate an
+     automaton.</td></tr>
+  <tr valign='top'><td>-l</td> <td>Specify the length of the generated formulae.</td></tr>
+  <tr valign='top'><td>-w</td> <td>Specify the weights of operators which determine the probability of
+     choosing which operator. The following three values are weight of boolean
+     commands, weight of future operators, and weight of past operators. For
+     example, the posibility of choosing a boolean operator is
+     (WEIGHT_BOOLEAN/(WEIGHT_BOOLEAN+WEIGHT_FUTURE+WEIGHT_PAST)). At least
+     one of them must have a positive weight. None of them can have a
+     negative weight.</td></tr>
+  <tr valign='top'><td>-of</td> <td>The outmost operator of every generated formula is a future operator.</td></tr>
+  <tr valign='top'><td>-mcp</td> <td>Every generated formula must contain at least one past operator if the
+       weight of past operators is greater than 1.</td></tr>
+  <tr valign='top'><td>-plain</td> <td>Output formulae in plain text instead of GFF.</td></tr>
+  <tr valign='top'><td>-spin</td> <td>Output formulae that can be accepted by SPIN.</td></tr>
+</table></dd>
+<dt>EXAMPLE</dt>
+<dd><pre>  generate -t fsa -a nbw -s 10 -n 3
+  generate -t fsa -a npw -s 5 -n 2 -as 4
+  generate -t qptl -w 1 2 0 -n 2 -l 8 10
+  generate -t int 0 10</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="HomomorphismCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.HomomorphismCommand"/>
+  <parameter id="name" value="homomorphism"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>homomorphism - Check if the first automaton is homomorphic to the second
+  automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>homomorphism FILE_OR_LVAL FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check if the first automaton is homomorphic to the second automaton. Return a
+  homomorphism if it is the case, and "false" otherwise.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>homomorphism a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ImportCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ImportCommand"/>
+  <parameter id="name" value="import"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>import - Import objects from a string.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>import [-c EXPR] LVAL STRING_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Import objects from a string.<br/>
+  <br/>
+  <table><tr valign='top'><td>-c</td> <td>A codec used to decode the specified string.</td></tr>
+  </table></dd>
+<dt>EXAMPLE</dt>
+  <dd><pre>import -c BA a.gff "[0]\nb,[0]-&gt;[1]\na,[1]-&gt;[1]\n[1]"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="InputTestCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.InputTestCommand"/>
+  <parameter id="name" value="input"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>input - Check if a word is accepted by an automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>input FILE_OR_LVAL STRING_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check if a word is accepted by an automaton. Return "true" if the word
+  is accepted, and "false" otherwise.<br/>
+  </dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  input a.gff "(p ~q)(p q){ (~p ~q) }"
+  input a.gff "(a)(b){ (a)(b)(a) }"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="IntersectionCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.IntersectionCommand"/>
+  <parameter id="name" value="intersection"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>intersection - Compute the intersection of the two input automata.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>intersection [-o FILE_OR_LVAL] FILE_OR_LVAL FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Compute the intersection (synchronous product) of the two input automata
+  and output the resulting automaton.<br/>
+  <br/>
+  <table><tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr>
+  </table></dd>
+<dt>EXAMPLE</dt>
+  <dd><pre>intersection -o c.gff a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="IsomorphismCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.IsomorphismCommand"/>
+  <parameter id="name" value="isomorphism"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>isomorphism - Check if two automaton are isomorphic.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>isomorphism FILE_OR_LVAL FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check if two automata are isomorphic. Return an isomorphism if it is the case,
+  and "false" otherwise.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>isomorphism a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="LayoutCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.LayoutCommand"/>
+  <parameter id="name" value="layout"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>layout - Layout an automaton or the active automaton in a GOAL window.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>layout [-m EXPR] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Specify a window ID to lay out the active automaton in the window or specify
+  an automaton to lay out it offscreen.<br/>
+  <br/>
+  <table><tr valign='top'><td>-m</td> <td>Specify the layout algorithm. Use the command "names layout" to see all
+     available layout algorithms.</td></tr>
+  </table></dd>
+<dt>EXAMPLE</dt>
+  <dd><pre>layout 1
+  layout -m "Circle Layout" aut.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="LoadCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.LoadCommand"/>
+  <parameter id="name" value="load"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>load - Load a file into a variable.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>load [-c EXPR] [ LVAL ] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Load a file into a variable. If the file contains multiple objects, the
+  variable will be a list.<br/>
+  <br/>
+  <table><tr valign='top'><td>-c</td> <td>Specify the codec used to decode the object. By default, the first
+     applicable codec will be used. Use the command "names codec" to see al
+     available codecs.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  load $omega input.gff
+  $x = load input.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="MinimizationCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.MinimizationCommand"/>
+  <parameter id="name" value="minimization"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>minimization - Compute the minimization of the input classic automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>minimization [-o FILE_OR_LVAL] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Compute the minimization of the input classic automaton.<br/>
+  <br/>
+  <table><tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>minimization -o b.gff a.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="NamesCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.NamesCommand"/>
+  <parameter id="name" value="names"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>names - Print names of some extensions.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>names EXPR</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Print names of some extensions and types. The argument can be "alphabet",
+  "automaton", "codec", "command", "complement", "game", "layout", "player",
+  "simulation", "simulation2", "solver", or "translate".<br/></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>names codec</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="OmegaCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.OmegaCommand"/>
+  <parameter id="name" value="omega"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>omega - Performing the &omega; operation on an NFW.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>omega FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Given an NFW, create an NBW such that a word is accepted by the NBW iff the
+  word can be partitioned into segments and every word segment is accepted by
+  the NFW.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>omega abc.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="OpenCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.OpenCommand"/>
+  <parameter id="name" value="open"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>open - Open a file as an editable object in a GOAL window.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>open [-w ID] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Open a file as an editable object in a GOAL window. The return value is the
+  index of the GOAL window.<br/>
+  <br/>
+  <table><tr valign='top'><td>-w</td> <td>Specified the GOAL window for the opened editable object.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>open input.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ParityCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ParityCommand"/>
+  <parameter id="name" value="parity"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>parity - Operations on parity conditions.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>parity convert EXPR EXPR FILE_OR_LVAL</dd>
+  <dd>parity compress FILE_OR_LVAL</dd>
+  <dd>parity propagate FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Convert the interpretation of parity conditions, compress parity conditions,
+  or propagate parities of states in a parity condition. For the conversion
+  of parity interpretations, the first argument is the source parity
+  interpretation, the second argument is the target parity interpretation, and
+  the third argument is a parity automaton (or a parity game).</dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  parity convert min-even max-even aut.gff
+  parity compress aut.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="PreferenceCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.PreferenceCommand"/>
+  <parameter id="name" value="preference"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>preference - Return user preferences or adjust user preferences at runtime.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>preference [ EXPR [ EXPR ] ]</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Return user preferences or adjust user preferences at runtime. The first
+  argument is the name of the preference. The second argument is the new value
+  of the preference. If the second argument is absent, the current value of the
+  user preference with the specified name will be returned. If both arguments
+  are absent, all user preferences and their values will be returned.</dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  preference ComplementAlgorithm
+  preference LayoutAlgorithm org.svvrl.goal.core.layout.KKLayout</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ProductCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ProductCommand"/>
+  <parameter id="name" value="product"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>product - Take the product of the two finite state automata or a game and a
+            finite state automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>product [-o FILE_OR_LVAL | -m EXPR | -a ] FILE_OR_LVAL FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Take the product of two finite state automata or a game and a finite state
+  automaton. The inputs must have the same type of alphabet and have labels on
+  transitions. The structure of the product will be the same as that of the
+  first automaton (or game). The acceptance condition of the product only
+  depends on the second automaton.<br/>
+  <br/>
+  <table><tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr>
+  <tr valign='top'><td>-a</td> <td>Take an asynchronous product. If this option is absent, this command will
+     take a synchronous product.</td></tr>
+  <tr valign='top'><td>-m</td> <td>Specify a map from the propositions of the second automaton to predicates
+     on the propositions of the first automaton (or game).</td></tr>
+</table></dd>
+<dt>EXAMPLE</dt>
+<dd><pre>  product -o c.gff a.gff b.gff
+  product -m "a: p/\\q, b: q\\/r" a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="PromelaCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.PromelaCommand"/>
+  <parameter id="name" value="promela"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>promela - Convert a B&uuml;chi automaton into Promela code.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>promela [-o FILE_OR_LVAL] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Convert a B&uuml;chi automaton into Promela code.<br/>
+  <br/>
+  <table><tr valign='top'><td>-o</td> <td>Output the Promela code to a file. By default, the Promela code will
+     be displayed on the screen.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd>promela -o output input.gff</dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="PropertyCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.PropertyCommand"/>
+  <parameter id="name" value="property"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>property - Get or set properties of an editable object such as automata.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>property FILE_OR_LVAL [ EXPR [ EXPR ] ]</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Get or set properties of an editable object. The first argument is the object.
+  The second argument is the name of the property. The third argument is the
+  new value of the property. If the third argument is absent, the current
+  value of the property with the specified name will be returned. If both
+  optional arguments are absent, all properties and their values will be
+  returned.</dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  property $aut Formula
+  property $aut Description</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="QPTLCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.QPTLCommand"/>
+  <parameter id="name" value="qptl"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>qptl - Manipulate QPTL formulae.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>qptl [-f | -l | -p | -r EXPR EXPR] FORMULA</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Manipulate QPTL formulae.<br/>
+  <br/>
+  <table><tr valign='top'><td>-f</td> <td>Get the free variables in a QPTL formula.</td></tr>
+  <tr valign='top'><td>-l</td> <td>Get the length of a QPTL formula.</td></tr>
+  <tr valign='top'><td>-p</td> <td>Check if a QPTL formula contains any past operator.</td></tr>
+  <tr valign='top'><td>-r</td> <td>Rename a free variable in a QPTL formula. The first argument is an existing
+     proposition and the second argument is a replacement of the existing
+     proposition.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>qptl -l "[] p"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ReadlineCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ReadlineCommand"/>
+  <parameter id="name" value="readline"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>readline - Read the input file line by line and put the results in a list.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>readline FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Read the input file line by line and put the results in a list.</dd>
+
+<dt>EXAMPLE</dt>
+   <dd><pre>readline input.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ReduceCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ReduceCommand"/>
+  <parameter id="name" value="reduce"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>reduce - Remove unreachable and dead states from an automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>reduce [-o FILE_OR_LVAL | -u | -d ] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Given an automaton, remove the unreachable and dead states (if -u and -d are
+  both present or both absent).<br/>
+  <br/>
+  <table><tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr>
+  <tr valign='top'><td>-u</td> <td>Reduce only unreachable states.</td></tr>
+  <tr valign='top'><td>-d</td> <td>Reduce only dead states.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>reduce -o b.gff a.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ReplaceCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ReplaceCommand"/>
+  <parameter id="name" value="replace"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>replace - Replace matched substrings.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>replace EXPR EXPR EXPR</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Replace matched substrings. An automaton that recognizes the replacement
+  results will be returned. The first argument is the source automaton (or
+  regular expression), the second argument is the pattern automaton (or
+  regular expression), and the third argument is the replacement automaton (or
+  regular expression). If a string in the language of the source automaton
+  contains substrings recognized by the pattern automaton, the matched
+  substrings will be replaced by the strings recognized by the replacement
+  automaton.</dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  replace m1.gff m2.gff m3.gff
+  replace m1.gff "a+" "c"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="RepositoryCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.RepositoryCommand"/>
+  <parameter id="name" value="repository"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>repository - Access the local and remote repositories.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>repository [-t EXPR | -min | -f EXPR] ("local" | "remote")</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Access the automata or the formulae in the local repository or in the remote
+  repository.<br/>
+  <br/>
+  <table><tr valign='top'><td>-t</td> <td>Specify the return type, either "automaton" or "formula". By default,
+     pairs of a formula and an automaton will be returned.</td></tr>
+  <tr valign='top'><td>-min</td> <td>Only return the smallest automata.</td></tr>
+  <tr valign='top'><td>-f</td> <td>Search for a formula.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  repository -t automaton local
+  repository -t formula remote</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ReverseCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ReverseCommand"/>
+  <parameter id="name" value="reverse"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>reverse - Reverse a classic finite state automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>reverse [-o FILE_OR_LVAL] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Reverse a classic finite state automaton such that the output accepts the
+  reverse of the language of the input.<br/>
+  <br/>
+  <table><tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>reverse -o b.gff a.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SatisfiabilityCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SatisfiabilityCommand"/>
+  <parameter id="name" value="satisfiability"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>satisfiability - Check whether a formula is satisfiable.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>satisfiability FORMULA_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check whether the input formula is satisfiable. Return "true" if it is the
+  case, and "false" otherwise.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>satisfiability "(p U q) U ~q"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SaveCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SaveCommand"/>
+  <parameter id="name" value="save"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>save - Save an object to a file.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>save [-c EXPR] LVAL FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Save an object to a file.<br/>
+  <br/>
+  <table><tr valign='top'><td>-c</td> <td>Specify the codec used to encode the object. By default, the GFF codec
+     will be used.</td></tr></table></dd>
+     
+<dt>EXAMPLE</dt>
+  <dd><pre>save $omega output.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SeparationCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SeparationCommand"/>
+  <parameter id="name" value="separation"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>separation - Separate the past operators and the future operators in a QPTL
+               formula.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>separation FORMULA</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Separate the past operators and the future operators in a QPTL formula. The
+  formula is required to be convertible to prenex normal form.<br/>
+  <br/>
+  <table><tr valign='top'><td>-e</td> <td>Perform an equivalent rewrite such that the result is equivalent to the
+     input formula. By default, a congruent rewrite is performed.</td></tr>
+  <tr valign='top'><td>-plain</td> <td>Output formulae in plain text instead of GFF.</td></tr>
+  <tr valign='top'><td>-spin</td> <td>Output formulae that can be accepted by SPIN.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>separation "[] (p --&gt; &lt;-&gt; q)"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SeqCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SeqCommand"/>
+  <parameter id="name" value="seq"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>seq - Generate a sequence of numbers.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>seq LAST</dd>
+  <dd>seq FIRST LAST</dd>
+  <dd>seq FIRST INCREMENT LAST</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Generate a sequence of numbers. The LAST, FIRST, and INCREMENT
+  in SYNOPSIS are all expressions.<br/></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>$numbers = seq 1 10</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SimplifyCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SimplifyCommand"/>
+  <parameter id="name" value="simplify"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>simplify - Simplify an automaton or a formula.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>simplify [ -m EXPR | -o FILE_OR_LVAL | OPTIONS ] FILE_OR_LVAL</dd>
+
+  <dd>Options for simulation:
+    -dse | -ds | -rse | -rs | -ru | -rd</dd>
+
+  <dd>Options for pruningfairset:
+    -ifs | -rfs | -lfs | -t4 | -t5 | -t6 | -t7 | -t8 | -t9</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Simplify the input automaton and return the resulting equivalent automaton
+  of the same type, or simplify the input logic formula.<br/>
+  <br/>
+  <table><tr valign='top'><td>-m</td> <td>Specify the algorithm used for simplification. The value can be simulation,
+     delayed, fair, pruningfairset, wring, or rabinindex. By default, simulation
+     will be used.</td></tr>
+  <tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr>
+  <tr valign='top'><td>-dse</td> <td>Enable simplification by direct simulation equivalence.</td></tr>
+  <tr valign='top'><td>-ds</td>  <td>Enable simplification by direct simulation.</td></tr>
+  <tr valign='top'><td>-rse</td> <td>Enable simplification by reverse simulation equivalence.</td></tr>
+  <tr valign='top'><td>-rs</td>  <td>Enable simplification by reverse simulation.</td></tr>
+  <tr valign='top'><td>-ru</td>  <td>Enable reducing unreachable states.</td></tr>
+  <tr valign='top'><td>-rd</td>  <td>Enable reducing dead states.</td></tr>
+  <tr valign='top'><td>-ifs</td> <td>Enable pruning states not in the final set.</td></tr>
+  <tr valign='top'><td>-rfs</td> <td>Enable pruning states not reaching the final set.</td></tr>
+  <tr valign='top'><td>-lfs</td> <td>Enable pruning fair sets that contains another fair set of the final set.</td></tr>
+  <tr valign='top'><td>-t4</td>  <td>Enable pruning fair sets by Theoram 4.</td></tr>
+  <tr valign='top'><td>-t5</td>  <td>Enable pruning fair sets by Theoram 5.</td></tr>
+  <tr valign='top'><td>-t6</td>  <td>Enable pruning fair sets by Theoram 6.</td></tr>
+  <tr valign='top'><td>-t7</td>  <td>Enable pruning fair sets by Theoram 7.</td></tr>
+  <tr valign='top'><td>-t8</td>  <td>Enable pruning fair sets by Theoram 8.</td></tr>
+  <tr valign='top'><td>-t9</td>  <td>Enable pruning fair sets by Theoram 9.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  simplify -o b.gff a.gff
+  simplify "[] [] p"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SimulatedCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SimulatedCommand"/>
+  <parameter id="name" value="simulated"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>simulated - Check whether the first automaton can be simulated by the
+  second automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>simulated [-m EXPR] EXPR EXPR</dd>
+  <dd>simulated -d EXPR EXPR</dd>
+  <dd>simulated -f EXPR EXPR</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check whether the first automata can be simulated by the second automaton.
+  Return "true" if it is the case, and "false" otherwise.
+
+  <table><tr valign='top'><td>-m</td> <td>Specify the name of the simulation computation procedure.
+     If this argument is absent, the default simulation procedure will be used.
+     Use the command "names simulation2" to see all available procedures.</td></tr>
+  <tr valign='top'><td>-d</td> <td>Use delayed simulation relation. If this argument is present, then both the
+     automata should be B&uuml;chi automata.</td></tr>
+  <tr valign='top'><td>-f</td> <td>Use fair simulation relation. If this argument is present, then both the
+     automata should be B&uuml;chi automata.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>simulated a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SimulationEquivalenceCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SimulationEquivalenceCommand"/>
+  <parameter id="name" value="simequiv"/>
+  <parameter id="full name" value="Simulation Equivalence"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>simequiv - Check whether two automata are simulation equivalent.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>simequiv EXPR EXPR</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check whether the two automata are simulation equivalent. Return "true" if it
+  is the case, and "false" otherwise.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>simequiv a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SleepCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SleepCommand"/>
+  <parameter id="name" value="sleep"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>sleep - Delay for a specified amount of time in seconds.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>sleep EXPR</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Delay for a specified amount of time in seconds.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>reduce -o b.gff a.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExtension" id="SolveExtension">
+  <parameter id="class" value="org.svvrl.goal.cmd.SolveExtension"/>
+  <parameter id="name" value="solve"/>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="SplitCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.SplitCommand"/>
+  <parameter id="name" value="split"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>split - Split an object into a set of elements.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>split [-d STRING_OR_LVAL] [EXPR | CMD_EXPR]</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>If the object is a list, this command will return a set of list
+  elements. If the object is an array, this command will return the
+  key set of the array. Otherwise, this command will convert the object
+  into a string and split the string according the delimiter. The default
+  delimiter is spaces, tabs, and newlines.<br/>
+  <br/>
+  <table><tr valign='top'><td>-d</td> <td>Specify the delimiter.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  $keys = split $arr
+  $elements = split -d ":" "1:2:3"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="StatCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.StatCommand"/>
+  <parameter id="name" value="stat"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>stat - Get statistical data of an automaton or a QPTL formula.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>stat [-s | -t | -a ] FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Get statistical data of an automaton or a QPTL formula. For automata, the
+  statistical data include the number of states, the number of transitions, and
+  the number of acceptance sets. For QPTL formulae, the statistical data include
+  the number of alternations of past and future temporal operators.<br/>
+  <br/>
+  <table><tr valign='top'><td>-s</td> <td>Get the number of states only.</td></tr>
+  <tr valign='top'><td>-t</td> <td>Get the number of transitions only.</td></tr>
+  <tr valign='top'><td>-a</td> <td>Get the number of acceptance sets (or states) only.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  stat -s a.gff
+  stat -t a.gff
+  stat a.gff
+  stat "[](p --&gt; &lt;-&gt; q)"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="TestCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.TestCommand"/>
+  <parameter id="name" value="test"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>test - Perform internal tests.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>test ???</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>This command is for internal usage.</dd>
+</dl>  
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="TranslateCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.TranslateCommand"/>
+  <parameter id="name" value="translate"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>translate - Translate a logic formula into an automaton.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>translate [ RE | ORE | QPTL | ACTL ] [ -m TRANSLATE_ALG | -o FILE_OR_LVAL
+            | -t AUTOMATON_TYPE | -sa | -se | -sf | -sg | -sb | -stgb | -sp
+            | -si | -sr | -rbm | -dt | -mp | -art | -pi | -pe ] FORMULA_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Translate a logic formula into an automaton. By default, this command
+  translates a QPTL formula into a non-deterministic B&uuml;chi word automaton.
+  RE stands for regular expressions while ORE stands for &omega;-regular
+  expressions. The translation for an ACTL formula produces a fair Kripke
+  structure interpreted as a label-on-state automaton base on [PMT02].<br/>
+  <br/>
+  <table><tr valign='top'><td>-m</td> <td>Choose the translation algorithm (tableau, inctableau, temporaltester,
+     gpvw, gpvw+, ltl2aut, ltl2aut+, ltl2ba, pltl2ba, couvreur, ltl2buchi,
+     modella, kp02, ccj09, or qptl2ba). This option applies to QPTL translation
+     only.
+     By default, the tableau algorithm will be used.</td></tr>
+  <tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr>
+  <tr valign='top'><td>-t</td> <td>Choose the type of the target automaton (ngbw or nbw). This option applies
+     to QPTL translation only. By default, it will be a non-deterministic
+     B&uuml;chi word automaton (NBW).</td></tr>
+  <tr valign='top'><td>-se</td> <td>Simplify the input (&omega;-)regular expression. By default, this option is
+      off.</td></tr>
+  <tr valign='top'><td>-sa</td> <td>Simplify the intermediate automata during the translation of &omega;-regular
+      expressions. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-sf</td> <td>Simplify the input QPTL formula before translation. By default, this
+       option is off.</td></tr>
+  <tr valign='top'><td>-sg</td> <td>Simplify the intermediate NGBW during the translation. By default, this
+      option is off</td></tr>
+  <tr valign='top'><td>-sb</td> <td>Simplify the NBW during the translation. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-stgb</td> <td>Simplify the NTGBW by simulation. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-sp</td> <td>Simplify the NBW after projecting quantifiers. By default, this option
+      is off.</td></tr>
+  <tr valign='top'><td>-si</td> <td>Simplify intermediate NBW during translation. By default, this option
+      is off.</td></tr>
+  <tr valign='top'><td>-sr</td> <td>Apply superset reduction to the generalized B&uuml;chi acceptance condition.
+      By default, this option is off.</td></tr>
+  <tr valign='top'><td>-rbm</td> <td>Reduce dead states before merging equivalent NBW states if the algorithm
+       is LTL2BA. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-dt</td> <td>Delegate the translation of unquantified formulae to another translation
+      algorithm. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-mp</td> <td>Minimize the automata of past formulae for QPTL2BA. By default, this
+      option is off.</td></tr>
+  <tr valign='top'><td>-art</td> <td>Apply advanced reduction of NTGBW transitions during the conversion from
+       two-way VWAA for PLTL2BA. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-pi</td> <td>Apply prime implicants to simplify covers for LTL2AUT+. By default, this
+       option is off.</td></tr>
+  <tr valign='top'><td>-pe</td> <td>Apply postponed expansion of refined states for GPVW, LTL2AUT, LTL2AUT+,
+      MoDeLLa, LTL2Buchi, and Couvreur. By default, this  option is off.</td></tr>
+  <tr valign='top'><td>-ru</td> <td>Reduce unreachable states of label-on-state NGBW obtained by Tableau. By
+      default, this  option is off.</td></tr>
+  <tr valign='top'><td>-rd</td> <td>Reduce dead states of label-on-state NGBW obtained by Tableau. By default,
+      this  option is off.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+<dd><pre>  translate -m gpvw -t nbw -o Fp.gff "&lt;&gt;p"
+  translate ORE "(a|b)* { b }"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="UnionCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.UnionCommand"/>
+  <parameter id="name" value="union"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>union - Compute the union of the two input automata.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>union [-o FILE_OR_LVAL] FILE_OR_LVAL FILE_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Compute the union of the two input automata and output the resulting
+  automaton.<br/>
+  <br/>
+  <table><tr valign='top'><td>-o</td> <td>Output to a designated file. By default, the result will show on the
+     screen.</td></tr></table></dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>union -o c.gff a.gff b.gff</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="ValidityCommand">
+  <parameter id="class" value="org.svvrl.goal.cmd.ValidityCommand"/>
+  <parameter id="name" value="validity"/>
+  <parameter id="help">
+    <value><![CDATA[
+<dl>
+<dt>NAME</dt>
+  <dd>validity - Check whether a formula is valid.</dd>
+
+<dt>SYNOPSIS</dt>
+  <dd>validity FORMULA_OR_LVAL</dd>
+
+<dt>DESCRIPTION</dt>
+  <dd>Check whether the input formula is valid. Return "true" if it is the case,
+  and "false" otherwise.</dd>
+
+<dt>EXAMPLE</dt>
+  <dd><pre>validity "[](p U q) U q &lt;--&gt; p U q"</pre></dd>
+</dl>
+    ]]></value>
+  </parameter>
+</extension>
+
+
+
+<!-- Complementation Commands -->
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="ClassicComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.ClassicComplementInterface" />
+  <parameter id="name" value="classic" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.ComplementConstruction" />
+  <parameter id="default for" value="NFW" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="DeterministicComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.DeterministicComplementInterface" />
+  <parameter id="name" value="deterministic" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.DeterministicComplementConstruction" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="KurshanComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.KurshanComplementInterface" />
+  <parameter id="name" value="kurshan" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.kurshan.KurshanConstruction" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="ModifiedSafraComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.ModifiedSafraComplementInterface" />
+  <parameter id="name" value="modifiedsafra" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.safra.ModifiedSafraConstruction" />
+  <parameter id="help">
+    <value><![CDATA[  <table><tr valign='top'><td>-atl</td> <td>  Apply the heuristic of simplifying accepting true loops.
+         By default, this option is off.</td></tr>
+  <tr valign='top'><td>-sa</td> <td>   Apply the heuristic of marking nodes that have only accepting
+         successors green. By default, this option is off.</td></tr></table>]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="MullerSchuppComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.MullerSchuppComplementInterface" />
+  <parameter id="name" value="ms" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.ms.MullerSchuppConstruction" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="PitermanComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.PitermanComplementInterface" />
+  <parameter id="name" value="piterman" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.piterman.PitermanConstruction" />
+  <parameter id="default for" value="NBW" />
+  <parameter id="help">
+    <value><![CDATA[  <table><tr valign='top'><td>-ht</td> <td>  Use Schewe's history trees instead of compact Safra trees. By default,
+         this option is off.</td></tr>
+  <tr valign='top'><td>-eq</td> <td>  Apply local optimization of merging equivalent states during the.
+        conversion from an NBW to an equivalent NBW. By default, this option
+        is off.</td></tr>
+  <tr valign='top'><td>-macc</td> <td>Maximize the accepting set of the target automaton.
+        By default, this option is off.</td></tr>
+  <tr valign='top'><td>-sim</td> <td> Simplify the complement NPW by simulation relations.
+        By default, this option is off.</td></tr>
+  <tr valign='top'><td>-sp</td> <td>  Simplify the parity condition based on the computation of Rabin index.
+        By default, this option is off.</td></tr>
+  <tr valign='top'><td>-ro</td> <td>  Reduce transitions in the conversion from NPW to NBW based on
+        the idea in the slice-based construction. By default, this option is
+        off.</td></tr>
+  <tr valign='top'><td>-r</td> <td>   Remove unreachable and dead states from the complement. By default,
+        this option is off.</td></tr></table>]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="RamseyComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.RamseyComplementInterface" />
+  <parameter id="name" value="ramsey" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.ramsey.RamseyConstruction" />
+  <parameter id="help">
+    <value><![CDATA[  <table><tr valign='top'><td>-macc</td> <td>Maximize the accepting set of the target automaton.
+        By default, this option is off.</td></tr>
+  <tr valign='top'><td>-min</td> <td> Minimize the intermediate DFW. By default, this option is off</td></tr>
+  <tr valign='top'><td>-r</td> <td>   Remove unreachable and dead states from the complement. By default,
+        this option is off.</td></tr></table>]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="RankComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.RankComplementInterface" />
+  <parameter id="name" value="rank" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.rank.RankConstruction" />
+  <parameter id="help">
+    <value><![CDATA[  <table><tr valign='top'><td>-r</td> <td>   Remove unreachable and dead states from the resulting automaton.
+        By default, this option is off.</td></tr>
+  <tr valign='top'><td>-tr</td> <td>  Apply tight rank construction. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-cp</td> <td>  Apply turn wise cut-point construction. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-ro</td> <td>  Apply the option of reducing outdegree. This implies tight rank. By
+        default, this option is off.</td></tr>
+  <tr valign='top'><td>-macc</td> <td>Maximize the accepting set of the target automaton. By default, this
+        option is off.</td></tr></table>]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="SafraComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.SafraComplementInterface" />
+  <parameter id="name" value="safra" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.safra.SafraConstruction" />
+  <parameter id="help">
+    <value><![CDATA[  <table><tr valign='top'><td>-ht</td> <td>   Use Schewe's history trees instead of compact Safra trees. By default,
+         this option is off.</td></tr>
+  <tr valign='top'><td>-atl</td> <td>  Apply the heuristic of simplifying accepting true loops.
+         By default, this option is off.</td></tr>
+  <tr valign='top'><td>-sa</td> <td>   Apply the heuristic of marking nodes that have only accepting
+         successors green. By default, this option is off.</td></tr></table>]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="SliceComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.SliceComplementInterface" />
+  <parameter id="name" value="slice" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.slice.SliceConstruction" />
+  <parameter id="help">
+    <value><![CDATA[  <table><tr valign='top'><td>-p</td> <td>   Use the preliminary version.</td></tr>
+  <tr valign='top'><td>-r</td> <td>   Remove unreachable and dead states from the resulting automaton. By
+        default, this option is off.</td></tr>
+  <tr valign='top'><td>-cp</td> <td>  Apply turn wise cut-point construction. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-ro</td> <td>  Apply the option of reducing outdegree. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-macc</td> <td>Maximize the accepting set of the target automaton. By default, this
+        option is off.</td></tr>
+  <tr valign='top'><td>-tt</td> <td>  Make the transition relation of the input automaton total. By default,
+        this option is off.</td></tr>
+  <tr valign='top'><td>-bfs</td> <td> Use breadth-first search when expanding the complement automaton.
+        By default, depth-first search will be used.</td></tr>
+  <tr valign='top'><td>-madj</td> <td>Merge adjacent 0-sets or *-sets. By default, this option is off.</td></tr>
+  <tr valign='top'><td>-eg</td> <td>  Apply the enhanced guessing. By default, this option is off.</td></tr></table>]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="WAAComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.WAAComplementInterface" />
+  <parameter id="name" value="waa" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.waa.WAAConstruction" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="ComplementConstructionInterface" id="WAPAComplementInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.WAPAComplementInterface" />
+  <parameter id="name" value="wapa" />
+  <parameter id="construction" value="org.svvrl.goal.core.comp.wapa.WAPAConstruction" />
+  <parameter id="help" value="" />
+</extension>
+
+
+
+<!-- Game Solvers -->
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="GameSolverInterface" id="BigStepSolverInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.BigStepSolverInterface" />
+  <parameter id="name" value="bigstep" />
+  <parameter id="solver" value="org.svvrl.goal.core.aut.game.BigStepSolver" />
+  <parameter id="description" value="an algorithm due to Schewe for parity games" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="GameSolverInterface" id="ClassicalBuchiSolverInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.ClassicalBuchiSolverInterface" />
+  <parameter id="name" value="cb" />
+  <parameter id="solver" value="org.svvrl.goal.core.aut.game.ClassicalBuchiSolver" />
+  <parameter id="description" value="a classical algorithm for Buchi games" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="GameSolverInterface" id="DominionDecompositionSolverInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.DominionDecompositionSolverInterface" />
+  <parameter id="name" value="dominiondec" />
+  <parameter id="solver" value="org.svvrl.goal.core.aut.game.DominionDecompositionSolver" />
+  <parameter id="description" value="a deterministic subexponential algorithm based on dominion decomposition for parity games" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="GameSolverInterface" id="GlobalOptimizationSolverInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.GlobalOptimizationSolverInterface" />
+  <parameter id="name" value="globalopt" />
+  <parameter id="solver" value="org.svvrl.goal.core.aut.game.GlobalOptimizationSolver" />
+  <parameter id="description" value="a generic solver with solver-independent global optimizations for parity games" />
+  <parameter id="help">
+  <value><![CDATA[  <table><tr valign='top'><td>-solver</td> <td>Specify the delegated game solver.</td></tr>
+  <tr valign='top'><td>-pp</td>     <td>Propagate parities of states. The default is off.</td></tr>
+  <tr valign='top'><td>-pc</td>     <td>Compress parity conditions. The default is off.</td></tr>
+  <tr valign='top'><td>-ps</td>     <td>Preprocess states with self-loops. The default is off.</td></tr>
+  <tr valign='top'><td>-sd</td>     <td>Decompose the game into strongly-connected components. The default is
+          off.</td></tr></table>]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="GameSolverInterface" id="McNaughtonZielonkaSolverInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.McNaughtonZielonkaSolverInterface" />
+  <parameter id="name" value="mz" />
+  <parameter id="solver" value="org.svvrl.goal.core.aut.game.McNaughtonZielonkaSolver" />
+  <parameter id="description" value="a recursive algorithm due to McNaughton-Zielonka for parity games" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="GameSolverInterface" id="ReachabilitySolverInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.ReachabilitySolverInterface" />
+  <parameter id="name" value="reachability" />
+  <parameter id="solver" value="org.svvrl.goal.core.aut.game.ReachabilitySolver" />
+  <parameter id="description" value="an algorithm for reachability games" />
+  <parameter id="help">
+    <value><![CDATA[  <table><tr valign='top'><td>-max</td> <td>Maximize the strategies for both players. Disabled by default.</td></tr></table>]]></value>
+  </parameter>
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="GameSolverInterface" id="RecursiveSolverInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.RecursiveSolverInterface" />
+  <parameter id="name" value="recursive" />
+  <parameter id="solver" value="org.svvrl.goal.core.aut.game.RecursiveSolver" />
+  <parameter id="description" value="a recursive algorithm due to Zielonka for parity games" />
+  <parameter id="help" value="" />
+</extension>
+
+<extension plugin-id="org.svvrl.goal.cmd" point-id="GameSolverInterface" id="SmallProgressMeasureSolverInterface">
+  <parameter id="class" value="org.svvrl.goal.cmd.SmallProgressMeasureSolverInterface" />
+  <parameter id="name" value="smallprog" />
+  <parameter id="solver" value="org.svvrl.goal.core.aut.game.SmallProgressMeasureSolver" />
+  <parameter id="description" value="an algorithm based on small progress measure for parity games" />
+  <parameter id="help" value="" />
+</extension>
+
+
+
+</plugin>

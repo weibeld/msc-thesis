@@ -1,0 +1,106 @@
+Gp.gff,[]p,[]p
+Gp.gff,false R p,false R p
+Fp.gff,<>p,<>p
+Fp.gff,true U p,true U p
+nextP.gff,()p,()p
+v1.gff,()()p,()()p
+f6.gff,p U q,p U q
+f7.gff,p W q,p W q
+p2.gff,[-]p,[-]p
+p2_B.gff,p B false,p B false
+Op.gff,<->p,<->p
+Op.gff,true S p,true S p
+p1.gff,(-)p,(-)p
+BeforeP.gff,(~)p,(~)p
+p6.gff,p S q,p S q
+p7.gff,p B q,p B q
+FGp.gff,<>[]p,<>[]p
+FGp_U.gff,true U (false R p),true U (false R p)
+f4.gff,[]<>p,[]<>p
+f4.gff,false R (true U p),false R (true U p)
+p4.gff,[]<->p,[]<->p
+p4.gff,false R (true S p),false R (true S p)
+p5.gff,<>[-]p,<>[-]p
+p5.gff,true U (p B false),true U (p B false)
+h2.gff,<-><>p,<-><>p
+h2.gff,true S (true U p),true S (true U p)
+1_F.gff,[](p --> <>q),[](p --> <>q)
+1_F.gff,false R (p --> (true U q)),false R (p --> (true U q))
+1_U.gff,[](p --> p U q),[](p --> p U q)
+1_W.gff,[](p --> p W q),[](p --> p W q)
+1_W.gff,[](p /\ ~q -->()(p \/ q)),[](p /\ ~q -->()(p \/ q))
+1_O.gff,[](p --> <->q),[](p --> <->q)
+1_S.gff,[](p --> p S q),[](p --> p S q)
+1_B.gff,[](p --> p B q),[](p --> p B q)
+1_B.gff,[](p /\ ~q --> (~)(p \/ q)),[](p /\ ~q --> (~)(p \/ q))
+b2.gff,[](<>p /\ q),[](<>p /\ q)
+b2.gff,false R (true U p /\ q),false R (true U p /\ q)
+g2.gff,[](<>p \/ <->p),[](<>p \/ <->p)
+g2.gff,false R ((true U p) \/ (true S p)),false R ((true U p) \/ (true S p))
+j2.gff,[]([-]p \/ [-]q),[]([-]p \/ [-]q)
+j2.gff,false R ((p B false) \/ (q B false)),false R ((p B false) \/ (q B false))
+n1.gff,[]p \/ <>q,[]p \/ <>q
+k2.gff,[](<->p --> q),[](<->p --> q)
+k2.gff,false R ((true S p) --> q),false R ((true S p) --> q)
+v2.gff,[](((-)(-) (~)false) --> p),[](((-)(-) first) --> p)
+x1.gff,[](p --> (~q) W r),[](p --> (~q) W r)
+x2.gff,[](q --> (~p) B r),[](q --> (~p) B r)
+j1.gff,[]q \/ []p,[]q \/ []p
+luo001.gff,[]((~)[-]p --> q),[]((~)[-]p --> q)
+luo001.gff,[]((~)[-]p --> [-]q),[]((~)[-]p --> [-]q)
+luo001.gff,false R ((~)(p B false) --> (q B false)),false R ((~)(p B false) --> (q B false))
+GS2_l.gff,[] (p \/ (q S r)),[] (p \/ (q S r))
+a1.gff,<>p /\ []q,<>p /\ []q
+a2.gff,<>(p /\ []q),<>(p /\ []q)
+c2.gff,<>([]p /\ []q),<>([]p /\ []q)
+c2.gff,true U ((false R p) /\ (false R q)),true U ((false R p) /\ (false R q))
+c2.gff,<>[]p /\ <>[]q,<>[]p /\ <>[]q
+c2.gff,(true U (false R p)) /\ (true U (false R q)),(true U (false R p)) /\ (true U (false R q))
+h1.gff,<><->p,<><->p
+h1.gff,true U (true S p),true U (true S p)
+l1.gff,<>(p /\ <->q),<>(p /\ <->q)
+l1.gff,true U (p /\ (true S q)),true U (p /\ (true S q))
+luo003.gff,<>(p /\ [-]q),<>(p /\ [-]q)
+luo003.gff,true U (p /\ (q B false)),true U (p /\ (q B false))
+luo004.gff,<>(p /\ <>(q /\ [-](~r))),<>(p /\ <>(q /\ [-](~r)))
+luo004.gff,true U (p /\ true U (q /\ ((~r) B false))),true U (p /\ true U (q /\ ((~r) B false)))
+m1.gff,<>p /\ <>q,<>p /\ <>q
+my_FGp_imp_GFq_simplest.gff,<>[]p --> []<>q,<>[]p --> []<>q
+my_FGp_imp_GFq_simplest.gff,true U (false R p) --> false R (true U q),true U (false R p) --> false R (true U q)
+UBFL2_l.gff,(p \/ (~) q) U r,(p \/ (~) q) U r
+USL2_l.gff,(p \/ (q S r)) U s,(p \/ (q S r)) U s
+UYL2_l.gff,(p \/ (-) q) U r,(p \/ (-) q) U r
+d1.gff,(p U q) U q,(p U q) U q
+f1.gff,p U q /\ q U r,p U q /\ q U r
+k1.gff,p --> []q,p --> []q
+n2.gff,p W <>q,p W <>q
+luo001.gff,q W (~p /\ q) ,q W (~p /\ q) 
+i2.gff,~q W p,~q W p
+z2.gff,~q W (~p /\ ~q),~q W (~p /\ ~q)
+z1.gff,~(p U q),~(p U q)
+luo001.gff,~(p U ~q),~(p U ~q)
+ca1.gff,~(<>p /\ []q),~(<>p /\ []q)
+ca1.gff,~((true U p) /\ (false R q)),~((true U p) /\ (false R q))
+ca2.gff,~(<>(p /\ []q)),~(<>(p /\ []q))
+cb2.gff,~([](<>p /\ q)),~([](<>p /\ q))
+cc1.gff,~(<>[]p /\ <>[]q),~(<>[]p /\ <>[]q)
+cc2.gff,~(<>([]p /\ []q)),~(<>([]p /\ []q))
+cc2.gff,~(true U ((false R p) /\ (false R q))),~(true U ((false R p) /\ (false R q)))
+cd1.gff,~((p U q) U q),~((p U q) U q)
+cf1.gff,~(p U q /\ q U r),~(p U q /\ q U r)
+cg1.gff,~(<>p),~(<>p)
+cg2.gff,~([](<>p \/ <->p)),~([](<>p \/ <->p))
+ch1.gff,~(<><->p),~(<><->p)
+ch2.gff,~(<-><>p),~(<-><>p)
+ci1.gff,~([](q --> <->p)),~([](q --> <->p))
+ci2.gff,~((~q) W p),~((~q) W p)
+cz2.gff,~((~q) W (~p /\ ~q)),~((~q) W (~p /\ ~q))
+cx1.gff,~([](p --> (~q) W r)),~([](p --> (~q) W r))
+cx2.gff,~([](q --> (~p) B r)),~([](q --> (~p) B r))
+cv1.gff,~(()()p),~(()()p)
+cv2.gff,~([](((-)(-) (~)false) --> p )),~([](((-)(-) first) --> p ))
+cs1.gff,~([](p --> <>[]q)),~([](p --> <>[]q))
+cs2.gff,~(<>[](<->p --> q)),~(<>[](<->p --> q))
+cs2.gff,~(true U (false R ((true S p) --> q))),~(true U (false R ((true S p) --> q)))
+even_p.gff,E t : t /\ [](t <--> ()(~ t)) /\ [](t --> p),E t : t /\ [](t <--> ()(~ t)) /\ [](t --> p) "Even p"
+GFpIMPGFq.gff,[]<>p-->[]<>q,[]<>p-->[]<>q

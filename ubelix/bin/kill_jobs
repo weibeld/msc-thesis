@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# Kill all running Sun Grid Engine jobs of the current user
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Nov. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+a=($(qstat | tail -n +3 | awk '{print $1}'))
+
+if [[ ${#a[@]} -eq 0 ]]; then
+  echo "No jobs running"
+else
+  qdel "${a[@]}"
+fi

@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Run a command on UBELIX HOME
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+usage() {
+cat <<EOF
+Usage:
+ ${0##*/} cmd
+
+Description:
+ Run command 'cmd' from within the HOME directory on UBELIX
+
+Argument:
+ cmd: any Bash command (make sure tildes are quoted)
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+[[ -z "$1" ]] && echo "${0##*/}: missing argument 'cmd'" && exit 1
+
+ssh dw07r324@submit.unibe.ch "$1"

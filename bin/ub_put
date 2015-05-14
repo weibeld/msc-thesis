@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Upload a file or directory from the local machine to UBELIX. Directories are
+# uploaded recursively.
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - May 2015
+#------------------------------------------------------------------------------#
+
+usage() {
+cat <<EOF
+Usage:
+ ${0##*/} path_local [path_remote]
+
+Description:
+ Upload the file or directory specified by 'path_local' to UBELIX. If
+ 'path_remote' is absent, then the content is placed in UBELIX HOME, otherwise
+ it is saved as or in 'path_remote', depending on whether 'path_remote' is a
+ file or non-existing directory, or an existing directory.
+
+Arguments:
+ path_local:  path to file or directory on local machin
+ path_remote: path to file or directory on UBELIX (absolute or relative to HOME)
+EOF
+}
+[[ "$1" = --help ]] && usage && exit
+
+[[ -z "$1" ]] && echo "${0##*/}: missing argument 'path_local'" && exit 1
+
+scp -r "$1" dw07r324@submit.unibe.ch:"${2:-~}"
