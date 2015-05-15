@@ -1,0 +1,526 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="org.svvrl.goal.core" version="2014.11.17" vendor="GOAL Development Team"
+        class="org.svvrl.goal.core.CorePlugin">
+<runtime>
+	<library id="core" path="classes/" type="code">
+		<export prefix="*"/>
+	</library>
+  <library type="resources" path="repository/" id="repository" />
+  <library type="resources" path="html/" id="html" />
+</runtime>
+
+<!-- Extensions -->
+<extension-point id="Codec">
+  <parameter-def id="class" />
+  <parameter-def id="priority" type="number" />
+</extension-point>
+<extension-point id="ConsoleHandler">
+  <parameter-def id="class" />
+  <parameter-def id="priority" type="number" />
+</extension-point>
+<extension-point id="UIHandler">
+  <parameter-def id="class" />
+  <parameter-def id="priority" type="number" />
+</extension-point>
+<extension-point id="Drawer">
+  <parameter-def id="class" />
+  <parameter-def id="editable" />
+</extension-point>
+<extension-point id="IdleDrawer">
+  <parameter-def id="class" />
+  <parameter-def id="object" />
+</extension-point>
+<extension-point id="Layout">
+  <parameter-def id="class" />
+  <parameter-def id="name" />
+  <parameter-def id="mnemonic" multiplicity="none-or-one" />
+  <parameter-def id="tooltip" multiplicity="none-or-one" />
+</extension-point>
+<extension-point id="CostFunction">
+  <parameter-def id="class" />
+  <parameter-def id="name" />
+</extension-point>
+<extension-point id="FormulaRewriter">
+  <parameter-def id="class" />
+  <parameter-def id="name" />
+  <parameter-def id="description" />
+</extension-point>
+<extension-point id="ComplementConstruction">
+  <parameter-def id="class" />
+  <parameter-def id="name" />
+</extension-point>
+<extension-point id="Simulation">
+  <parameter-def id="class" />
+  <parameter-def id="name" />
+  <parameter-def id="type" />
+</extension-point>
+<extension-point id="Simulation2">
+  <parameter-def id="class" />
+  <parameter-def id="name" />
+  <parameter-def id="type" />
+</extension-point>
+<extension-point id="GameSolver">
+  <parameter-def id="class" />
+  <parameter-def id="acc" />
+</extension-point>
+<extension-point id="GameConversion">
+  <parameter-def id="class" />            <!-- the class of the game conversion -->
+  <parameter-def id="name" />             <!-- the name of the game conversion -->
+  <parameter-def id="src" />              <!-- the source game type -->
+  <parameter-def id="dst" />              <!-- the target game type -->
+</extension-point>
+
+
+
+<!-- Codecs -->
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="GFFCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.GFFCodec" />
+  <parameter id="priority" value="0" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="OldGFFCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.OldGFFCodec" />
+  <parameter id="priority" value="10" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="GFFCollectionCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.GFFCollectionCodec" />
+  <parameter id="priority" value="20" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="JFFCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.JFFCodec" />
+  <parameter id="priority" value="30" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="MoDeLLaCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.MoDeLLaCodec" />
+  <parameter id="priority" value="40" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="LTL2BuchiCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.LTL2BuchiCodec" />
+  <parameter id="priority" value="50" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="PromelaCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.promela.PromelaCodec" />
+  <parameter id="priority" value="60" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="DotCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.dot.DotCodec" />
+  <parameter id="priority" value="70" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="JPEGCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.JPEGCodec" />
+  <parameter id="priority" value="80" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="PNGCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.PNGCodec" />
+  <parameter id="priority" value="90" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="AntichainCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.AntichainCodec" />
+  <parameter id="priority" value="100" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="BACodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.BACodec" />
+  <parameter id="priority" value="110" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="MXCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.MXCodec" />
+  <parameter id="priority" value="120" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="SVGCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.SVGCodec" />
+  <parameter id="priority" value="130" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="GasTeXCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.GasTeXCodec" />
+  <parameter id="priority" value="140" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="TikzCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.TikzCodec" />
+  <parameter id="priority" value="150" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="VaucansonCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.VaucansonCodec" />
+  <parameter id="priority" value="160" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="PGSolverCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.PGSolverCodec" />
+  <parameter id="priority" value="170" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Codec" id="LBTTCodec">
+  <parameter id="class" value="org.svvrl.goal.core.io.LBTTCodec" />
+  <parameter id="priority" value="180" />
+</extension>
+
+
+
+<!-- Drawers -->
+<extension plugin-id="org.svvrl.goal.core" point-id="Drawer" id="FormulaDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.draw.FormulaDrawer" />
+  <parameter id="editable" value="org.svvrl.goal.core.logic.FormulaHolder" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Drawer" id="FSADrawer">
+  <parameter id="class" value="org.svvrl.goal.core.draw.FSADrawer" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Drawer" id="AltAutomatonDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.draw.AltAutomatonDrawer" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.alt.AltAutomaton" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Drawer" id="GameDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.draw.GameDrawer" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.game.Game" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Drawer" id="TwoWayAltAutomatonDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.draw.TwoWayAltAutomatonDrawer" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.alt.twoway.TwoWayAltAutomaton" />
+</extension>
+
+
+
+<!-- Idle Drawers -->
+<extension plugin-id="org.svvrl.goal.core" point-id="IdleDrawer" id="StateInfoDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.draw.StateInfoDrawer" />
+  <parameter id="object" value="org.svvrl.goal.core.aut.State" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="IdleDrawer" id="SafraStateInfoDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.comp.safra.SafraStateInfoDrawer" />
+  <parameter id="object" value="org.svvrl.goal.core.comp.safra.SafraState" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="IdleDrawer" id="MSStateInfoDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.comp.ms.MSStateInfoDrawer" />
+  <parameter id="object" value="org.svvrl.goal.core.comp.ms.MSState" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="IdleDrawer" id="ScheweStateInfoDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.comp.schewe.ScheweStateInfoDrawer" />
+  <parameter id="object" value="org.svvrl.goal.core.comp.schewe.ScheweState" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="IdleDrawer" id="PitermanStateInfoDrawer">
+  <parameter id="class" value="org.svvrl.goal.core.comp.piterman.PitermanStateInfoDrawer" />
+  <parameter id="object" value="org.svvrl.goal.core.comp.piterman.PitermanState" />
+</extension>
+
+
+
+<!-- Layout Algorithms -->
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="CircleLayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.CircleLayout" />
+  <parameter id="name" value="Circle Layout" />
+  <parameter id="mnemonic" value="C" />
+  <parameter id="tooltip" value="Spread states in a circle." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="FRLayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.FRLayout" />
+  <parameter id="name" value="FR Layout" />
+  <parameter id="mnemonic" value="F" />
+  <parameter id="tooltip" value="Perform the Fruchterman-Reingold layout [FR91]." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="ForceScanAlgorithm">
+  <parameter id="class" value="org.svvrl.goal.core.layout.ForceScanAlgorithm" />
+  <parameter id="name" value="Force-Scan Algorithm (FSA)" />
+  <parameter id="mnemonic" value="S" />
+  <parameter id="tooltip" value="Perform the force-scan algorithm (FSA) [EL92] to remove node overlapping." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="ForceTransferAlgorithm">
+  <parameter id="class" value="org.svvrl.goal.core.layout.ForceTransferAlgorithm" />
+  <parameter id="name" value="Force-Transfer Algorithm (FTA)" />
+  <parameter id="mnemonic" value="T" />
+  <parameter id="tooltip" value="Perform the force-transfer algorithm (FTA) [HLSG07] to remove node overlapping." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="GEMLayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.GEMLayout" />
+  <parameter id="name" value="GEM Layout" />
+  <parameter id="mnemonic" value="G" />
+  <parameter id="tooltip" value="Perform the GEM layout [FLM94]." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="TreeLayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.TreeLayout" />
+  <parameter id="name" value="Tree Layout" />
+  <parameter id="mnemonic" value="T" />
+  <parameter id="tooltip" value="Perform a naive tree layout." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="ImprovedPushForceScanAlgorithm">
+  <parameter id="class" value="org.svvrl.goal.core.layout.ImprovedPushForceScanAlgorithm" />
+  <parameter id="name" value="Improved Push Force-Scan Algorithm" />
+  <parameter id="mnemonic" value="P" />
+  <parameter id="tooltip" value="Perform the improved push force-scan algorithm [HIMF98]." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="ISOMLayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.ISOMLayout" />
+  <parameter id="name" value="ISOM Layout" />
+  <parameter id="mnemonic" value="I" />
+  <parameter id="tooltip" value="Perform the ISOM layout [Meyer98]." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="KKLayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.KKLayout" />
+  <parameter id="name" value="KK Layout" />
+  <parameter id="mnemonic" value="K" />
+  <parameter id="tooltip" value="Perform the Kamada-Kawai layout [KK89]." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="RandomLayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.RandomLayout" />
+  <parameter id="name" value="Random Layout" />
+  <parameter id="mnemonic" value="R" />
+  <parameter id="tooltip" value="Place states in random locations." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="SALayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.SALayout" />
+  <parameter id="name" value="SA Layout" />
+  <parameter id="mnemonic" value="S" />
+  <parameter id="tooltip" value="Perform the SA layout [DH96]." />
+</extension>
+<!--
+<extension plugin-id="org.svvrl.goal.core" point-id="Layout" id="TimGALayout">
+  <parameter id="class" value="org.svvrl.goal.core.layout.TimGALayout" />
+  <parameter id="name" value="TimGA Layout" />
+  <parameter id="mnemonic" value="T" />
+  <parameter id="tooltip" value="Perform the TimGA layout [EM01]." />
+</extension>
+-->
+
+
+<!-- Cost Functions -->
+<extension plugin-id="org.svvrl.goal.core" point-id="CostFunction" id="KKCostFunction">
+  <parameter id="class" value="org.svvrl.goal.core.layout.KKCostFunction" />
+  <parameter id="name" value="KK" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="CostFunction" id="SACostFunction">
+  <parameter id="class" value="org.svvrl.goal.core.layout.SACostFunction" />
+  <parameter id="name" value="SA" />
+</extension>
+
+
+
+<!-- Formula Rewriters -->
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="RESimplifier">
+  <parameter id="class" value="org.svvrl.goal.core.logic.re.RESimplifier" />
+  <parameter id="name" value="Regular Expression Patterns" />
+  <parameter id="description" value="Simplify regular expressions based rewriting patterns." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="ORESimplifier">
+  <parameter id="class" value="org.svvrl.goal.core.logic.ore.ORESimplifier" />
+  <parameter id="name" value="ω-Regular Expression Patterns" />
+  <parameter id="description" value="Simplify ω-regular expressions based rewriting patterns." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="LTLSimplifier">
+  <parameter id="class" value="org.svvrl.goal.core.logic.ltl.LTLSimplifier" />
+  <parameter id="name" value="LTL Patterns" />
+  <parameter id="description" value="Simplify LTL formulae based congruent rewriting patterns." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="QPTLSimplifier">
+  <parameter id="class" value="org.svvrl.goal.core.logic.qptl.QPTLSimplifier" />
+  <parameter id="name" value="QPTL Patterns" />
+  <parameter id="description" value="Simplify QPTL formulae based congruent rewriting patterns." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="ACTLSimplifier">
+  <parameter id="class" value="org.svvrl.goal.core.logic.actl.ACTLSimplifier" />
+  <parameter id="name" value="ACTL Patterns" />
+  <parameter id="description" value="Simplify ACTL formulae based congruent rewriting patterns." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="EH2000LTL">
+  <parameter id="class" value="org.svvrl.goal.core.logic.ltl.EH2000" />
+  <parameter id="name" value="Pure Eventuality &amp; Pure Universality" />
+  <parameter id="description" value="Simplify LTL formulae based pure eventuality and pure universality [EH00]." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="EH2000QPTL">
+  <parameter id="class" value="org.svvrl.goal.core.logic.qptl.EH2000" />
+  <parameter id="name" value="Pure Eventuality &amp; Pure Universality" />
+  <parameter id="description" value="Simplify QPTL formulae based pure eventuality and pure universality [EH00]." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="LTLPastEvaluator">
+  <parameter id="class" value="org.svvrl.goal.core.logic.ltl.LTLPastEvaluator" />
+  <parameter id="name" value="Past Formulae Evaluation" />
+  <parameter id="description" value="Evaluate past formulae at the initial position." />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="FormulaRewriter" id="QPTLPastEvaluator">
+  <parameter id="class" value="org.svvrl.goal.core.logic.qptl.QPTLPastEvaluator" />
+  <parameter id="name" value="Past Formulae Evaluation" />
+  <parameter id="description" value="Evaluate past formulae at the initial position." />
+</extension>
+
+
+
+<!--  Complement Constructions -->
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="RamseyConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.ramsey.RamseyConstruction" />
+  <parameter id="name" value="Ramsey-Based Construction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="KurshanConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.kurshan.KurshanConstruction" />
+  <parameter id="name" value="Kurshan's Construction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="SafraConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.safra.SafraConstruction" />
+  <parameter id="name" value="Safra's Construction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="ModifiedSafraConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.safra.ModifiedSafraConstruction" />
+  <parameter id="name" value="Modified Safra's Construction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="MullerSchuppConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.ms.MullerSchuppConstruction" />
+  <parameter id="name" value="Muller-Schupp Construction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="ScheweConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.schewe.ScheweConstruction" />
+  <parameter id="name" value="Safra-Schewe Construction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="PitermanConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.piterman.PitermanConstruction" />
+  <parameter id="name" value="Safra-Piterman Construction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="WAAConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.waa.WAAConstruction" />
+  <parameter id="name" value="Via Weak Alternation Automata" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="WAPAConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.wapa.WAPAConstruction" />
+  <parameter id="name" value="Via Weak Alternation Parity Automata" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="RankConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.rank.RankConstruction" />
+  <parameter id="name" value="Rank-Based Construction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="ComplementConstruction" id="SliceConstruction">
+  <parameter id="class" value="org.svvrl.goal.core.comp.slice.SliceConstruction" />
+  <parameter id="name" value="Slice-Based Construction" />
+</extension>
+
+
+
+<!--  Simulation Computation Procedures -->
+<extension plugin-id="org.svvrl.goal.core" point-id="Simulation" id="NaiveSimulation">
+  <parameter id="class" value="org.svvrl.goal.core.aut.opt.NaiveSimulation" />
+  <parameter id="name" value="Naive" />
+  <parameter id="type" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Simulation" id="SchematicSimulation">
+  <parameter id="class" value="org.svvrl.goal.core.aut.opt.SchematicSimulation" />
+  <parameter id="name" value="SchematicSimilarity1" />
+  <parameter id="type" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Simulation" id="RefinedSimulation">
+  <parameter id="class" value="org.svvrl.goal.core.aut.opt.RefinedSimulation" />
+  <parameter id="name" value="RefinedSimilarity" />
+  <parameter id="type" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Simulation" id="EfficientSimulation">
+  <parameter id="class" value="org.svvrl.goal.core.aut.opt.EfficientSimulation" />
+  <parameter id="name" value="EfficientSimilarity" />
+  <parameter id="type" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+
+
+
+<!--  Simulation Computation Procedures between two Automata -->
+<extension plugin-id="org.svvrl.goal.core" point-id="Simulation2" id="NaiveSimulation2">
+  <parameter id="class" value="org.svvrl.goal.core.aut.opt.NaiveSimulation2" />
+  <parameter id="name" value="Naive" />
+  <parameter id="type" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Simulation2" id="SchematicSimulation2">
+  <parameter id="class" value="org.svvrl.goal.core.aut.opt.SchematicSimulation2" />
+  <parameter id="name" value="SchematicSimilarity1" />
+  <parameter id="type" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Simulation2" id="RefinedSimulation2">
+  <parameter id="class" value="org.svvrl.goal.core.aut.opt.RefinedSimulation2" />
+  <parameter id="name" value="RefinedSimilarity" />
+  <parameter id="type" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="Simulation2" id="EfficientSimulation2">
+  <parameter id="class" value="org.svvrl.goal.core.aut.opt.EfficientSimulation2" />
+  <parameter id="name" value="EfficientSimilarity" />
+  <parameter id="type" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+
+
+
+<!-- Game Solvers -->
+<extension plugin-id="org.svvrl.goal.core" point-id="GameSolver" id="ReachabilitySolver">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.ReachabilitySolver" />
+  <parameter id="acc" value="org.svvrl.goal.core.aut.ReachabilityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameSolver" id="ClassicalBuchiSolver">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.ClassicalBuchiSolver" />
+  <parameter id="acc" value="org.svvrl.goal.core.aut.BuchiAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameSolver" id="RecursiveSolver">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.RecursiveSolver" />
+  <parameter id="acc" value="org.svvrl.goal.core.aut.ParityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameSolver" id="McNaughtonZielonkaSolver">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.McNaughtonZielonkaSolver" />
+  <parameter id="acc" value="org.svvrl.goal.core.aut.ParityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameSolver" id="DominionDecompositionSolver">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.DominionDecompositionSolver" />
+  <parameter id="acc" value="org.svvrl.goal.core.aut.ParityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameSolver" id="SmallProgressMeasureSolver">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.SmallProgressMeasureSolver" />
+  <parameter id="acc" value="org.svvrl.goal.core.aut.ParityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameSolver" id="BigStepSolver">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.BigStepSolver" />
+  <parameter id="acc" value="org.svvrl.goal.core.aut.ParityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameSolver" id="GlobalOptimizationSolver">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.GlobalOptimizationSolver" />
+  <parameter id="acc" value="org.svvrl.goal.core.aut.ParityAcc" />
+</extension>
+
+
+
+<!-- Game Conversions -->
+<extension plugin-id="org.svvrl.goal.core" point-id="GameConversion" id="NBG2NMG">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.NBG2NMG" />
+  <parameter id="name" value="NBG2NMG" />
+  <parameter id="src" value="NBG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameConversion" id="NBG2NPG">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.NBG2NPG" />
+  <parameter id="name" value="NBG2NPG" />
+  <parameter id="src" value="NBG" />
+  <parameter id="dst" value="NPG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameConversion" id="NGBG2NMG">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.NGBG2NMG" />
+  <parameter id="name" value="NGBG2NMG" />
+  <parameter id="src" value="NGBG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameConversion" id="NCG2NMG">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.NCG2NMG" />
+  <parameter id="name" value="NCG2NMG" />
+  <parameter id="src" value="NCG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameConversion" id="NMG2NPG">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.NMG2NPG" />
+  <parameter id="name" value="NMG2NPG" />
+  <parameter id="src" value="NMG" />
+  <parameter id="dst" value="NPG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameConversion" id="NRG2NMG">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.NRG2NMG" />
+  <parameter id="name" value="NRG2NMG" />
+  <parameter id="src" value="NRG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameConversion" id="NSG2NMG">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.NSG2NMG" />
+  <parameter id="name" value="NSG2NMG" />
+  <parameter id="src" value="NSG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.core" point-id="GameConversion" id="NPG2NMG">
+  <parameter id="class" value="org.svvrl.goal.core.aut.game.NPG2NMG" />
+  <parameter id="name" value="NPG2NMG" />
+  <parameter id="src" value="NPG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+
+
+
+</plugin>

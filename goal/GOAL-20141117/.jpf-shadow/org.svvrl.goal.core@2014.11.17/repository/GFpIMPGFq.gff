@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Structure label-on="Transition" type="FiniteStateAutomaton">
+    <Name/>
+    <Description/>
+    <Alphabet type="Propositional">
+        <prop>p</prop>
+        <prop>q</prop>
+    </Alphabet>
+    <StateSet>
+        <State sid="0">
+            <x>144</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>96</y>
+        </State>
+        <State sid="1">
+            <x>144</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>196</y>
+        </State>
+        <State sid="2">
+            <x>244</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>196</y>
+        </State>
+        <State sid="3">
+            <x>244</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>96</y>
+        </State>
+        <State sid="4">
+            <x>344</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>146</y>
+        </State>
+    </StateSet>
+    <InitialStateSet>
+        <StateID>0</StateID>
+    </InitialStateSet>
+    <TransitionSet>
+        <Transition tid="27">
+            <from>0</from>
+            <to>2</to>
+            <label>~q</label>
+        </Transition>
+        <Transition tid="26">
+            <from>0</from>
+            <to>1</to>
+            <label>~p</label>
+        </Transition>
+        <Transition tid="29">
+            <from>0</from>
+            <to>4</to>
+            <label>q</label>
+        </Transition>
+        <Transition tid="28">
+            <from>0</from>
+            <to>3</to>
+            <label>True</label>
+        </Transition>
+        <Transition tid="31">
+            <from>2</from>
+            <to>2</to>
+            <label>~q</label>
+        </Transition>
+        <Transition tid="30">
+            <from>1</from>
+            <to>1</to>
+            <label>~p</label>
+        </Transition>
+        <Transition tid="34">
+            <from>3</from>
+            <to>3</to>
+            <label>True</label>
+        </Transition>
+        <Transition tid="35">
+            <from>4</from>
+            <to>2</to>
+            <label>~q</label>
+        </Transition>
+        <Transition tid="32">
+            <from>2</from>
+            <to>4</to>
+            <label>q</label>
+        </Transition>
+        <Transition tid="33">
+            <from>3</from>
+            <to>1</to>
+            <label>~p</label>
+        </Transition>
+        <Transition tid="36">
+            <from>4</from>
+            <to>4</to>
+            <label>q</label>
+        </Transition>
+    </TransitionSet>
+    <Acc type="Buchi">
+        <StateID>1</StateID>
+        <StateID>4</StateID>
+    </Acc>
+</Structure>

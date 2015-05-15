@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Structure label-on="Transition" type="FiniteStateAutomaton">
+    <Name/>
+    <Description/>
+    <Alphabet type="Propositional">
+        <prop>p</prop>
+        <prop>q</prop>
+        <prop>r</prop>
+    </Alphabet>
+    <StateSet>
+        <State sid="0">
+            <x>187</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>216</y>
+        </State>
+        <State sid="1">
+            <x>187</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>116</y>
+        </State>
+        <State sid="2">
+            <x>87</x>
+            <label/>
+            <name/>
+            <description/>
+            <y>166</y>
+        </State>
+    </StateSet>
+    <InitialStateSet>
+        <StateID>0</StateID>
+    </InitialStateSet>
+    <TransitionSet>
+        <Transition tid="12">
+            <from>1</from>
+            <to>0</to>
+            <label>p q ~r</label>
+            <name/>
+            <description/>
+        </Transition>
+        <Transition tid="13">
+            <from>1</from>
+            <to>1</to>
+            <label>p ~q ~r</label>
+            <name/>
+            <description/>
+        </Transition>
+        <Transition tid="23">
+            <from>0</from>
+            <to>1</to>
+            <label>~q ~r</label>
+        </Transition>
+        <Transition tid="22">
+            <from>0</from>
+            <to>0</to>
+            <label>q ~r</label>
+        </Transition>
+        <Transition tid="25">
+            <from>1</from>
+            <to>2</to>
+            <label>r</label>
+        </Transition>
+        <Transition tid="24">
+            <from>0</from>
+            <to>2</to>
+            <label>r</label>
+        </Transition>
+        <Transition tid="26">
+            <from>2</from>
+            <to>2</to>
+            <label>True</label>
+        </Transition>
+    </TransitionSet>
+    <Acc type="Buchi">
+        <StateID>2</StateID>
+    </Acc>
+</Structure>

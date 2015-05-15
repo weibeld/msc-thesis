@@ -8,7 +8,7 @@
 #   - Field 2 to n-1: construction options
 #   - Field n:        arbitrary, is ignored by this script (but must be present)
 #
-# Example: fribourg.r2c.m1.m1.the_ultimative_run
+# Example subdirectory name: fribourg.r2c.m1.m1.the_ultimative_run
 #
 # Daniel Weibel <daniel.weibel@unifr.ch> Oct. 2014 - May 2015
 #------------------------------------------------------------------------------#

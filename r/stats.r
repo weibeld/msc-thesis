@@ -13,25 +13,20 @@ Read <- function(file) {
   read.csv(file=file, comment.char="#")
 }
 
-OutT <- function(df) {
-  # Return number of timeouts
-  #----------------------------------------------------------------------------#
-  nrow(df[df$t_out == "Y",])
-}
+# Get number of timeouts, or display them
+OutT  <- function(df) { nrow(OutT_(df)) }
+OutT_ <- function(df) { df[df$t_out == "Y",] }
 
-OutM <- function(df) {
-  # Return number of memory outs
-  #----------------------------------------------------------------------------#
-  nrow(df[df$m_out == "Y",])
-}
+# Get number of memory outs, or display them
+OutM  <- function(df) { nrow(OutM_(df)) }
+OutM_ <- function(df) { df[df$m_out == "Y",] }
 
-Out <- function(df) {
-  # Return sum of timeouts and memory outs
-  #----------------------------------------------------------------------------#
-  OutsTime(df) + OutsMem(df)
-}
+# Get total number of timeouts + memory outs, or display them
+Out   <- function(df) { nrow(Out_(df)) }
+Out_  <- function(df) { df[df$t_out == "Y" | df$m_out == "Y",] }
 
-Stats1 <- function(df, label="", col="states") {
+
+Stats1 <- function(df, c="", col="states") {
   # Statistics aggregated over all automata
   #----------------------------------------------------------------------------#
   s <- df[!is.na(df$states), col]
@@ -42,10 +37,10 @@ Stats1 <- function(df, label="", col="states") {
              p75=as.numeric(quantile(s, 0.75)),
              max=max(s),
              n=as.integer(length(s)),
-             label=label)
+             comments=c)
 }
 
-Stats2 <- function(df, label="", col="states") {
+Stats2 <- function(df, c="", col="states") {
   # Statistics for the 110 transition density/acceptance density classes
   # Calculate statistics for the 110 classes of acceptance densitiy and trans-
   # ition density combinations from the result of a single complementation run
@@ -68,7 +63,7 @@ Stats2 <- function(df, label="", col="states") {
                         dt=t,
                         da=a,
                         n=length(s),
-                        label=label)
+                        comments=c)
       if (i == 1) stats <- row               else
                   stats <- rbind(stats, row)
       i <- i + 1
@@ -77,27 +72,23 @@ Stats2 <- function(df, label="", col="states") {
   stats
 }
 
-
-EffectiveSamples <- function(...) {
-  # Get effective samples of a set of data frames.
-  # Args:
-  #   ...: One or more data frames
-  # Returns:
-  #   A list with copies of the passed data frames containing only the effective
-  #   samples. The order of the data frames in the list corresponds to the order
-  #   in which they were passed to this function.
+EffSamples <- function(...) {
+  # Determine the effective samples of a set of data frames. The effecive
+  # samples are the complementation tasks (rows) that are successful in ALL of
+  # the passed data frames (i.e. 'states' is not NA).
+  # Args:    ...: One or more data frames
+  # Returns: A logical vector with TRUE for each row that is an effective
+  #          sample, and FALSE for the others.
   #----------------------------------------------------------------------------#
-  df <- list(...)
-  mask <- logical(nrow(df[[1]]))  # Logical vector initialised with FALSE
-  for (frame in df)
-    mask <- mask | is.na(frame$states)
-  df.reduced <- list()
-  for (frame in df)
-    df.reduced[[length(df.reduced)+1]] <- frame[!mask,]
-  df.reduced
+  dfs <- list(...)
+  i <- 1
+  for (df in dfs) {
+    if (i == 1) v <-     !is.na(df$states) else
+                v <- v & !is.na(df$states)
+    i <- i + 1
+  }
+  v
 }
-
-
 
 Complexity <- function(n, m) {
   # Write two numbers n and m in the form m = (xn)^n

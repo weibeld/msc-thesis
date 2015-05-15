@@ -1,0 +1,2619 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="org.svvrl.goal.gui" version="2014.11.17" vendor="GOAL Development Team"
+        class="org.svvrl.goal.gui.UIPlugin">
+<requires>
+	<import plugin-id="org.svvrl.goal.core" plugin-version="2014.11.17" />
+</requires>
+<runtime>
+	<library id="gui" path="classes/" type="code">
+		<export prefix="*"/>
+	</library>
+  <library type="resources" path="icons/" id="icons" />
+</runtime>
+
+
+
+<!-- Extensions -->
+<extension-point id="Menu">
+  <parameter-def id="class" />
+  <parameter-def id="container" />
+  <parameter-def id="location" />
+  <parameter-def id="name" multiplicity="none-or-one" />
+  <parameter-def id="mnemonic" multiplicity="none-or-one" />
+  <parameter-def id="accelerator" multiplicity="none-or-one" />
+  <parameter-def id="tooltip" multiplicity="none-or-one" />
+  <parameter-def id="small_icon" multiplicity="none-or-one" />
+  <parameter-def id="large_icon" multiplicity="none-or-one" />
+  <parameter-def id="style" multiplicity="none-or-one" />
+  <parameter-def id="group" multiplicity="none-or-one" />
+  <parameter-def id="separator" type="boolean" multiplicity="none-or-one" />
+</extension-point>
+<extension-point id="Editor">
+  <parameter-def id="class" />
+  <parameter-def id="editable" />
+</extension-point>
+<extension-point id="PropertyEditor">
+  <parameter-def id="class" />
+  <parameter-def id="object" />
+</extension-point>
+<extension-point id="ToolBox">
+  <parameter-def id="class" />
+  <parameter-def id="priority" type="number" />
+</extension-point>
+<extension-point id="OptionsPanel">
+  <parameter-def id="class" />
+  <parameter-def id="location" />
+  <parameter-def id="for" multiplicity="any" />
+</extension-point>
+<extension-point id="GameConversionOptionsPanel">
+  <parameter-def id="class" />                      <!-- the class of the panel -->
+  <parameter-def id="src" />                        <!-- the source game type of the conversion -->
+  <parameter-def id="dst" />                        <!-- the target game type of the conversion -->
+</extension-point>
+<extension-point id="GameSolverOptionsPanel">
+  <parameter-def id="class" />                      <!-- the class of the panel -->
+  <parameter-def id="name" />                       <!-- the name of the game solver -->
+</extension-point>
+
+
+
+<!-- UIHandler -->
+<extension plugin-id="org.svvrl.goal.core" point-id="UIHandler" id="WindowHandler">
+  <parameter id="class" value="org.svvrl.goal.gui.WindowHandler"/>
+  <parameter id="priority" value="10" />
+</extension>
+
+
+
+<!-- File Menu -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FileMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.MenuBar" />
+  <parameter id="location" value="first" />
+  <parameter id="name" value="File" />
+  <parameter id="mnemonic" value="F" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.NewMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="first" />
+  <parameter id="name" value="New" />
+  <parameter id="mnemonic" value="N" />
+  <parameter id="large_icon" value="Nuvola/new_document_24x24.png" />
+  <parameter id="small_icon" value="Nuvola/new_document_16x16.png" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewEditableAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.NewEditableAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.NewMenu" />
+    <parameter id="location" value="first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewLogicFormulaMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.NewLogicFormulaMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.NewMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.NewEditableAction" />
+    <parameter id="name" value="Algebraic Expression / Logic Formula" />
+    <parameter id="mnemonic" value="L" />
+    <parameter id="separator" value="true" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewRegularExpressionAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewRegularExpressionAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewLogicFormulaMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewOmegaRegularExpressionAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewOmegaRegularExpressionAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewLogicFormulaMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewRegularExpressionAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewQPTLAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewQPTLAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewLogicFormulaMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewOmegaRegularExpressionAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewACTLAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewACTLAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewLogicFormulaMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewQPTLAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewFiniteAutomatonMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.NewMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.NewLogicFormulaMenu" />
+    <parameter id="name" value="Finite Automaton" />
+    <parameter id="mnemonic" value="F" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNFWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNFWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNREWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNREWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNFWAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNREWAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNCWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNCWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNCWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNMWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNMWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNRWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNRWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNMWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNSWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNSWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNRWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNPWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNPWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNSWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNTBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNTBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNPWAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNTGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNTGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNTBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNTMWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNTMWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNTGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNTRWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNTRWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNTMWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNTSWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNTSWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNTRWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNTPWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNTPWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNTSWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewRandomFSAAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewRandomFSAAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNTPWAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewAltAutomatonMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.NewAltAutomatonMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.NewMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.NewFiniteAutomatonMenu" />
+    <parameter id="name" value="Alternating Automaton" />
+    <parameter id="mnemonic" value="A" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFAltAutomatonMenu">
+      <parameter id="class" value="org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewAltAutomatonMenu" />
+      <parameter id="location" value="first" />
+      <parameter id="name" value="DNF" />
+      <parameter id="mnemonic" value="D" />
+    </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNABWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNABWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+        <parameter id="location" value="first" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNACWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNACWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNABWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNAGBWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNAGBWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNACWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNAMWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNAMWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNAGBWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNARWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNARWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNAMWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNASWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNASWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNARWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNAPWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNAPWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNASWAction" />
+      </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFAltAutomatonMenu">
+      <parameter id="class" value="org.svvrl.goal.gui.menu.NewCNFAltAutomatonMenu" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewAltAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.menu.NewDNFAltAutomatonMenu" />
+      <parameter id="name" value="CNF" />
+      <parameter id="mnemonic" value="C" />
+    </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNABWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNABWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFAltAutomatonMenu" />
+        <parameter id="location" value="first" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNACWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNACWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNABWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNAGBWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNAGBWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNACWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNAMWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNAMWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNAGBWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNARWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNARWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNAMWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNASWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNASWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNARWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNAPWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNAPWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNASWAction" />
+      </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewTwoWayAltAutomatonMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.NewTwoWayAltAutomatonMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.NewMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.NewAltAutomatonMenu" />
+    <parameter id="name" value="Two-Way Alternating Automaton" />
+    <parameter id="mnemonic" value="T" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFTwoWayAltAutomatonMenu">
+      <parameter id="class" value="org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewTwoWayAltAutomatonMenu" />
+      <parameter id="location" value="first" />
+      <parameter id="name" value="DNF" />
+      <parameter id="mnemonic" value="D" />
+    </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNTWABWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNTWABWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="first" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNTWACWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNTWACWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNTWABWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNTWAGBWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNTWAGBWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNTWACWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNTWAMWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNTWAMWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNTWAGBWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNTWARWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNTWARWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNTWAMWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNTWASWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNTWASWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNTWARWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewDNFNTWAPWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewDNFNTWAPWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewDNFNTWASWAction" />
+      </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFTwoWayAltAutomatonMenu">
+      <parameter id="class" value="org.svvrl.goal.gui.menu.NewCNFTwoWayAltAutomatonMenu" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewTwoWayAltAutomatonMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.menu.NewDNFTwoWayAltAutomatonMenu" />
+      <parameter id="name" value="CNF" />
+      <parameter id="mnemonic" value="C" />
+    </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNTWABWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNTWABWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="first" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNTWACWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNTWACWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNTWABWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNTWAGBWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNTWAGBWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNTWACWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNTWAMWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNTWAMWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNTWAGBWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNTWARWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNTWARWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNTWAMWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNTWASWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNTWASWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNTWARWAction" />
+      </extension>
+      <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewCNFNTWAPWAction">
+        <parameter id="class" value="org.svvrl.goal.gui.action.NewCNFNTWAPWAction" />
+        <parameter id="container" value="org.svvrl.goal.gui.menu.NewCNFTwoWayAltAutomatonMenu" />
+        <parameter id="location" value="after=org.svvrl.goal.gui.action.NewCNFNTWASWAction" />
+      </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewGameMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.NewMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.NewTwoWayAltAutomatonMenu" />
+    <parameter id="name" value="Game" />
+    <parameter id="mnemonic" value="G" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNFGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNFGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNREGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNREGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNFGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNBGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNBGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNREGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNGBGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNGBGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNBGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNMGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNMGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNGBGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNRGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNRGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNMGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNSGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNSGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNRGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewNPGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewNPGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNSGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewRandomGameAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NewRandomGameAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewNPGAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="GameGenerationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.GameGenerationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.NewGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NewRandomGameAction" />
+    </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="OpenAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.OpenAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.NewMenu" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CloseActiveTabAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.CloseActiveTabAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.OpenAction" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CloseAllTabsAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.CloseAllTabsAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.CloseActiveTabAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SaveAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.SaveAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.CloseAllTabsAction" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SaveAsAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.SaveAsAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.SaveAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SaveAllAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.SaveAllAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.SaveAsAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ImportMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.ImportMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.SaveAllAction" />
+  <parameter id="name" value="Import" />
+  <parameter id="mnemonic" value="I" />
+  <parameter id="large_icon" value="Nuvola/import_24x24.png" />
+  <parameter id="small_icon" value="Nuvola/import_16x16.png" />
+  <parameter id="separator" value="true" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ImportFromTextAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ImportFromTextAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ImportMenu" />
+    <parameter id="location" value="first" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExportMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.ExportMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="name" value="Export" />
+  <parameter id="mnemonic" value="E" />
+  <parameter id="large_icon" value="Nuvola/export_24x24.png" />
+  <parameter id="small_icon" value="Nuvola/export_16x16.png" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.ImportMenu" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExportAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ExportAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ExportMenu" />
+    <parameter id="location" value="first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExportMultipleAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ExportMultipleAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ExportMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ExportAction" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PrintAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.PrintAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.ExportMenu" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RecentFileMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.RecentFileMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.PrintAction" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExitAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.ExitAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.RecentFileMenu" />
+  <parameter id="separator" value="true" />
+</extension>
+
+
+
+<!-- Edit Menu -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="EditMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.MenuBar" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.FileMenu" />
+  <parameter id="name" value="Edit" />
+  <parameter id="mnemonic" value="E" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="UndoAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.UndoAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="first" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RedoAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.RedoAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.UndoAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SelectAllAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.SelectAllAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.RedoAction" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="AutomatonSearchAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.AutomatonSearchAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.SelectAllAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CutAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.CutAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.AutomatonSearchAction" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CopyAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.CopyAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.CutAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PasteAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.PasteAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.CopyAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DeleteAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.DeleteAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.PasteAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MergeStatesAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.MergeStatesAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.DeleteAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CopyAsMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.CopyAsMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.MergeStatesAction" />
+  <parameter id="name" value="Copy As" />
+  <parameter id="mnemonic" value="A" />
+  <parameter id="separator" value="true" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CopyAsPromelaAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.CopyAsPromelaAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.CopyAsMenu" />
+    <parameter id="location" value="first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CopyAsGasTeXAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.CopyAsGasTeXAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.CopyAsMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.CopyAsPromelaAction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CopyAsTikzAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.CopyAsTikzAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.CopyAsMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.CopyAsGasTeXAction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CopyAsVaucansonAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.CopyAsVaucansonAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.CopyAsMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.CopyAsTikzAction" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PreferenceAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.PreferenceAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.CopyAsMenu" />
+  <parameter id="separator" value="true" />
+</extension>
+
+
+
+<!-- View Menu -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ViewMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.MenuBar" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.EditMenu" />
+  <parameter id="name" value="View" />
+  <parameter id="mnemonic" value="V" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PropertyEditorAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.PropertyEditorAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="location" value="first" />
+  <parameter id="style" value="check" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RecentFilesAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.RecentFilesAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.PropertyEditorAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SnapToGridAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.SnapToGridAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.RecentFilesAction" />
+  <parameter id="style" value="check" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DisplayGridlinesAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.DisplayGridlinesAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.SnapToGridAction" />
+  <parameter id="style" value="check" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DisplayGuidelinesAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.DisplayGuidelinesAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.DisplayGridlinesAction" />
+  <parameter id="style" value="check" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FloatableToolbarAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.FloatableToolbarAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.DisplayGuidelinesAction" />
+  <parameter id="style" value="check" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ZoomMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.FloatableToolbarAction" />
+  <parameter id="name" value="Zoom" />
+  <parameter id="mnemonic" value="Z" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ZoomAutoAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$ZoomAutoAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="first" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="Zoom50Action">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$Zoom50Action" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ZoomActions$ZoomAutoAction" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="Zoom75Action">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$Zoom75Action" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ZoomActions$Zoom50Action" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="Zoom100Action">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$Zoom100Action" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ZoomActions$Zoom75Action" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="Zoom125Action">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$Zoom125Action" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ZoomActions$Zoom100Action" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="Zoom150Action">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$Zoom150Action" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ZoomActions$Zoom125Action" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="Zoom175Action">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$Zoom175Action" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ZoomActions$Zoom150Action" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="Zoom200Action">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$Zoom200Action" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ZoomActions$Zoom175Action" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CustomZoomAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ZoomActions$CustomZoomAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ZoomActions$Zoom200Action" />
+    <parameter id="group" value="org.svvrl.goal.gui.menu.ZoomMenu" />
+    <parameter id="style" value="radio" />
+  </extension>
+<!--
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DebugMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.DebugMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.ZoomMenu" />
+  <parameter id="name" value="Debug" />
+  <parameter id="mnemonic" value="D" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DebugCoreAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.DebugCoreAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.DebugMenu" />
+    <parameter id="location" value="first" />
+    <parameter id="style" value="check" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DebugExceptionAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.DebugExceptionAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.DebugMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.DebugCoreAction" />
+    <parameter id="style" value="check" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DebugUIAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.DebugUIAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.DebugMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.DebugExceptionAction" />
+    <parameter id="style" value="check" />
+  </extension>
+-->
+
+
+
+<!-- Repository Menu -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RepositoryMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.RepositoryMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.MenuBar" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.ViewMenu" />
+  <parameter id="name" value="Repository" />
+  <parameter id="mnemonic" value="R" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="BuchiRepositoryAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.BuchiRepositoryAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.RepositoryMenu" />
+  <parameter id="location" value="first" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="BuchiStoreAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.BuchiStoreAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.RepositoryMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.BuchiRepositoryAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="BuchiStoreUploaderAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.BuchiStoreUploaderAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.RepositoryMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.BuchiStoreAction" />
+</extension>
+
+
+
+<!-- Formula Menu -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FormulaMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.MenuBar" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.RepositoryMenu" />
+  <parameter id="name" value="Formula" />
+  <parameter id="mnemonic" value="O" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SatisfiabilityAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.SatisfiabilityAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="first" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ValidityAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.ValidityAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.SatisfiabilityAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTLClassificationMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.QPTLClassificationMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.ValidityAction" />
+  <parameter id="name" value="Temporal Hierarchy" />
+  <parameter id="mnemonic" value="T" />
+  <parameter id="tooltip" value="Classification into the Temporal Hierarchy" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTLSyntaxClassificationAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.QPTLSyntaxClassificationAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLClassificationMenu" />
+    <parameter id="location" value="first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTLLanguageClassificationAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.QPTLLanguageClassificationAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLClassificationMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.QPTLSyntaxClassificationAction" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NegationNormalFormAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.NegationNormalFormAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTLClassificationMenu" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PrenexNormalFormAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.PrenexNormalFormAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.NegationNormalFormAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SimplifyFormulaAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.SimplifyFormulaAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.PrenexNormalFormAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PastFutureSeparationAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.PastFutureSeparationAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.SimplifyFormulaAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RegularExpressionTranslationAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.RegularExpressionTranslationAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.PastFutureSeparationAction" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="OmegaRegularExpressionTranslationAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.OmegaRegularExpressionTranslationAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.RegularExpressionTranslationAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTLTranslateMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.OmegaRegularExpressionTranslationAction" />
+  <parameter id="name" value="Translate QPTL" />
+  <parameter id="mnemonic" value="Q" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2LOSNGBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+    <parameter id="location" value="first" />
+    <parameter id="name" value="To NGBW (Label-On-State)" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TableauActions$QPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TableauActions$QPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="IncTableauActions$QPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.IncTableauActions$QPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TableauActions$QPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TemporalTesterActions$QPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TemporalTesterActions$QPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.IncTableauActions$QPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWActions$QPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWActions$QPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TemporalTesterActions$QPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWPlusActions$QPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$QPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWActions$QPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTActions$QPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$QPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$QPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTPlusActions$QPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$QPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$QPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedModellaActions$QPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedModellaActions$QPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$QPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TableauActions$StepByStepQPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TableauActions$StepByStepQPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedModellaActions$QPTL2LOSNGBWAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWActions$StepByStepQPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWActions$StepByStepQPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TableauActions$StepByStepQPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWPlusActions$StepByStepQPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$StepByStepQPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWActions$StepByStepQPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTActions$StepByStepQPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$StepByStepQPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$StepByStepQPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTPlusActions$StepByStepQPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$StepByStepQPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$StepByStepQPTL2LOSNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedModellaActions$StepByStepQPTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedModellaActions$StepByStepQPTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$StepByStepQPTL2LOSNGBWAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2LOSNBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTL2LOSNGBWMenu" />
+    <parameter id="name" value="To NBW (Label-On-State)" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TableauActions$QPTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TableauActions$QPTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="IncTableauActions$QPTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.IncTableauActions$QPTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TableauActions$QPTL2LOSNBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TemporalTesterActions$QPTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TemporalTesterActions$QPTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.IncTableauActions$QPTL2LOSNBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWActions$QPTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWActions$QPTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TemporalTesterActions$QPTL2LOSNBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWPlusActions$QPTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$QPTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWActions$QPTL2LOSNBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTActions$QPTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$QPTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$QPTL2LOSNBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTPlusActions$QPTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$QPTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$QPTL2LOSNBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedModellaActions$QPTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedModellaActions$QPTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$QPTL2LOSNBWAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2NGBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTL2LOSNBWMenu" />
+    <parameter id="name" value="To NGBW" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TableauActions$QPTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TableauActions$QPTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="IncTableauActions$QPTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.IncTableauActions$QPTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TableauActions$QPTL2NGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TemporalTesterActions$QPTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TemporalTesterActions$QPTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.IncTableauActions$QPTL2NGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWActions$QPTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWActions$QPTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TemporalTesterActions$QPTL2NGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWPlusActions$QPTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$QPTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWActions$QPTL2NGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTActions$QPTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$QPTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$QPTL2NGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTPlusActions$QPTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$QPTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$QPTL2NGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedModellaActions$QPTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedModellaActions$QPTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$QPTL2NGBWAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2NBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTL2NGBWMenu" />
+    <parameter id="name" value="To NBW" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TableauActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TableauActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="IncTableauActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.IncTableauActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TableauActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="TemporalTesterActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.TemporalTesterActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.IncTableauActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.TemporalTesterActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedGPVWPlusActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedGPVWPlusActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2AUTPlusActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="KP02Actions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.KP02Actions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2AUTPlusActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedModellaActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedModellaActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.KP02Actions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="LTL2BAActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.LTL2BAActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedModellaActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PLTL2BAActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PLTL2BAActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.LTL2BAActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedCouvreurActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedCouvreurActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.PLTL2BAActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2BuchiActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2BuchiActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedCouvreurActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="CCJ09Actions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.CCJ09Actions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedLTL2BuchiActions$QPTL2NBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2BAActions$QPTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.QPTL2BAActions$QPTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.CCJ09Actions$QPTL2NBWAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2NTGBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.QPTL2NTGBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTL2NBWMenu" />
+    <parameter id="name" value="To NTGBW" />
+    <parameter id="separator" value="true" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="LTL2BAActions$QPTL2NTGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.LTL2BAActions$QPTL2NTGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NTGBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PLTL2BAActions$QPTL2NTGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PLTL2BAActions$QPTL2NTGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NTGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.LTL2BAActions$QPTL2NTGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedCouvreurActions$QPTL2NTGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedCouvreurActions$QPTL2NTGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NTGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.PLTL2BAActions$QPTL2NTGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExtendedLTL2BuchiActions$QPTL2NTGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExtendedLTL2BuchiActions$QPTL2NTGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NTGBWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExtendedCouvreurActions$QPTL2NTGBWAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2NABWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.QPTL2NABWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTL2NTGBWMenu" />
+    <parameter id="name" value="To NABW" />
+    <parameter id="separator" value="true" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2BAActions$FutureQPTL2NABWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.QPTL2BAActions$FutureQPTL2NABWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NABWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2NACWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.QPTL2NACWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTL2NABWMenu" />
+    <parameter id="name" value="To NACW" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="LTL2BAActions$QPTL2VWAAAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.LTL2BAActions$QPTL2VWAAAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NACWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2NTWACWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.QPTL2NTWACWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTL2NACWMenu" />
+    <parameter id="name" value="To NTWACW" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PLTL2BAActions$QPTL2TWVWAAAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PLTL2BAActions$QPTL2TWVWAAAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NTWACWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="QPTL2BAActions$CanonicalQPTL2NTWACWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.QPTL2BAActions$CanonicalQPTL2NTWACWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.QPTL2NTWACWMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.PLTL2BAActions$QPTL2TWVWAAAction" />
+    </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ACTLTranslateMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.ACTLTranslateMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.QPTLTranslateMenu" />
+  <parameter id="name" value="Translate ACTL" />
+  <parameter id="mnemonic" value="A" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ACTL2LOSNGBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.ACTL2LOSNGBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ACTLTranslateMenu" />
+    <parameter id="location" value="first" />
+    <parameter id="name" value="To NGBW (Label-On-State)" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PMT02Actions$ACTL2LOSNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PMT02Actions$ACTL2LOSNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ACTL2LOSNGBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+<!--
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ACTL2LOSNBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.ACTL2LOSNBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ACTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.ACTL2LOSNGBWMenu" />
+    <parameter id="name" value="To NBW (Label-On-State)" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PMT02Actions$ACTL2LOSNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PMT02Actions$ACTL2LOSNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ACTL2LOSNBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ACTL2NGBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.ACTL2NGBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ACTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.ACTL2LOSNBWMenu" />
+    <parameter id="name" value="To NGBW" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PMT02Actions$ACTL2NGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PMT02Actions$ACTL2NGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ACTL2NGBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ACTL2NBWMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.ACTL2NBWMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.ACTLTranslateMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.ACTL2NGBWMenu" />
+    <parameter id="name" value="To NBW" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PMT02Actions$ACTL2NBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PMT02Actions$ACTL2NBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ACTL2NBWMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+-->
+
+
+
+<!-- Automaton Menu -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="AutomatonMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.MenuBar" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.FormulaMenu" />
+  <parameter id="name" value="Automaton" />
+  <parameter id="mnemonic" value="A" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="AlphabetMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.AlphabetMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="first" />
+    <parameter id="name" value="Alphabet" />
+    <parameter id="mnemonic" value="A" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ShowAtomicPropositionsAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ShowAtomicPropositionsAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AlphabetMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ExpandAlphabetAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ExpandAlphabetAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AlphabetMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ShowAtomicPropositionsAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ContractAlphabetAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ContractAlphabetAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AlphabetMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ExpandAlphabetAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RenamePropositionAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.RenamePropositionAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AlphabetMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ContractAlphabetAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="AbstractAlphabetAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.AbstractAlphabetAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AlphabetMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.RenamePropositionAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertAlphabetTypeAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertAlphabetTypeAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AlphabetMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.AbstractAlphabetAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DuplicateAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.DuplicateAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.AlphabetMenu" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MergeAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.MergeAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.DuplicateAction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="AcceptanceConditionMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.AcceptanceConditionMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.MergeAction" />
+    <parameter id="name" value="Acceptance Condition" />
+    <parameter id="mnemonic" value="A" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ResetAccAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ResetAccAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AcceptanceConditionMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MaximizeAcceptanceSetAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.MaximizeAcceptanceSetAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AcceptanceConditionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ResetAccAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MinimizeAcceptanceSetAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.MinimizeAcceptanceSetAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AcceptanceConditionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.MaximizeAcceptanceSetAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ParityInterpretationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ParityInterpretationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AcceptanceConditionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.MinimizeAcceptanceSetAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ParityCompressionAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ParityCompressionAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AcceptanceConditionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ParityInterpretationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ParityPropagationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ParityPropagationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AcceptanceConditionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ParityCompressionAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="AutomatonUtilityMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.AcceptanceConditionMenu" />
+    <parameter id="name" value="Utilities" />
+    <parameter id="mnemonic" value="U" />
+  </extension>  
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FindMSCCAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.FindMSCCAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FindCyclesAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.FindCyclesAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.FindMSCCAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NaiveSimulationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NaiveSimulationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.FindCyclesAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SchematicSimulationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SchematicSimulationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NaiveSimulationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RefinedSimulationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.RefinedSimulationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.SchematicSimulationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="EfficientSimulationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.EfficientSimulationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.RefinedSimulationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DelayedSimulationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.DelayedSimulationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.EfficientSimulationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FairSimulationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.FairSimulationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.DelayedSimulationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="EliminateEpsilonAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.EliminateEpsilonAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.FairSimulationAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="OmegaAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.OmegaAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.EliminateEpsilonAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="LayoutMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.LayoutMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.AutomatonUtilityMenu" />
+    <parameter id="name" value="Layout" />
+    <parameter id="mnemonic" value="L" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="InputTestMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.InputTestMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.LayoutMenu" />
+    <parameter id="name" value="Input Test" />
+    <parameter id="mnemonic" value="I" />
+    <parameter id="separator" value="true" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="InputTestAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.InputTestAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.InputTestMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="InputSimulatorAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.InputSimulatorAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.InputTestMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.InputTestAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RunTreeAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.RunTreeAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.InputTestMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.InputSimulatorAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RunDagAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.RunDagAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.InputTestMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.RunTreeAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SplitTreeAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SplitTreeAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.InputTestMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.RunDagAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ReducedSplitTreeAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ReducedSplitTreeAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.InputTestMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.SplitTreeAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="EmptinessAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.EmptinessAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.InputTestMenu" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ContainmentMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.ContainmentMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="name" value="Containment" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.EmptinessAction" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ContainmentAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ContainmentAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ContainmentMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SafraContainmentAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SafraContainmentAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ContainmentMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ContainmentAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ModifiedSafraContainmentAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ModifiedSafraContainmentAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ContainmentMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.SafraContainmentAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MSContainmentAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.MSContainmentAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ContainmentMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ModifiedSafraContainmentAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PitermanContainmentAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PitermanContainmentAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ContainmentMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.MSContainmentAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SliceContainmentAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SliceContainmentAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ContainmentMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.PitermanContainmentAction" />
+    </extension>
+<!--
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SliceAntichainAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SliceAntichainAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ContainmentMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.SliceContainmentAction" />
+    </extension>
+-->
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="EquivalenceMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.EquivalenceMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.ContainmentMenu" />
+    <parameter id="name" value="Equivalence" />
+    <parameter id="mnemonic" value="Q" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="EquivalenceWithAutomatonAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.EquivalenceWithAutomatonAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.EquivalenceMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="EquivalenceWithFormulaAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.EquivalenceWithFormulaAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.EquivalenceMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.EquivalenceWithAutomatonAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SimulatedMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.SimulatedMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.EquivalenceMenu" />
+    <parameter id="name" value="Simulated" />
+    <parameter id="mnemonic" value="S" />    
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DirectSimulatedAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.DirectSimulatedAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimulatedMenu" />
+      <parameter id="location" value="first" />
+    </extension>  
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DelayedSimulatedAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.DelayedSimulatedAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimulatedMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.DirectSimulatedAction" />
+    </extension>  
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FairSimulatedAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.FairSimulatedAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimulatedMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.DelayedSimulatedAction" />
+    </extension>  
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SimulationEquivalenceAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.SimulationEquivalenceAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.SimulatedMenu" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DeterministicMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.DeterministicMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.SimulationEquivalenceAction" />
+    <parameter id="name" value="Deterministic" />
+    <parameter id="mnemonic" value="D" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DeterministicAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.DeterministicAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterministicMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SemanticallyDeterministicAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SemanticallyDeterministicAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterministicMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.DeterministicAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="AperiodicAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.AperiodicAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.DeterministicMenu" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MorphismMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.MorphismMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.AperiodicAction" />
+    <parameter id="name" value="Morphism" />
+    <parameter id="mnemonic" value="M" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="HomomorphismAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.HomomorphismAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.MorphismMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="IsomorphismAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.IsomorphismAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.MorphismMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.HomomorphismAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FSAClassificationAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.FSAClassificationAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.MorphismMenu" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ClosureAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ClosureAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.FSAClassificationAction" />
+    <parameter id="separator" value="true" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ClosureAction" />
+    <parameter id="name" value="Convert" />
+    <parameter id="mnemonic" value="V" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertLabelPositionAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertLabelPositionAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertAlternationStyleAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertAlternationStyleAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertLabelPositionAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToRegularExpressionAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToRegularExpressionAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertAlternationStyleAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToOmegaRegularExpressionAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToOmegaRegularExpressionAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToRegularExpressionAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FSA2GameAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.FSA2GameAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToOmegaRegularExpressionAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.FSA2GameAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNCWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNCWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNCWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNMWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNMWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNGBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNRWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNRWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNMWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNSWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNSWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNRWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNPWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNPWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNSWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNTBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNTBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNPWAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNTGBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNTGBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNTBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ConvertMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNTGBWAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DeterminizationMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.DeterminizationMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.ConvertMenu" />
+    <parameter id="name" value="Determinize" />
+    <parameter id="mnemonic" value="D" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NFWToDFWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NFWToDFWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterminizationMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToDBWByLandweberAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToDBWByLandweberAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterminizationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NFWToDFWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToDBWByBK09Action">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToDBWByBK09Action" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterminizationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToDBWByLandweberAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NBWToDRWBySafraAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NBWToDRWBySafraAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterminizationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToDBWByBK09Action" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NBWToDRWByModifiedSafraAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NBWToDRWByModifiedSafraAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterminizationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NBWToDRWBySafraAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NBWToDRWByMSAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NBWToDRWByMSAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterminizationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NBWToDRWByModifiedSafraAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NBWToDPWByPitermanAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.NBWToDPWByPitermanAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.DeterminizationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.NBWToDRWByMSAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MinimizationMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.MinimizationMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.DeterminizationMenu" />
+    <parameter id="name" value="Minimization" />
+    <parameter id="mnemonic" value="M" />
+  </extension>    
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ClassicalMinimizationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ClassicalMinimizationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.MinimizationMenu" />
+      <parameter id="location" value="first" />
+    </extension>    
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="HopcroftMinimizationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.HopcroftMinimizationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.MinimizationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ClassicalMinimizationAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FSAProductAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.FSAProductAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.MinimizationMenu" />
+  </extension>        
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="IntersectionAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.IntersectionAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.FSAProductAction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="UnionAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.UnionAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.IntersectionAction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ComplementMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.UnionAction" />
+    <parameter id="name" value="Complement" />
+    <parameter id="mnemonic" value="C" />
+  </extension>    
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ClassicComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ClassicComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="KurshanComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.KurshanComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ClassicComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RamseyComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.RamseyComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.KurshanComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SafraComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SafraComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.RamseyComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ModifiedSafraComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ModifiedSafraComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.SafraComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MSComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.MSComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ModifiedSafraComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="WAPAComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.WAPAComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ModifiedSafraComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="WAAComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.WAAComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.WAPAComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PitermanComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PitermanComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.WAAComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RankComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.RankComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.PitermanComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SliceComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SliceComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.RankComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementDBWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementDBWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.SliceComplementAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementDCWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementDCWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToComplementDBWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementDMWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementDMWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToComplementDCWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementDRWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementDRWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToComplementDMWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementDSWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementDSWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToComplementDRWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementDPWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementDPWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToComplementDSWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementNABWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementNABWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToComplementDPWAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementNACWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementNACWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToComplementNABWAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToComplementNAPWAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToComplementNAPWAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToComplementNACWAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepComplementMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.ComplementMenu" />
+    <parameter id="name" value="Complement (Step-by-Step)" />
+    <parameter id="mnemonic" value="C" />
+  </extension>    
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepSafraComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepSafraComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepModifiedSafraComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepModifiedSafraComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.StepByStepSafraComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepMSComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepMSComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.StepByStepModifiedSafraComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepWAPAComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepWAPAComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.StepByStepMSComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepWAAComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepWAAComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.StepByStepWAPAComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepPitermanComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepPitermanComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.StepByStepWAAComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepRankComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepRankComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.StepByStepPitermanComplementAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepSliceComplementAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepSliceComplementAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.StepByStepRankComplementAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConcatenationAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ConcatenationAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="name" value="Concatenation" />
+    <parameter id="mnemonic" value="C" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ReplacementAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ReplacementAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="name" value="Replacement" />
+    <parameter id="mnemonic" value="R" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ConcatenationAction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ReverseAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.ReverseNFWAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="name" value="Reverse" />
+    <parameter id="mnemonic" value="R" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ReplacementAction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SimplificationMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.action.ReverseNFWAction" />
+    <parameter id="name" value="Simplify" />
+    <parameter id="mnemonic" value="S" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ReduceStatesAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ReduceStatesAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ReduceAltConnectorsAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ReduceAltConnectorsAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ReduceStatesAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PruningFairSetsAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.PruningFairSetsAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ReduceAltConnectorsAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SimulationSimplificationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SimulationSimplificationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.PruningFairSetsAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="WringOptimizationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.WringOptimizationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.SimulationSimplificationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DelayedSimulationSimplificationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.DelayedSimulationSimplificationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.WringOptimizationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FairSimulationSimplificationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.FairSimulationSimplificationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.DelayedSimulationSimplificationAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="RabinIndexSimplificationAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.RabinIndexSimplificationAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SimplificationMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.FairSimulationSimplificationAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PromelaAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.PromelaAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.AutomatonMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.SimplificationMenu" />
+  </extension>
+
+
+
+<!-- Game Menu -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="GameMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.GameMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.MenuBar" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.AutomatonMenu" />
+  <parameter id="name" value="Game" />
+  <parameter id="mnemonic" value="G" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SolveGameMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.SolveGameMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.GameMenu" />
+    <parameter id="name" value="Solve" />
+    <parameter id="mnemonic" value="S" />
+    <parameter id="location" value="first" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="SolveGameAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.SolveGameAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SolveGameMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepSolveGameAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.StepByStepSolveGameAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.SolveGameMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.SolveGameAction" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="GameConversionMenu">
+    <parameter id="class" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.GameMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.SolveGameMenu" />
+    <parameter id="name" value="Convert" />
+    <parameter id="mnemonic" value="C" />
+    <parameter id="separator" value="true" />
+  </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNBGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNBGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+      <parameter id="location" value="first" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNCGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNCGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNBGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNGBGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNGBGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNCGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNMGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNMGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNGBGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNRGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNRGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNMGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNSGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNSGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNRGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="ConvertToNPGAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.ConvertToNPGAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNSGAction" />
+    </extension>
+    <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="GameConversionAction">
+      <parameter id="class" value="org.svvrl.goal.gui.action.GameConversionAction" />
+      <parameter id="container" value="org.svvrl.goal.gui.menu.GameConversionMenu" />
+      <parameter id="location" value="after=org.svvrl.goal.gui.action.ConvertToNPGAction" />
+      <parameter id="separator" value="true" />
+    </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="GameProductAction">
+    <parameter id="class" value="org.svvrl.goal.gui.action.GameProductAction" />
+    <parameter id="container" value="org.svvrl.goal.gui.menu.GameMenu" />
+    <parameter id="location" value="after=org.svvrl.goal.gui.menu.GameConversionMenu" />
+  </extension>
+
+
+
+<!-- Window Menu -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="WindowMenu">
+	<parameter id="class" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.MenuBar" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.menu.GameMenu" />
+  <parameter id="name" value="Window" />
+  <parameter id="mnemonic" value="W" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NewWindowAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.NewWindowAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="first" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NextWindowAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.NextWindowAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.NewWindowAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PreviousWindowAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.PreviousWindowAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.NextWindowAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="DetachAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.DetachAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.PreviousWindowAction" />
+  <parameter id="separator" value="true" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="NextTabAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.NextTabAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.DetachAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="PreviousTabAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.PreviousTabAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.NextTabAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MoveToNextWindowAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.MoveToNextWindowAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.PreviousTabAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MoveToPreviousWindowAction">
+  <parameter id="class" value="org.svvrl.goal.gui.action.MoveToPreviousWindowAction" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.MoveToNextWindowAction" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="MoveToMenu">
+  <parameter id="class" value="org.svvrl.goal.gui.menu.MoveToMenu" />
+  <parameter id="container" value="org.svvrl.goal.gui.menu.WindowMenu" />
+  <parameter id="location" value="after=org.svvrl.goal.gui.action.MoveToPreviousWindowAction" />
+</extension>
+
+
+
+<!-- Editors -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="RegularExpressionEditor">
+	<parameter id="class" value="org.svvrl.goal.gui.editor.RegularExpressionEditor" />
+	<parameter id="editable" value="org.svvrl.goal.core.logic.re.EditableRE" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="OmegaRegularExpressionEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.OmegaRegularExpressionEditor" />
+  <parameter id="editable" value="org.svvrl.goal.core.logic.ore.EditableORE" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="QPTLEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.QPTLEditor" />
+  <parameter id="editable" value="org.svvrl.goal.core.logic.qptl.QPTLFormula" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="ACTLEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.ACTLEditor" />
+  <parameter id="editable" value="org.svvrl.goal.core.logic.actl.ACTLFormula" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="FSAEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.FSAEditor"/>
+  <parameter id="editable" value="org.svvrl.goal.core.aut.fsa.FSA" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="TwoWayAltAutomatonEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TwoWayAltAutomatonEditor"/>
+  <parameter id="editable" value="org.svvrl.goal.core.aut.alt.twoway.TwoWayAltAutomaton" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="AltAutomatonEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.AltAutomatonEditor"/>
+  <parameter id="editable" value="org.svvrl.goal.core.aut.alt.AltAutomaton" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="GameEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.GameEditor" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.game.Game" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="InputSimulatorViewer">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.InputSimulatorViewer" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.fsa.InputSimulator" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="RunTreeViewer">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.RunTreeViewer" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.fsa.RunTree" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="RunDagViewer">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.RunDagViewer" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.fsa.RunDag" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="Editor" id="SplitTreeViewer">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.SplitTreeViewer" />
+  <parameter id="editable" value="org.svvrl.goal.core.aut.fsa.SplitTree" />
+</extension>
+
+
+
+<!-- PropertyEditors -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="EditablePropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.EditablePropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.Editable" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="AutomatonPropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.AutomatonPropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.Automaton" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="GraphicComponentPropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.GraphicComponentPropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.GraphicComponent" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="StatePropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.StatePropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.State" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TransitionPropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TransitionPropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.Transition" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="AltTransitionPropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.AltTransitionPropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.alt.AltTransition" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TwoWayAltTransitionPropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TwoWayAltTransitionPropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.alt.twoway.TwoWayAltTransition" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="ClassicAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.ClassicAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.ClassicAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="ReachabilityAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.ReachabilityAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.ReachabilityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="BuchiAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.BuchiAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.BuchiAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="CoBuchiAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.CoBuchiAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.CoBuchiAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="GeneralizedBuchiAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.GeneralizedBuchiAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.GeneralizedBuchiAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="MullerAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.MullerAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.MullerAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="RabinAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.RabinAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.RabinAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="StreettAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.StreettAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.StreettAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="ParityAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.ParityAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.ParityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TBuchiAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TBuchiAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.TBuchiAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TCoBuchiAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TCoBuchiAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.TCoBuchiAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TGeneralizedBuchiAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TGeneralizedBuchiAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.TGeneralizedBuchiAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TMullerAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TMullerAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.TMullerAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TRabinAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TRabinAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.TRabinAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TStreettAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TStreettAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.TStreettAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="TParityAccEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.TParityAccEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.TParityAcc" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="AltAutomatonPropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.AltAutomatonPropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.alt.AltAutomaton" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="AltStatePropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.AltStatePropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.alt.AltState" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="AltConnectorPropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.AltConnectorPropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.alt.AltConnector" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="GamePropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.GamePropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.game.Game" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="PropertyEditor" id="GameStatePropertyEditor">
+  <parameter id="class" value="org.svvrl.goal.gui.editor.GameStatePropertyEditor"/>
+  <parameter id="object" value="org.svvrl.goal.core.aut.game.GameState" />
+</extension>
+
+
+<!-- Toolboxes -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="ToolBox" id="GeneralToolBox">
+  <parameter id="class" value="org.svvrl.goal.gui.tool.GeneralToolBox"/>
+  <parameter id="priority" value="0" />
+</extension>
+<!--
+<extension plugin-id="org.svvrl.goal.gui" point-id="ToolBox" id="QPTLToolBox">
+  <parameter id="class" value="org.svvrl.goal.gui.tool.QPTLToolBox"/>
+  <parameter id="priority" value="10" />
+</extension>
+-->
+<extension plugin-id="org.svvrl.goal.gui" point-id="ToolBox" id="AutomatonToolBox">
+  <parameter id="class" value="org.svvrl.goal.gui.tool.AutomatonToolBox"/>
+  <parameter id="priority" value="20" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="ToolBox" id="ControllerToolBox">
+  <parameter id="class" value="org.svvrl.goal.gui.tool.ControllerToolBox"/>
+  <parameter id="priority" value="30" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="ToolBox" id="InputSimulatorToolBox">
+  <parameter id="class" value="org.svvrl.goal.gui.tool.InputSimulatorToolBox"/>
+  <parameter id="priority" value="40" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="ToolBox" id="RunTreeToolBox">
+  <parameter id="class" value="org.svvrl.goal.gui.tool.RunTreeToolBox"/>
+  <parameter id="priority" value="40" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="ToolBox" id="RunDagToolBox">
+  <parameter id="class" value="org.svvrl.goal.gui.tool.RunDagToolBox"/>
+  <parameter id="priority" value="40" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="ToolBox" id="SplitTreeToolBox">
+  <parameter id="class" value="org.svvrl.goal.gui.tool.SplitTreeToolBox"/>
+  <parameter id="priority" value="40" />
+</extension>
+
+
+
+<!-- OptionsPanel -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="GeneralOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.GeneralOptionsPanel"/>
+  <parameter id="location" value="/General?first" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="AutomatonOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.AutomatonOptionsPanel"/>
+  <parameter id="location" value="/Automaton?after=General" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="AperiodicOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.AperiodicOptionsPanel"/>
+    <parameter id="location" value="/Automaton/Aperiodic?first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ConversionOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ConversionOptionsPanel"/>
+    <parameter id="location" value="/Automaton/Conversion?after=Aperiodic" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="SimulationOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.SimulationOptionsPanel"/>
+    <parameter id="location" value="/Automaton/Simulation?after=Conversion" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ClassificationOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.ClassificationOptionsPanel"/>
+  <parameter id="location" value="/Classification?after=Automaton" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="TemporalHierarchyClassificationOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.TemporalHierarchyClassificationOptionsPanel"/>
+    <parameter id="location" value="/Classification/Temporal Hierarchy?first" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="CodecOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.CodecOptionsPanel"/>
+  <parameter id="location" value="/Codec?after=Classification" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="DotCodecOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.DotCodecOptionsPanel"/>
+    <parameter id="location" value="/Codec/Dot?first" />
+    <parameter id="for" value="org.svvrl.goal.core.io.dot.DotCodec" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="GasTeXCodecOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.GasTeXCodecOptionsPanel"/>
+    <parameter id="location" value="/Codec/GasTeX?after=Dot" />
+    <parameter id="for" value="org.svvrl.goal.core.io.GasTeXCodec" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="TikzCodecOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.TikzCodecOptionsPanel"/>
+    <parameter id="location" value="/Codec/Tikz?after=GasTeX" />
+    <parameter id="for" value="org.svvrl.goal.core.io.TikzCodec" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="VaucansonCodecOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.VaucansonCodecOptionsPanel"/>
+    <parameter id="location" value="/Codec/Vaucanson-G?after=Tikz" />
+    <parameter id="for" value="org.svvrl.goal.core.io.VaucansonCodec" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ComplementOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.ComplementOptionsPanel"/>
+  <parameter id="location" value="/Complementation?after=Codec" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="RamseyOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.RamseyOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Ramsey-Based Construction?first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="SafraOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.SafraOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Safra's Construction?after=Ramsey-Based Construction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ModifiedSafraOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ModifiedSafraOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Modified Safra's Construction?after=Safra's Construction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="PitermanOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.PitermanOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Safra-Piterman Construction?after=Modified Safra's Construction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="RankComplementOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.RankComplementOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Rank-Based Construction?after=Safra-Piterman Construction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="SliceComplementOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.SliceComplementOptionsPanel"/>
+    <parameter id="location" value="/Complementation/Slice-Based Construction?after=Rank-Based Construction" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ContainmentOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.ContainmentOptionsPanel"/>
+  <parameter id="location" value="/Containment?after=Complementation" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="MSContainmentOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.MSContainmentOptionsPanel"/>
+    <parameter id="location" value="/Containment/On-The-Fly with Muller-Schupp Construction?first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="SafraContainmentOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.SafraContainmentOptionsPanel"/>
+    <parameter id="location" value="/Containment/On-The-Fly with Safra's Construction?after=On-The-Fly with Muller-Schupp Construction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ModifiedSafraContainmentOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ModifiedSafraContainmentOptionsPanel"/>
+    <parameter id="location" value="/Containment/On-The-Fly with Modified Safra's Construction?after=On-The-Fly with Safra's Construction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="PitermanContainmentOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.PitermanContainmentOptionsPanel"/>
+    <parameter id="location" value="/Containment/On-The-Fly with Safra-Piterman Construction?after=On-The-Fly with Modified Safra's Construction" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="SliceContainmentOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.SliceContainmentOptionsPanel"/>
+    <parameter id="location" value="/Containment/On-The-Fly with Slice-Based Construction?after=On-The-Fly with Safra-Piterman Construction" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="GameOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.GameOptionsPanel"/>
+  <parameter id="location" value="/Game?after=Containment" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="GameConversionOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.GameConversionOptionsPanel"/>
+    <parameter id="location" value="/Game/Conversion?first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="GameSolverOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.GameSolverOptionsPanel"/>
+    <parameter id="location" value="/Game/Solver?after=Conversion" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="LayoutOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.LayoutOptionsPanel"/>
+  <parameter id="location" value="/Layout?after=Game" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="CircleLayoutOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.CircleLayoutOptionsPanel"/>
+    <parameter id="location" value="/Layout/Circle Layout?first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ForceScanAlgorithmOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ForceScanAlgorithmOptionsPanel"/>
+    <parameter id="location" value="/Layout/Force-Scan Algorithm?after=Circle Layout" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ForceTransferAlgorithmOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ForceTransferAlgorithmOptionsPanel"/>
+    <parameter id="location" value="/Layout/Force-Transfer Algorithm?after=Force-Scan Algorithm" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="FRLayoutOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.FRLayoutOptionsPanel"/>
+    <parameter id="location" value="/Layout/FR Layout?after=Force-Transfer Algorithm" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ImprovedForceScanAlgorithmOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ImprovedForceScanAlgorithmOptionsPanel"/>
+    <parameter id="location" value="/Layout/Improved Force-Scan Algorithm?after=FR Layout" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ISOMLayoutOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ISOMLayoutOptionsPanel"/>
+    <parameter id="location" value="/Layout/ISOM Layout?after=Improved Force-Scan Algorithm" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="KKLayoutOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.KKLayoutOptionsPanel"/>
+    <parameter id="location" value="/Layout/KK Layout?after=ISOM Layout" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="SALayoutOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.SALayoutOptionsPanel"/>
+    <parameter id="location" value="/Layout/SA Layout?after=KK Layout" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="TreeLayoutOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.TreeLayoutOptionsPanel"/>
+    <parameter id="location" value="/Layout/Tree Layout?after=SA Layout" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="LogicOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.LogicOptionsPanel"/>
+  <parameter id="location" value="/Logic?after=Layout" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="QPTLOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.QPTLOptionsPanel"/>
+    <parameter id="location" value="/Logic/QPTL?first" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="RepositoryOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.RepositoryOptionsPanel"/>
+  <parameter id="location" value="/Repository?after=Logic" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="BuchiStoreOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.BuchiStoreOptionsPanel"/>
+    <parameter id="location" value="/Repository/Online Repository?first" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="SimplificationOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.SimplificationOptionsPanel"/>
+  <parameter id="location" value="/Simplification?after=Repository" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="SimulationOptimizerOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.SimulationOptimizerOptionsPanel"/>
+    <parameter id="location" value="/Simplification/By Simulation?first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="PruningFairSetsOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.PruningFairSetsOptionsPanel"/>
+    <parameter id="location" value="/Simplification/By Pruning Fair Sets?after=By Simulation" />
+  </extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="TranslationOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.TranslationOptionsPanel"/>
+  <parameter id="location" value="/Translation?after=Simplification" />
+</extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="RETranslationOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.RETranslationOptionsPanel"/>
+    <parameter id="location" value="/Translation/Regular Expressions?first" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ORETranslationOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ORETranslationOptionsPanel"/>
+    <parameter id="location" value="/Translation/ω-Regular Expressions?after=Regular Expressions" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="TableauOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.TableauOptionsPanel"/>
+    <parameter id="location" value="/Translation/Tableau (MP)?after=ω-Regular Expressions" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="IncrementalTableauOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.IncrementalTableauOptionsPanel"/>
+    <parameter id="location" value="/Translation/Incremental Tableau (KMMP)?after=Tableau (MP)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="TemporalTesterOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.TemporalTesterOptionsPanel"/>
+    <parameter id="location" value="/Translation/Temporal Tester (KP)?after=Incremental Tableau (KMMP)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ExtendedGPVWOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ExtendedGPVWOptionsPanel"/>
+    <parameter id="location" value="/Translation/Extended On-the-Fly (GPVW)?after=Temporal Tester (KP)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ExtendedGPVWPlusOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ExtendedGPVWPlusOptionsPanel"/>
+    <parameter id="location" value="/Translation/Extended On-the-Fly (GPVW+)?after=Extended On-the-Fly (GPVW)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ExtendedLTL2AUTOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ExtendedLTL2AUTOptionsPanel"/>
+    <parameter id="location" value="/Translation/Extended LTL2AUT (DGV)?after=Extended On-the-Fly (GPVW+)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ExtendedLTL2AUTPlusOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ExtendedLTL2AUTPlusOptionsPanel"/>
+    <parameter id="location" value="/Translation/Extended LTL2AUT+ (DGV)?after=Extended LTL2AUT (DGV)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="KP02OptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.KP02OptionsPanel"/>
+    <parameter id="location" value="/Translation/KP02?after=Extended LTL2AUT+ (DGV)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ExtendedModellaOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ExtendedModellaOptionsPanel"/>
+    <parameter id="location" value="/Translation/Extended MoDeLLa (ST)?after=KP02" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="LTL2BAOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.LTL2BAOptionsPanel"/>
+    <parameter id="location" value="/Translation/LTL2BA (GO)?after=Extended MoDeLLa (ST)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="PLTL2BAOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.PLTL2BAOptionsPanel"/>
+    <parameter id="location" value="/Translation/PLTL2BA (GO)?after=LTL2BA (GO)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ExtendedCouvreurOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ExtendedCouvreurOptionsPanel"/>
+    <parameter id="location" value="/Translation/Extended Couvreur's Algorithm?after=PLTL2BA (GO)" />
+  </extension>
+  <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="ExtendedLTL2BuchiOptionsPanel">
+    <parameter id="class" value="org.svvrl.goal.gui.pref.ExtendedLTL2BuchiOptionsPanel"/>
+    <parameter id="location" value="/Translation/Extended LTL2BUCHI (GL) ?after=Extended Couvreur's Algorithm" />
+  </extension>
+
+
+
+<!--  Game Conversion Options Panel -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="GameConversionOptionsPanel" id="NBG2NMGOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.Game2NMGOptionsPanel"/>
+  <parameter id="src" value="NBG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="GameConversionOptionsPanel" id="NGBG2NMGOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.Game2NMGOptionsPanel"/>
+  <parameter id="src" value="NGBG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="GameConversionOptionsPanel" id="NCG2NMGOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.Game2NMGOptionsPanel"/>
+  <parameter id="src" value="NCG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="GameConversionOptionsPanel" id="NRG2NMGOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.Game2NMGOptionsPanel"/>
+  <parameter id="src" value="NRG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="GameConversionOptionsPanel" id="NSG2NMGOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.Game2NMGOptionsPanel"/>
+  <parameter id="src" value="NSG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="GameConversionOptionsPanel" id="NPG2NMGOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.Game2NMGOptionsPanel"/>
+  <parameter id="src" value="NPG" />
+  <parameter id="dst" value="NMG" />
+</extension>
+
+
+
+<!--  Game Solver Options Panel -->
+<extension plugin-id="org.svvrl.goal.gui" point-id="GameSolverOptionsPanel" id="ReachabilitySolverOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.ReachabilitySolverOptionsPanel"/>
+  <parameter id="name" value="Reachability" />
+</extension>
+<extension plugin-id="org.svvrl.goal.gui" point-id="GameSolverOptionsPanel" id="GlobalOptimizationSolverOptionsPanel">
+  <parameter id="class" value="org.svvrl.goal.gui.pref.GlobalOptimizationSolverOptionsPanel"/>
+  <parameter id="name" value="Global Optimization" />
+</extension>
+	
+
+
+</plugin>

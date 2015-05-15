@@ -43,23 +43,22 @@ done
 
 # Check arguments
 [[ ! "$p" -gt 0   ]] && abort "'$p' is not a valid number"
-[[ -z "$indir"    ]] && abort "must set option '-i input_dir'"
+[[ -z   "$indir"  ]] && abort "must set option '-i input_dir'"
 [[ ! -d "$indir"  ]] && abort "'$indir' is not a valid directory"
 outdir=${outdir:-$(pwd)}
 [[ ! -d "$outdir" ]] && abort "'$outdir' is not a valid directory"
 
-# It's convenient to do everything from within the input directory
-cd "$indir"
+# List of all the files in the input directory, one file per line
+filenames=$(ls "$indir" | sed "s/^/$indir\//")  # Referrable from current dir
 
-echo "Total $(($(ls | wc -l))) files"
+# Number of files in the input directory
+n=$(($(echo "$filenames" | wc -l)))
+echo "Total $n files"
 
 # Size of the first p-1 partitions (total/p is integer division and discards
 # the decimal part if the result is not an integer). The last partition will
 # contain all the remaining files, which may differ from 'size'.
-size=$(($(ls | wc -l) / $p))
-
-# List of all the files in the input directory, one per line
-filenames=$(ls)
+size=$(($n / $p))
 
 # Pad a number with 0s to the number of digits of 'p'
 d=$(($(echo -n $p | wc -c)))

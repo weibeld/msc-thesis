@@ -140,6 +140,16 @@ Each of the 110 transition density and acceptance density combination groups con
 
 The reason that we chose this existing test set, instead of for example generating our own one, is that it has been previously used and is thus an established reference point. As it is commonly accepted in disciplines that rely on performance measurements via test sets (for example artificial intelligence), we also think that it is imporant that there is established test data that can be used as an objective benchmark. This is to avoid that self-made test data is biased toward the technology whose performance is to evaluate. By using the test set of Tsai et al., we are taking a step in this direction. Furthermore, the experiments conducted by Tsai et al. are similar to our ones, so there might be to notice interesting parallels or differences in the results. The same test set has also been used by an earlier performance investigation of the Fribourg construction in~\cite{2013_bsc_goettel}.
 
+Besides the test set of the GOAL automata, we did all the tests also on the first four Michel automata:
+\begin{itemize}
+\item Michel N1: 3 states, 7 transitions, 1 accepting state
+\item Michel N2: 4 states, 14 transitions, 1 accepting state
+\item Michel N3: 5 states, 23 transitions, 1 accepting state
+\item Michel N4: 6 states, 34 transitions, 1 accepting state
+\end{itemize}
+
+These are the Michel automata that can be processes with our implementation and on our execution environment. Complementing Michel automata N5 and above would already by far exceed our available computing and time resources.
+
 
 \section{Internal Tests}
 In the internal tests we want to find out which version of the Fribourg constructionn is the most efficient one. With most efficient, we mean the one that produces on average the least number of states on the set of test automata.
@@ -161,7 +171,7 @@ Regarding the dependency of R2C, there are two possibilities. First (\id{R2C-A})
 
 Göttel ~\cite{2013_bsc_goettel} has compared \id{R2C-B} to a plain version of the Fribourg construction where no optimisations at all are applied. He used the same test data as we do. The result was that \id{R2C-B} produces on average slightly less states, but the peak number of generated states are higher than in the plain version. It will be interesting to see if we can replicate these results, and how the selective application of the R2C optimisation (\id{R2C-A}) performs compared to \id{R2C-B}.
 
-Regarding the dependencies of the M1 and M2 optimisation, there are only two cases we can test. First, M1 alone, and second, M1 and M2 together. Assuming that the R2C optimisation adds a certain performance gain on top of an existing construction, we can then combine the better one of \id{M1} and \id{M1+M2} with R2C. We can already reveal at this point that \id{M1} performs better than \id{M1+M2} on our test set, even though \id{M1+M2} has a better theoretical worst-case complexity. This topic is further discussed in Chapter~\ref{chap_results}. Thus, the versio that we will want to test is \id{M1+R2C}.
+Regarding the dependencies of the M1 and M2 optimisation, there are only two cases we can test. First, M1 alone, and second, M1 and M2 together. Assuming that the R2C optimisation adds a certain performance gain on top of an existing construction, we can then combine the better one of \id{M1} and \id{M1+M2} with R2C. We can already reveal at this point that \id{M1} performs slightly better than \id{M1+M2} on our test set, even though \id{M1+M2} has a better theoretical worst-case complexity. This topic is further discussed in Chapter~\ref{chap_results}. Thus, the version that we will want to test is \id{M1+R2C}.
 
 Furthermore, we can also investigate the effect of some generic optimisations on our construction. The most generic optimisations, which are included in most complementation constructions in GOAL, and also our plugin with the Fribourg construction, are:
 \begin{enumerate}
@@ -173,13 +183,13 @@ By applying these two optimisations to the best version of the Fribourg construc
 
 Summarising, for the internal tests we are going to carry out runs of the following versions of the Fribourg construction:
 \begin{enumerate}
-\item Plain
-\item \id{R2C}
-\item \id{R2C+C}
-\item \id{M1}
-\item \id{M1+M2}
-\item \id{M1+R2C}
-\item \id{M1+R2C+MACC+R}
+\item \id{Fribourg}
+\item \id{Fribourg+R2C}
+\item \id{Fribourg+R2C+C}
+\item \id{Fribourg+M1}
+\item \id{Fribourg+M1+M2}
+\item \id{Fribourg+M1+R2C}
+\item \id{Fribourg+M1+R2C+MACC+R}
 \end{enumerate}
 
 
@@ -193,4 +203,38 @@ Ramsey, piterman, rank, and slice are representative for the four main complemen
 
 
 \section{Execution Environment}
+
+UBELIX Linux cluster, runs Sun Grid Engine (load scheduler).
+
+All the jobs are executed on machines belonging to one of the two following queues:
+
+\begin{itemize}
+\item long.q
+  \begin{itemize}
+  \item hnode 47--49
+  \item Intel Xeon E5-2695v2 2.40GHz
+  \item 24 CPU cores (slots)
+  \item 96 GB RAM
+  \item $\rightarrow$ 4 GB RAM per core (slot)
+  \item h_cpu limit: >200:00:00 (not sure)
+  \end{itemize}
+\item mpi.q
+  \begin{itemize}
+  \item hnode 01--42
+  \item Intel Xeon E5-2665 2.40GHz
+  \item 16 CPU cores (slots)
+  \item 64 GB RAM
+  \item $\rightarrow$ 4 GB RAM per core (slot)
+  \item h_cpu limit: 72:00:00
+  \item h_rt limit: 73:00:00
+  \end{itemize}
+\item highmem.q
+  \begin{itemize}
+  \item jnode 01--21
+  \item Intel Xeon E5-2665 2.40GHz
+  \item 16 CPU cores (slots)
+  \item 256 GB RAM
+  \item $\rightarrow$ 16 GB RAM per core (slot)
+  \end{itemize}
+\end{itemize}
 

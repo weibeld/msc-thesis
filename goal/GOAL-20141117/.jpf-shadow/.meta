@@ -1,22 +1,22 @@
 #This is automatically generated file.
-#Thu May 14 01:32:39 CEST 2015
+#Fri May 15 15:47:36 CEST 2015
 uid\:ch.unifr.goal.util@0.0.1=ch.unifr.goal.util@0.0.1
-file\:org.svvrl.goal.core@2014.11.17=org.svvrl.goal.core@2014.11.17.zip
+file\:org.svvrl.goal.core@2014.11.17=org.svvrl.goal.core@2014.11.17
 uid\:org.svvrl.goal.core@2014.11.17=org.svvrl.goal.core@2014.11.17
-file\:org.svvrl.goal.gui@2014.11.17=org.svvrl.goal.gui@2014.11.17.zip
-modified\:org.svvrl.goal.cmd@2014.11.17=2014-11-17 08\:17\:32
-source\:org.svvrl.goal.core@2014.11.17=../plugins/org.svvrl.goal.core.zip
+file\:org.svvrl.goal.gui@2014.11.17=org.svvrl.goal.gui@2014.11.17
+modified\:org.svvrl.goal.cmd@2014.11.17=2015-05-14 18\:05\:43
+source\:org.svvrl.goal.core@2014.11.17=../plugins/org.svvrl.goal.core/
 source\:ch.unifr.goal.util@0.0.1=../plugins/ch.unifr.goal.util/
-modified\:ch.unifr.goal.util@0.0.1=2015-05-14 00\:13\:46
-file\:org.svvrl.goal.cmd@2014.11.17=org.svvrl.goal.cmd@2014.11.17.zip
-modified\:org.svvrl.goal.gui@2014.11.17=2014-11-17 08\:17\:34
-modified\:org.svvrl.goal.core@2014.11.17=2014-11-17 08\:17\:33
-source\:org.svvrl.goal.gui@2014.11.17=../plugins/org.svvrl.goal.gui.zip
+modified\:ch.unifr.goal.util@0.0.1=2015-05-14 18\:06\:32
+file\:org.svvrl.goal.cmd@2014.11.17=org.svvrl.goal.cmd@2014.11.17
+modified\:org.svvrl.goal.gui@2014.11.17=2015-05-14 18\:05\:43
+modified\:org.svvrl.goal.core@2014.11.17=2015-05-14 18\:05\:43
+source\:org.svvrl.goal.gui@2014.11.17=../plugins/org.svvrl.goal.gui/
 file\:ch.unifr.goal.complement@0.0.1=ch.unifr.goal.complement@0.0.1
 uid\:ch.unifr.goal.complement@0.0.1=ch.unifr.goal.complement@0.0.1
 source\:ch.unifr.goal.complement@0.0.1=../plugins/ch.unifr.goal.complement/
 uid\:org.svvrl.goal.cmd@2014.11.17=org.svvrl.goal.cmd@2014.11.17
-source\:org.svvrl.goal.cmd@2014.11.17=../plugins/org.svvrl.goal.cmd.zip
+source\:org.svvrl.goal.cmd@2014.11.17=../plugins/org.svvrl.goal.cmd/
 file\:ch.unifr.goal.util@0.0.1=ch.unifr.goal.util@0.0.1
-modified\:ch.unifr.goal.complement@0.0.1=2014-09-10 15\:07\:29
+modified\:ch.unifr.goal.complement@0.0.1=2015-05-14 18\:10\:54
 uid\:org.svvrl.goal.gui@2014.11.17=org.svvrl.goal.gui@2014.11.17
