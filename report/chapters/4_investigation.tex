@@ -195,10 +195,19 @@ Summarising, for the internal tests we are going to carry out runs of the follow
 
 \section{External Tests}
 \textbf{Justification why to use only piterman, slice, and rank}$\\$
-UBELIX/jobs/2014-10-09: $\\$
+Notes in UBELIX/jobs/2014-10-09: $\\$
 Made test with complementing the first 10 of the size 15 test set with all constructions, and only piterman, slice, and rank (and safra) completed all of them. $\\$
 See Tsai (2011)~\cite{2011_tsai} page 5: they compared ramsey, piterman, rank, and slice. But ramsey couldn't complement any of the 11,000 automata of size 15. $\\$
 Ramsey, piterman, rank, and slice are representative for the four main complementatio approaches: Ramsey-based, determinization-based, rank-based, and slice-based.
+
+\subsection*{Test configurations}
+
+\begin{itemize}
+\item \id{Fribourg+M1+R2C}
+\item \id{Piterman+EQ+SIM+RO}
+\item \id{Rank+TR+RO}
+\item \id{Slice+P+RO+MADJ+EG}
+\end{itemize}
 
 
 
@@ -216,7 +225,7 @@ All the jobs are executed on machines belonging to one of the two following queu
   \item 24 CPU cores (slots)
   \item 96 GB RAM
   \item $\rightarrow$ 4 GB RAM per core (slot)
-  \item h_cpu limit: >200:00:00 (not sure)
+  \item h\_cpu limit: $>$ 200:00:00 (not sure)
   \end{itemize}
 \item mpi.q
   \begin{itemize}
@@ -225,8 +234,8 @@ All the jobs are executed on machines belonging to one of the two following queu
   \item 16 CPU cores (slots)
   \item 64 GB RAM
   \item $\rightarrow$ 4 GB RAM per core (slot)
-  \item h_cpu limit: 72:00:00
-  \item h_rt limit: 73:00:00
+  \item h\_cpu limit: 72:00:00
+  \item h\_rt limit: 73:00:00
   \end{itemize}
 \item highmem.q
   \begin{itemize}
@@ -238,3 +247,30 @@ All the jobs are executed on machines belonging to one of the two following queu
   \end{itemize}
 \end{itemize}
 
+
+\subsection*{Tests}
+
+\begin{enumerate}
+\item Internal on GOAL testset
+\item External on GOAL testset
+\item Internal on Michel automata
+\item External on Michel automata
+\item Completeness of GOAL testset
+\item Universality of GOAL testset
+\end{enumerate}
+
+\subsection*{The tests are successful with the following resources}
+
+\begin{tabular}{|p{1.5cm}|l|r|r|r|r|r|p{3.5cm}|}
+\hline
+Test & Queue & Slots & \parbox[t]{1.75cm}{Job\\memory\\limit} & \parbox[t]{1.75cm}{Job CPU\\time limit} & \parbox[t]{1.75cm}{CPU time\\limit per\\automaton\\} & \parbox[t]{1.75cm}{Memory\\limit per\\automaton\\} & Notes \\
+\hline
+1 and 2 & mpi.q & 4 & 4 GB & 72:00:00 & 600 sec. & 1 GB & rank -tr -ro has to be run on 10 partitions of the test set \\
+\hline
+3 and 4 & highmem.q & 4 & 16 GB & 72:00:00 & None & 14 GB & piterman -eq -sim -ro out of memory on Michel N4 \\
+\hline
+4 & mpi.q & 4 & 4 GB & 72:00:00 & None & 1 GB & \\
+\hline
+5 & mpi.q & 4 & 4 GB & 72:00:00 & None & 2 GB & universal -m piterman -eq -ro \\
+\hline
+\end{tabular}
