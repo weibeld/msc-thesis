@@ -139,59 +139,61 @@ Hist <- function(data, lmar=NULL, lines=NULL, lines.cex=1, xaxp=NULL, yaxp=NULL,
   } 
 }
 
-Dim3 <- function(df, type, x.var="da", y.var="dt", z.var="states",
-                 func=median, func.args=list(), matrix.only=FALSE, ...) {
-  # Draw plots for three-dimensional data. Wrapper for persp(), image(),
-  # contour(), and heatmap().
-  # Args:
-  #   df:          Data frame containing the three-dimensional data to plot
-  #   type:        One of "persp", "image", "contour", and "heatmap"
-  #   x.var:       Column of the data frame containing the x-values
-  #   y.var:       Column of the data frame containing the y-values
-  #   z.var:       Column of the data frame containing the z-values
-  #   func:        Function to apply to the classes of z-values
-  #   func.args:   List with further arguments to the function func
-  #   matrix.only: Do not plot, just return data as matrix with the required
-  #                form for the z argument of the underlying graphics functions.
-  #   ...:         Arguments for the underlying graphics functions.
-  # Returns:
-  #   If type="persp": The perspective matrix pmat, needed for adding custom
-  #                    elements (e.g. axes) to a persp plot.
-  # Details:
-  #   The combinations of x.var and y.var column values divide the data frame
-  #   in sets of rows. The vector of z.var column values in each of these sets
-  #   is passed to the function func which distilles it to a single value
-  #   (e.g. median). In this way, there will be one z-value for every combinat-
-  #   ion of x and y-values.
-  #----------------------------------------------------------------------------#
-  # Create matrix summarising three-dimensional data
-  row.indices <- as.numeric(names(table(df[[x.var]])))  # Row names = x.var vals
-  col.indices <- as.numeric(names(table(df[[y.var]])))  # Col names = y.var vals
-  cells <- numeric()  # Cell values of matrix (distilled z.var values)
-  for (r in row.indices) {
-    for (c in col.indices) {
-      z.vals <- df[df[[x.var]] == r & df[[y.var]] == c, z.var]
-      cells <- c(cells, do.call(func, c(list(z.vals), func.args)))
-    }
-  }
-  mat <- matrix(cells, nrow=length(row.indices), ncol=length(col.indices),
-                byrow=TRUE, dimnames=list(row.indices, col.indices))
-  if (matrix.only) return(mat)
-  # Plot the above matrix
-  if      (type == "persp") {
-    # Good values: shade=0.75, theta=70, expand=0.25, nticks=11
-    persp(x=row.indices, y=col.indices, z=mat, ticktype="detailed", ...)
-  }
-  else if (type == "image") {
-    image(x=row.indices, y=col.indices, z=mat, ...)
-  }
-  else if (type == "contour") {
-    image(x=row.indices, y=col.indices, z=mat, ...)
-  }
-  else if (type == "heatmap") {
-    heatmap(mat, ...)
-  }
-}
+# Dim3 <- function(df, type, x.var="da", y.var="dt", z.var="states",
+#                  func=median, func.args=list(), matrix.only=FALSE, ...) {
+#   # Draw plots for three-dimensional data. Wrapper for persp(), image(),
+#   # contour(), and heatmap().
+#   # Args:
+#   #   df:          Data frame containing the three-dimensional data to plot
+#   #   type:        One of "persp", "image", "contour", and "heatmap"
+#   #   x.var:       Column of the data frame containing the x-values
+#   #   y.var:       Column of the data frame containing the y-values
+#   #   z.var:       Column of the data frame containing the z-values
+#   #   func:        Function to apply to the classes of z-values
+#   #   func.args:   List with further arguments to the function func
+#   #   matrix.only: Do not plot, just return data as matrix with the required
+#   #                form for the z argument of the underlying graphics functions.
+#   #   ...:         Arguments for the underlying graphics functions.
+#   # Returns:
+#   #   If type="persp": The perspective matrix pmat, needed for adding custom
+#   #                    elements (e.g. axes) to a persp plot.
+#   # Details:
+#   #   The combinations of x.var and y.var column values divide the data frame
+#   #   in sets of rows. The vector of z.var column values in each of these sets
+#   #   is passed to the function func which distilles it to a single value
+#   #   (e.g. median). In this way, there will be one z-value for every combinat-
+#   #   ion of x and y-values.
+#   #----------------------------------------------------------------------------#
+#   # Create matrix summarising three-dimensional data
+#   row.indices <- as.numeric(names(table(df[[x.var]])))  # Row names = x.var vals
+#   col.indices <- as.numeric(names(table(df[[y.var]])))  # Col names = y.var vals
+#   cells <- numeric()  # Cell values of matrix (distilled z.var values)
+#   for (r in row.indices) {
+#     for (c in col.indices) {
+#       z.vals <- df[df[[x.var]] == r & df[[y.var]] == c, z.var]
+#       cells <- c(cells, do.call(func, c(list(z.vals), func.args)))
+#     }
+#   }
+#   mat <- matrix(cells, nrow=length(row.indices), ncol=length(col.indices),
+#                 byrow=TRUE, dimnames=list(row.indices, col.indices))
+#   if (matrix.only) return(mat)
+#   # Plot the above matrix
+#   if      (type == "persp") {
+#     # Good values: shade=0.75, theta=70, expand=0.25, nticks=11
+#     persp(x=row.indices, y=col.indices, z=mat, ticktype="detailed", ...)
+#   }
+#   else if (type == "image") {
+#     image(x=row.indices, y=col.indices, z=mat, ...)
+#   }
+#   else if (type == "contour") {
+#     image(x=row.indices, y=col.indices, z=mat, ...)
+#   }
+#   else if (type == "heatmap") {
+#     heatmap(mat, ...)
+#   }
+# }
+
+
 
 
 Axis <- function(...) {
@@ -214,121 +216,31 @@ SetLeftMargin <- function(lmar) {
 
 
 
-#==============================================================================#
-# Custom axes, axis ticks, and axis labels for persp plot
-# All function take a list a of the following form as their argument:
-#   a[[1]]: Ticks of x-axis (if drawing x-axis), or x-position of other axis
-#   a[[2]]: Ticks of y-axis (if drawing y-axis), or y-position of other axis
-#   a[[3]]: Ticks of z-axis (if drawing z-axis), or z-position of other axis
-#   a[[4]]: Perspective matrix (pmat) returned by persp
-#==============================================================================#
-PerspAxis <- function(a, ...) {
-  # Add an axis to a persp plot.
-  # Args:
-  #   a:   The list described above
-  #   ...: Arguments for lines()
-  #----------------------------------------------------------------------------#
-  lines(trans3d(a[[1]], a[[2]], a[[3]], a[[4]]), ...)
-}
-
-PerspTicks <- function(a, tickl.len=strwidth("M"), tick.dir=c(1,0), ...) {
-  # Add axis tick marks to one axis of a persp plot.
-  # Args:
-  #   tick.len: Length of ticks
-  #   tick.dir: Direction of ticks in other two dimensions. Vector of size 2
-  #             with values 1, 0, or -1. If size is 1, second elt. is set to 0.
-  #   ...:      Arguments for segment()
-  #----------------------------------------------------------------------------#
-  if (length(tick.dir) < 2) tick.dir[2] <- 0
-  lines <- PerspLines(a, tick.len, tick.dir)
-  segments(lines$inner$x, lines$inner$y, lines$outer$x, lines$outer$y, ...)
-}
-
-PerspAxisLabel <- function(a, label="Move me", ...) {
-  # Add an axis label to a an axis of a persp plot.
-  # Args:
-  #   a:     The list described above
-  #   label: Text of the axis label
-  #   ...:   Arguments for text()
-  #----------------------------------------------------------------------------#
-  x <- a[[1]]; y <- a[[2]]; z <- a[[3]]; pmat <- a[[4]]
-  if      (length(x) > 1) x <- (min(x) + max(x)) / 2  # If label for x-axis
-  else if (length(y) > 1) y <- (min(y) + max(y)) / 2  # If label for y-axis
-  else if (length(z) > 1) z <- (min(z) + max(z)) / 2  # If label for z-axis
-  text(trans3d(x, y, z, pmat), labels=label, ...)
-}
-
-PerspTickLabels <- function(a, labels, tick.len=strwidth("M"), tick.dir=c(1,0),
-                            ...) {
-  # Add tick mark labels to an axis of a persp plot.
-  # Args:
-  #   a:        The list described above
-  #   labels:   The tick mark labels
-  #   tick.len: Length of ticks
-  #   tick.dir: Direction of ticks in other two dimensions. Vector of size 2
-  #             with values 1, 0, or -1. If size is 1, second elt. is set to 0.
-  #   ...:      Arguments for text()
-  #----------------------------------------------------------------------------#
-  x <- a[[1]]; y <- a[[2]]; z <- a[[3]]
-  if (length(tick.dir) < 2) tick.dir[2] <- 0
-  lines <- PerspLines(a, tick.len, tick.dir)
-  text(lines$outer$x, lines$outer$y, labels, ...)
-}
-
-PerspLines <- function(a, gap, dir) {
-  # Compute two lines parallel to one axis spanning the ticks.
-  # Private helper function for PerspTicks and PerspTickLabels.
-  # Args:
-  #   a:   The list described above
-  #   gap: The distance between outer and inner linee (length of ticks)
-  #   dir: Vector of size 2 with values 1, 0, or -1. Direction of outer line to
-  #        inner line in the other two dimensions.
-  # Returns:
-  #   List:
-  #   $inner: trans3d line identical with axis
-  #   $outer: trans3d line parallel to $inner
-  #----------------------------------------------------------------------------#
-  x <- a[[1]]; y <- a[[2]]; z <- a[[3]]; pmat <- a[[4]]
-  inner <- trans3d(x, y, z, pmat)
-  # Modify parameters for outer line
-  if      (length(x) > 1) {  # If lines on x-axis
-    y <- y + (gap * dir[1])
-    z <- z + (gap * dir[2])
-  }
-  else if (length(y) > 1) {  # If lines on y-axis
-    x <- x + (gap * dir[1])
-    z <- z + (gap * dir[2])
-  }
-  else if (length(z) > 1) {  # If lines on z-axis
-    x <- x + (gap * dir[1])
-    y <- y + (gap * dir[2])
-  }
-  outer <- trans3d(x, y, z, pmat)
-  list(inner=inner, outer=outer)
-}
 
 
-Format <- function(n, t=1, dec=1, mark=",", all.marks=TRUE) {
-  # Format a vector of integers or floats for printing
-  # Args:
-  #   n:         Numeric or character vector (representing numbers) of any size
-  #   t:         Formatting type. 1=integer, 2=float
-  #   dec:       Number of digits after the decimal point (if t=2)
-  #   mark:      Character to use for the thousand-separator
-  #   all.marks: Use thousand-separator for all numbers >= 1000 (TRUE), or only
-  #              for numbers >= 10'000 (FALSE)
-  # Returns:
-  #   A character vector containing the formatted numbers.
-  #----------------------------------------------------------------------------#
-  n <- as.numeric(n)
-  format <- ifelse(t == 1, "d", "f")
-  if (all.marks)
-    return(formatC(n, format=format, digits=dec, big.mark=mark))
-  # If thousand-separator only for numbers >= 10'000:
-  res <- character()
-  for (scalar in n) {
-    res <- c(res, formatC(scalar, format=format, digits=dec,
-             big.mark=ifelse(scalar < 10000, "", mark)))
-  }
-  res
-}
+
+
+# Format <- function(n, t=1, dec=1, mark=",", all.marks=TRUE) {
+#   # Format a vector of integers or floats for printing
+#   # Args:
+#   #   n:         Numeric or character vector (representing numbers) of any size
+#   #   t:         Formatting type. 1=integer, 2=float
+#   #   dec:       Number of digits after the decimal point (if t=2)
+#   #   mark:      Character to use for the thousand-separator
+#   #   all.marks: Use thousand-separator for all numbers >= 1000 (TRUE), or only
+#   #              for numbers >= 10'000 (FALSE)
+#   # Returns:
+#   #   A character vector containing the formatted numbers.
+#   #----------------------------------------------------------------------------#
+#   n <- as.numeric(n)
+#   format <- ifelse(t == 1, "d", "f")
+#   if (all.marks)
+#     return(formatC(n, format=format, digits=dec, big.mark=mark))
+#   # If thousand-separator only for numbers >= 10'000:
+#   res <- character()
+#   for (scalar in n) {
+#     res <- c(res, formatC(scalar, format=format, digits=dec,
+#              big.mark=ifelse(scalar < 10000, "", mark)))
+#   }
+#   res
+# }

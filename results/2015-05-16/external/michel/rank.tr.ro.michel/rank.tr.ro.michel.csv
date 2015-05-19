@@ -1,0 +1,14 @@
+# Starting date:             2015-05-16 16:32:40
+# Cluster job name:          rank.tr.ro.michel
+# Cluster job ID:            7369717
+# Cluster node:              jnode17
+# Cluster queue:             highmem.q
+# GOAL command:              complement -m rank -tr -ro
+# Input data:                michel.tar.gz
+# Memory limit (Java heap):  14G
+# Timeout (CPU time):        No timeout
+id,states,timeout,memout,cpu_time,real_time,dt,da,file
+1,23,N,N,2.239,2.551,,,michel_n1.gff
+2,181,N,N,2.990,8.975,,,michel_n2.gff
+3,1884,N,N,6.353,7.645,,,michel_n3.gff
+4,25985,N,N,30.012,26.649,,,michel_n4.gff

@@ -1,0 +1,14 @@
+# Starting date:             2015-05-16 16:32:27
+# Cluster job name:          fribourg.r2c.c.michel
+# Cluster job ID:            7369714
+# Cluster node:              jnode16
+# Cluster queue:             highmem.q
+# GOAL command:              complement -m fribourg -r2c -c
+# Input data:                michel.tar.gz
+# Memory limit (Java heap):  14G
+# Timeout (CPU time):        No timeout
+id,states,timeout,memout,cpu_time,real_time,dt,da,file
+1,33,N,N,2.222,1.283,,,michel_n1.gff
+2,467,N,N,3.379,3.278,,,michel_n2.gff
+3,8271,N,N,26.983,25.486,,,michel_n3.gff
+4,168291,N,N,28142.780,28067.975,,,michel_n4.gff

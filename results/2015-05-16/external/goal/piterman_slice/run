@@ -1,0 +1,1 @@
+complement_batch -m 4G -c 72:00:00 -q mpi.q -s 10G -p 4 -n ea ~/data/goal.tar.gz 600 1G

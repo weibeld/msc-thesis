@@ -1,0 +1,14 @@
+# Starting date:             2015-05-16 16:32:41
+# Cluster job name:          slice.p.ro.madj.eg.michel
+# Cluster job ID:            7369718
+# Cluster node:              jnode17
+# Cluster queue:             highmem.q
+# GOAL command:              complement -m slice -p -ro -madj -eg
+# Input data:                michel.tar.gz
+# Memory limit (Java heap):  14G
+# Timeout (CPU time):        No timeout
+id,states,timeout,memout,cpu_time,real_time,dt,da,file
+1,35,N,N,2.294,7.722,,,michel_n1.gff
+2,431,N,N,3.607,8.257,,,michel_n2.gff
+3,6786,N,N,11.375,13.262,,,michel_n3.gff
+4,123180,N,N,159.524,131.213,,,michel_n4.gff
