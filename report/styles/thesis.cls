@@ -57,6 +57,6 @@
 
 % Table spacings
 {\renewcommand{\arraystretch}{1.15}
-\renewcommand{\tabcolsep}{0.1cm}
+\renewcommand{\tabcolsep}{0.2cm}
 
 \endinput % Mandatory

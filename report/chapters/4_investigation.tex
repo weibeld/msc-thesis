@@ -167,11 +167,11 @@ As in Section~\ref{optimisations}, we refer to the first optimisation as R2C, th
 \item M2 can only be applied if M1 is also applied
 \end{enumerate}
 
-Regarding the dependency of R2C, there are two possibilities. First (\id{R2C-A}), the R2C optimisation is selectively applied to the input automata which are complete, and not to the others. Second (\id{R2C-B}), all automata are made complete beforehand (by adding a sink state), and then the R2C optimisation is applied to all the automata.
+Regarding the dependency of R2C, there are two possibilities. First (\em{R2C-A}), the R2C optimisation is selectively applied to the input automata which are complete, and not to the others. Second (\em{R2C-B}), all automata are made complete beforehand (by adding a sink state), and then the R2C optimisation is applied to all the automata.
 
-Göttel ~\cite{2013_bsc_goettel} has compared \id{R2C-B} to a plain version of the Fribourg construction where no optimisations at all are applied. He used the same test data as we do. The result was that \id{R2C-B} produces on average slightly less states, but the peak number of generated states are higher than in the plain version. It will be interesting to see if we can replicate these results, and how the selective application of the R2C optimisation (\id{R2C-A}) performs compared to \id{R2C-B}.
+Göttel ~\cite{2013_bsc_goettel} has compared \em{R2C-B} to a plain version of the Fribourg construction where no optimisations at all are applied. He used the same test data as we do. The result was that \em{R2C-B} produces on average slightly less states, but the peak number of generated states are higher than in the plain version. It will be interesting to see if we can replicate these results, and how the selective application of the R2C optimisation (\em{R2C-A}) performs compared to \em{R2C-B}.
 
-Regarding the dependencies of the M1 and M2 optimisation, there are only two cases we can test. First, M1 alone, and second, M1 and M2 together. Assuming that the R2C optimisation adds a certain performance gain on top of an existing construction, we can then combine the better one of \id{M1} and \id{M1+M2} with R2C. We can already reveal at this point that \id{M1} performs slightly better than \id{M1+M2} on our test set, even though \id{M1+M2} has a better theoretical worst-case complexity. This topic is further discussed in Chapter~\ref{chap_results}. Thus, the version that we will want to test is \id{M1+R2C}.
+Regarding the dependencies of the M1 and M2 optimisation, there are only two cases we can test. First, M1 alone, and second, M1 and M2 together. Assuming that the R2C optimisation adds a certain performance gain on top of an existing construction, we can then combine the better one of \em{M1} and \em{M1+M2} with R2C. We can already reveal at this point that \em{M1} performs slightly better than \em{M1+M2} on our test set, even though \em{M1+M2} has a better theoretical worst-case complexity. This topic is further discussed in Chapter~\ref{chap_results}. Thus, the version that we will want to test is \em{M1+R2C}.
 
 Furthermore, we can also investigate the effect of some generic optimisations on our construction. The most generic optimisations, which are included in most complementation constructions in GOAL, and also our plugin with the Fribourg construction, are:
 \begin{enumerate}
@@ -183,13 +183,13 @@ By applying these two optimisations to the best version of the Fribourg construc
 
 Summarising, for the internal tests we are going to carry out runs of the following versions of the Fribourg construction:
 \begin{enumerate}
-\item \id{Fribourg}
-\item \id{Fribourg+R2C}
-\item \id{Fribourg+R2C+C}
-\item \id{Fribourg+M1}
-\item \id{Fribourg+M1+M2}
-\item \id{Fribourg+M1+R2C}
-\item \id{Fribourg+M1+R2C+MACC+R}
+\item \em{Fribourg}
+\item \em{Fribourg+R2C}
+\item \em{Fribourg+R2C+C}
+\item \em{Fribourg+M1}
+\item \em{Fribourg+M1+M2}
+\item \em{Fribourg+M1+R2C}
+\item \em{Fribourg+M1+R2C+MACC+R}
 \end{enumerate}
 
 
@@ -203,10 +203,10 @@ Ramsey, piterman, rank, and slice are representative for the four main complemen
 \subsection*{Test configurations}
 
 \begin{itemize}
-\item \id{Fribourg+M1+R2C}
-\item \id{Piterman+EQ+SIM+RO}
-\item \id{Rank+TR+RO}
-\item \id{Slice+P+RO+MADJ+EG}
+\item \em{Fribourg+M1+R2C}
+\item \em{Piterman+EQ+SIM+RO}
+\item \em{Rank+TR+RO}
+\item \em{Slice+P+RO+MADJ+EG}
 \end{itemize}
 
 

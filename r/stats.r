@@ -39,18 +39,17 @@ Out   <- function(df) { nrow(Out_(df)) }
 Out_  <- function(df) { df[df$timeout == "Y" | df$memout == "Y",] }
 
 
-StatsAgg <- function(df, col="states", comment="") {
+StatsAgg <- function(df, col="states", v="") {
   # Get statistics aggregated over all automata
   #----------------------------------------------------------------------------#
   s <- df[!is.na(df$states), col]
-  data.frame(mean=mean(s),
-             min=min(s),
-             p25=as.numeric(quantile(s, 0.25)),
-             median=median(s),
-             p75=as.numeric(quantile(s, 0.75)),
-             max=max(s),
-             n=as.integer(length(s)),
-             comments=comment)
+  data.frame(Version = v,
+             Mean    = as.numeric(mean(s)),
+             Min     = as.integer(min(s)),
+             P25     = as.numeric(quantile(s, 0.25)),
+             Median  = as.numeric(median(s)),
+             P75     = as.numeric(quantile(s, 0.75)),
+             Max     = as.integer(max(s)))
 }
 
 Stats <- function(df, col="states", comment="") {
@@ -95,11 +94,23 @@ StatsMatrix <- function(df, col="median") {
   matrix(df[[col]], nrow=11, ncol=10, dimnames=list(dt, da), byrow=TRUE)
 }
 
-Latex <- function(x, digits=NULL, align=NULL, file="") {
+FormatDataFrame <- function(df, digits=1) {
+  # Format the number columns (int or float) in a data frame for printing
+  #----------------------------------------------------------------------------#
+  i <- 1
+  for (col in df) {
+    if (class(col) == "numeric") df[[i]] <- Float(col, d=digits) else
+    if (class(col) == "integer") df[[i]] <- Int(col)
+    i <- i + 1
+  }
+  df
+}
+
+LatexTable <- function(x, digits=NULL, align=NULL, ...) {
   # Transform a R data frame or matrix into a LaTeX table
   #----------------------------------------------------------------------------#
   library(xtable)
-  print(xtable(x, digits=digits, align=align), file=file)
+  print(xtable(x, digits=digits, align=align), ...)
 }
 
 StatsMatrix2Latex <- function(m, digits=NULL, file="") {
@@ -172,7 +183,7 @@ Persp <- function(m, theta=0, ...) {
 
 # Format a vector of numbers as integers or floats, return them as 'character'
 Int   <- function(n)      { formatC(n, format="d", big.mark=",") }
-Float <- function(n, d=2) { formatC(n, format="f", big.mark=","), digits=d, }
+Float <- function(n, d=2) { formatC(n, format="f", big.mark=",", digits=d) }
 
 
 Complexity <- function(n, m) {

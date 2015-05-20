@@ -1,5 +1,82 @@
 \section{Internal Tests}
 
+Note: all results from UBELIX:~/jobs/2015-05-16
+
+\subsection{GOAL Test Set}
+
+\subsubsection{Timeouts and Memory Excesses}
+
+Timeout for each complementation task: 600 seconds CPU time
+
+Memory limit: Java heap set to 1 GB
+
+\begin{tabular}{|l|rr|}
+\hline
+Version & Timeouts & Memory Excesses \\
+\hline
+\em{Fribourg}               & 48 & 0 \\
+\em{Fribourg+R2C}           & 30 & 0 \\
+\em{Fribourg+R2C+C}         & 54 & 0 \\  
+\em{Fribourg+M1}            &  2 & 0 \\
+\em{Fribourg+M1+M2}         &  1 & 0 \\
+\em{Fribourg+M1+R2C}        &  1 & 0 \\
+\em{Fribourg+M1+R2C+MACC+R} &  1 & 0 \\
+\hline
+\end{tabular}
+
+Effective samples: 10,939
+
+\subsubsection{Statistics Aggregated}
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrrrr}
+  \hline
+Version & Mean & Min & P25 & Median & P75 & Max \\ 
+  \hline
+Fribourg & 2,004.6 & 2 & 222.0 & 761.0 & 2,175.0 & 37,904 \\ 
+  Fribourg+R2C & 1,955.9 & 2 & 180.0 & 689.0 & 2,127.5 & 37,904 \\ 
+  Fribourg+R2C+C & 2,424.6 & 2 & 85.0 & 451.0 & 2,329.0 & 54,648 \\ 
+  Fribourg+M1 & 963.2 & 2 & 177.0 & 482.0 & 1,138.0 & 16,260 \\ 
+  Fribourg+M1+M2 & 958.0 & 2 & 181.0 & 496.0 & 1,156.5 & 15,223 \\ 
+  Fribourg+M1+R2C & 937.7 & 2 & 152.0 & 447.0 & 1,118.0 & 16,260 \\ 
+  Fribourg+M1+R2C+MACC+R & 115.4 & 1 & 1.0 & 1.0 & 20.0 & 9,843 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrrrr}
+  \toprule
+Version & Mean & Min & P25 & Median & P75 & Max \\ 
+  \midrule
+Fribourg & 2,004.6 & 2 & 222.0 & 761.0 & 2,175.0 & 37,904 \\ 
+  Fribourg+R2C & 1,955.9 & 2 & 180.0 & 689.0 & 2,127.5 & 37,904 \\ 
+  Fribourg+R2C+C & 2,424.6 & 2 & 85.0 & 451.0 & 2,329.0 & 54,648 \\ 
+  Fribourg+M1 & 963.2 & 2 & 177.0 & 482.0 & 1,138.0 & 16,260 \\ 
+  Fribourg+M1+M2 & 958.0 & 2 & 181.0 & 496.0 & 1,156.5 & 15,223 \\ 
+  Fribourg+M1+R2C & 937.7 & 2 & 152.0 & 447.0 & 1,118.0 & 16,260 \\ 
+  Fribourg+M1+R2C+MACC+R & 115.4 & 1 & 1.0 & 1.0 & 20.0 & 9,843 \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+
+Idea: R2C+C has a muc lower median than R2C. So, it would be interesting to see how M1+R2C+C compares to M1+R2C. Furthermore, M1+R2C+MACC+R is dominated by R. So, we could apply R to the best of M1+R2C and M1+R2C+C. I.e.
+\begin{itemize}
+\item Add Fribourg+M1+R2C+C
+\item Drop Fribourg+M1+R2C+MACC+R
+\item Add Fribourg+M1+R2C+R or Fribourg+M1+R2C+C+R
+\end{itemize}
+
+
+
+\subsection{Michel Automata}
+Are Michel automata complete?
+
+C shouldn't be applied at all, because then the input automaton would not be a Michel automaton.
+
+
+
 \begin{tabular}{r|rrrrrrrrrr}
   \hline
  & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & 0.6 & 0.7 & 0.8 & 0.9 & 1.0 \\ 

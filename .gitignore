@@ -11,7 +11,5 @@
 *.rbc
 .DS_Store
 *.class
-testset
-test_set
-GOAL.app
 api
+testset
