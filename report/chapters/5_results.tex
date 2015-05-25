@@ -71,9 +71,15 @@ Idea: R2C+C has a muc lower median than R2C. So, it would be interesting to see 
 
 
 \subsection{Michel Automata}
-Are Michel automata complete?
+Michel automata are complete, thus the C options makes no sense.
 
-C shouldn't be applied at all, because then the input automaton would not be a Michel automaton.
+For the Michel automata Fribourg+M1+M2 is better than Fribourg+M1. Fribourg+M1+R2C is again much better than Fribourg+M1 and even Fribourg+M1+M2. Thus, we have to test Fribourg+M1+M2+R2C. 
+
+\begin{itemize}
+\item Add Fribourg+M1+M2+R2C
+\item Add Fribourg+M1+M2+R2C+R
+\item Add Fribourg+R
+\end{itemize}
 
 
 
@@ -95,6 +101,52 @@ C shouldn't be applied at all, because then the input automaton would not be a M
    \hline
 \end{tabular}
 
+asdflkjasdf
+
+
+asdflkjf
+
+\begin{tabular}{r|rrrrrrrrrr}
+ & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & 0.6 & 0.7 & 0.8 & 0.9 & 1.0 \\ 
+  \hline
+1.0 & 269.0 & 308.0 & 254.0 & 236.0 & 238.5 & 297.0 & 266.0 & 156.0 & 207.0 & 68.0 \\ 
+  1.2 & 960.0 & 1,407.5 & 1,479.0 & 2,150.0 & 1,152.0 & 1,090.5 & 942.5 & 1,206.5 & 718.0 & 104.5 \\ 
+  1.4 & 3,426.0 & 2,915.0 & 2,752.0 & 3,393.0 & 2,693.0 & 3,265.5 & 2,263.5 & 2,425.0 & 1,844.5 & 154.5 \\ 
+  1.6 & 3,799.0 & 3,698.0 & 4,901.5 & 3,926.0 & 3,960.0 & 3,655.0 & 2,580.5 & 1,905.5 & 2,124.5 & 155.0 \\ 
+  1.8 & 3,375.0 & 3,169.0 & 3,420.5 & 3,967.0 & 3,943.0 & 3,132.0 & 2,246.5 & 1,144.0 & 971.5 & 114.0 \\ 
+  2.0 & 1,906.5 & 2,261.0 & 2,383.0 & 2,884.0 & 2,354.5 & 2,096.5 & 1,169.5 & 932.0 & 568.0 & 98.5 \\ 
+  2.2 & 1,467.0 & 1,633.0 & 1,795.5 & 1,942.5 & 1,611.5 & 1,640.5 & 569.5 & 499.0 & 330.5 & 78.5 \\ 
+  2.4 & 924.5 & 1,232.5 & 1,319.0 & 1,317.5 & 1,056.5 & 886.5 & 514.5 & 314.5 & 182.0 & 59.0 \\ 
+  2.6 & 625.0 & 763.0 & 880.5 & 945.5 & 828.0 & 684.5 & 316.0 & 175.0 & 132.0 & 44.5 \\ 
+  2.8 & 483.5 & 584.5 & 836.0 & 690.0 & 575.0 & 395.5 & 240.0 & 151.5 & 103.0 & 41.0 \\ 
+  3.0 & 319.5 & 450.5 & 557.0 & 523.5 & 367.5 & 313.5 & 155.5 & 116.0 & 84.5 & 32.0 \\ 
+\end{tabular}
+
+\begin{tabular}{lrrrrrr}
+  \hline
+Version & Mean & Min & P25 & Median & P75 & Max \\ 
+  \hline
+fribourg.goal & 2,004.57 & 2 & 222.00 & 761.00 & 2,175.00 & 37,904 \\ 
+  fribourg.m1.goal & 963.17 & 2 & 177.00 & 482.00 & 1,138.00 & 16,260 \\ 
+  fribourg.m1.m2.goal & 958.00 & 2 & 181.00 & 496.00 & 1,156.50 & 15,223 \\ 
+  fribourg.m1.r2c.goal & 937.66 & 2 & 152.00 & 447.00 & 1,118.00 & 16,260 \\ 
+  fribourg.m1.r2c.macc.r.goal & 115.40 & 1 & 1.00 & 1.00 & 20.00 & 9,843 \\ 
+  fribourg.r2c.c.goal & 2,424.56 & 2 & 85.00 & 451.00 & 2,329.00 & 54,648 \\ 
+  fribourg.r2c.goal & 1,955.91 & 2 & 180.00 & 689.00 & 2,127.50 & 37,904 \\ 
+   \hline
+\end{tabular}
+
 
 
 \section{External Tests}
+
+\subsection{GOAL Test Set}
+
+With \em{rank -tr -ro} there are 3796 uncompleted tasks (7,204 effective samples), without it only 7 (10,993 effective samples). Should the main analysis be done without rank? Because of rank, we would exclude the most difficult cases for the other constructions from the analysis.
+
+With \em{piterman -eq -sim -ro}, the median is 1 and the 75th percentile 21. It' similar as when removing unreachable and dead states from the output automaton. I think this is caused by the sim optimisation, which simplifies one of the intermediate automata of the construction. Have to try the following:
+
+\begin{itemize}
+\item piterman -eq -sim -ro -r
+\item piterman -eq -ro
+\end{itemize}
