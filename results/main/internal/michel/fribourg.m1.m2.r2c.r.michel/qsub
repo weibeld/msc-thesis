@@ -1,0 +1,12 @@
+qsub -wd "/home/ubelix/sm/dw07r324/jobs/2015-05-25/internal/michel/fribourg.m1.m2.r2c.r.michel" \
+     -q highmem.q \
+     -l h_cpu=72:00:00,h_vmem=16G \
+     -l scratch=1,scratch_size=10G,scratch_files=10M \
+     -pe smp 4 -R y  \
+     -V \
+     -M daniel.weibel@unifr.ch \
+     -m ea \
+     -o stdout \
+     -e stderr \
+     -N fribourg.m1.m2.r2c.r.michel \
+     "/home/ubelix/sm/dw07r324/submit/complement" -a "fribourg -m1 -m2 -r2c -r" -d /home/ubelix/sm/dw07r324/data/michel.tar.gz -t 0 -m 14G 

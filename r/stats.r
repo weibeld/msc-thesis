@@ -13,30 +13,18 @@ Read <- function(file) {
   read.csv(file=file, comment.char="#")
 }
 
-ReadSubdirs <- function() {
+ReadSubdirs <- function(base=".") {
   # Read all the CSV files in all the subdirectories of the current directory
   # into separate data frames.
   # Returns: a list of data frames, with elements named after the input files
   #----------------------------------------------------------------------------#
   l <- list()
-  for (f in Sys.glob("*/*.csv")) {
+  for (f in Sys.glob(paste0(base, "/*/*.csv"))) {
     name  <- basename(tools::file_path_sans_ext(f))
     l[[name]] <- Read(f)
   }
   l
 }
-
-# Get number of timeouts, or display the corresponding lines
-OutT  <- function(df) { nrow(OutT_(df)) }
-OutT_ <- function(df) { df[df$timeout == "Y",] }
-
-# Get number of memory outs, or display the corresponding lines
-OutM  <- function(df) { nrow(OutM_(df)) }
-OutM_ <- function(df) { df[df$memout == "Y",] }
-
-# Get number of timeouts + memory outs, or display tthe corresponding lines
-Out   <- function(df) { nrow(Out_(df)) }
-Out_  <- function(df) { df[df$timeout == "Y" | df$memout == "Y",] }
 
 Outs <- function(list, labels=names(list)) {
   # Get number of timeouts and memory outs for each of a list of data frames
@@ -46,29 +34,54 @@ Outs <- function(list, labels=names(list)) {
   #----------------------------------------------------------------------------#
   i <- 1
   for (df in list) {
-    row <- data.frame(Version = labels[i],
-                      Time    = OutT(df),
-                      Memory  = OutM(df))
+    row <- data.frame(Construction = labels[i],
+                      Time         = nrow(df[df$timeout == "Y",]),
+                      Memory       = nrow(df[df$memout  == "Y",]))
     if (i == 1) res <- row else res <- rbind(res, row)
     i <- i + 1
   }
   res
 }
 
+Eff <- function(list, vector=FALSE) {
+  # Get the effective samples of a set of data frames (i.e. the rows with non-NA
+  # states in ALL data frames).
+  # Args:    list:   a list of data frames
+  #          vector: if TRUE, returns only logical vector indicating which rows
+  #                  are effective samples
+  # Returns: a list of data frames containing only the effective samples of the
+  #          input data frames (or a logical vector if 'vector' is TRUE)
+  #----------------------------------------------------------------------------#
+  i <- 1
+  for (df in list) {
+    if (i == 1) v <-     !is.na(df$states) else
+                v <- v & !is.na(df$states)
+    i <- i + 1
+  }
+  if (vector) v else lapply(list, `[`, v, )
+}
+
+EffNb <- function(list, invert=FALSE) {
+  # Get the number of effective samples from a list of data frames
+  #----------------------------------------------------------------------------#
+  n <- nrow(EffSamples(list)[[1]])
+  if (invert) nrow(list[[1]]) - n else n
+}
+
 Michel <- function(list, col="states", labels=names(list)) {
-  # Combine resulrs for Michel automata in single data frame
-  # Args: list: a list of data frames
-  #       col:  name of the column to display in the result
+  # Combine results for Michel automata in a single data frame
+  # Args: list:   a list of data frames
+  #       col:    name of the column to display in the result
   #       labels: character vector with a label for each data frame in 'list'
   # Returns: a data frame with one row for each data frame in 'list'
   #----------------------------------------------------------------------------#
   i <- 1
   for (df in list) {
-    row <- data.frame(Version = labels[i],
-                      `Michel 1` = df[1, col],
-                      `Michel 2` = df[2, col],
-                      `Michel 3` = df[3, col],
-                      `Michel 4` = df[4, col], check.names=FALSE)
+    row <- data.frame(Construction = labels[i],
+                      `Michel 1`   = df[1, col],
+                      `Michel 2`   = df[2, col],
+                      `Michel 3`   = df[3, col],
+                      `Michel 4`   = df[4, col], check.names=FALSE)
     if (i == 1) res <- row else res <- rbind(res, row)
     i <- i + 1
   }
@@ -84,101 +97,90 @@ Stats <- function(list, col="states", labels=names(list)) {
   #----------------------------------------------------------------------------#
   i <- 1
   for (df in list) {
+    if (any(is.na(df$states))) stop("data frame has NA in column 'states'")
     x <- df[[col]]
-    row <- data.frame(Version = labels[i],
-                      Mean    = mean(x),
-                      Min.    = min(x),
-                      P25     = quantile(x, 0.25, names=FALSE),
-                      Median  = median(x),
-                      P75     = quantile(x, 0.75, names=FALSE),
-                      Max.    = max(x))
+    row <- data.frame(Construction = labels[i],
+                      Mean         = mean(x),
+                      Min.         = min(x),
+                      P25          = quantile(x, 0.25, names=FALSE),
+                      Median       = median(x),
+                      P75          = quantile(x, 0.75, names=FALSE),
+                      Max.         = max(x))
     if (i == 1) res <- row else res <- rbind(res, row)
     i <- i + 1
   }
   res
 }
 
-StatsGoal <- function(df, col="states") {
+StatsGoal <- function(list, col="states") {
   # Get statistics split up by the 110 transition/acceptance density classes
-  # Args: df:  a data frame with effective samples from the GOAL test set
-  #       col: name of the column for which to calculate the statistics
-  # Returns: a data frame with one row of stats for each of the dt/da classes
+  # Args: list: named list of GOAL result data frames with no NA states
+  #       col:  name of the column for which to calculate the statistics
+  # Returns: list of data frames with one row for each dt/da class
   #----------------------------------------------------------------------------#
-  # Transition and acceptance densities. Don't create with 'seq', or '==' fails.
-  dt <- c(1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0)
-  da <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+  res.list <- list()
   i <- 1
-  for (t in dt) {
-    for (a in da) {
-      x <- df[df$dt == t & df$da == a, col]
-      row <- data.frame(mean   = mean(x),
-                        min    = min(x),
-                        p25    = quantile(x, 0.25, names=FALSE),
-                        median = median(x),
-                        p75    = quantile(x, 0.75, names=FALSE),
-                        max    = max(x),
-                        dt     = t,
-                        da     = a,
-                        n      = length(x))
-      if (i == 1) res <- row else res <- rbind(res, row)
-      i <- i + 1
+  for (df in list) {
+    if (any(is.na(df$states))) stop("data frame has NA in column 'states'")
+    j <- 1
+    for (t in Dt()) {
+      for (a in Da()) {
+        x <- df[df$dt == t & df$da == a, col]
+        row <- data.frame(mean   = mean(x),
+                          min    = min(x),
+                          p25    = quantile(x, 0.25, names=FALSE),
+                          median = median(x),
+                          p75    = quantile(x, 0.75, names=FALSE),
+                          max    = max(x),
+                          dt     = t,
+                          da     = a,
+                          n      = length(x))
+        if (j == 1) res.df <- row else res.df <- rbind(res.df, row)
+        j <- j + 1
+      }
     }
+    res.list[[names(list)[i]]] <- res.df
+    i <- i + 1
+  }
+  res.list
+}
+
+MatrixGoal <- function(list, col="states", stat="median") {
+  # Get a single statistics as dt/da matrices
+  # Args: list: named list of GOAL result data frames with no NA states
+  #       col:  column for which to get the statistics
+  #       stat: statistics (column name of result of 'StatsGoal')
+  # Returns: list of matrices with elements named after the input data frames
+  #----------------------------------------------------------------------------#
+  res <- list()
+  s <- StatsGoal(list, col=col)
+  i <- 1
+  for (df in s) {
+    res[[names(list)[i]]] <- matrix(df[[stat]], nrow=11, ncol=10, byrow=TRUE,
+                             dimnames=list(dt=Float(Dt()), da=Float(Da())))
+    i <- i + 1
   }
   res
 }
 
-GoalMatrix <- function(x, col1="states", col2="median") {
-  # Print one statistics from 'StatsCls' as a matrix with the transition densi-
-  # ties as rows and the acceptance densities as columns
-  # Args:
-  #   df:  a data frame with results from the GOAL test set
-  #   col1: name of a column of 'df'
-  #   col2: the stat to print as a matrix, column name or result of 'StatsCls'
-  # Returns: a matrix
+MatrixTestset <- function(df) {
+  # Get number of complete or universal automata for each dt/da class
+  # Arg: df:  data frame with results from the completeness or universal test
+  # Returns: matrix with number of complete or universal automata
   #----------------------------------------------------------------------------#
-  if (is.data.frame(x)) { x <- list(tmp=x); no.list <- TRUE } else no.list <- FALSE
-  # Row and column names
-  dt <- Float(seq(1, 3, 0.2), d=1)    # Rows
-  da <- Float(seq(0.1, 1, 0.1), d=1)  # Columns
-  n <- names(x)
-  l <- list()
-  i <- 1
-  for (df in x) {
-    stats.goal <- StatsGoal(df, col=col1)
-    name <- n[i]
-    l[[name]] <- matrix(stats.goal[[col2]], nrow=11, ncol=10, dimnames=list(dt, da), byrow=TRUE)
-    i <- i + 1
-  }
-  if (no.list) l[[1]] else l
-}
-
-GoalInputMatrix <- function(df, col) {
-  # Transition and acceptance densities. Don't create with 'seq', or '==' fails.
-  dt <- c(1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0)
-  da <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
-  vals <- integer()
-  for (t in dt) {
-    for (a in da) {
-      vals <- c(vals, nrow(df[df$dt == t & df$da == a & df[[col]] == "Y",]))
+  if ("complete"  %in% colnames(df)) col <- "complete"  else
+  if ("universal" %in% colnames(df)) col <- "universal" else
+  stop("could not find column 'complete' or 'universal' in data frame")
+  nb.yes <- integer()
+  for (t in Dt()) {
+    for (a in Da()) {
+      nb.yes <- c(nb.yes, nrow(df[df$dt == t & df$da == a & df[[col]] == "Y",]))
     }
   }
-  matrix(vals, nrow=11, ncol=10, dimnames=list(Float(dt, d=1), Float(da, d=1)), byrow=TRUE)
+  # Fill a matrix with number of "Y" rows for each dt/da class
+  matrix(nb.yes, nrow=11, ncol=10, byrow=TRUE,
+         dimnames=list(dt=Float(Dt()), da=Float(Da())))
 }
-
-# GoalMatrix <- function(df, col1="states", col2="median") {
-#   # Print one statistics from 'StatsCls' as a matrix with the transition densi-
-#   # ties as rows and the acceptance densities as columns
-#   # Args:
-#   #   df:  a data frame with results from the GOAL test set
-#   #   col1: name of a column of 'df'
-#   #   col2: the stat to print as a matrix, column name or result of 'StatsCls'
-#   # Returns: a matrix
-#   #----------------------------------------------------------------------------#
-#   stats.goal <- StatsGoal(df, col=col1)
-#   dt <- Float(seq(1, 3, 0.2), d=1)    # Rows
-#   da <- Float(seq(0.1, 1, 0.1), d=1)  # Columns
-#   matrix(stats.goal[[col2]], nrow=11, ncol=10, dimnames=list(dt, da), byrow=TRUE)
-# }
 
 LatexTable <- function(x, format="f", digits=1, align=NULL, ...) {
   # Transform a data frame or matrix to a LaTeX table
@@ -222,7 +224,7 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, ...) {
     if (is.null(align))
       for (i in seq(1, ncol(x))) align.auto <- paste0(align.auto, "r")
   }
-  else stop("Argument 'x' must be data frame or matrix, found ", class(x))
+  else stop("argument 'x' must be data frame or matrix, found ", class(x))
 
   if (is.null(align)) align <- align.auto
 
@@ -231,30 +233,7 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, ...) {
   print(xtable(x, align=align), ...)
 }
 
-EffSamples <- function(list, vector=FALSE) {
-  # Get the effective samples of a set of data frames (i.e. the rows with non-NA
-  # states in ALL data frames).
-  # Args:    list:   a list of data frames
-  #          vector: if TRUE, returns only logical vector indicating which rows
-  #                  are effective samples
-  # Returns: a list of data frames containing only the effective samples of the
-  #          input data frames (or a logical vector if 'vector' is TRUE)
-  #----------------------------------------------------------------------------#
-  i <- 1
-  for (df in list) {
-    if (i == 1) v <-     !is.na(df$states) else
-                v <- v & !is.na(df$states)
-    i <- i + 1
-  }
-  if (vector) v else lapply(list, `[`, v, )
-}
 
-EffSamplesNumber <- function(list, invert=FALSE) {
-  # Get the number of effective samples from a list of data frames
-  #----------------------------------------------------------------------------#
-  n <- nrow(EffSamples(list)[[1]])
-  if (invert) nrow(list[[1]]) - n else n
-}
 
 Contour <- function(m, grid=TRUE, ...) {
   # Draw a contour plot of a dt/da or da/dt matrix with some default settings
@@ -381,7 +360,11 @@ PerspAxisLabel <- function(a, label="Move me", ...) {
 
 # Format a vector of numbers as integers or floats, return them as 'character'
 Int   <- function(n)      { formatC(n, format="d", big.mark=",") }
-Float <- function(n, d=2) { formatC(n, format="f", big.mark=",", digits=d) }
+Float <- function(n, d=1) { formatC(n, format="f", big.mark=",", digits=d) }
+
+# Return transition and acceptance densities
+Dt <- function() { c(1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0) }
+Da <- function() { c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0) }
 
 
 Complexity <- function(n, m) {

@@ -1,0 +1,14 @@
+# Starting date:             2015-05-25 20:28:18
+# Cluster job name:          piterman.eq.sim.ro.r.michel
+# Cluster job ID:            7911869
+# Cluster node:              jnode10
+# Cluster queue:             highmem.q
+# GOAL command:              complement -m piterman -eq -sim -ro -r
+# Input data:                michel.tar.gz
+# Memory limit (Java heap):  14G
+# Timeout (CPU time):        No timeout
+id,states,timeout,memout,cpu_time,real_time,dt,da,file
+1,20,N,N,2.580,4.565,,,michel_n1.gff
+2,182,N,N,5.336,3.596,,,michel_n2.gff
+3,2683,N,N,97.800,90.246,,,michel_n3.gff
+4,NA,N,Y,8590.510,7559.172,,,michel_n4.gff

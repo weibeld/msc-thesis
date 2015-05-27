@@ -1,0 +1,1 @@
+We use 'piterman -eq -ro' instead of 'piterman -eq -sim -ro'. The '-sim' option comes close to '-r', however they are not equivalent. That is, '-sim' still procduces unreachable and dead states, although very few.

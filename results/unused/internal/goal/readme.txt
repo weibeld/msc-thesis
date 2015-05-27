@@ -1,0 +1,1 @@
+We don't do investigations with the '-r' option for now, that is how many unreachable and dead states the different constructions produce.
