@@ -1,0 +1,12 @@
+qsub -wd "/home/ubelix/sm/dw07r324/jobs/2015-05-16/external/goal/rank/rank.tr.ro.goal_10_of_10" \
+     -q mpi.q \
+     -l h_cpu=72:00:00,h_vmem=4G \
+     -l scratch=1,scratch_size=10G,scratch_files=10M \
+     -pe smp 4 -R y  \
+     -V \
+     -M daniel.weibel@unifr.ch \
+     -m ea \
+     -o stdout \
+     -e stderr \
+     -N rank.tr.ro.goal_10_of_10 \
+     "/home/ubelix/sm/dw07r324/submit/complement" -a "rank -tr -ro" -d /home/ubelix/sm/dw07r324/data/goal_splitted/goal.10_of_10.tar.gz -t 600 -m 1G -i 9901 -n 

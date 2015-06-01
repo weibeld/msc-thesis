@@ -64,28 +64,8 @@ Eff <- function(list, vector=FALSE) {
 EffNb <- function(list, invert=FALSE) {
   # Get the number of effective samples from a list of data frames
   #----------------------------------------------------------------------------#
-  n <- nrow(EffSamples(list)[[1]])
+  n <- nrow(Eff(list)[[1]])
   if (invert) nrow(list[[1]]) - n else n
-}
-
-Michel <- function(list, col="states", labels=names(list)) {
-  # Combine results for Michel automata in a single data frame
-  # Args: list:   a list of data frames
-  #       col:    name of the column to display in the result
-  #       labels: character vector with a label for each data frame in 'list'
-  # Returns: a data frame with one row for each data frame in 'list'
-  #----------------------------------------------------------------------------#
-  i <- 1
-  for (df in list) {
-    row <- data.frame(Construction = labels[i],
-                      `Michel 1`   = df[1, col],
-                      `Michel 2`   = df[2, col],
-                      `Michel 3`   = df[3, col],
-                      `Michel 4`   = df[4, col], check.names=FALSE)
-    if (i == 1) res <- row else res <- rbind(res, row)
-    i <- i + 1
-  }
-  res
 }
 
 Stats <- function(list, col="states", labels=names(list)) {
@@ -126,15 +106,26 @@ StatsGoal <- function(list, col="states") {
     for (t in Dt()) {
       for (a in Da()) {
         x <- df[df$dt == t & df$da == a, col]
-        row <- data.frame(mean   = mean(x),
-                          min    = min(x),
-                          p25    = quantile(x, 0.25, names=FALSE),
-                          median = median(x),
-                          p75    = quantile(x, 0.75, names=FALSE),
-                          max    = max(x),
-                          dt     = t,
-                          da     = a,
-                          n      = length(x))
+        if (length(x) > 0)
+          row <- data.frame(mean   = mean(x),
+                            min    = min(x),
+                            p25    = quantile(x, 0.25, names=FALSE),
+                            median = median(x),
+                            p75    = quantile(x, 0.75, names=FALSE),
+                            max    = max(x),
+                            dt     = t,
+                            da     = a,
+                            n      = length(x))
+        else  # If there are no effective samples in a dt/da class
+          row <- data.frame(mean   = NA,
+                            min    = NA,
+                            p25    = NA,
+                            median = NA,
+                            p75    = NA,
+                            max    = NA,
+                            dt     = t,
+                            da     = a,
+                            n      = 0)
         if (j == 1) res.df <- row else res.df <- rbind(res.df, row)
         j <- j + 1
       }
@@ -143,6 +134,26 @@ StatsGoal <- function(list, col="states") {
     i <- i + 1
   }
   res.list
+}
+
+Michel <- function(list, col="states", labels=names(list)) {
+  # Combine results for Michel automata in a single data frame
+  # Args: list:   a list of data frames
+  #       col:    name of the column to display in the result
+  #       labels: character vector with a label for each data frame in 'list'
+  # Returns: a data frame with one row for each data frame in 'list'
+  #----------------------------------------------------------------------------#
+  i <- 1
+  for (df in list) {
+    row <- data.frame(Construction = labels[i],
+                      `Michel 1`   = df[1, col],
+                      `Michel 2`   = df[2, col],
+                      `Michel 3`   = df[3, col],
+                      `Michel 4`   = df[4, col], check.names=FALSE)
+    if (i == 1) res <- row else res <- rbind(res, row)
+    i <- i + 1
+  }
+  res
 }
 
 MatrixGoal <- function(list, col="states", stat="median") {
