@@ -13,14 +13,14 @@ Read <- function(file) {
   read.csv(file=file, comment.char="#")
 }
 
-ReadSubdirs <- function(base=".") {
+ReadSubdirs <- function(dir=".") {
   # Read all the CSV files in all the subdirectories of the current directory
   # into separate data frames.
   # Returns: a list of data frames, with elements named after the input files
   #----------------------------------------------------------------------------#
   l <- list()
-  for (f in Sys.glob(paste0(base, "/*/*.csv"))) {
-    name  <- basename(tools::file_path_sans_ext(f))
+  for (f in Sys.glob(paste0(dir, "/*/*.csv"))) {
+    name  <- FormatName(basename(tools::file_path_sans_ext(f)))
     l[[name]] <- Read(f)
   }
   l
@@ -138,7 +138,7 @@ StatsGoal <- function(list, col="states") {
 
 Michel <- function(list, col="states", labels=names(list)) {
   # Combine results for Michel automata in a single data frame
-  # Args: list:   a list of data frames
+  # Args: list:   named list of Michel result data frames
   #       col:    name of the column to display in the result
   #       labels: character vector with a label for each data frame in 'list'
   # Returns: a data frame with one row for each data frame in 'list'
@@ -244,11 +244,24 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, ...) {
   print(xtable(x, align=align), ...)
 }
 
-
+Stripchart <- function(list, col="states", ...) {
+  #
+  # Args: list: named list of data frames
+  #       col:  column to plot
+  #----------------------------------------------------------------------------#
+  data <- lapply(list, `[[`, col)  # Named list of vectors
+  data <- rev(data)      # Reverse list to obtain top-down order of strips
+  las <- 1               # All axis tick labes horizontal
+  pch <- 1               # Circles as plotting symbols
+  MarL(10)               # Increase left margin
+  stripchart(data, method="jitter", jitter=0.25, las=las, pch=pch, xaxt="n", ...)
+  # Axis with formatted tick marks
+  axis(1, at=axTicks(1), labels=Int(axTicks(1)))
+}
 
 Contour <- function(m, grid=TRUE, ...) {
   # Draw a contour plot of a dt/da or da/dt matrix with some default settings
-  # Args: m:    dt/da or da/dt matrix, column and row names are important
+  # Args: m:    dt/da or da/dt matrix, col and row names are taken as x/y values
   #       grid: whether to add a grid (TRUE) or not (FALSE)
   #       ...:  further options for 'contour', or graphical parameters
   #----------------------------------------------------------------------------#
@@ -267,9 +280,54 @@ Contour <- function(m, grid=TRUE, ...) {
   }
 }
 
-Persp <- function(m, theta=0, ...) {
+surf.colors <- function(m, maxmax) {
+  max <- max(m)
+  r <- nrow(m); c <- ncol(m)
+  m.avg <- (m[-1, -1] + m[-1, -(c-1)] + m[-(r-1), -1] + m[-(r-1), -(c-1)]) / 4
+  palette <- terrain.colors(20)
+  breaks <- (20 * max) / maxmax
+  palette[cut(m.avg, breaks=breaks, include.lowest=TRUE)]
+}
+
+PerspBatch <- function(list, pdf=TRUE, width=7, height=7, mar=par("mar"), dir=".", theta=0, ...) {
+
+  # Find greatest element of the set of matrices
+  max <- max(sapply(list, max))
+
+  # par(bg = "white")
+  # z <- list[[1]]
+  # x <- seq(1, nrow(z))
+  # y <- seq(1, ncol(z))
+  # nrz <- nrow(z)
+  # ncz <- ncol(z)
+  # jet.colors <- colorRampPalette( c("blue", "green") )
+  # nbcol <- 100
+  # color <- jet.colors(nbcol)
+  # zfacet <- z[-1, -1] + z[-1, -ncz] + z[-nrz, -1] + z[-nrz, -ncz]
+  # facetcol <- cut(zfacet, nbcol)
+
+  #col <- surf.colors(list[[1]])
+
+
+  names <- names(list)
+  i <- 1
+  for (m in list) {
+    if (pdf)
+      pdf(file=paste0(dir, "/", names[i], ".pdf"), width=width, height=height)
+    else
+      quartz(width=width, height=height)
+    par(mar=mar)
+    par(xpd=TRUE)
+    Persp(m, theta=theta, col=surf.colors(m, max), ...)
+    text(-0.68, 0.05, "States median", srt=95)
+    if (pdf) dev.off()
+    i <- i + 1
+  }
+}
+
+Persp <- function(m, theta=0, phi=40, ...) {
   # Draw a persp plot of a dt/da or da/dt matrix with some default settings
-  # Args: m: dt/da or da/dt matrix, column and row names are important
+  # Args: m:     dt/da or da/dt matrix, col and row names are taken as x/y vals
   #       theta: rotation (counter clock-wise)
   #       ...:   further arguments for 'persp', or graphical parameters
   # Returns: the perspective matrix 'pmat' for mapping 3D to 2D points
@@ -278,21 +336,35 @@ Persp <- function(m, theta=0, ...) {
   x <- as.numeric(rownames(z))  # Row names are taken as x values
   y <- as.numeric(colnames(z))  # Column names are taken as y values
   ticktype <- "detailed"        # Draw ticks (not just arrows)
-  nticks <- 11                  # Number of ticks (approximate)
-  phi <- 40                     # Elevation of the viewpoint
+  nticks <- 10                  # Number of ticks (approximate)
+  phi <- phi                    # Elevation of the viewpoint
   theta <- theta                # Rotation (counter clock-wise)
-  expand <- 0.5                 # Stretching of the z-axis
+  expand <- 0.75                 # Stretching of the z-axis
   d <- 4                        # Lessen the "perspective effect" (default is 1)
-  shade <- 0.75                 # Shading of surface (higher values are darker)
+  shade <- 0.5               # Shading of surface (higher values are darker)
   # Note: persp plots in Christian's thesis: dt/da matrix and theta=-135
-  persp(x=x, y=y, z=z, ticktype=ticktype, nticks=nticks, phi=phi, theta=theta,
+
+  
+
+
+  pmat <- persp(x=x, y=y, z=z, ticktype=ticktype, nticks=nticks, phi=phi, theta=theta,
         expand=expand, d=d, shade=shade, ...)
+
+  for (w in seq(200, 2600, 200)) {
+    lines(trans3d(c(1,3), c(0.1,0.1), c(w,w), pmat), lty="solid", col="gray")
+    lines(trans3d(c(1,1), c(0.1,1.0), c(w,w), pmat), lty="solid", col="gray")
+  }
+
+  par(new=TRUE)
+  persp(x=x, y=y, z=z, ticktype=ticktype, nticks=nticks, phi=phi, theta=theta,
+        expand=expand, d=d, shade=shade, axes=FALSE, ...)
 }
 
 # These functions can be used to draw custom axes, if Persp has been called with
 # 'axes=FALSE'. The three axes have to be drawn one after another. All functions
 # take an argument 'a' whereof from the first three elements exactly one is a
-# vector (tick positions), and the others are scalars:
+# vector (tick positions), and the others are scalars, and the fourth is the
+# perspective matrix returned by 'Persp':
 #   a[[1]]: x-axis: tick marks (vector) or x-position of the axis with a vector
 #   a[[2]]: y-axis: tick marks (vector) or y-position of the axis with a vector
 #   a[[3]]: z-axis: tick marks (vector) or z-position of the axis with a vector
@@ -369,13 +441,36 @@ PerspAxisLabel <- function(a, label="Move me", ...) {
   list(inner=inner, outer=outer)
 }
 
-# Format a vector of numbers as integers or floats, return them as 'character'
+# Format a numeric as integers or float character strings
 Int   <- function(n)      { formatC(n, format="d", big.mark=",") }
 Float <- function(n, d=1) { formatC(n, format="f", big.mark=",", digits=d) }
+
+FormatName <- function(c) {
+  # Convert a string of the form "fribourg.r2c.c.goal" to "Fribourg+R2C+C"
+  #----------------------------------------------------------------------------#
+  l <- strsplit(c, ".", fixed=TRUE)        # List of vectors with tokens
+  sapply(l, function(t) {
+              s <- length(t)-1             # Number of needed tokens
+              t <- t[1:s]                  # Discard last token
+              t[1] <- CapFirst(t[1])       # Capitalise first token
+              if (s > 1)
+                t[2:s] <- toupper(t[2:s])  # Capitalise remaining tokens
+              paste(t, collapse="+")       # Concatenate tokens with "+"
+            })
+}
+
+# Capitalise the first character of a string
+CapFirst <- function(c) { paste0(toupper(substring(c, 1, 1)), substring(c, 2)) }
 
 # Return transition and acceptance densities
 Dt <- function() { c(1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0) }
 Da <- function() { c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0) }
+
+# Set margins on the four sides of the plot (in number of lines)
+MarB <- function(size) { mar <- par("mar"); mar[1] <- size; par(mar=mar) }
+MarL <- function(size) { mar <- par("mar"); mar[2] <- size; par(mar=mar) }
+MarT <- function(size) { mar <- par("mar"); mar[3] <- size; par(mar=mar) }
+MarR <- function(size) { mar <- par("mar"); mar[4] <- size; par(mar=mar) }
 
 
 Complexity <- function(n, m) {

@@ -1,7 +1,10 @@
 
 # Test set analysis
 cmpl <- Read("completeness/completeness.csv")
+cmpl.m <- MatrixTestset(cmpl)
+
 univ <- Read("universality/universality.csv")
+univ.m <- MatrixTestset(univ)
 
 #------------------------------------------------------------------------------#
 # Internal tests
@@ -10,12 +13,14 @@ univ <- Read("universality/universality.csv")
 # GOAL automata
 #-------------#
 
-i.g.all <- ReadSubdirs("internal/goal")
+# Read list of data frames and put list elements in desired order
+i.g.all <- ReadSubdirs("internal/goal")[c(1, 7, 6, 2, 3, 5, 4)]
+
+# Get effective samples
 i.g <- Eff(i.g.all)
 
 # States: aggregated statistics
-i.g.s1 <- Stats(i.g)[c(1, 7, 6, 2, 3, 5, 4), ]
-rownames(i.g.s1) <- NULL
+i.g.s1 <- Stats(i.g)
 
 # States: dt/da classes statistics
 i.g.s2 <- StatsGoal(i.g)
@@ -24,8 +29,7 @@ i.g.s2 <- StatsGoal(i.g)
 i.g.s2.m <- MatrixGoal(i.g, stat="median")
 
 # Time: aggregated statistics
-i.g.t1 <- Stats(i.g, col="cpu_time")[c(1, 7, 6, 2, 3, 5, 4), ]
-rownames(i.g.t1) <- NULL
+i.g.t1 <- Stats(i.g, col="cpu_time")
 
 # Time: dt/da classes statistics
 i.g.t2 <- StatsGoal(i.g, col="cpu_time")
@@ -37,15 +41,14 @@ i.g.t2.m <- MatrixGoal(i.g, col="cpu_time", stat="median")
 # Michel automata
 #---------------#
 
-i.m <- ReadSubdirs("internal/michel")
+# Read list of data frames and put list elements in desired order
+i.m <- ReadSubdirs("internal/michel")[c(6, 7, 4, 5, 1, 2, 3)]
 
 # States
-i.m.s <- Michel(i.m)[c(6, 7, 4, 5, 1, 2, 3), ]
-rownames(i.m.s) <- NULL
+i.m.s <- Michel(i.m)
 
 # Time
-i.m.t <- Michel(i.m, col="cpu_time")[c(6, 7, 4, 5, 1, 2, 3), ]
-rownames(i.m.t) <- NULL
+i.m.t <- Michel(i.m, col="cpu_time")
 
 
 #------------------------------------------------------------------------------#
@@ -57,7 +60,10 @@ rownames(i.m.t) <- NULL
 
 # Without Rank
 
+# Read list of data frames
 e.g.all <- ReadSubdirs("external/goal")
+
+# Get effective samples
 e.g <- Eff(e.g.all)
 
 # States: aggregated statistics
@@ -81,8 +87,11 @@ e.g.t2.m <- MatrixGoal(e.g, col="cpu_time", stat="median")
 
 # With Rank
 
+# Add the rank data frame to the list of previously read data frames
 e.g.rank.all <- e.g.all
 e.g.rank.all$rank.tr.ro.goal <- Read("external/goal/rank/rank.tr.ro.goal/rank.tr.ro.goal.csv")
+
+# Get effective samples
 e.g.rank <- Eff(e.g.rank.all)
 
 # States: aggregated statistics
@@ -110,7 +119,7 @@ e.g.rank.t2.m <- MatrixGoal(e.g.rank, col="cpu_time", stat="median")
 e.m <- ReadSubdirs("external/michel")
 
 # States
-e.m.states <- Michel(e.m)
+e.m.s <- Michel(e.m)
 
 # Times
-e.m.time <- Michel(e.m)
+e.m.t <- Michel(e.m)

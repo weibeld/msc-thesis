@@ -46,21 +46,21 @@ Draw <- function(what, data, width=4, height=4, pointsize=8,
 }
 
 
-Stripchart <- function(data, labels=NULL, lmar=NULL, xaxp=NULL, ...) {
-  # Wrapper for stripchart()
-  # Args:
-  #   data:   Data to plot
-  #   labels: Labels for the individual strips
-  #   lmar:   Size of left margin of graphics
-  #   xaxp:   Graphical parameter xaxp specifying x-axis ticks
-  #   ...:    Arguments for stripchart()
-  #----------------------------------------------------------------------------#
-  SetLeftMargin(lmar)
-  stripchart(data, group.names=labels, method="jitter", pch=1, xaxt="n",
-             lwd=par("lwd"), ...)  # lwd sets line width of axes
-  xticks <- axTicks(1, axp=xaxp)
-  Axis(1, at=xticks, labels=xticks)
-}
+# Stripchart <- function(data, labels=NULL, lmar=NULL, xaxp=NULL, ...) {
+#   # Wrapper for stripchart()
+#   # Args:
+#   #   data:   Data to plot
+#   #   labels: Labels for the individual strips
+#   #   lmar:   Size of left margin of graphics
+#   #   xaxp:   Graphical parameter xaxp specifying x-axis ticks
+#   #   ...:    Arguments for stripchart()
+#   #----------------------------------------------------------------------------#
+#   SetLeftMargin(lmar)
+#   stripchart(data, group.names=labels, method="jitter", pch=1, xaxt="n",
+#              lwd=par("lwd"), ...)  # lwd sets line width of axes
+#   xticks <- axTicks(1, axp=xaxp)
+#   Axis(1, at=xticks, labels=xticks)
+# }
   
 
 Boxplot <- function(data, labels=NULL, out=FALSE, out.text=TRUE, out.cex=1,
@@ -196,23 +196,23 @@ Hist <- function(data, lmar=NULL, lines=NULL, lines.cex=1, xaxp=NULL, yaxp=NULL,
 
 
 
-Axis <- function(...) {
-  # Wrapper for axis() with adapted line width by default
-  #----------------------------------------------------------------------------#
-  axis(..., lwd=par("lwd"))
-}
+# Axis <- function(...) {
+#   # Wrapper for axis() with adapted line width by default
+#   #----------------------------------------------------------------------------#
+#   axis(..., lwd=par("lwd"))
+# }
 
-SetLeftMargin <- function(lmar) {
-  # Set left margin for current graphics device driver
-  # Args:
-  #   lmar: Size of left margin. If NULL, nothing is done.
-  #----------------------------------------------------------------------------#
-  if (!is.null(lmar)) {
-    m <- par("mar")
-    m[2] <- lmar
-    par(mar=m)
-  }
-}
+# SetLeftMargin <- function(lmar) {
+#   # Set left margin for current graphics device driver
+#   # Args:
+#   #   lmar: Size of left margin. If NULL, nothing is done.
+#   #----------------------------------------------------------------------------#
+#   if (!is.null(lmar)) {
+#     m <- par("mar")
+#     m[2] <- lmar
+#     par(mar=m)
+#   }
+# }
 
 
 
