@@ -14,7 +14,7 @@ univ.m <- MatrixTestset(univ)
 #-------------#
 
 # Read list of data frames and put list elements in desired order
-i.g.all <- ReadSubdirs("internal/goal")[c(1, 7, 6, 2, 3, 5, 4)]
+i.g.all <- ReadSubdirs("internal/goal")[c(1, 8, 7, 2, 3, 5, 4, 6)]
 
 # Get effective samples
 i.g <- Eff(i.g.all)
@@ -122,4 +122,4 @@ e.m <- ReadSubdirs("external/michel")
 e.m.s <- Michel(e.m)
 
 # Times
-e.m.t <- Michel(e.m)
+e.m.t <- Michel(e.m, col="cpu_time")

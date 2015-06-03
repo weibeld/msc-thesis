@@ -259,6 +259,21 @@ Stripchart <- function(list, col="states", ...) {
   axis(1, at=axTicks(1), labels=Int(axTicks(1)))
 }
 
+# Contour is less informative than persp, so it could be completely omitted
+ContourBatch <- function(list, pdf=TRUE, dir=".", width=7, height=7, mar=par("mar"),
+                         zlim=c(0, max(sapply(list, max))), ...) {
+  pdf.files <- paste0(dir, "/contour_", names(list), ".pdf")  # Names of output files
+  i <- 1
+  for (m in list) {
+    if (pdf) pdf(file=pdf.files[i], width=width, height=height)
+    else     quartz(width=width, height=height)
+    par(mar=mar)  # Set margins
+    Contour(m, zlim=zlim, ...)
+    if (pdf) dev.off()
+    i <- i + 1
+  }
+}
+
 Contour <- function(m, grid=TRUE, ...) {
   # Draw a contour plot of a dt/da or da/dt matrix with some default settings
   # Args: m:    dt/da or da/dt matrix, col and row names are taken as x/y values
@@ -280,84 +295,111 @@ Contour <- function(m, grid=TRUE, ...) {
   }
 }
 
-surf.colors <- function(m, maxmax) {
-  max <- max(m)
-  r <- nrow(m); c <- ncol(m)
-  m.avg <- (m[-1, -1] + m[-1, -(c-1)] + m[-(r-1), -1] + m[-(r-1), -(c-1)]) / 4
-  palette <- terrain.colors(20)
-  breaks <- (20 * max) / maxmax
-  palette[cut(m.avg, breaks=breaks, include.lowest=TRUE)]
-}
-
-PerspBatch <- function(list, pdf=TRUE, width=7, height=7, mar=par("mar"), dir=".", theta=0, ...) {
-
-  # Find greatest element of the set of matrices
-  max <- max(sapply(list, max))
-
-  # par(bg = "white")
-  # z <- list[[1]]
-  # x <- seq(1, nrow(z))
-  # y <- seq(1, ncol(z))
-  # nrz <- nrow(z)
-  # ncz <- ncol(z)
-  # jet.colors <- colorRampPalette( c("blue", "green") )
-  # nbcol <- 100
-  # color <- jet.colors(nbcol)
-  # zfacet <- z[-1, -1] + z[-1, -ncz] + z[-nrz, -1] + z[-nrz, -ncz]
-  # facetcol <- cut(zfacet, nbcol)
-
-  #col <- surf.colors(list[[1]])
-
-
-  names <- names(list)
+PerspBatch <- function(list, pdf=TRUE, dir=".", width=7, height=7, mar=par("mar"),
+                       zlim=c(0, max(sapply(list, max))), z.colors=TRUE,
+                       custom.zlab=NULL, ...) {
+  # Draw a batch of persp plots with identical parameters
+  # Args: list: named list of dt/da or da/dt matrices (rows/columns)
+  #       pdf:         use 'pdf' driver (TRUE) or 'quartz' (FALSE)
+  #       dir:         directory where to save the PDF files (if pdf=TRUE)
+  #       width, height: width and height of the output graphics
+  #       mar:         margins of the output graphics
+  #       zlim:        common zlim for all the plots
+  #       z.colors:    if TRUE, use a z-dependent colour scheme
+  #       custom.zlab: a function without arguments placing text on the plot
+  #       ...:         arguments to 'Persp'
+  #----------------------------------------------------------------------------#
+  max <- max(sapply(list, max))  # Greatest element of all the matrices
+  pdf.files <- paste0(dir, "/", names(list), ".pdf")  # Names of output files
   i <- 1
   for (m in list) {
-    if (pdf)
-      pdf(file=paste0(dir, "/", names[i], ".pdf"), width=width, height=height)
-    else
-      quartz(width=width, height=height)
-    par(mar=mar)
-    par(xpd=TRUE)
-    Persp(m, theta=theta, col=surf.colors(m, max), ...)
-    text(-0.68, 0.05, "States median", srt=95)
+    if (pdf) pdf(file=pdf.files[i], width=width, height=height)
+    else     quartz(width=width, height=height)
+    par(mar=mar)  # Set margins
+    if (z.colors) Persp(m, zlim=zlim, col=FacetColors(m, max), ...)
+    else          Persp(m, zlim=zlim, ...)
+    # Execute user-provided function for adding text (or anything else) to plot
+    if (!is.null(custom.zlab)) {
+      par(xpd=TRUE)   # Allow plotting outside of plotting area
+      custom.zlab()   # Try: function() { text(-0.68, 0.05, "States", srt=95) }
+    }
     if (pdf) dev.off()
     i <- i + 1
   }
 }
 
-Persp <- function(m, theta=0, phi=40, ...) {
-  # Draw a persp plot of a dt/da or da/dt matrix with some default settings
+Persp <- function(m, zlim=range(m, na.rm=TRUE), lin=TRUE, lin.xy=NULL,
+                  lin.lty=par("lty"), lin.lwd=par("lwd"), lin.col=par("col"), ...) {
+  # Draw a persp plot of a dt/da or da/dt matrix (rows/columns)
   # Args: m:     dt/da or da/dt matrix, col and row names are taken as x/y vals
-  #       theta: rotation (counter clock-wise)
-  #       ...:   further arguments for 'persp', or graphical parameters
+  #       zlim:  zlim (it's an explicit argument just to make sure it is set)
+  #       lin:   if TRUE, add horizontal helper lines at the height of z-ticks
+  #              on two of the xz and yz planes
+  #       lin.xy: list with named elements 'x' and 'y' specifying x-pos of lines
+  #               on yz plane and y-pos of lines on xz plane, respectively
+  #       lin.lty, lin.lwd, lin.col: type, width and colour for horizontal lines
+  #       ...:   arguments for 'persp'
   # Returns: the perspective matrix 'pmat' for mapping 3D to 2D points
+  # Note: persp plots in Christian's thesis: dt/da matrix and theta=225
+  #       Other nice values: dt/da, theta=150, ltheta=30, lphi=20, shade=0.5
   #----------------------------------------------------------------------------#
-  z <- m                        # z values to plot
-  x <- as.numeric(rownames(z))  # Row names are taken as x values
-  y <- as.numeric(colnames(z))  # Column names are taken as y values
-  ticktype <- "detailed"        # Draw ticks (not just arrows)
-  nticks <- 10                  # Number of ticks (approximate)
-  phi <- phi                    # Elevation of the viewpoint
-  theta <- theta                # Rotation (counter clock-wise)
-  expand <- 0.75                 # Stretching of the z-axis
-  d <- 4                        # Lessen the "perspective effect" (default is 1)
-  shade <- 0.5               # Shading of surface (higher values are darker)
-  # Note: persp plots in Christian's thesis: dt/da matrix and theta=-135
+  # Data
+  x <- as.numeric(rownames(m))  # Row names are taken as x values
+  y <- as.numeric(colnames(m))  # Column names are taken as y values
 
-  
+  # persp options: mandatory
+  ticktype <- "detailed"        # Draw ticks on axes (not just arrows)
+  nticks   <- 10                # Number of ticks on each axis (approximate)
+  # persp options: sensible defaults
+  expand   <- 0.75              # Stretching of the z-axis
+  d        <- 4                 # Lessen the "perspective effect" (default is 1)
 
-
-  pmat <- persp(x=x, y=y, z=z, ticktype=ticktype, nticks=nticks, phi=phi, theta=theta,
-        expand=expand, d=d, shade=shade, ...)
-
-  for (w in seq(200, 2600, 200)) {
-    lines(trans3d(c(1,3), c(0.1,0.1), c(w,w), pmat), lty="solid", col="gray")
-    lines(trans3d(c(1,1), c(0.1,1.0), c(w,w), pmat), lty="solid", col="gray")
+  # Helper lines: (1) create empty plot; (2) draw lines; (3) overlay real plot
+  if (lin) {
+    # Defaults if one or both of lin.xy$x and lin.xy$y are not set
+    if (is.null(lin.xy$x)) lin.xy$x <- min(x)  # x-pos of lines on yz-plane
+    if (is.null(lin.xy$y)) lin.xy$y <- min(y)  # y-pos of lines on xz-plane
+    # Calculate the same z-ticks that 'persp' will later use (probably)
+    z.ticks <- pretty(zlim, nticks)
+    # Dummy matrix filled with NA to create empty plot (but desired perspective)
+    m.na <- matrix(nrow=nrow(m), ncol=ncol(m))
+    # Create empty plot from dummy matrix to get perspective matrix 'pmat'
+    pmat <- persp(x=x, y=y, z=m.na,
+                  zlim=zlim, expand=expand, d=d, axes=FALSE, box=FALSE, ...)
+    old.par <- par(lty=lin.lty, lwd=lin.lwd, col=lin.col)  # Set line style
+    # For every z-tick draw a helper line on the specified xz and yz plane
+    for (z in z.ticks[2:(length(z.ticks)-1)]) {
+      # xz-plane: two points in 3D space -> two points in 2D space -> one line
+      lines(trans3d(c(min(x), max(x)), lin.xy$y, z, pmat))
+      # yz-plane: two points in 3D space -> two points in 2D space -> one line
+      lines(trans3d(lin.xy$x, c(min(y), max(y)), z, pmat))
+    }
+    par(old.par)   # Revert changes made for setting the line style
+    par(new=TRUE)  # Allow subsequent 'persp' to add to existing plot
   }
+  # Overlay real plot over empty plot with helper lines
+  persp(x=x, y=y, z=m,
+        zlim=zlim, ticktype=ticktype, nticks=nticks, expand=expand, d=d, ...)
+}
 
-  par(new=TRUE)
-  persp(x=x, y=y, z=z, ticktype=ticktype, nticks=nticks, phi=phi, theta=theta,
-        expand=expand, d=d, shade=shade, axes=FALSE, ...)
+FacetColors <- function(m, maxmax=max(m)) {
+  # Calculate colours for each of the facets (rectangles) in a persp plot. The
+  # return value can be directly used for the 'col' option of 'persp'.
+  # Args: m:      matrix from which a persp plot is to be drawn
+  #       maxmax: if a batch of persp plots is created: the maximum value of all
+  #               the matrices so that we can have same colours on same z values
+  # Returns: vector of colours for the (ncol-1) * (nrow-1) facets of a persp
+  # Note: https://stat.ethz.ch/pipermail/r-help/2003-September/039104.html
+  #       This function has been found on this URL, I have no idea how it works.
+  #----------------------------------------------------------------------------#
+  palette <- terrain.colors(20)  # 20 colours from green to brown to white
+  r <- nrow(m); c <- ncol(m)
+  # This is part of the magic...
+  m.avg <- (m[-1, -1] + m[-1, -(c-1)] + m[-(r-1), -1] + m[-(r-1), -(c-1)]) / 4
+  # Low peak -> few breaks -> few colours (starting from beginning of palette)
+  breaks <- (20 * max(m)) / maxmax
+  # Creates a vector of length (nrow(m)-1) * (ncol(m)-1) with colours
+  palette[cut(m.avg, breaks=breaks, include.lowest=TRUE)]
 }
 
 # These functions can be used to draw custom axes, if Persp has been called with
