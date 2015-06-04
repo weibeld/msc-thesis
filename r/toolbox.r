@@ -7,7 +7,13 @@
 # Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - May 2015
 #------------------------------------------------------------------------------#
 
-Read <- function(file) {
+SetDir <- function() {
+  # Change working directory so that we can work with relative paths only
+  #----------------------------------------------------------------------------#
+  setwd("~/Desktop/thesis/results")
+}
+
+ReadSingle <- function(file) {
   # Read a CSV file to a data frame
   #----------------------------------------------------------------------------#
   read.csv(file=file, comment.char="#")
@@ -20,8 +26,8 @@ ReadSubdirs <- function(dir=".") {
   #----------------------------------------------------------------------------#
   l <- list()
   for (f in Sys.glob(paste0(dir, "/*/*.csv"))) {
-    name  <- FormatName(basename(tools::file_path_sans_ext(f)))
-    l[[name]] <- Read(f)
+    name  <- FormatName(basename(f))
+    l[[name]] <- ReadSingle(f)  
   }
   l
 }
@@ -35,8 +41,8 @@ Outs <- function(list, labels=names(list)) {
   i <- 1
   for (df in list) {
     row <- data.frame(Construction = labels[i],
-                      Time         = nrow(df[df$timeout == "Y",]),
-                      Memory       = nrow(df[df$memout  == "Y",]))
+                      Timeouts          = nrow(df[df$timeout == "Y",]),
+                      `Memory excesses` = nrow(df[df$memout  == "Y",]))
     if (i == 1) res <- row else res <- rbind(res, row)
     i <- i + 1
   }
@@ -68,17 +74,17 @@ EffNb <- function(list, invert=FALSE) {
   if (invert) nrow(list[[1]]) - n else n
 }
 
-Stats <- function(list, col="states", labels=names(list)) {
+Stats <- function(list, dat="states", labels=names(list)) {
   # Get statistics aggregated over entire data frame for a list of data frames
   # Args: list:   a list of data frames
-  #       col:    name of the column for which to calculate the statistics
+  #       dat:    name of the column for which to calculate the statistics
   #       labels: character vector with a label for each data frame in 'list'
   # Returns: a data frame with the stats with one row for each input data frame
   #----------------------------------------------------------------------------#
   i <- 1
   for (df in list) {
     if (any(is.na(df$states))) stop("data frame has NA in column 'states'")
-    x <- df[[col]]
+    x <- df[[dat]]
     row <- data.frame(Construction = labels[i],
                       Mean         = mean(x),
                       Min.         = min(x),
@@ -92,10 +98,10 @@ Stats <- function(list, col="states", labels=names(list)) {
   res
 }
 
-StatsGoal <- function(list, col="states") {
+StatsGoal <- function(list, dat="states") {
   # Get statistics split up by the 110 transition/acceptance density classes
   # Args: list: named list of GOAL result data frames with no NA states
-  #       col:  name of the column for which to calculate the statistics
+  #       data:  name of the column for which to calculate the statistics
   # Returns: list of data frames with one row for each dt/da class
   #----------------------------------------------------------------------------#
   res.list <- list()
@@ -105,7 +111,7 @@ StatsGoal <- function(list, col="states") {
     j <- 1
     for (t in Dt()) {
       for (a in Da()) {
-        x <- df[df$dt == t & df$da == a, col]
+        x <- df[df$dt == t & df$da == a, dat]
         if (length(x) > 0)
           row <- data.frame(mean   = mean(x),
                             min    = min(x),
@@ -136,35 +142,63 @@ StatsGoal <- function(list, col="states") {
   res.list
 }
 
-Michel <- function(list, col="states", labels=names(list)) {
+MichelBarplot <- function(list, dat="states", gap=1, l.rot=45, l.dst=0.33, ...) {
+  # Create a barplot with one bar group for every construction
+  # Args: list:  named list of Michel result data frames
+  #       dat:  column name of the data to plot
+  #       gap:   gap between bar groups (assume bar width of 1)
+  #       l.rot: rotation angle for the group labels on the x-axis
+  #       l.dst: distance between group labels and x-axis
+  #       ...:   arguments to 'barplot'
+  # Note: if there are issues after setting 'gap' or xaxs="i", try to fix them
+  #       by adding an x-axis with 'axis(1)' and setting 'xlim' explicitly.
+  #----------------------------------------------------------------------------#
+  # Create matrix with col for each construction row for each Michel automaton
+  v <- numeric()
+  m <- sapply(lapply(list, `[`, , dat), append, v)
+  nbars <- nrow(m); ngroups <- ncol(m)
+  # Draw barplot; the values of each row of 'm' form a group
+  barplot(m, beside=TRUE, xaxt="n", yaxt="n", space=c(0, gap), width=1, ...)
+  # Draw custom y-axis
+  axis(2, at=axTicks(2), labels=Int(axTicks(2)), las=1)
+  # Note: the following assumes that the width of a bar is 1 (see barplot above)
+  # Ensure a tick at the right edge of the last bar of each group
+  par(xaxp=c(0, (nbars + gap) * ngroups, ngroups))  # Test with axis(1)
+  # Draw group labels in the center of each bar group (nbars / 2)
+  x.pos <- head(axTicks(1), -1) + gap + (nbars / 2)
+  y.pos <- -l.dst * diff(axTicks(2))[1]
+  text(x=x.pos, y=y.pos, labels=colnames(m), xpd=TRUE, pos=2, offset=0, srt=l.rot)
+}
+
+Michel <- function(list, dat="states", labels=names(list)) {
   # Combine results for Michel automata in a single data frame
   # Args: list:   named list of Michel result data frames
-  #       col:    name of the column to display in the result
+  #       dat:    name of the column to display in the result
   #       labels: character vector with a label for each data frame in 'list'
   # Returns: a data frame with one row for each data frame in 'list'
   #----------------------------------------------------------------------------#
   i <- 1
   for (df in list) {
     row <- data.frame(Construction = labels[i],
-                      `Michel 1`   = df[1, col],
-                      `Michel 2`   = df[2, col],
-                      `Michel 3`   = df[3, col],
-                      `Michel 4`   = df[4, col], check.names=FALSE)
+                      `Michel 1`   = df[1, dat],
+                      `Michel 2`   = df[2, dat],
+                      `Michel 3`   = df[3, dat],
+                      `Michel 4`   = df[4, dat], check.names=FALSE)
     if (i == 1) res <- row else res <- rbind(res, row)
     i <- i + 1
   }
   res
 }
 
-MatrixGoal <- function(list, col="states", stat="median") {
+MatrixGoal <- function(list, dat="states", stat="median") {
   # Get a single statistics as dt/da matrices
   # Args: list: named list of GOAL result data frames with no NA states
-  #       col:  column for which to get the statistics
+  #       dat:  column for which to get the statistics
   #       stat: statistics (column name of result of 'StatsGoal')
   # Returns: list of matrices with elements named after the input data frames
   #----------------------------------------------------------------------------#
   res <- list()
-  s <- StatsGoal(list, col=col)
+  s <- StatsGoal(list, dat=dat)
   i <- 1
   for (df in s) {
     res[[names(list)[i]]] <- matrix(df[[stat]], nrow=11, ncol=10, byrow=TRUE,
@@ -244,17 +278,16 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, ...) {
   print(xtable(x, align=align), ...)
 }
 
-Stripchart <- function(list, col="states", ...) {
+Stripchart <- function(list, dat="states", jitter=0.25, ...) {
   #
   # Args: list: named list of data frames
-  #       col:  column to plot
+  #       data:  column to plot
   #----------------------------------------------------------------------------#
-  data <- lapply(list, `[[`, col)  # Named list of vectors
+  data <- lapply(list, `[[`, dat)  # Named list of vectors
   data <- rev(data)      # Reverse list to obtain top-down order of strips
   las <- 1               # All axis tick labes horizontal
   pch <- 1               # Circles as plotting symbols
-  MarL(10)               # Increase left margin
-  stripchart(data, method="jitter", jitter=0.25, las=las, pch=pch, xaxt="n", ...)
+  stripchart(data, method="jitter", jitter=jitter, las=las, pch=pch, xaxt="n", ...)
   # Axis with formatted tick marks
   axis(1, at=axTicks(1), labels=Int(axTicks(1)))
 }
@@ -295,7 +328,7 @@ Contour <- function(m, grid=TRUE, ...) {
   }
 }
 
-PerspBatch <- function(list, pdf=TRUE, dir=".", width=7, height=7, mar=par("mar"),
+PerspBatch <- function(list, pdf=FALSE, dir=".", width=7, height=7, mar=par("mar"),
                        zlim=c(0, max(sapply(list, max))), z.colors=TRUE,
                        custom.zlab=NULL, ...) {
   # Draw a batch of persp plots with identical parameters
@@ -352,7 +385,7 @@ Persp <- function(m, zlim=range(m, na.rm=TRUE), lin=TRUE, lin.xy=NULL,
   nticks   <- 10                # Number of ticks on each axis (approximate)
   # persp options: sensible defaults
   expand   <- 0.75              # Stretching of the z-axis
-  d        <- 4                 # Lessen the "perspective effect" (default is 1)
+  d        <- 6                 # Lessen the "perspective effect" (default is 1)
 
   # Helper lines: (1) create empty plot; (2) draw lines; (3) overlay real plot
   if (lin) {
@@ -488,11 +521,11 @@ Int   <- function(n)      { formatC(n, format="d", big.mark=",") }
 Float <- function(n, d=1) { formatC(n, format="f", big.mark=",", digits=d) }
 
 FormatName <- function(c) {
-  # Convert a string of the form "fribourg.r2c.c.goal" to "Fribourg+R2C+C"
+  # Convert a filename of the form "fribourg.r2c.c.goal.csv" to "Fribourg+R2C+C"
   #----------------------------------------------------------------------------#
   l <- strsplit(c, ".", fixed=TRUE)        # List of vectors with tokens
   sapply(l, function(t) {
-              s <- length(t)-1             # Number of needed tokens
+              s <- length(t)-2             # Number of needed tokens
               t <- t[1:s]                  # Discard last token
               t[1] <- CapFirst(t[1])       # Capitalise first token
               if (s > 1)

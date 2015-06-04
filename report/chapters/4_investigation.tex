@@ -132,6 +132,8 @@ We performed complementation-equivalence tests for the Fribourg construction wit
 Doubtlessly, it would be desirable to test more, and especially bigger and more diverse automata. However, by doing so one would quickly face practical problems due to long complementation times with bigger automata and larger alphabets, and high memory usage. For our current purpose, however, the tests we did are enough for us to be confident that our implementation is correct.
 
 \section{Test Data}
+
+\subsection{GOAL Test Set}
 For our set of sample automata, we chose to adopt the test set that has been created and used for another empirical performance comparison of Büchi complementation constructions by Tsai et al.~\cite{2010_tsai} (the first author, Tsai, being the main author of GOAL). This test set consists of 11000 automata of size 15, and 11000 automata of size 20. Each set of 11000 automata consists of 110 groups containing 100 automata each. The 110 groups result from the cartesian product of 11 transitions densities and 10 acceptance densities.
 
 At this point, we have to explain the notions of transition and acceptance densitiy, as they are defined in~\cite{2010_tsai} and also implemented in GOAL. The transition density defines the number of transitions in an automaton. In particular, if the transition density is $t$ and the automaton has $n$ states, then the automaton contains $tn$ transitions for every symbol of the alphabet. In other words, the transition density is the average number of outgoing (and incoming) transitions of a state for each symbol of the alphabet. The transition densities in the test set range from 1 to 3 in steps of 0.2, that is, there are the 11 instances 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0. The acceptance density in turn is the percentage of states that are accepting states. It is thus a number between 0 and 1. In the test set, the 10 acceptance density classes range from 0.1 to 1.0 in steps of 0.1.
@@ -140,6 +142,77 @@ Each of the 110 transition density and acceptance density combination groups con
 
 The reason that we chose this existing test set, instead of for example generating our own one, is that it has been previously used and is thus an established reference point. As it is commonly accepted in disciplines that rely on performance measurements via test sets (for example artificial intelligence), we also think that it is imporant that there is established test data that can be used as an objective benchmark. This is to avoid that self-made test data is biased toward the technology whose performance is to evaluate. By using the test set of Tsai et al., we are taking a step in this direction. Furthermore, the experiments conducted by Tsai et al. are similar to our ones, so there might be to notice interesting parallels or differences in the results. The same test set has also been used by an earlier performance investigation of the Fribourg construction in~\cite{2013_bsc_goettel}.
 
+We tested each of the 11,000 automata for completeness and universality. As GOAL provides no commands for testing completeness and universality, we created the additional GOAL plugin \textsf{ch.unifr.goal.util} that implements these two operations and makes them accessible over the command line interface. The results of our tests are the following.
+
+\begin{itemize}
+\item 990 of the 11,000 automata are complete (9\%)
+\item 6,796 of the 11,000 automata are universal (61.8\%)
+\end{itemize}
+
+We furthermore analysed how these two properties are distributed over the 110 classes of transition/acceptance density combinations. The results follow below in table form and as a three-dimensional visualisation.
+
+\renewcommand{\tabcolsep}{0.1cm}
+\begin{figure}
+  \centering
+  \hfil
+  \begin{subtable}[t]{0.45\textwidth}
+  \begin{tabular}{r|rrrrrrrrrr}
+  & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & 0.6 & 0.7 & 0.8 & 0.9 & 1.0 \\ 
+  \hline
+  1.0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+  1.2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+  1.4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+  1.6 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+  1.8 & 1 & 1 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 \\ 
+  2.0 & 0 & 5 & 1 & 2 & 2 & 3 & 1 & 2 & 2 & 2 \\ 
+  2.2 & 5 & 10 & 8 & 5 & 3 & 5 & 8 & 6 & 7 & 1 \\ 
+  2.4 & 10 & 6 & 11 & 11 & 8 & 6 & 10 & 20 & 9 & 7 \\ 
+  2.6 & 17 & 17 & 12 & 16 & 14 & 19 & 22 & 21 & 19 & 19 \\ 
+  2.8 & 27 & 20 & 29 & 32 & 26 & 27 & 30 & 25 & 24 & 19 \\ 
+  3.0 & 37 & 37 & 40 & 39 & 34 & 37 & 38 & 35 & 38 & 39 \\ 
+  \end{tabular}
+  \caption{Completeness}
+  \end{subtable}
+  \hfill
+  \begin{subtable}[t]{0.45\textwidth}
+  \begin{tabular}{r|rrrrrrrrrr}
+   & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & 0.6 & 0.7 & 0.8 & 0.9 & 1.0 \\ 
+  \hline
+  1.0 & 4 & 5 & 5 & 7 & 8 & 4 & 6 & 10 & 4 & 3 \\ 
+  1.2 & 1 & 3 & 5 & 8 & 8 & 12 & 10 & 13 & 4 & 14 \\ 
+  1.4 & 2 & 17 & 13 & 17 & 20 & 24 & 22 & 21 & 27 & 26 \\ 
+  1.6 & 16 & 28 & 30 & 37 & 49 & 42 & 42 & 49 & 45 & 45 \\ 
+  1.8 & 31 & 40 & 55 & 59 & 64 & 67 & 76 & 70 & 63 & 78 \\ 
+  2.0 & 60 & 64 & 85 & 75 & 83 & 83 & 79 & 90 & 87 & 83 \\ 
+  2.2 & 67 & 87 & 86 & 88 & 89 & 91 & 89 & 89 & 89 & 86 \\ 
+  2.4 & 88 & 89 & 86 & 92 & 95 & 95 & 94 & 97 & 96 & 97 \\ 
+  2.6 & 86 & 93 & 92 & 97 & 97 & 97 & 98 & 96 & 98 & 96 \\ 
+  2.8 & 94 & 97 & 95 & 94 & 97 & 99 & 98 & 97 & 97 & 100 \\ 
+  3.0 & 99 & 99 & 99 & 97 & 99 & 98 & 100 & 100 & 100 & 99 \\ 
+  \end{tabular}
+  \caption{Universality}
+  \end{subtable}
+  \hfil
+
+  \begin{subfigure}[t]{0.475\textwidth}
+  \centering
+  \hfil
+  \includegraphics[width=\textwidth]{figures/r/completeness/persp.pdf}
+  \caption{Completeness}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.475\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/universality/persp.pdf}
+  \caption{Universality}
+  \end{subfigure}
+  \hfil
+\caption{Completeness and universality in the GOAL test set.}
+\end{figure}
+\renewcommand{\tabcolsep}{0.2cm}
+
+
+\subsection{Michel Automata}
 Besides the test set of the GOAL automata, we did all the tests also on the first four Michel automata:
 \begin{itemize}
 \item Michel N1: 3 states, 7 transitions, 1 accepting state

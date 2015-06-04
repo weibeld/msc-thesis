@@ -1,72 +1,87 @@
 \section{Internal Tests}
 
-Note: all results from UBELIX:~/jobs/2015-05-16
-
 \subsection{GOAL Test Set}
 
 \subsubsection{Timeouts and Memory Excesses}
 
-Timeout for each complementation task: 600 seconds CPU time
+Timeout for each complementation task: 600 seconds CPU time. Memory limit by limiting Java heap to 1 GB.
 
-Memory limit: Java heap set to 1 GB
-
-\begin{tabular}{|l|rr|}
-\hline
-Version & Timeouts & Memory Excesses \\
-\hline
-\em{Fribourg}               & 48 & 0 \\
-\em{Fribourg+R2C}           & 30 & 0 \\
-\em{Fribourg+R2C+C}         & 54 & 0 \\  
-\em{Fribourg+M1}            &  2 & 0 \\
-\em{Fribourg+M1+M2}         &  1 & 0 \\
-\em{Fribourg+M1+R2C}        &  1 & 0 \\
-\em{Fribourg+M1+R2C+MACC+R} &  1 & 0 \\
-\hline
-\end{tabular}
-
-Effective samples: 10,939
-
-\subsubsection{Statistics Aggregated}
 \begin{table}[ht]
 \centering
-\begin{tabular}{lrrrrrr}
+\begin{tabular}{lrr}
   \hline
-Version & Mean & Min & P25 & Median & P75 & Max \\ 
+Construction & Time & Memory \\ 
   \hline
-Fribourg & 2,004.6 & 2 & 222.0 & 761.0 & 2,175.0 & 37,904 \\ 
-  Fribourg+R2C & 1,955.9 & 2 & 180.0 & 689.0 & 2,127.5 & 37,904 \\ 
-  Fribourg+R2C+C & 2,424.6 & 2 & 85.0 & 451.0 & 2,329.0 & 54,648 \\ 
-  Fribourg+M1 & 963.2 & 2 & 177.0 & 482.0 & 1,138.0 & 16,260 \\ 
-  Fribourg+M1+M2 & 958.0 & 2 & 181.0 & 496.0 & 1,156.5 & 15,223 \\ 
-  Fribourg+M1+R2C & 937.7 & 2 & 152.0 & 447.0 & 1,118.0 & 16,260 \\ 
-  Fribourg+M1+R2C+MACC+R & 115.4 & 1 & 1.0 & 1.0 & 20.0 & 9,843 \\ 
+Fribourg & 48 & 0 \\ 
+  Fribourg+R2C & 30 & 0 \\ 
+  Fribourg+R2C+C & 54 & 0 \\ 
+  Fribourg+M1 & 2 & 0 \\ 
+  Fribourg+M1+M2 & 1 & 0 \\ 
+  Fribourg+M1+R2C & 1 & 0 \\ 
+  Fribourg+M1+R2C+C & 8 & 0 \\ 
+  Fribourg+R & 24 & 0 \\ 
    \hline
 \end{tabular}
+\caption{Number of timeouts and memory excesses.}
 \end{table}
+
+
+The number of effective samples is 10,939. That is, 10,939 of the 11,000 automata have been successfully complemented by all constructions, while 61 automata have failed to complement with at least one of the constructions.
+
+\textcolor{red}{It is strange that Fribourg+R has so much fewer timeouts than Fribourg}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/r/internal/goal/stripchart_new.pdf}
+\caption{Number of states of complements.}
+\end{figure}
+
+
+\subsubsection{Statistics Aggregated}
+
+Number of states of the produced complement automaton, aggregated over the whole test set.
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{lrrrrrr}
-  \toprule
-Version & Mean & Min & P25 & Median & P75 & Max \\ 
-  \midrule
+  \hline
+Construction & Mean & Min. & P25 & Median & P75 & Max. \\ 
+  \hline
 Fribourg & 2,004.6 & 2 & 222.0 & 761.0 & 2,175.0 & 37,904 \\ 
   Fribourg+R2C & 1,955.9 & 2 & 180.0 & 689.0 & 2,127.5 & 37,904 \\ 
   Fribourg+R2C+C & 2,424.6 & 2 & 85.0 & 451.0 & 2,329.0 & 54,648 \\ 
   Fribourg+M1 & 963.2 & 2 & 177.0 & 482.0 & 1,138.0 & 16,260 \\ 
   Fribourg+M1+M2 & 958.0 & 2 & 181.0 & 496.0 & 1,156.5 & 15,223 \\ 
   Fribourg+M1+R2C & 937.7 & 2 & 152.0 & 447.0 & 1,118.0 & 16,260 \\ 
-  Fribourg+M1+R2C+MACC+R & 115.4 & 1 & 1.0 & 1.0 & 20.0 & 9,843 \\ 
-   \bottomrule
+  Fribourg+M1+R2C+C & 1,062.6 & 2 & 83.0 & 331.0 & 1,208.5 & 25,002 \\ 
+  Fribourg+R & 136.3 & 1 & 1.0 & 1.0 & 21.0 & 12,312 \\ 
+   \hline
 \end{tabular}
+\caption{Aggregated statistics.}
 \end{table}
 
-Idea: R2C+C has a muc lower median than R2C. So, it would be interesting to see how M1+R2C+C compares to M1+R2C. Furthermore, M1+R2C+MACC+R is dominated by R. So, we could apply R to the best of M1+R2C and M1+R2C+C. I.e.
-\begin{itemize}
-\item Add Fribourg+M1+R2C+C
-\item Drop Fribourg+M1+R2C+MACC+R
-\item Add Fribourg+M1+R2C+R or Fribourg+M1+R2C+C+R
-\end{itemize}
+Statistics over the execution time in CPU time of all the automata.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrrrr}
+  \hline
+Construction & Mean & Min. & P25 & Median & P75 & Max. \\ 
+  \hline
+Fribourg & 8.53 & 2.49 & 3.30 & 4.89 & 7.26 & 585.99 \\ 
+  Fribourg+R2C & 6.63 & 2.19 & 2.86 & 4.18 & 6.40 & 219.68 \\ 
+  Fribourg+R2C+C & 8.54 & 2.16 & 2.56 & 3.48 & 6.38 & 582.87 \\ 
+  Fribourg+M1 & 4.94 & 2.47 & 3.16 & 4.10 & 5.85 & 55.07 \\ 
+  Fribourg+M1+M2 & 4.56 & 2.21 & 2.89 & 3.78 & 5.11 & 38.43 \\ 
+  Fribourg+M1+R2C & 4.44 & 2.22 & 2.83 & 3.59 & 5.27 & 42.48 \\ 
+  Fribourg+M1+R2C+C & 5.57 & 2.51 & 3.23 & 3.97 & 6.51 & 147.44 \\ 
+  Fribourg+R & 6.00 & 2.15 & 2.71 & 3.58 & 5.70 & 166.57 \\ 
+   \hline
+\end{tabular}
+\caption{Running times in seconds of the complementation tasks, measured as CPU time.}
+\end{table}
+
+\textcolor{red}{It is strange that Fribourg+R is so much faster than Fribourg}
 
 
 
@@ -135,39 +150,6 @@ fribourg.goal & 2,004.57 & 2 & 222.00 & 761.00 & 2,175.00 & 37,904 \\
   fribourg.r2c.goal & 1,955.91 & 2 & 180.00 & 689.00 & 2,127.50 & 37,904 \\ 
    \hline
 \end{tabular}
-
-% \begin{figure}
-%     \centering
-%     \begin{subfigure}[t]{0.45\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{/Users/dw/Desktop/plot1.pdf}
-%         \caption{Because of rank, we would exclude the most difficult cases for the other constructions from the analysis.}
-%         \label{fig:y equals x}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[t]{0.45\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{/Users/dw/Desktop/plot2.pdf}
-%         \caption{$y=3sinx$}
-%         \label{fig:three sin x}
-%     \end{subfigure}
-
-%     \begin{subfigure}[t]{0.45\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{/Users/dw/Desktop/plot3.pdf}
-%         \caption{$y=5/x$}
-%         \label{fig:five over x}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[t]{0.45\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{/Users/dw/Desktop/plot3.pdf}
-%         \caption{$y=5/x$}
-%         \label{fig:five over x}
-%     \end{subfigure}
-%     \caption{Three simple graphs}
-%     \label{fig:three graphs}
-% \end{figure}
 
 
 
