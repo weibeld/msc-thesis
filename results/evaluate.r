@@ -66,9 +66,9 @@ IntGoal <- function() {
   df <- Stats(i.g, dat="cpu_time")
   LatexTable(df, include.rownames=FALSE, format="f", digits=2, file=file)
 
-  # Strip chart of states (including removal of entries to make PDF lighter)
+  # Strip chart of states (including decimation to make PDF lighter)
   file <- paste0(dir, "/stripchart.pdf")
-  # Prepare a data set where we remove a part of the entries with few states
+  # Prepare a data set with a good part of the rows with few states removed
   i.g.light <- lapply(i.g, function(df) {
     # Remove 'rm.perc' percent of the rows with less than 'threshold' states
     threshold <- 1000; rm.perc <- 0.8
@@ -103,7 +103,38 @@ IntGoal <- function() {
   Stripchart(i.g.light, xlim=c(0, 60000), jitter=0.275)
   dev.off()
 
-  
+  # Persp plots with median of produced states
+  mlist <- MatrixGoal(i.g)
+  PerspBatch(mlist, pdf=TRUE, dir=dir, prefix="s.median.", width=6, height=5,
+             mar=c(1, 2.5, 0, 0), zlim=c(0, 6500), z.colors=TRUE, zlab="",
+             xlab="Transition density", ylab="Acceptance density", lin=TRUE,
+             lin.xy=list(x=1, y=0.1), lin.col="gray", theta=150, phi=25,
+             shade=0.5, ltheta=30, lphi=20, custom.zlab=function() {
+             text(-0.73, 0.06, "States (median)", srt=94) })
+
+  # Image plot showing difficulty levels for all the dt/da classes
+  file <- paste0(dir, "/s.median.image.pdf")
+  m.avg <- MatrixAvg(mlist)  # Average of all the state median matrices
+  pdf(file=file, width=4.25, height=4.25)
+  # less than 500: green; betw. 500 and 1450: yellow; more than 1450: red
+  par(mar=c(0.25, 3, 2.75, 0.25))
+  Image(m.avg, breaks=c(0, 500, 1450, 6000), col=c("green", "yellow", "red"))
+  dev.off()
+}
+
+IntMichel <- function() {
+  dir <- .MkDir("internal/michel")
+  # Barplot with the number of states for all Michel automata for each constr.
+  file <- paste0(dir, "/s.barplot.pdf")
+  #pdf(file=file, width=7, height=5)
+  par(mar=c(8, 6, 1, 0))
+  i.m.empty <- lapply(i.m, function(df) { df$states <- 0; df })
+  MichelBarplot(i.m, ylim=c(0, 300000), col="white", plot=FALSE)
+  # par(new=TRUE)
+  #MichelBarplot(i.m, ylim=c(0, 300000), col="white")
+  # text(x=-7, y=150000, labels="Complement size", srt=90, xpd=TRUE)
+  # abline(h=tail(axTicks(2)), col="gray", lty="dotted", xpd=FALSE)
+  #dev.off()
 }
 
 ExtGoal <- function() {
@@ -126,8 +157,10 @@ dir <- .MkDir("external/goal")
   dev.off()
 }
 
+.BaseDir <- function() { "~/Desktop/thesis/report/figures/r" }
+
 .MkDir <- function(dir) {
-  dir <- paste0("~/Desktop/thesis/report/figures/r/", dir)
+  dir <- paste0(.BaseDir(), "/", dir)
   dir.create(dir, recursive=TRUE, showWarnings=FALSE)
   dir
 }

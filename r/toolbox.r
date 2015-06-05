@@ -142,23 +142,34 @@ StatsGoal <- function(list, dat="states") {
   res.list
 }
 
-MichelBarplot <- function(list, dat="states", gap=1, l.rot=45, l.dst=0.33, ...) {
+MichelBarplot <- function(list, dat="states", ylim=c(0, max(sapply(lapply(list, `[`, dat), max))),
+                          gap=1, lab.rot=45, lab.dst=0.33, lin=FALSE,
+                          lin.col="gray", lin.lty="dotted", lin.lwd=par("lwd"), ...) {
   # Create a barplot with one bar group for every construction
-  # Args: list:  named list of Michel result data frames
-  #       dat:  column name of the data to plot
-  #       gap:   gap between bar groups (assume bar width of 1)
-  #       l.rot: rotation angle for the group labels on the x-axis
-  #       l.dst: distance between group labels and x-axis
+  # Args: list:    named list of Michel result data frames
+  #       dat:     column name of the data to plot
+  #       ylim:    y-range, defaults from zero to greatest data point
+  #       gap:     gap between bar groups (assume bar width of 1)
+  #       lab.rot: rotation angle for the group labels on the x-axis
+  #       lab.dst: distance between group labels and x-axis
+  #       lin:     if TRUE, draw horizontal helper lines at y-ticks
+  #       lin.col, lin.lty, lin.lwd: colour, type, and width for helper lines
   #       ...:   arguments to 'barplot'
   # Note: if there are issues after setting 'gap' or xaxs="i", try to fix them
   #       by adding an x-axis with 'axis(1)' and setting 'xlim' explicitly.
   #----------------------------------------------------------------------------#
-  # Create matrix with col for each construction row for each Michel automaton
+  # Create matrix with: rows: Michel automata; cols: constructions
   v <- numeric()
   m <- sapply(lapply(list, `[`, , dat), append, v)
   nbars <- nrow(m); ngroups <- ncol(m)
+  if (lin) {
+    m.empty <- m; m.empty[,] <- 0  # Plot zeros as dummy data
+    barplot(m.empty, beside=TRUE, xaxt="n", yaxt="n", space=c(0, gap), width=1, ylim=ylim, ...)
+    abline(h=tail(axTicks(2)), col=lin.col, lty=lin.lty)  # Add helper lines
+    par(new=TRUE)
+  }
   # Draw barplot; the values of each row of 'm' form a group
-  barplot(m, beside=TRUE, xaxt="n", yaxt="n", space=c(0, gap), width=1, ...)
+  barplot(m, beside=TRUE, xaxt="n", yaxt="n", space=c(0, gap), width=1, ylim=ylim, ...)
   # Draw custom y-axis
   axis(2, at=axTicks(2), labels=Int(axTicks(2)), las=1)
   # Note: the following assumes that the width of a bar is 1 (see barplot above)
@@ -166,8 +177,8 @@ MichelBarplot <- function(list, dat="states", gap=1, l.rot=45, l.dst=0.33, ...) 
   par(xaxp=c(0, (nbars + gap) * ngroups, ngroups))  # Test with axis(1)
   # Draw group labels in the center of each bar group (nbars / 2)
   x.pos <- head(axTicks(1), -1) + gap + (nbars / 2)
-  y.pos <- -l.dst * diff(axTicks(2))[1]
-  text(x=x.pos, y=y.pos, labels=colnames(m), xpd=TRUE, pos=2, offset=0, srt=l.rot)
+  y.pos <- -lab.dst * diff(axTicks(2))[1]
+  text(x=x.pos, y=y.pos, labels=colnames(m), xpd=TRUE, pos=2, offset=0, srt=lab.rot)
 }
 
 Michel <- function(list, dat="states", labels=names(list)) {
@@ -278,10 +289,56 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, ...) {
   print(xtable(x, align=align), ...)
 }
 
+MatrixAvg <- function(list) {
+  # Calculate the average of a list of matrices
+  # Args: list: a list of matrices
+  # Returns: a matrix with the average values of all input matrices
+  #----------------------------------------------------------------------------#
+  res <- matrix()
+  i <- 1
+  for (m in list) {
+    if (i == 1) res <- m else res <- res + m
+    i <- i + 1
+  }
+  res / length(list)
+}
+
+Image <- function(m, ...) {
+  # Draw an image plot of a dt/da or da/dt matrix
+  # Args: m: a dt/da or da/dt matrix (rows/columns)
+  #       ...: arguments for 'image'
+  #----------------------------------------------------------------------------#
+  nr <- nrow(m); nc <- ncol(m)
+  m <- t(m)[,nr:1]  # This makes the image having the same layout as matrix 'm'
+  # Draw image plot
+  image(x=1:nc, y=1:nr, z=m, xaxt="n", yaxt="n", xlab="", ylab="", ...)
+  if (nr == 11 & nc == 10) {  # Initial matrix is rows=dt, cols=da (dt/da)
+    x.val <- Float(Da()); x.lab <- "Acceptance density"
+    y.val <- Float(Dt()); y.lab <- "Transition density"
+  }
+  else if (nr == 10 & nc == 11) {  # Initial matrix is rows=da, cols=dt (da/dt)
+    x.val <- Float(Dt()); x.lab <- "Transition density"
+    y.val <- Float(Da()); y.lab <- "Acceptance density"
+  }
+  usr <- par("usr")  # Get extreme values of x-axis [1,2], and y-axis [3,4]
+  par(xpd=TRUE)      # Allow drawing outside of plot area
+  # Labels on x-axis (top)
+  text(x=1:nc, y=usr[4]+0.5, labels=x.val)
+  x.mid <- (usr[2] - usr[1]) / 2 + usr[1]  # Middle of x-axis
+  text(x=x.mid, y=usr[4]+1.2, labels=x.lab)
+  # Labels on y-axis (left)
+  text(x=usr[1]-0.5, y=nr:1, labels=y.val)
+  y.mid <- (usr[4] - usr[3]) / 2 + usr[3]  # Middle of y-axis
+  text(x=usr[1]-1.24, y=y.mid, labels=y.lab, srt=90)
+  # Add grid
+  abline(h=seq(usr[3], usr[4]), v=seq(usr[1], usr[2]), xpd=FALSE)
+}
+
 Stripchart <- function(list, dat="states", jitter=0.25, ...) {
-  #
-  # Args: list: named list of data frames
-  #       data:  column to plot
+  # Draw stripcharts from column 'dat' from a list of data frames
+  # Args: list:   named list of data frames
+  #       dat:    column with the values to plot
+  #       jitter: width of the strips (higher values are wider)
   #----------------------------------------------------------------------------#
   data <- lapply(list, `[[`, dat)  # Named list of vectors
   data <- rev(data)      # Reverse list to obtain top-down order of strips
@@ -328,13 +385,14 @@ Contour <- function(m, grid=TRUE, ...) {
   }
 }
 
-PerspBatch <- function(list, pdf=FALSE, dir=".", width=7, height=7, mar=par("mar"),
+PerspBatch <- function(list, pdf=FALSE, dir=".", prefix="", width=7, height=7, mar=par("mar"),
                        zlim=c(0, max(sapply(list, max))), z.colors=TRUE,
                        custom.zlab=NULL, ...) {
   # Draw a batch of persp plots with identical parameters
-  # Args: list: named list of dt/da or da/dt matrices (rows/columns)
+  # Args: list:        named list of dt/da or da/dt matrices (rows/columns)
   #       pdf:         use 'pdf' driver (TRUE) or 'quartz' (FALSE)
   #       dir:         directory where to save the PDF files (if pdf=TRUE)
+  #       prefix:      prefix string for filenames (filename is list elt. name)
   #       width, height: width and height of the output graphics
   #       mar:         margins of the output graphics
   #       zlim:        common zlim for all the plots
@@ -343,7 +401,7 @@ PerspBatch <- function(list, pdf=FALSE, dir=".", width=7, height=7, mar=par("mar
   #       ...:         arguments to 'Persp'
   #----------------------------------------------------------------------------#
   max <- max(sapply(list, max))  # Greatest element of all the matrices
-  pdf.files <- paste0(dir, "/", names(list), ".pdf")  # Names of output files
+  pdf.files <- paste0(dir, "/", prefix, names(list), ".pdf")  # Names of output files
   i <- 1
   for (m in list) {
     if (pdf) pdf(file=pdf.files[i], width=width, height=height)

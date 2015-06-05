@@ -32,7 +32,7 @@ The number of effective samples is 10,939. That is, 10,939 of the 11,000 automat
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.75\textwidth]{figures/r/internal/goal/stripchart_new.pdf}
+\includegraphics[width=0.75\textwidth]{figures/r/internal/goal/stripchart.pdf}
 \caption{Number of states of complements.}
 \end{figure}
 
@@ -82,6 +82,82 @@ Fribourg & 8.53 & 2.49 & 3.30 & 4.89 & 7.26 & 585.99 \\
 \end{table}
 
 \textcolor{red}{It is strange that Fribourg+R is so much faster than Fribourg}
+
+\subsubsection{Statistics Split Up by dt/da classes}
+
+\newcommand{\perspwidth}{0.475}
+
+\begin{figure}[ht]
+\centering
+  \hfill
+  \begin{subfigure}[t]{\perspwidth\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg.pdf}
+  \caption{Fribourg}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{\perspwidth\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+R2C.pdf}
+  \caption{Fribourg+R2C}
+  \end{subfigure}
+  \hfill
+
+  \hfill
+  \begin{subfigure}[t]{\perspwidth\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+R2C+C.pdf}
+  \caption{Fribourg+R2C+C}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{\perspwidth\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+R.pdf}
+  \caption{Fribourg+R}
+  \end{subfigure}
+  \hfill  
+\caption{Median states}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+  \hfill
+  \begin{subfigure}[t]{\perspwidth\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+M1.pdf}
+  \caption{Fribourg+M1}
+  \end{subfigure}
+  \hfill
+  \hfill
+  \begin{subfigure}[t]{\perspwidth\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+M1+M2.pdf}
+  \caption{Fribourg+M1+M2}
+  \end{subfigure}
+  \hfill
+
+  \hfill
+  \begin{subfigure}[t]{\perspwidth\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+M1+R2C.pdf}
+  \caption{Fribourg+M1+R2C}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{\perspwidth\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+M1+R2C+C.pdf}
+  \caption{Fribourg+M1+R2C+C}
+  \end{subfigure}
+  \hfill
+\end{figure}
+
+\subsubsection{Difficulty Classes of the GOAL Test Set}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.4\textwidth]{figures/r/internal/goal/s.median.image.pdf}
+\caption{Average of the median number of produced states of all the constructions: green (easy): $\leq$ 500; yellow (medium): $\leq$ 1450; red (hard): $>$ 1450.}
+\end{figure}
 
 
 
