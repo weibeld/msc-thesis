@@ -42,7 +42,7 @@ Outs <- function(list, labels=names(list)) {
   for (df in list) {
     row <- data.frame(Construction = labels[i],
                       Timeouts          = nrow(df[df$timeout == "Y",]),
-                      `Memory excesses` = nrow(df[df$memout  == "Y",]))
+                      `Memory excesses` = nrow(df[df$memout  == "Y",]), check.names=FALSE)
     if (i == 1) res <- row else res <- rbind(res, row)
     i <- i + 1
   }
@@ -144,7 +144,7 @@ StatsGoal <- function(list, dat="states") {
 
 MichelBarplot <- function(list, dat="states", ylim=c(0, max(sapply(lapply(list, `[`, dat), max))),
                           gap=1, lab.rot=45, lab.dst=0.33, lin=FALSE,
-                          lin.col="gray", lin.lty="dotted", lin.lwd=par("lwd"), ...) {
+                          lin.col="gray", lin.lty="dotted", lin.lwd=par("lwd"), yaxp=par("yaxp"), ...) {
   # Create a barplot with one bar group for every construction
   # Args: list:    named list of Michel result data frames
   #       dat:     column name of the data to plot
@@ -152,8 +152,9 @@ MichelBarplot <- function(list, dat="states", ylim=c(0, max(sapply(lapply(list, 
   #       gap:     gap between bar groups (assume bar width of 1)
   #       lab.rot: rotation angle for the group labels on the x-axis
   #       lab.dst: distance between group labels and x-axis
-  #       lin:     if TRUE, draw horizontal helper lines at y-ticks
+  #       lin:     if TRUE, draw horizontal helper lines at y-axis ticks
   #       lin.col, lin.lty, lin.lwd: colour, type, and width for helper lines
+  #       yaxp:    ticks on y-axis
   #       ...:   arguments to 'barplot'
   # Note: if there are issues after setting 'gap' or xaxs="i", try to fix them
   #       by adding an x-axis with 'axis(1)' and setting 'xlim' explicitly.
@@ -162,15 +163,18 @@ MichelBarplot <- function(list, dat="states", ylim=c(0, max(sapply(lapply(list, 
   v <- numeric()
   m <- sapply(lapply(list, `[`, , dat), append, v)
   nbars <- nrow(m); ngroups <- ncol(m)
+  # Draw empty plot and then helper lines
   if (lin) {
     m.empty <- m; m.empty[,] <- 0  # Plot zeros as dummy data
     barplot(m.empty, beside=TRUE, xaxt="n", yaxt="n", space=c(0, gap), width=1, ylim=ylim, ...)
-    abline(h=tail(axTicks(2)), col=lin.col, lty=lin.lty)  # Add helper lines
+    par(yaxp=yaxp)
+    abline(h=tail(axTicks(2), -1), col=lin.col, lty=lin.lty)  # Add helper lines
     par(new=TRUE)
   }
   # Draw barplot; the values of each row of 'm' form a group
   barplot(m, beside=TRUE, xaxt="n", yaxt="n", space=c(0, gap), width=1, ylim=ylim, ...)
   # Draw custom y-axis
+  par(yaxp=yaxp)
   axis(2, at=axTicks(2), labels=Int(axTicks(2)), las=1)
   # Note: the following assumes that the width of a bar is 1 (see barplot above)
   # Ensure a tick at the right edge of the last bar of each group
@@ -238,7 +242,7 @@ MatrixTestset <- function(df) {
          dimnames=list(dt=Float(Dt()), da=Float(Da())))
 }
 
-LatexTable <- function(x, format="f", digits=1, align=NULL, ...) {
+LatexTable <- function(x, format="f", digits=1, align=NULL, include.rownames=FALSE, ...) {
   # Transform a data frame or matrix to a LaTeX table
   # Args: x:      data frame or matrix
   #       format: character vector with "f", "d", or "" for each column of a
@@ -286,7 +290,7 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, ...) {
 
   # Create the LaTeX code
   library(xtable)
-  print(xtable(x, align=align), ...)
+  print(xtable(x, align=align), include.rownames=include.rownames, floating=FALSE, ...)
 }
 
 MatrixAvg <- function(list) {
