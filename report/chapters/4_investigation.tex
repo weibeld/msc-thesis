@@ -8,8 +8,8 @@ To do these investigations, we implemented the Fribourg construction as a plugin
 
 In this chapter, we are going to describe each of these points, including our concrete experiment setup. The results of the tests are presented and discussed in Section~\ref{results}.
 
-
-\section{GOAL}
+\section{Implementation of the Construction}
+\subsection{GOAL}
 \label{goal}
 GOAL stands for Graphical Tool for Omega-Automata and Logics and has been developed at the National University of Taiwan since 2007~\cite{2007_goal,2008_goal_ext}. The tool is based on the three pillars, \om-automata, temporal logic formulas, and games. It allows to create instances of each of these types, and manipulate them in a multitude of ways. Relevant for our purposes are the \om-automata capabilities of GOAL.
 
@@ -81,7 +81,7 @@ Complementation constructions in GOAL can define a set of options that can be se
 For most complementation constructions (all listed in Table~\ref{goal_constructions} except the Ramsey-based construction) there is also a version for step-by-step execution. In this case, the constructions define so-called steps and stages, through which the user can iterate independently. This is a great way for understanding how a complementation construction works, and for investigating specific cases in order to potentially further improve the construction. 
 
 
-\section{Implementation of the Fribourg Construction as a GOAL Plugin}
+\subsection{The GOAL Plugin}
 \label{implementation}
 We implemented the Fribourg construction, including its optimisations, in Java as a plugin for GOAL. This means that after installing out plugin to an existing GOAL installation\footnote{As the plugin interfaces of GOAL have recently changed, the can be used only for GOAL versions 2014-11-17 and newer.}, the Fribourg construction will be an integral part of GOAL and can be used in the same way as any other pre-existing complementation construction.
 
@@ -119,7 +119,7 @@ The complete integration allows us to publish the plugin so that it can be used 
 
 Since between the 2014-08-08 and 2014-11-17 releases of GOAL certain parts of the plugin interfaces have changed, and we adapted our plugin accordingly, the currently maintained version of the plugin works only with GOAL versions 2014-11-17 or newer. It is thus essential for any GOAL user to update to this version in order to use our plugin.
 
-\section{Verification of the Implementation}
+\subsection{Verification of the Implementation}
 
 See UBELIX/jobs/2014-11-25
 
@@ -132,8 +132,8 @@ We performed complementation-equivalence tests for the Fribourg construction wit
 Doubtlessly, it would be desirable to test more, and especially bigger and more diverse automata. However, by doing so one would quickly face practical problems due to long complementation times with bigger automata and larger alphabets, and high memory usage. For our current purpose, however, the tests we did are enough for us to be confident that our implementation is correct.
 
 \section{Test Data}
-
 \subsection{GOAL Test Set}
+\label{goal_testset}
 For our set of sample automata, we chose to adopt the test set that has been created and used for another empirical performance comparison of Büchi complementation constructions by Tsai et al.~\cite{2010_tsai} (the first author, Tsai, being the main author of GOAL). This test set consists of 11000 automata of size 15, and 11000 automata of size 20. Each set of 11000 automata consists of 110 groups containing 100 automata each. The 110 groups result from the cartesian product of 11 transitions densities and 10 acceptance densities.
 
 At this point, we have to explain the notions of transition and acceptance densitiy, as they are defined in~\cite{2010_tsai} and also implemented in GOAL. The transition density defines the number of transitions in an automaton. In particular, if the transition density is $t$ and the automaton has $n$ states, then the automaton contains $tn$ transitions for every symbol of the alphabet. In other words, the transition density is the average number of outgoing (and incoming) transitions of a state for each symbol of the alphabet. The transition densities in the test set range from 1 to 3 in steps of 0.2, that is, there are the 11 instances 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0. The acceptance density in turn is the percentage of states that are accepting states. It is thus a number between 0 and 1. In the test set, the 10 acceptance density classes range from 0.1 to 1.0 in steps of 0.1.
@@ -198,15 +198,51 @@ Besides the test set of the GOAL automata, we did all the tests also on the firs
 These are the Michel automata that can be processes with our implementation and on our execution environment. Complementing Michel automata N5 and above would already by far exceed our available computing and time resources.
 
 
-\section{Internal Tests}
-In the internal tests we want to find out which version of the Fribourg constructionn is the most efficient one. With most efficient, we mean the one that produces on average the least number of states on the set of test automata.
+\section{Test Procedure}
+
+
+\subsection{Internal Tests}
+In the internal tests our aim is to compare different versions of the Fribourg construction. A specific version of the Fribourg construction is composed of a combination of options. Options can be the 
 
 As presented in Section~\ref{optimisations}, there are three optimisations to the Fribourg construction:
+\begin{itemize}
+\item R2C: if the input automaton is complete, remove all states whose rightmost colour is 2
+\item M1: merge certain adjacent sets within a state
+\item M2: reduce 2-coloured sets (requires M1)
+\end{itemize}
+
+Furthermore, our GOAL plugin includes, among others, the following options:
+\begin{itemize}
+\item C: make the input automaton complete (by adding a sink state)
+\item R: remove unreachable and dead states from the output automaton
+\end{itemize}
+
+The versions of the Fribourg construction that we chose for our internal tests consist of combinations of these five options. According to the nature of the two test sets (the GOAL test set and the Michel automata), we chose two different sets of versions for the two test sets. We are now first going to describe the setup for the GOAL test set and then the one for the Michel test set.
+
+For the tests on the GOAL test set, we chose the following eight versions of the Fribourg construction:
 \begin{enumerate}
-\item Removing a state if its righmost colour is 2 during the construction (only if the input automaton is complete)
-\item Merge adjacent sets within a state
-\item Reduce the overall number of 2-coloured sets
+\item Fribourg
+\item Fribourg+R2C
+\item Fribourg+R2C+C
+\item Fribourg+M1
+\item Fribourg+M1+M2
+\item Fribourg+M1+R2C
+\item Fribourg+M1+R2C+C
+\item Fribourg+R
 \end{enumerate}
+
+The first version is the plain Fribourg construction without any optimisations or options. The next two versions are devoted to investigate the R2C optimisation. Version 2, Fribourg+R2C, applies the optimsation only to the automata which happen to be complete. On the other hand, Version 3, Fribourg+R2C+C, makes all input automata preliminarily complete by adding a sink state, so that the R2C optimisation  can be applied to \it{all} automata. The question here is, does it pay off to increase the size of automata by one (for adding a sink state) but then being able to apply R2C, over not increasing the size of the automata but not being able to apply R2C? As we have seen in Section~\ref{goal_testset}, only 9\% of the automata of the GOAL test set are complete. This means that Version 2 actually lets 91\% of the test set unaffected, whereas Version 3 would increase the size of, and thus generally make more difficult, these 91\% of the automata.
+
+
+
+ can R2C compensate for the increase by one of the size of the input automata that results from adding a sink state to make them complete? As we have seen in Section~\ref{goal_testset}, only 9\% of the automata of the GOAL test set are complete, thus 91\% of the test set would be affected by the C option.
+
+
+
+The exact set of versions of the Fribourg construction that we chose for our internal tests are the following. 
+
+
+
 
 As in Section~\ref{optimisations}, we refer to the first optimisation as R2C, the second one as M1, and the third one as M2. These optimisations have the following dependencies:
 \begin{enumerate}
@@ -240,7 +276,7 @@ Summarising, for the internal tests we are going to carry out runs of the follow
 \end{enumerate}
 
 
-\section{External Tests}
+\subsection{External Tests}
 \textbf{Justification why to use only piterman, slice, and rank}$\\$
 Notes in UBELIX/jobs/2014-10-09: $\\$
 Made test with complementing the first 10 of the size 15 test set with all constructions, and only piterman, slice, and rank (and safra) completed all of them. $\\$
@@ -258,7 +294,7 @@ Ramsey, piterman, rank, and slice are representative for the four main complemen
 
 
 
-\section{Execution Environment}
+\subsection{Execution Environment}
 
 UBELIX Linux cluster, runs Sun Grid Engine (load scheduler).
 
@@ -295,8 +331,6 @@ All the jobs are executed on machines belonging to one of the two following queu
 \end{itemize}
 
 
-\subsection*{Tests}
-
 \begin{enumerate}
 \item Internal on GOAL testset
 \item External on GOAL testset
@@ -306,7 +340,7 @@ All the jobs are executed on machines belonging to one of the two following queu
 \item Universality of GOAL testset
 \end{enumerate}
 
-\subsection*{The tests are successful with the following resources}
+The tests are successful with the following resources:
 
 \begin{tabular}{|p{1.5cm}|l|r|r|r|r|r|p{3.5cm}|}
 \hline
