@@ -1,5 +1,3 @@
-
-
 \minitoc
 
 In this chapter we come to the core of this thesis, namely to test how the Fribourg construction performs on real test automata. We are interested in two things. First, how the different versions of the Fribourg construction compare to each other. That is, with which optimisations the Fribourg construction is most efficient. Second, we compare the Fribourg construction to other complementation constructions. We can refer ot the first type of investigations as the \textit{internal} tests, and to the second one as the \textit{external} tests.
@@ -198,10 +196,10 @@ Besides the test set of the GOAL automata, we did all the tests also on the firs
 These are the Michel automata that can be processes with our implementation and on our execution environment. Complementing Michel automata N5 and above would already by far exceed our available computing and time resources.
 
 
-\section{Test Procedure}
-
+\section{Experimental Setup}
 
 \subsection{Internal Tests}
+\label{4_internal}
 In the internal tests our aim is to compare different versions of the Fribourg construction. A specific version of the Fribourg construction is composed of a combination of options. Options can be the 
 
 As presented in Section~\ref{optimisations}, there are three optimisations to the Fribourg construction:
@@ -219,6 +217,8 @@ Furthermore, our GOAL plugin includes, among others, the following options:
 
 The versions of the Fribourg construction that we chose for our internal tests consist of combinations of these five options. According to the nature of the two test sets (the GOAL test set and the Michel automata), we chose two different sets of versions for the two test sets. We are now first going to describe the setup for the GOAL test set and then the one for the Michel test set.
 
+\subsubsection{GOAL Test Set}
+
 For the tests on the GOAL test set, we chose the following eight versions of the Fribourg construction:
 \begin{enumerate}
 \item Fribourg
@@ -231,127 +231,157 @@ For the tests on the GOAL test set, we chose the following eight versions of the
 \item Fribourg+R
 \end{enumerate}
 
-The first version is the plain Fribourg construction without any optimisations or options. The next two versions are devoted to investigate the R2C optimisation. Version 2, Fribourg+R2C, applies the optimsation only to the automata which happen to be complete. On the other hand, Version 3, Fribourg+R2C+C, makes all input automata preliminarily complete by adding a sink state, so that the R2C optimisation  can be applied to \it{all} automata. The question here is, does it pay off to increase the size of automata by one (for adding a sink state) but then being able to apply R2C, over not increasing the size of the automata but not being able to apply R2C? As we have seen in Section~\ref{goal_testset}, only 9\% of the automata of the GOAL test set are complete. This means that Version 2 actually lets 91\% of the test set unaffected, whereas Version 3 would increase the size of, and thus generally make more difficult, these 91\% of the automata.
+The first version is the plain Fribourg construction without any optimisations or options. The next two versions are devoted to investigate the R2C optimisation. Version 2 applies the optimsation only to the automata which happen to be complete (and as we have seen in Section~\ref{goal_testset} these are 9\%). Version 3, on the other hand, makes all input automata preliminarily complete by adding a sink state, so that the R2C optimisation can be applied to \textit{all} automata. The question here is, does it pay off to increase the size of the automata by one (for adding the sink state) but then being able to apply R2C, or is it better to not add the extra state but then not applying R2C neither?
 
+Similar investigations about the R2C optimisation of the Fribourg construction have been made by Göttel~\cite{2013_bsc_goettel}. In particular, he compared Version 1 in our above listing with Version 3. His results were that the mean complement sizes of Version 3 are higher than in Version 1. He evaluated, however, only the mean values, but looking closely at the results suggests that the median values could be in favour of Version 3. Therefore, we decided to reinvestigate this question. Indeed, in our own results the median complement sizes of Version 3 are considerably lower than the ones of Version 1 and Version 2. We will further elaborate on this point in Chapter~\ref{chap_results}.
 
+Versions 4 and 5 in our above listing are for investigating the M1 and M2 optimisations. As M2 requires M1, there are only these two possible combinations. Versions 6 and 7 then enhance the ``better'' one of Version 4 and 5 with R2C and its alternative R2C+C. As we will see in Chapter~\ref{chap_results}, the better one of Version 4 and 5 in terms of median complement sizes is Version 4. That is, the application of M2 results in a decline, rather than a gain, in performance compared to the application of M1 alone. We have to note at this point that such results are always specific to the used the test set, and not universally valid. With a different test set, Version 5 might indeed be better than Version 4. As we will see in the next section, this is the case for our alternative test set consisting of the first four Michel automata.
 
- can R2C compensate for the increase by one of the size of the input automata that results from adding a sink state to make them complete? As we have seen in Section~\ref{goal_testset}, only 9\% of the automata of the GOAL test set are complete, thus 91\% of the test set would be affected by the C option.
+Version 8, finally, is again the plain Fribourg construction, but this time the output automata are reduced by removing their unreachable and dead states. Comparing the results of Version 8 with Version 1 gives an idea of how many unreachable and dead states the Fribourg construction produces. This is inspired by the paper of the GOAL authors~\cite{2011_tsai} in which the number of unreachable and dead states is one of the main metrics for assessing the performance of a construction.
 
+% As in Section~\ref{optimisations}, we refer to the first optimisation as R2C, the second one as M1, and the third one as M2. These optimisations have the following dependencies:
+% \begin{enumerate}
+% \item R2C can only be applied if the input automaton is complete
+% \item M2 can only be applied if M1 is also applied
+% \end{enumerate}
 
+% Regarding the dependency of R2C, there are two possibilities. First (\em{R2C-A}), the R2C optimisation is selectively applied to the input automata which are complete, and not to the others. Second (\em{R2C-B}), all automata are made complete beforehand (by adding a sink state), and then the R2C optimisation is applied to all the automata.
 
-The exact set of versions of the Fribourg construction that we chose for our internal tests are the following. 
+% Göttel ~\cite{2013_bsc_goettel} has compared \em{R2C-B} to a plain version of the Fribourg construction where no optimisations at all are applied. He used the same test data as we do. The result was that \em{R2C-B} produces on average slightly less states, but the peak number of generated states are higher than in the plain version. It will be interesting to see if we can replicate these results, and how the selective application of the R2C optimisation (\em{R2C-A}) performs compared to \em{R2C-B}.
 
+% Regarding the dependencies of the M1 and M2 optimisation, there are only two cases we can test. First, M1 alone, and second, M1 and M2 together. Assuming that the R2C optimisation adds a certain performance gain on top of an existing construction, we can then combine the better one of \em{M1} and \em{M1+M2} with R2C. We can already reveal at this point that \em{M1} performs slightly better than \em{M1+M2} on our test set, even though \em{M1+M2} has a better theoretical worst-case complexity. This topic is further discussed in Chapter~\ref{chap_results}. Thus, the version that we will want to test is \em{M1+R2C}.
 
+% Furthermore, we can also investigate the effect of some generic optimisations on our construction. The most generic optimisations, which are included in most complementation constructions in GOAL, and also our plugin with the Fribourg construction, are:
+% \begin{enumerate}
+% \item Maximise the acceptance set of the input automaton (MACC)
+% \item Remove unreachable and dead states from the output automaton (R)
+% \end{enumerate}
 
+% By applying these two optimisations to the best version of the Fribourg construction, we can see how far we can go with tweaking our construction, with respect to our set of test automata.
 
-As in Section~\ref{optimisations}, we refer to the first optimisation as R2C, the second one as M1, and the third one as M2. These optimisations have the following dependencies:
+% Summarising, for the internal tests we are going to carry out runs of the following versions of the Fribourg construction:
+% \begin{enumerate}
+% \item \em{Fribourg}
+% \item \em{Fribourg+R2C}
+% \item \em{Fribourg+R2C+C}
+% \item \em{Fribourg+M1}
+% \item \em{Fribourg+M1+M2}
+% \item \em{Fribourg+M1+R2C}
+% \item \em{Fribourg+M1+R2C+MACC+R}
+% \end{enumerate}
+
+\subsubsection{Michel Test Set}
+The versions we tested for the Michel test set are the following:
 \begin{enumerate}
-\item R2C can only be applied if the input automaton is complete
-\item M2 can only be applied if M1 is also applied
+\item Fribourg
+\item Fribourg+R2C
+\item Fribourg+M1
+\item Fribourg+M1+M2
+\item Fribourg+M1+M2+R2C
+\item Fribourg+R
 \end{enumerate}
 
-Regarding the dependency of R2C, there are two possibilities. First (\em{R2C-A}), the R2C optimisation is selectively applied to the input automata which are complete, and not to the others. Second (\em{R2C-B}), all automata are made complete beforehand (by adding a sink state), and then the R2C optimisation is applied to all the automata.
-
-Göttel ~\cite{2013_bsc_goettel} has compared \em{R2C-B} to a plain version of the Fribourg construction where no optimisations at all are applied. He used the same test data as we do. The result was that \em{R2C-B} produces on average slightly less states, but the peak number of generated states are higher than in the plain version. It will be interesting to see if we can replicate these results, and how the selective application of the R2C optimisation (\em{R2C-A}) performs compared to \em{R2C-B}.
-
-Regarding the dependencies of the M1 and M2 optimisation, there are only two cases we can test. First, M1 alone, and second, M1 and M2 together. Assuming that the R2C optimisation adds a certain performance gain on top of an existing construction, we can then combine the better one of \em{M1} and \em{M1+M2} with R2C. We can already reveal at this point that \em{M1} performs slightly better than \em{M1+M2} on our test set, even though \em{M1+M2} has a better theoretical worst-case complexity. This topic is further discussed in Chapter~\ref{chap_results}. Thus, the version that we will want to test is \em{M1+R2C}.
-
-Furthermore, we can also investigate the effect of some generic optimisations on our construction. The most generic optimisations, which are included in most complementation constructions in GOAL, and also our plugin with the Fribourg construction, are:
-\begin{enumerate}
-\item Maximise the acceptance set of the input automaton (MACC)
-\item Remove unreachable and dead states from the output automaton (R)
-\end{enumerate}
-
-By applying these two optimisations to the best version of the Fribourg construction, we can see how far we can go with tweaking our construction, with respect to our set of test automata.
-
-Summarising, for the internal tests we are going to carry out runs of the following versions of the Fribourg construction:
-\begin{enumerate}
-\item \em{Fribourg}
-\item \em{Fribourg+R2C}
-\item \em{Fribourg+R2C+C}
-\item \em{Fribourg+M1}
-\item \em{Fribourg+M1+M2}
-\item \em{Fribourg+M1+R2C}
-\item \em{Fribourg+M1+R2C+MACC+R}
-\end{enumerate}
+The rationale for choosing these versions is basically the same as for the GOAL test set with the following differences. First, Michel automata are complete, thus it is not necessary to apply the C option. Rather, R2C will automatically apply to all automata. Second, the aim of Version 5 is again to enhance the better one of Versions 3 and 4 with R2C. However, contrarily to the \goal{} test set Fribourg+M1+M2 is better than Fribourg+M1 for the Michel automata. That is why Version 5 is Fribourg+M1+M2+R2C.
 
 
 \subsection{External Tests}
-\textbf{Justification why to use only piterman, slice, and rank}$\\$
-Notes in UBELIX/jobs/2014-10-09: $\\$
-Made test with complementing the first 10 of the size 15 test set with all constructions, and only piterman, slice, and rank (and safra) completed all of them. $\\$
-See Tsai (2011)~\cite{2011_tsai} page 5: they compared ramsey, piterman, rank, and slice. But ramsey couldn't complement any of the 11,000 automata of size 15. $\\$
-Ramsey, piterman, rank, and slice are representative for the four main complementatio approaches: Ramsey-based, determinization-based, rank-based, and slice-based.
+In the so called external tests we compare the best version of the Fribourg construction with different complementation constructions, again for both the GOAL test set and the Michel test set. The concrete constructions we compared for the external tests are the following.
 
-\subsection*{Test configurations}
+\begin{enumerate}
+\item Piterman+EQ+RO
+\item Slice+P+RO+MADJ+EG
+\item Rank+TR+RO
+\item Fribourg+M1+R2C (\goal{} test set) and Fribourg+M1+M2+R2C (Michel test set)
+\end{enumerate}
 
-\begin{itemize}
-\item \em{Fribourg+M1+R2C}
-\item \em{Piterman+EQ+SIM+RO}
-\item \em{Rank+TR+RO}
-\item \em{Slice+P+RO+MADJ+EG}
-\end{itemize}
+For the alternative constructions, we chose the Piterman, Slice, and Rank construction. These constructions are representative for three of the four main complementation approaches, determinization-based, slice-based, and rank-based. The fourth complementation approach is Ramsey-based and there is an implementation of the Ramsey construction in \goal{}. However, in preliminary tests, we realised that this construction is not performant enough to be used on our test sets within our time and memory constraints. The authors of \goal{} came to a similar conclusion when they made similar experiments on the \goal{} test set~\cite{2011_tsai}. In their case, the Ramsey construction could not complete any of the 11,000 automata within the set time and memory constraints, and they went on to do the result analysis without the Ramysey construction.
 
+The same applies to all the other constructions that are implemented in \goal{}. We did preliminary tests with all of them and saw that only the three mentioned constructions, Piterman, Slice, and Rank, can be resonably used on the \goal{} test set\footnote{The Safra construction would also have been possible, but the Safra construction is similar to the Piterman construction.}.
+
+The three chosen constructions also have optimisations in their implementations in \goal{}. To have a fair comparison to the best version of the Fribourg construction, which also uses optimisations, we activated the optimisation of these constructions as well. In particular, we chose those optimisations which are set as default in the \goal{} GUI for each construction.
+
+We use Fribourg+M1+R2C for the \goal{} test set and Fribourg+M1+M2+R2C for the Michel test set. This is because these two versions are the most performant ones for the respective test sets.
+
+
+% \textbf{Justification why to use only piterman, slice, and rank}$\\$
+% Notes in UBELIX/jobs/2014-10-09: $\\$
+% Made test with complementing the first 10 of the size 15 test set with all constructions, and only piterman, slice, and rank (and safra) completed all of them. $\\$
+% See Tsai (2011)~\cite{2011_tsai} page 5: they compared ramsey, piterman, rank, and slice. But ramsey couldn't complement any of the 11,000 automata of size 15. $\\$
+% Ramsey, piterman, rank, and slice are representative for the four main complementatio approaches: Ramsey-based, determinization-based, rank-based, and slice-based.
+
+
+\subsection{Time and Memory Limits}
+We defined a time limit of 600 seconds CPU time and a memory limit of 1 GB per complementation task in the GOAL test set. That means, if the complementation of a single automaton is not finished after 600 seconds CPU time or uses more than 1 GB memory, the task is aborted and marked as a \textit{timeout} or \textit{memory excess}.
+
+These limits correspond to the ones used by the experiments of the \goal{} authors~\cite{2011_tsai}. However, from their paper it is not clear if their time limit is in CPU time or wallclock time. But since they used different computing nodes, our results regarding the number of timeouts will anyway differ from theirs.
+
+The reason for these limits is simply the restricted amount of time and memory resources that we have available for the experiments. In an ideal world, we would let every complementation task run to its end, no matter how long it takes and how much memory it uses. This would give a perfectly unbiased picture of the results. By setting time and memory limits, we basically exclude the most difficult automata from the experiment. However, as mentioned, the practical reasons of limited time and computing power force as to make this compromise.
+
+The timeout and memory limit of 1 GB apply just to the automata of the \goal{} test set. For the Michel test set we did not set a timeout because we wanted each one of the four automata to finish. The longest complementation task of a Michel automaton consequently durated 109,810 seconds which is about 28 hours. We set a very high memory limit of 14 GB for the Michel test set to avoid memory excesses as we wanted each automaton to successfully complete. The number of 14 GB is determined by the physically available memory on the used computing nodes. All Michel automata successfully completed with this amount of memory.
+
+The timeout was implemented by the means of the \textsf{ulimit} Bash builtin\footnote{\url{http://linux.die.net/man/1/bash}}, which allows to set a maximum time after which running processes are killed. The memory limit was implemented by setting the maximum size of the Java heap, which can be done by the \textsf{-Xmx} option to the Java Virtual Machine (JVM). The heap is the main memory area of Java and the place where all the objects reside. Note that since our memory limit defines actually the size of the Java heap, the total amount of memory used by the process is higher than our limit, as Java has some other memory areas, for example for the JVM itself. However, this is a rather constant amount of memory and independent from the current automaton, so it does not disturb the relative comparisons of the results.
+
+The presence of aborted complementation task require the consideration of the so called effective samples in the result analysis, as introduced in the experiment paper of the \goal{} authors. The effective samples are those automata which have been successfully completed by \textit{all} constructions that are to be compared to each other. Imagine two constructions $A$ and $B$ where $A$ is successful complementing all the automata, whereas $B$ has timeouts or memory excesses at 100 of the automata. If we would now take, for example, the median complement sizes of the two result sets without first extracting the effective samples, then $B$ is likely be assessed as too good relative to $A$, because $B$'s results do not include the 100 automata at which it failed, and which are thus likely to have large complement sizes with $B$. The same 100 automata would however be included in the results of $A$. Therefore, all the result analysis of the experiments with the \goal{} test sets, that we present in Chapter~\ref{chap_results}, are based on the effective samples of the result sets. 
 
 
 \subsection{Execution Environment}
+We executed the experiments on a high performance computing (HPC) computer cluster called UBELIX at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}. This cluster consists of different types of Linux-driven HPC computing nodes, and is managed by Oracle Grid Engine\footnote{\url{http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html}} (formerly known as Sun Grid Engine) version 6.2. Oracle Grid Engine is a so called load scheduler that is responsible for automatically distributing computing tasks to computing nodes.
 
-UBELIX Linux cluster, runs Sun Grid Engine (load scheduler).
+The basic workflow of working on the cluster is to prepare a so called job and specify the resources that the job requires for running (time, memory, number of CPU cores, and so on). Then the job can be submitted to the grid engine. The grid engine first puts incoming jobs in a queue and then automatically dispatches them to suitable computing nodes as soon as the required capacity is available.
 
-All the jobs are executed on machines belonging to one of the two following queues:
+A job in our case is the execution of a construction (or version of the Fribourg construction) over an entire test set. Thus, we were running 22 jobs in total. We arranged that all jobs were run on identical nodes with the following specifications:
 
 \begin{itemize}
-\item long.q
-  \begin{itemize}
-  \item hnode 47--49
-  \item Intel Xeon E5-2695v2 2.40GHz
-  \item 24 CPU cores (slots)
-  \item 96 GB RAM
-  \item $\rightarrow$ 4 GB RAM per core (slot)
-  \item h\_cpu limit: $>$ 200:00:00 (not sure)
-  \end{itemize}
-\item mpi.q
-  \begin{itemize}
-  \item hnode 01--42
-  \item Intel Xeon E5-2665 2.40GHz
-  \item 16 CPU cores (slots)
-  \item 64 GB RAM
-  \item $\rightarrow$ 4 GB RAM per core (slot)
-  \item h\_cpu limit: 72:00:00
-  \item h\_rt limit: 73:00:00
-  \end{itemize}
-\item highmem.q
-  \begin{itemize}
-  \item jnode 01--21
-  \item Intel Xeon E5-2665 2.40GHz
-  \item 16 CPU cores (slots)
-  \item 256 GB RAM
-  \item $\rightarrow$ 16 GB RAM per core (slot)
-  \end{itemize}
+\item Processor: Intel Xeon E5-2665 2.40GHz (64 bit)
+\item CPU cores: 16
+\item Operating System: Red Hat Enterprise Linux 6.6
 \end{itemize}
 
+Since we use the execution time (CPU time) as a secondary metrics, next to the complement sizes, it is important that all complementation tasks are executed on the same type of hardware. \goal{} is multithreaded and thus the jobs may use multiple CPU cores. The number of CPU cores a job may use is not restricted (up to the number of available cores on the node, in our case 16), but our observation is that the jobs use a rather small number of cores (2--3). Note that the measurement of the execution time is not affected by the number of cores a process uses, as the CPU times are measured separately on each core and then added together.  
 
-\begin{enumerate}
-\item Internal on GOAL testset
-\item External on GOAL testset
-\item Internal on Michel automata
-\item External on Michel automata
-\item Completeness of GOAL testset
-\item Universality of GOAL testset
-\end{enumerate}
+% \begin{itemize}
+% \item mpi.q
+%   \begin{itemize}
+%   \item hnode 01--42
+%   \item Intel Xeon E5-2665 2.40GHz
+%   \item 16 CPU cores (slots)
+%   \item 64 GB RAM
+%   \item $\rightarrow$ 4 GB RAM per core (slot)
+%   \item h\_cpu limit: 72:00:00
+%   \item h\_rt limit: 73:00:00
+%   \end{itemize}
+% \item highmem.q
+%   \begin{itemize}
+%   \item jnode 01--21
+%   \item Intel Xeon E5-2665 2.40GHz
+%   \item 16 CPU cores (slots)
+%   \item 256 GB RAM
+%   \item $\rightarrow$ 16 GB RAM per core (slot)
+%   \end{itemize}
+% \end{itemize}
 
-The tests are successful with the following resources:
 
-\begin{tabular}{|p{1.5cm}|l|r|r|r|r|r|p{3.5cm}|}
-\hline
-Test & Queue & Slots & \parbox[t]{1.75cm}{Job\\memory\\limit} & \parbox[t]{1.75cm}{Job CPU\\time limit} & \parbox[t]{1.75cm}{CPU time\\limit per\\automaton\\} & \parbox[t]{1.75cm}{Memory\\limit per\\automaton\\} & Notes \\
-\hline
-1 and 2 & mpi.q & 4 & 4 GB & 72:00:00 & 600 sec. & 1 GB & rank -tr -ro has to be run on 10 partitions of the test set \\
-\hline
-3 and 4 & highmem.q & 4 & 16 GB & 72:00:00 & None & 14 GB & piterman -eq -sim -ro out of memory on Michel N4 \\
-\hline
-4 & mpi.q & 4 & 4 GB & 72:00:00 & None & 1 GB & \\
-\hline
-5 & mpi.q & 4 & 4 GB & 72:00:00 & None & 2 GB & universal -m piterman -eq -ro \\
-\hline
-\end{tabular}
+% \begin{enumerate}
+% \item Internal on GOAL testset
+% \item External on GOAL testset
+% \item Internal on Michel automata
+% \item External on Michel automata
+% \item Completeness of GOAL testset
+% \item Universality of GOAL testset
+% \end{enumerate}
+
+% The tests are successful with the following resources:
+
+% \begin{tabular}{|p{1.5cm}|l|r|r|r|r|r|p{3.5cm}|}
+% \hline
+% Test & Queue & Slots & \parbox[t]{1.75cm}{Job\\memory\\limit} & \parbox[t]{1.75cm}{Job CPU\\time limit} & \parbox[t]{1.75cm}{CPU time\\limit per\\automaton\\} & \parbox[t]{1.75cm}{Memory\\limit per\\automaton\\} & Notes \\
+% \hline
+% 1 and 2 & mpi.q & 4 & 4 GB & 72:00:00 & 600 sec. & 1 GB & rank -tr -ro has to be run on 10 partitions of the test set \\
+% \hline
+% 3 and 4 & highmem.q & 4 & 16 GB & 72:00:00 & None & 14 GB & piterman -eq -sim -ro out of memory on Michel N4 \\
+% \hline
+% 4 & mpi.q & 4 & 4 GB & 72:00:00 & None & 1 GB & \\
+% \hline
+% 5 & mpi.q & 4 & 4 GB & 72:00:00 & None & 2 GB & universal -m piterman -eq -ro \\
+% \hline
+% \end{tabular}

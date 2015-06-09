@@ -83,8 +83,9 @@ IntGoal <- function() {
   i.g.light <- .Decimate(i.g.light, 2500, 0.25)
   i.g.light <- .Decimate(i.g.light, 5000, 0.1)
   pdf(file=file, width=8, height=5)
-  par(mar=c(2.25, 9.25, 0.5, 0.5))
+  par(mar=c(3.5, 9.25, 0.5, 0.5))
   Stripchart(i.g.light, xlim=c(0, 60000), jitter=0.275)
+  text(x=30000, y=-1, labels="Complement size (states)", xpd=TRUE)
   dev.off()
 
   # Persp plots with median of produced states

@@ -390,7 +390,7 @@ Contour <- function(m, grid=TRUE, ...) {
 }
 
 PerspBatch <- function(list, pdf=FALSE, dir=".", prefix="", width=7, height=7, mar=par("mar"),
-                       zlim=c(0, max(sapply(list, max))), z.colors=TRUE,
+                       zlim=c(0, max(sapply(list, max))), z.colors=TRUE, z.color.breaks=20,
                        custom.zlab=NULL, ...) {
   # Draw a batch of persp plots with identical parameters
   # Args: list:        named list of dt/da or da/dt matrices (rows/columns)
@@ -411,7 +411,7 @@ PerspBatch <- function(list, pdf=FALSE, dir=".", prefix="", width=7, height=7, m
     if (pdf) pdf(file=pdf.files[i], width=width, height=height)
     else     quartz(width=width, height=height)
     par(mar=mar)  # Set margins
-    if (z.colors) Persp(m, zlim=zlim, col=FacetColors(m, max), ...)
+    if (z.colors) Persp(m, zlim=zlim, col=FacetColors(m, max, breaks=z.color.breaks), ...)
     else          Persp(m, zlim=zlim, ...)
     # Execute user-provided function for adding text (or anything else) to plot
     if (!is.null(custom.zlab)) {
@@ -477,7 +477,7 @@ Persp <- function(m, zlim=range(m, na.rm=TRUE), lin=TRUE, lin.xy=NULL,
         zlim=zlim, ticktype=ticktype, nticks=nticks, expand=expand, d=d, ...)
 }
 
-FacetColors <- function(m, maxmax=max(m)) {
+FacetColors <- function(m, maxmax=max(m), breaks=20) {
   # Calculate colours for each of the facets (rectangles) in a persp plot. The
   # return value can be directly used for the 'col' option of 'persp'.
   # Args: m:      matrix from which a persp plot is to be drawn
@@ -487,12 +487,13 @@ FacetColors <- function(m, maxmax=max(m)) {
   # Note: https://stat.ethz.ch/pipermail/r-help/2003-September/039104.html
   #       This function has been found on this URL, I have no idea how it works.
   #----------------------------------------------------------------------------#
-  palette <- terrain.colors(20)  # 20 colours from green to brown to white
+  palette <- terrain.colors(breaks)  # colours from green to brown to white
   r <- nrow(m); c <- ncol(m)
   # This is part of the magic...
   m.avg <- (m[-1, -1] + m[-1, -(c-1)] + m[-(r-1), -1] + m[-(r-1), -(c-1)]) / 4
   # Low peak -> few breaks -> few colours (starting from beginning of palette)
-  breaks <- (20 * max(m)) / maxmax
+  breaks <- (breaks * max(m)) / maxmax
+  if (breaks < 2) breaks <- 2  # Must be >= 2 for 'cut'
   # Creates a vector of length (nrow(m)-1) * (ncol(m)-1) with colours
   palette[cut(m.avg, breaks=breaks, include.lowest=TRUE)]
 }

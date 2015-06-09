@@ -1,48 +1,54 @@
 \section{Internal Tests}
 
 \subsection{GOAL Test Set}
-
-\subsubsection{Timeouts and Memory Excesses}
-
-Timeout for each complementation task: 600 seconds CPU time. Memory limit by limiting Java heap to 1 GB.
+First of all, let us how many unsuccessful complementation tasks there were with the internal tests on the \goal{} test set. Table~\ref{i.g.out_table} shows the number of timeouts and memory excesses for each of the eight tested versions of the Fribourg construction.
 
 \begin{table}[ht]
 \centering
 \input{figures/r/internal/goal/outs.tex}
-\caption{Number of timeouts and memory excesses.}
+\caption{Number of timeouts and memory excesses in the internal tests on the \goal{} test set.}
+\label{i.g.out_table}
 \end{table}
 
+As we can see in the table, there were no memory excesses, that is, none of the 11,000 complementation tasks required more than 1 GB memory (actually, Java heap size). On the other hand, there is quite a number of timeouts. If we extract the effective samples from these result sets, we get a set of 10,939 automata. That means that these 10,939 automata have been successfully completed by all the versions of the Fribourg construction, whereas the remaining 61 automata (0.55\%) provoked a timeout in at least one of the versions.
 
-The number of effective samples is 10,939. That is, 10,939 of the 11,000 automata have been successfully complemented by all constructions, while 61 automata (0.55 \%) have failed to complement with at least one of the constructions.
-
-\textcolor{red}{It is strange that Fribourg+R has so much fewer timeouts than Fribourg}
+Our main analysis is now about the sizes of the complements of these 10,939 automata. With size we mean the number of states of an automaton. A stripchart as the one in Figure~\ref{i.g.stripchart} is a good way to get a first glance of the complement sizes. Each horizontal strip contains 10,939 dots, each one corresponding to a produced complement automaton. The x-position of a dot indicates the size of the corresponding complement automaton.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.75\textwidth]{figures/r/internal/goal/s.stripchart.pdf}
-\caption{Number of states of complements.}
+\includegraphics[width=0.7\textwidth]{figures/r/internal/goal/s.stripchart.pdf}
+\caption{Stripchart with the complement sizes of the 10,939 effective samples of the \goal{} test set.}
+\label{i.g.stripchart}
 \end{figure}
 
+The first thing to note is that the distribution of complement sizes is extremely right-skewed (also known as positive-skewed). The peak close to the left end of the x-axis and there is a long tail toward the right. This means that most of the complements are very small and the frequency decreases with increasing complement size. Finally, there are some few complements which are very large. This distribution implies that the mean is generally higher than the median, because the mean is ``dragged'' to the right by the few very large complements.
 
-\subsubsection{Statistics Aggregated}
+Next, we can compare the distributions of the individual version to each other. While Fribourg and Fribourg+R2C have a similarly long tail, Fribourg+R2C+C has a considerably longer one. This clearly is the effect of increasing the size of 91\% of the automata by adding a sink state in order to make them complete. Next, Fribourg+M1, Fribourg+M1+M2, and Fribourg+M1+R2C have similarly long tails that are significantly shorter than the ones of the previous versions. This indicates that the M1 optimisation is effective in reducing the size of otherwise large complements. Fribourg+M1+R2C+C, as expected, again increases the size of the tail due to the C option. Finally, Fribourg+R has a very short tail and an even higher concentration of very small complements. This is because the complements are pruned by removing their unreachable and dead states, and thus at least the complements of the 61.8\% universal input automata are reduced to empty automata of size 1.
 
-Number of states of the produced complement automaton, aggregated over the whole test set.
+Having a first impression of the distribution of complement sizes, we can look at some statistics characterising this distribution. Table~\ref{i.g.stats_table} shows the mean complement size along with the classic five-number summary consisting of minimum value, 25th percentile, median, 75th percentile and maximum value for each version of the Fribourg construction. As expected, the mean is always higher than the median. Generally, the median is a more robust metrics than the mean, because it is not affected by the value of outliers. This applies specifically to our distribution where some few very large complements might significantly increase the man whereas they leave the median unaffected. Therefore, the median will be our main metric, and the subsequent analyses will be based on the median.
 
 \begin{table}[ht]
 \centering
 \input{figures/r/internal/goal/s.stats.tex}
-\caption{Aggregated statistics.}
+\caption{Statistics of the complement sizes of the 10,939 effective samples of the \goal{} test set.}
+\label{i.g.stats_table}
 \end{table}
 
-Statistics over the execution time in CPU time of all the automata.
+Going through the median values in Table~\ref{i.g.stats_table} we encounter some surprises. To begin with, as expected, there is a decrease from Fribourg (761) to Fribourg+R2C (689). Then, however, there is a significant drop to 451 with Fribourg+R2C+C. This is a surprise insofar as by looking at Figure~\ref{i.g.stripchart}, Fribourg+R2C+C seems to have the worst performance at a first glance. Indeed it also has the highest mean, which is due to the group of extremely large complements. The median, however, is very low, even lower than the one of Fribourg+M1 with its significantly shorter tail in Figure~\ref{i.g.stripchart}. Also the 25th percentile of Fribourg+R2C+C is with 85 one of the lowest. Going to the other side of the median, however, the 75th percentile (2,329) is the largest of all versions. A possible characterisation of this phenomenon is that the C option (together with R2C) makes small complements smaller, and large complements larger. The diminishment of small complements is far-reaching enough that the median is affected by it and decreased significantly.
 
-\begin{table}[ht]
-\centering
-\input{figures/r/internal/goal/t.stats.tex}
-\caption{Running times in seconds of the complementation tasks, measured as CPU time.}
-\end{table}
+The next thing we see in Table~\ref{i.g.stats_table} is that the median of Fribourg+M1 (482) is slightly lower than the median of Fribourg+M1+M2 (496). The same applies to the 25th and 75th percentile. This backs up our statement from Section~\ref{4_internal} that Fribourg+M1 performs better on the \goal{} teset set than Fribourg+M1+M2. The difference is rather small (the median increase is 2.9\%), but it is enough to consider Fribourg+M1 as the better of the two versions, and to combine it therefore with R2C and R2C+C.
 
-\textcolor{red}{It is strange that Fribourg+R is so much faster than Fribourg}
+Fribourg+M1+R2C brings down the median from 482 to 447, with respect to Fribourg+M1. Also the 25th and 75th percentile are decreased. Adding the C option to Fribourg+M1+R2C, again causes the median to drop dramatically, from 447 to 331. The 25th percentile decreases from 152 to 83. The 75th percentile however increases from 1,118 to 1,208.5. Here we have again the same picture of the effecto of adding the C option that we had before. Namely that small complements are made smaller, and large complements are made larger.
+
+Finally, the last row in Table~\ref{i.g.stats_table} with Fribourg+R shows the extent of unreachable and dead states that the Fribourg construction produces. The median is 1, and a further analysis reveals that the single-state complements go up to the 61st percentile. That is, 61\% of the complements have a size of 1. This is likely to correspond to the 61.8\% of universal automata in the GOAL test set whose complements can be reduced to empty automata with a single state.
+
+
+% \begin{table}[ht]
+% \centering
+% \input{figures/r/internal/goal/t.stats.tex}
+% \caption{Running times in seconds of the complementation tasks, measured as CPU time.}
+% \end{table}
+% \textcolor{red}{It is strange that Fribourg+R is so much faster than Fribourg}
 
 \subsubsection{Statistics Split Up by dt/da classes}
 
