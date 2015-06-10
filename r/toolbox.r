@@ -293,18 +293,22 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, include.rownames=FAL
   print(xtable(x, align=align), include.rownames=include.rownames, floating=FALSE, ...)
 }
 
-MatrixAvg <- function(list) {
-  # Calculate the average of a list of matrices
-  # Args: list: a list of matrices
-  # Returns: a matrix with the average values of all input matrices
+MatrixAgg <- function(lst.m, func=mean) {
+  # Aggregate the corresponding cells of a list of matrices
+  # Args: lst.m: list of matrics
+  #       func:  function taking as input a numerical vector and returning a
+  #              single number
+  # Returns: a matrix with the aggregated values of the input matrices
   #----------------------------------------------------------------------------#
-  res <- matrix()
-  i <- 1
-  for (m in list) {
-    if (i == 1) res <- m else res <- res + m
-    i <- i + 1
+  nr <- nrow(lst.m[[1]]); nc <- ncol(lst.m[[1]])
+  agg.vals <- numeric()
+  for (r in seq(1, nr)) {
+    for (c in seq(1, nc)) {
+      vals <- sapply(lst.m, `[`, r, c)
+      agg.vals <- c(agg.vals, func(vals))
+    }
   }
-  res / length(list)
+  matrix(agg.vals, nrow=nr, ncol=nc, byrow=TRUE, dimnames=dimnames(lst.m[[1]]))
 }
 
 Image <- function(m, ...) {

@@ -99,11 +99,11 @@ IntGoal <- function() {
 
   # Image plot showing difficulty levels for all the dt/da classes
   file <- paste0(dir, "/s.median.image.pdf")
-  m.avg <- MatrixAvg(mlist)  # Average of all the state median matrices
+  m.avg <- MatrixAgg(mlist, mean)  # Average of all the state median matrices
   pdf(file=file, width=4.25, height=4.25)
   # less than 500: green; betw. 500 and 1450: yellow; more than 1450: red
   par(mar=c(0.25, 3, 2.75, 0.25))
-  Image(m.avg, breaks=c(0, 500, 1450, 6000), col=c("green", "yellow", "red"))
+  Image(m.avg, breaks=c(0, 500, 1600, 6000), col=c("green", "yellow", "red"))
   dev.off()
 }
 
