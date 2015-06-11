@@ -11,7 +11,7 @@ GetData <- function() {
   i.g <<- Eff(i.g.all)
 
   # Internal: Michel automata
-  i.m <<- ReadSubdirs("internal/michel")[c(5, 7, 3, 1, 4, 2, 6)]
+  i.m <<- ReadSubdirs("internal/michel")[c(4, 6, 3, 1, 2, 5)]
 
   # External: GOAL test set with Rank
   e.g.with_rank.all <<- ReadSubdirs("external/goal")[c(2, 4, 3, 1)]
@@ -40,7 +40,7 @@ Completeness <- function() {
   m <- MatrixTestset(cmpl)
   # LaTeX table
   file <- paste0(dir, "/table.tex")
-  LatexTable(m, format="d", align="r|rrrrrrrrrr", file=file)
+  LatexTable(m, format="d", include.rownames=TRUE, align="r|rrrrrrrrrr", file=file)
   # Persp plot
   file <- paste0(dir, "/persp.pdf")
   .ComplUnivPersp(m, file)
@@ -51,7 +51,7 @@ Universality <- function() {
   m <- MatrixTestset(univ)
   # LaTeX table
   file <- paste0(dir, "/table.tex")
-  LatexTable(m, format="d", align="r|rrrrrrrrrr", file=file)
+  LatexTable(m, format="d", include.rownames=TRUE, align="r|rrrrrrrrrr", file=file)
   # Persp plot
   file <- paste0(dir, "/persp.pdf")
   .ComplUnivPersp(m, file)
@@ -98,11 +98,11 @@ IntGoal <- function() {
              text(-0.73, 0.06, "States (median)", srt=94) })
 
   # Image plot showing difficulty levels for all the dt/da classes
-  file <- paste0(dir, "/s.median.image.pdf")
+  file <- paste0(dir, "/difficulty.pdf")
   m.avg <- MatrixAgg(mlist, mean)  # Average of all the state median matrices
-  pdf(file=file, width=4.25, height=4.25)
-  # less than 500: green; betw. 500 and 1450: yellow; more than 1450: red
+  pdf(file=file, width=4.1, height=4.1)
   par(mar=c(0.25, 3, 2.75, 0.25))
+  # less than 500: green; betw. 500 and 1600: yellow; more than 1600: red
   Image(m.avg, breaks=c(0, 500, 1600, 6000), col=c("green", "yellow", "red"))
   dev.off()
 }
@@ -231,10 +231,11 @@ ExtMichel <- function() {
   #----------------------------------------------------------------------------#
   pdf(file=file, width=6, height=4.5)
   par(mar=c(1, 3, 0, 0.5))
-  Persp(m, zlim=c(0, 100), theta=-35, phi=15, lin=TRUE, lin.xy=list(x=3, y=1),
-        lin.col="gray", col="gray90", shade=0.6, ltheta=-90, lphi=30, zlab="",
-        xlab="Transition density", ylab="Acceptance density")
-  text(-0.74, 0.03, "Number of automata", srt=92, xpd=TRUE)
+  # Draw persp plot. Note: cex.axis applies only to tick marks
+  Persp(m, zlim=c(0, 100), theta=-44, phi=25, lin=TRUE, lin.xy=list(x=3, y=1),
+        lin.col="gray", col="deepskyblue", shade=0.6, ltheta=-90, lphi=30, zlab="",
+        xlab="Transition density", ylab="Acceptance density", cex.axis=0.95)
+  text(-0.75, 0.03, "Number of automata", srt=92, xpd=TRUE)
   dev.off()
 }
 

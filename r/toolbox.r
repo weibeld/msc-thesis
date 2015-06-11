@@ -142,6 +142,34 @@ StatsGoal <- function(list, dat="states") {
   res.list
 }
 
+MichelTable <- function(list, dat="states", labels=names(list)) {
+  # Combine results for Michel automata in a single data frame
+  # Args: list:   named list of Michel result data frames
+  #       dat:    name of the column to display in the result
+  #       labels: character vector with a label for each data frame in 'list'
+  # Returns: a data frame with one row for each data frame in 'list'
+  #----------------------------------------------------------------------------#
+  i <- 1
+  for (df in list) {
+    x <- c(3, 4, 5, 6)
+    y <- df[[dat]]
+    fit <- nls(y ~ (a*x)^x, start=list(a=1))
+    a <- summary(fit)$parameters[1]
+    std.err <- summary(fit)$parameters[2]
+    row <- data.frame(Construction = labels[i],
+                      `3 states`   = df[1, dat],
+                      `4 states`   = df[2, dat],
+                      `5 states`   = df[3, dat],
+                      `6 states`   = df[4, dat],
+                      `Fitted curve` = paste0("$(", Float(a, d=3), "n)^n$"),
+                      `Std. error`   = paste0(Float(std.err*100, d=2), "\\%"),
+                      check.names=FALSE)
+    if (i == 1) res <- row else res <- rbind(res, row)
+    i <- i + 1
+  }
+  res
+}
+
 MichelBarplot <- function(list, dat="states", ylim=c(0, max(sapply(lapply(list, `[`, dat), max))),
                           gap=1, lab.rot=45, lab.dst=0.33, lin=FALSE,
                           lin.col="gray", lin.lty="dotted", lin.lwd=par("lwd"), yaxp=par("yaxp"), ...) {
@@ -183,26 +211,6 @@ MichelBarplot <- function(list, dat="states", ylim=c(0, max(sapply(lapply(list, 
   x.pos <- head(axTicks(1), -1) + gap + (nbars / 2)
   y.pos <- -lab.dst * diff(axTicks(2))[1]
   text(x=x.pos, y=y.pos, labels=colnames(m), xpd=TRUE, pos=2, offset=0, srt=lab.rot)
-}
-
-Michel <- function(list, dat="states", labels=names(list)) {
-  # Combine results for Michel automata in a single data frame
-  # Args: list:   named list of Michel result data frames
-  #       dat:    name of the column to display in the result
-  #       labels: character vector with a label for each data frame in 'list'
-  # Returns: a data frame with one row for each data frame in 'list'
-  #----------------------------------------------------------------------------#
-  i <- 1
-  for (df in list) {
-    row <- data.frame(Construction = labels[i],
-                      `Michel 1`   = df[1, dat],
-                      `Michel 2`   = df[2, dat],
-                      `Michel 3`   = df[3, dat],
-                      `Michel 4`   = df[4, dat], check.names=FALSE)
-    if (i == 1) res <- row else res <- rbind(res, row)
-    i <- i + 1
-  }
-  res
 }
 
 MatrixGoal <- function(list, dat="states", stat="median") {
@@ -330,14 +338,16 @@ Image <- function(m, ...) {
   }
   usr <- par("usr")  # Get extreme values of x-axis [1,2], and y-axis [3,4]
   par(xpd=TRUE)      # Allow drawing outside of plot area
+  gap1 <- 0.25       # Gap between plot and "tick marks"
+  gap2 <- 1.2        # Gap between plot and axis labels
   # Labels on x-axis (top)
-  text(x=1:nc, y=usr[4]+0.5, labels=x.val)
+  text(x=1:nc, y=usr[4]+gap1, labels=x.val, pos=3, offset=0)
   x.mid <- (usr[2] - usr[1]) / 2 + usr[1]  # Middle of x-axis
-  text(x=x.mid, y=usr[4]+1.2, labels=x.lab)
+  text(x=x.mid, y=usr[4]+gap2, labels=x.lab)
   # Labels on y-axis (left)
-  text(x=usr[1]-0.5, y=nr:1, labels=y.val)
+  text(x=usr[1]-(gap1 * nc / (nr+0.5)), y=nr:1, labels=y.val, pos=2, offset=0)
   y.mid <- (usr[4] - usr[3]) / 2 + usr[3]  # Middle of y-axis
-  text(x=usr[1]-1.24, y=y.mid, labels=y.lab, srt=90)
+  text(x=usr[1]-gap2-0.15, y=y.mid, labels=y.lab, srt=90)
   # Add grid
   abline(h=seq(usr[3], usr[4]), v=seq(usr[1], usr[2]), xpd=FALSE)
 }

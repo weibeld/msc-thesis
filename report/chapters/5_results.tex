@@ -141,43 +141,45 @@ Finally,Fribourg+M1+R2C+C differs from Fribourg+M1+R2C in a similar way Fribourg
 
 With 331 states, Fribourg+M1+R2C+C has the lowest median of all the versions (except Fribourg+R which is a special case because it modifies the output of the construction). However, we still declare Fribourg+M1+R2C as the winner on the \goal{} test set, mainly for two reasons. First, while Fribourg+M1+R2C+C has a lower median, the mean is still higher (1062.6 to 937.7 which is a plus of 13.3\%). This results from the complements of the hard automata, which are larger than with Fribourg+M1+R2C. From a practical point of view, the mean might be relevant, because it relates more directly to the required computing resources than the median. For example the execution CPU time per complementation task, that we also measured along with our experiments, is 25.4\% higher for Fribourg+M1+R2C+C than for Fribourg+M1+R2C. The increase in the average execution time per automaton is from 4.44 to 5.57 seconds and in the total execution time from 48,572 seconds ($\approx$ 135 hours) to 60,919 seconds ($\approx$ 169 hours). Fribourg+M1+R2C, on the other hand, has the lowest mean of all versions. The second reason that we choose Fribourg+M1+R2C as the winner and not Fribourg+M1+R2C+C is that the C option is not a real part of the construction. It actually modifies the input automata before the construction starts in order to make them better suited for the construction. Fribourg+M1+R2C, on the other hand, includes only native options, and input and output of the construction are not modified. This should also make it fairer to compare the Fribourg construction to other constructions in the external tests (Section~\ref{ext}).
 
-\subsubsection{Difficulty Classes of the GOAL Test Set}
+As we have seen, there are big difference in the complement sizes across the different classes of the \goal{} test set. Furthermore, there is a certain pattern, namely the mountain in the north-western region of the class matrix. Automata of classes that are in the mountain region seem to be harder to complement than automata from the classes in the flatland region. We attempted to categorise the classes of the \goal{} test set into the three groups ``easy'', ``medium'', and ``hard''. To do so, we first averaged the matrices with the median complement sizes of all the eight versions of the Fribourg construction. In this way, we have a mean median complement size for each class. Then we defined two breakpoints that divide the classes into easy, medium, and hard groups. The breakpoints 500 and 1,600 result in an appropriate groups that seem to capture the reality well. The result with these breakpoints can be seen in Figure~\ref{i.g.difficulty}.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.4\textwidth]{figures/r/internal/goal/s.median.image.pdf}
-\caption{Average of the median number of produced states of all the constructions: green (easy): $\leq$ 500; yellow (medium): $\leq$ 1450; red (hard): $>$ 1450.}
+\includegraphics[width=0.35\textwidth]{figures/r/internal/goal/difficulty.pdf}
+\caption{Difficulty categories of the transition/acceptance density classes of the \goal{} test set. Green: easy; yellow: medium; red: hard.}
 \end{figure}
 
+As can be seen in Figure~\ref{i.g.difficulty}, there are 53 easy, 36 medium, and 21 hard classes. The easy classes are mainly those with extreme values. In particular, all the classes with a low or high transition density of 0.1, or 2.8 and 3.0, and a high acceptance density of 1.0 are easy. Furthermore, there is a ``triangle'' of easy classes between transition densities 2.0 and 2.6. and acceptance densities 0.5 and 0.9. The higher the transition density, the lower the acceptance density may be so that the corresponding class is still easy. The hard classes are roughly those with a transition density between 1.4 and 1.8 and an acceptance density between 0.1 and 0.6. The medium classes finally are situated as a ``belt'' around the hard classes.
+
+It is interesting that the extreme values of transition density and acceptance density result in easy automata. With a transition density of 1.0 and an alphabet size of 2, each of the 15 states has on average two outgoing and two incoming transitions\footnote{The transition density multiplied with the number of states defines the number of transition for each symbol of the alphabet in the automaton, see Section~\ref{4_goal_testset}.}. With a transition density of 3.0, each state has on average 6 outgoing and 6 incoming transitions. These low or high connectivity seems to considerably simplify the complementation task. The same applies to a high acceptance density of 1.0, which means that every state is an accepting state\footnote{The acceptance density defines the percentage of states that are accepting, see Section~\ref{4_goal_testset} as well.}. Generally, we can say that automata with high acceptance densities are easier to complement than automata with lower acceptance densities. This also means that the pattern of easy automata at the extreme values of transition and accceptance density, does not apply to to the lower extreme of the acceptance density. Automata with a very low acceptance density of 0.1 are hard to complement---unless they are made easy by a low or high transition density.
+
+Another interesting point is that the hard automata have transition densities between 1.4 and 1.8. It seems that this range of transition densities is the crucial factor in the hardness of a complementation task, and that it is only alleviated by a growing acceptance density. This explains the decline of the mountain ridge from west to east.
+
+Summarising we can say that transition densities between 1.4 and 1.8 produce the hardest complementation tasks, and that to the both sides the difficulty steadily decreases with declining or growing transition density. Furthermore, a growing acceptance density generally implies easier complementation tasks.
 
 
-\subsection{Michel Automata}
+\subsection{Michel Test Set}
+We complemented the first four Michel automata with the six versions of the Fribourg constructions that are listed in Section~\ref{4_internal}. All complementation tasks were successful, as we did not set a timeout or memory limit. Remember that the first four Michel automata have 3, 4, 5, and 6 states, respectively. The sizes of the resulting complements are presented in Figure~\ref{i.m.states} in table form and visualised as a grouped barplot.
 
 \begin{figure}[ht]
   \centering
   \begin{subtable}{0.75\textwidth}
     \centering
     \input{figures/r/internal/michel/s.table.tex}
-    \caption{Complement sizes of the first four Michel automata.}
   \end{subtable}
 
-  \begin{subfigure}{0.75\textwidth}
+  \begin{subfigure}{0.7\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/r/internal/michel/s.barplot.pdf}
     \caption{Complement sizes of the first four Michel visualised as a barplot. The bars 1 to 4 of each group correspond to Michel automata 1 to 4.}
   \end{subfigure}
-  \caption{Complement sizes of Michel automata.}
+\caption{Complement sizes of the Michel automata in table form and visualised as a barplot. Each version of the Fribourg construction is represented by four bars, which stand for Michel automata 1 to 4, respectively.}
+\label{i.m.states}
 \end{figure}
 
-Michel automata are complete, thus the C options makes no sense.
+Looking at the results reveals two things. First, Michel automata result in very large complements. For example, Michel 4, which has six states, results in a complement with 287,907 states with the plain Fribourg construction. This is a state growth of $(1.354n)^n$. Exactly this state explosion is the aim of Michel automata, which have been developed with the goal to crate a set of automata that is extremely hard to complement.
 
-For the Michel automata Fribourg+M1+M2 is better than Fribourg+M1. Fribourg+M1+R2C is again much better than Fribourg+M1 and even Fribourg+M1+M2. Thus, we have to test Fribourg+M1+M2+R2C. 
-
-\begin{itemize}
-\item Add Fribourg+M1+M2+R2C
-\item Add Fribourg+M1+M2+R2C+R
-\item Add Fribourg+R
-\end{itemize}
+This also shows why we were only able to complement the first four Michel automata. If we assume the same state growth of $(1.354n)^n$ for the fifth Michel automaton, Michel 5, with seven states, then the complement would have around 6.9 million states. The execution time for Michel 4 with the plain Friboug construction was 100,976 CPU time seconds ($\approx$ 180 hours). If we assume a linear relation between the number of generated states and the execution time, then Michel 5 would have an execution time of more than 2.4 million seconds, which is around 279 days. This estimation is still a very conservative, as the relation between complement size and execution time is not linear but seems to be exponential as well (see table with exeuction times in appendix). 
 
 
 
@@ -278,6 +280,8 @@ For the Michel automata Fribourg+M1+M2 is better than Fribourg+M1. Fribourg+M1+R
 
 
 \subsection{Michel Automata}
+
+
 
 
 \begin{figure}[ht]
