@@ -33,6 +33,7 @@ All <- function() {
   IntMichel()
   ExtGoal()
   ExtMichel()
+  Appendices()
 }
 
 Completeness <- function() {
@@ -40,7 +41,8 @@ Completeness <- function() {
   m <- MatrixTestset(cmpl)
   # LaTeX table
   file <- paste0(dir, "/table.tex")
-  LatexTable(m, format="d", include.rownames=TRUE, align="r|rrrrrrrrrr", file=file)
+  LatexTable(m, format="d", include.rownames=TRUE, align="r|rrrrrrrrrr",
+             hline.after=0, file=file)
   # Persp plot
   file <- paste0(dir, "/persp.pdf")
   .ComplUnivPersp(m, file)
@@ -51,7 +53,8 @@ Universality <- function() {
   m <- MatrixTestset(univ)
   # LaTeX table
   file <- paste0(dir, "/table.tex")
-  LatexTable(m, format="d", include.rownames=TRUE, align="r|rrrrrrrrrr", file=file)
+  LatexTable(m, format="d", include.rownames=TRUE, align="r|rrrrrrrrrr",
+             hline.after=0, file=file)
   # Persp plot
   file <- paste0(dir, "/persp.pdf")
   .ComplUnivPersp(m, file)
@@ -112,7 +115,7 @@ IntMichel <- function() {
 
   # Table with the complement sizes
   file <- paste0(dir, "/s.table.tex")
-  LatexTable(Michel(i.m), format="d", file=file)
+  LatexTable(MichelTable(i.m), format="d", align="rlrrrrrr", file=file)
 
   # Barplot with complement sizes
   file <- paste0(dir, "/s.barplot.pdf")
@@ -193,11 +196,11 @@ ExtMichel <- function() {
 
   # Table with the complement sizes
   file <- paste0(dir, "/s.table.tex")
-  LatexTable(Michel(e.m), format="d", file=file)
+  LatexTable(MichelTable(e.m), format="d", align="rlrrrrrr", file=file)
 
   # Table with the execution times
   file <- paste0(dir, "/t.table.tex")
-  LatexTable(Michel(e.m), dat="cpu_time", format="d", file=file)
+  LatexTable(MichelTable(e.m), dat="cpu_time", align="rlrrrrrr", file=file)
 
   # Barplot with complement sizes
   file <- paste0(dir, "/s.barplot.pdf")
@@ -209,6 +212,59 @@ ExtMichel <- function() {
 
   # No barplot for execution times, because the value for Piterman (Michel 4)
   # is so high that the other values cannot be distinguished anymore
+}
+
+Appendices <- function() {
+  dir <- .MkDir("appendices")
+
+  # Matrices of median complement sizes of internal tests
+  m.lst <- MatrixGoal(i.g)
+  .AppendixMatrices(m.lst, dir)
+
+  # Matrices of median complement sizes of external tests (without Rank)
+  m.lst <- MatrixGoal(e.g)
+  # Remove Fribourg, because we have it already in the internal tests
+  m.lst$`Fribourg+M1+R2C` <- NULL
+  .AppendixMatrices(m.lst, dir)
+
+  # CPU time stats for GOAL test set (internal)
+  file <- paste0(dir, "/i.g.t.stats.tex")
+  stats <- Stats(i.g, dat="cpu_time", total=TRUE, total.hours=TRUE)
+  format <- c("", "f", "f", "f", "f", "f", "f", "f", "d")
+  LatexTable(stats, format=format, file=file, digits=1)
+
+  # CPU time stats for GOAL test set (external with Rank -> 7,204 eff. samples)
+  file <- paste0(dir, "/e.g.t.stats.with_rank.tex")
+  stats <- Stats(e.g.with_rank, dat="cpu_time", total=TRUE, total.hours=TRUE)
+  format <- c("", "f", "f", "f", "f", "f", "f", "f", "d")
+  LatexTable(stats, format=format, file=file, digits=1)
+
+  # CPU time stats for GOAL test set (external without Rank -> 10,998 eff. samples)
+  file <- paste0(dir, "/e.g.t.stats.without_rank.tex")
+  stats <- Stats(e.g, dat="cpu_time", total=TRUE, total.hours=TRUE)
+  format <- c("", "f", "f", "f", "f", "f", "f", "f", "d")
+  LatexTable(stats, format=format, file=file, digits=1)
+
+  # CPU times for Michel test set (internal)
+  file <- paste0(dir, "/i.m.t.tex")
+  LatexTable(MichelTable(i.m, dat="cpu_time"), align="rlrrrrrr", file=file)
+
+  # CPU times for Michel test set (external)
+  file <- paste0(dir, "/e.m.t.tex")
+  LatexTable(MichelTable(e.m, dat="cpu_time"), align="rlrrrrrr", file=file)
+}
+
+.AppendixMatrices <- function(m.lst, dir) {
+  i <- 1
+  for (m in m.lst) {
+    file <- paste0(dir, "/s.median.", names(m.lst)[i], ".tex")
+    options(warn=-1)  # Disable warnings (because of custom column type 'R')
+    # 'R' is a custom column type defined in the LaTeX document
+    LatexTable(m, format="d", include.rownames=TRUE, align="r|RRRRRRRRRR",
+               hline.after=0, file=file)
+    options(warn=0)  # Re-enable warnings
+    i <- i + 1
+  }
 }
 
 

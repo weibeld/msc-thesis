@@ -33,7 +33,7 @@
 \parskip0.25\baselineskip
 \parindent0pt
 
-\title{Performance Investigations of a Subset-Tuple Büchi Complementation Construction}
+\title{Empirical Performance Investigation of a Büchi\\Complementation Construction}
 \author{Daniel Weibel}
 \date{\today}
 
@@ -41,6 +41,8 @@
 \maketitle
 
 
+% Order of the front matter is: abstract, dedication, acknowledgements,
+% table of contents
 
 \begin{abstract}
 This will be the abstract.
@@ -88,14 +90,21 @@ First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsch
 % \newpage
 % \input{chapters/6_conclusions.tex}
 
-% \appendix
-% \chapter{Plugin Installation and Usage}
-% \label{app_plugin}
-% \input{chapters/app_plugin.tex}
+% For the order of the end matter (appendiy before bibliography, or vice versa)
+% there are no strict rules.
 
-% \chapter{Matrices for median complement sizes for the 110 classes of the \goal{} test set}
-% \label{app_matrices}
-% \input{chapters/app_matrices.tex}
+\appendix
+\chapter{Plugin Installation and Usage}
+\label{app_plugin}
+\input{chapters/app_plugin.tex}
+
+\chapter{Median Complement Sizes of the \goal{} Test Set}
+\label{app_matrices}
+\input{chapters/app_matrices.tex}
+
+\chapter{Execution Times}
+\label{app_times}
+\input{chapters/app_times.tex}
 
 
 
@@ -104,40 +113,40 @@ First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsch
 
 
 % Drawings
-\begin{figure}
-\begin{center}
-\Automaton
-\end{center}
-\end{figure}
+% \begin{figure}
+% \begin{center}
+% \Automaton
+% \end{center}
+% \end{figure}
 
-\begin{figure}
-\begin{center}
-\RunTree
-\end{center}
-\end{figure}
+% \begin{figure}
+% \begin{center}
+% \RunTree
+% \end{center}
+% \end{figure}
 
-\begin{figure}
-\begin{center}
-\SubsetConstructionTree
-\end{center}
-\end{figure}
+% \begin{figure}
+% \begin{center}
+% \SubsetConstructionTree
+% \end{center}
+% \end{figure}
 
-\begin{figure}
-\begin{center}
-\SplitTreeRightLeft
-\end{center}
-\end{figure}
+% \begin{figure}
+% \begin{center}
+% \SplitTreeRightLeft
+% \end{center}
+% \end{figure}
 
-\begin{figure}
-\begin{center}
-\ReducedSplitTreeRightLeft
-\end{center}
-\end{figure}
+% \begin{figure}
+% \begin{center}
+% \ReducedSplitTreeRightLeft
+% \end{center}
+% \end{figure}
 
-\begin{figure}
-\begin{center}
-\RunDAG
-\end{center}
-\end{figure} 
+% \begin{figure}
+% \begin{center}
+% \RunDAG
+% \end{center}
+% \end{figure} 
 
 \end{document}

@@ -1,4 +1,3 @@
-\minitoc
 
 In this chapter we come to the core of this thesis, namely to test how the Fribourg construction performs on real test automata. We are interested in two things. First, how the different versions of the Fribourg construction compare to each other. That is, with which optimisations the Fribourg construction is most efficient. Second, we compare the Fribourg construction to other complementation constructions. We can refer ot the first type of investigations as the \textit{internal} tests, and to the second one as the \textit{external} tests.
 
@@ -6,7 +5,7 @@ To do these investigations, we implemented the Fribourg construction as a plugin
 
 In this chapter, we are going to describe each of these points, including our concrete experiment setup. The results of the tests are presented and discussed in Section~\ref{results}.
 
-\section{Implementation of the Construction}
+\section{Implementation}
 \subsection{GOAL}
 \label{goal}
 GOAL stands for Graphical Tool for Omega-Automata and Logics and has been developed at the National University of Taiwan since 2007~\cite{2007_goal,2008_goal_ext}. The tool is based on the three pillars, \om-automata, temporal logic formulas, and games. It allows to create instances of each of these types, and manipulate them in a multitude of ways. Relevant for our purposes are the \om-automata capabilities of GOAL.
@@ -79,11 +78,10 @@ Complementation constructions in GOAL can define a set of options that can be se
 For most complementation constructions (all listed in Table~\ref{goal_constructions} except the Ramsey-based construction) there is also a version for step-by-step execution. In this case, the constructions define so-called steps and stages, through which the user can iterate independently. This is a great way for understanding how a complementation construction works, and for investigating specific cases in order to potentially further improve the construction. 
 
 
-\subsection{The GOAL Plugin}
+\subsection{Implementation of the Construction}
 \label{implementation}
 We implemented the Fribourg construction, including its optimisations, in Java as a plugin for GOAL. This means that after installing out plugin to an existing GOAL installation\footnote{As the plugin interfaces of GOAL have recently changed, the can be used only for GOAL versions 2014-11-17 and newer.}, the Fribourg construction will be an integral part of GOAL and can be used in the same way as any other pre-existing complementation construction.
 
-\subsection{Options for the Fribourg Construction}
 To keep the Fribourg construction flexible, we made use of options. The three optimisations described in Section~\ref{optimisations} are presented to the user as selectable options. Additionally, we included several further options. Table~\ref{goal_fribourg_options} lists them all. For convenience, we use for each options a short code name, which is also used as the option name in the command line mode.
 
 \begin{table}
@@ -130,15 +128,32 @@ We performed complementation-equivalence tests for the Fribourg construction wit
 Doubtlessly, it would be desirable to test more, and especially bigger and more diverse automata. However, by doing so one would quickly face practical problems due to long complementation times with bigger automata and larger alphabets, and high memory usage. For our current purpose, however, the tests we did are enough for us to be confident that our implementation is correct.
 
 \section{Test Data}
+The core of this thesis is to empirically investigate the performance of the Fribourg construction. To this end, we ``feed'' a set of concrete automata to the Fribourg construction and analyse the results. This set of automata is the test data and is of crucial importance for the validity of the performance investigation. Test data should not be biased in favour or unfavour of one of the tested algorithms. Ideally, publicly available, or even standardised, test data is used, that has been previously used in other experiments. Furthermore, test data should cover interesting cases that reveal important aspects about the algorithm.
+
+For our investigation we chose two test sets that are publicly known or available and cover very different scenarios. While one of them consists of 11,000 automata and tries to cover a broad range of ``everyday'' complementation problems, the other one consists of just 4 automata, that are however very special. We call the former one the \goal{} test set and the latter on the Michel test set, and we are going to describe them in the following two sections.
+
+
 \subsection{GOAL Test Set}
 \label{4_goal_testset}
-For our set of sample automata, we chose to adopt the test set that has been created and used for another empirical performance comparison of Büchi complementation constructions by Tsai et al.~\cite{2010_tsai} (the first author, Tsai, being the main author of GOAL). This test set consists of 11000 automata of size 15, and 11000 automata of size 20. Each set of 11000 automata consists of 110 groups containing 100 automata each. The 110 groups result from the cartesian product of 11 transitions densities and 10 acceptance densities.
+The \goal{} test set has been created by Tsai~et~al. for the experiments described in the the paper \textit{State of Büchi Complementation}~\cite{2010_tsai}. In this paper, the authors carry out empirical performance investigations of Büchi complementation constructions that are very similar to our own investigations. The experiments were run with the \goal{} tool, hence the name \goal{} test set. The idea leading the design of this test set was to generate a large set of complementation problems with various difficulty levels.
 
-At this point, we have to explain the notions of transition and acceptance densitiy, as they are defined in~\cite{2010_tsai} and also implemented in GOAL. The transition density defines the number of transitions in an automaton. In particular, if the transition density is $t$ and the automaton has $n$ states, then the automaton contains $tn$ transitions for every symbol of the alphabet. In other words, the transition density is the average number of outgoing (and incoming) transitions of a state for each symbol of the alphabet. The transition densities in the test set range from 1 to 3 in steps of 0.2, that is, there are the 11 instances 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0. The acceptance density in turn is the percentage of states that are accepting states. It is thus a number between 0 and 1. In the test set, the 10 acceptance density classes range from 0.1 to 1.0 in steps of 0.1.
+The test set consists of 11,000 automata of size 15, and with an alphabet size of 2. It is structured into 110 classes that are combinations of two parameters, the so called transition density and the acceptance density. Simply speaking, the transition density determines the number of transitions in an automaton, and the acceptance density determines the number of accepting states.
 
-Each of the 110 transition density and acceptance density combination groups contains thus 100 automata. These automata were generated at random with the random automata generator of GOAL. The alphabet size of all the automata is 2. According to Tsai et al.~The alphabet size of all the automata is 2 According to Tsai et al. this test set generates a large class of complementation problems ranging from easy to hard~\cite{2010_tsai}. The test set is available on the GOAL website\footnote{http://goal.im.ntu.edu.tw/}. At the time of this writing, the direct link to the data is \url{http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?media=goal:ciaa2010_automata.tar.gz}.
+More precisely, the transition density $t$ is defined as follows. Let $n$ be the number of states of automaton $A$, and $t$ its transition density. Then $A$ contains $tn$ transitions for each symbol of the alphabet\footnote{In the case $tn$ is not an integer, it is rounded up to the next integer.}. That is, if one of our test set automata with 15 states and the alphabet ${0, 1}$ has a transition density of 2, then it contains exactly 30 transtions for symbol $0$ and 30 transitions for symbol $1$. Consequently, each state has on average two outgoing and two incoming transitions for each symbol. Therefore, the transition density can also be seen as the average number of outgoing and incoming transitons per alphabet symbol that a state has.
 
-The reason that we chose this existing test set, instead of for example generating our own one, is that it has been previously used and is thus an established reference point. As it is commonly accepted in disciplines that rely on performance measurements via test sets (for example artificial intelligence), we also think that it is imporant that there is established test data that can be used as an objective benchmark. This is to avoid that self-made test data is biased toward the technology whose performance is to evaluate. By using the test set of Tsai et al., we are taking a step in this direction. Furthermore, the experiments conducted by Tsai et al. are similar to our ones, so there might be to notice interesting parallels or differences in the results. The same test set has also been used by an earlier performance investigation of the Fribourg construction in~\cite{2013_bsc_goettel}.
+The acceptance density $a$ is defined as the ratio of accepting states to non-accepting states in the automaton. That is, if automaton $A$ has $n$ states and an acceptance density of $a$, then it contains $an$ accepting states\footnote{Again, if $an$ is not an integer, it is rounded up to the next integer.}. The acceptance density is thus bound to a number between 0 and 1. For example, if an automaton of our test set has an acceptance density of 0.1, then it has 2 accepting states, and if an automaton has an accepting density of 1, then all of its states are accepting states.
+
+In the \goal{} test set there are 11 transiton densities and 10 acceptance densities. The transition densities range from 1 to 3 in steps of 0.2, and the acceptance densities range from 0.1 to 1 in steps of 0.1. Thus, we have
+\begin{align*}
+t^\prime& = \{ 1.0,\,1.2,\,1.4,\,1.6,\,1.8,\,2.0,\,2.2,\,2.4,\,2.6,\,2.8,\,3.0 \} \\
+a^\prime & = \{ 0.1,\,0.2,\,0.3,\,0.4,\,0.5,\,0.6,\,0.7,\,0.8,\,0.9,\,1.0 \}
+\end{align*}
+
+The 110 classes result from the Cartesian product of $t^\prime$ and $a^\prime$. Each class consequently contains 100 automata. In this thesis, we will often present these classes as a $11 \times 10$ matrix where the rows represent the transition densities $t^\prime$, and the columns represent the acceptance densities $a^\prime$. Within the given constraints, the 11,000 automata were generated at random.
+
+The original \goal{} test set includes another set of 11,000 automata with the same specifications as the first one, except that the size of the automata is 20 instead of 15. In their paper~\cite{2010_tsai}, Tsai~et~al. repeated their experiments with this size 20 test set. In our own investigations we will however only use the size 15 test set. On the one hand, we think that repeating the experiments with the size-20 test set would add only a limited benefit to the insight already gained from the size-15 test set. It might be more beneficial to do further tests with a more diverse type of data (like the Michel test set that we describe in the next section). On the other hand, the size-20 test set may cause practical problems in terms of required computing and time resources. We restrict ourselves therefore to the size-15 test set, and when we refer to the \goal{} test set, we strictly mean the size-15 test set throughout the rest of this thesis.
+
+The \goal{} test set is publicly available from the \goal{} website via the following link: \url{http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?media=goal:ciaa2010_automata.tar.gz}.
 
 We tested each of the 11,000 automata for completeness and universality. As GOAL provides no commands for testing completeness and universality, we created the additional GOAL plugin \textsf{ch.unifr.goal.util} that implements these two operations and makes them accessible over the command line interface. The results of our tests are the following.
 
@@ -184,8 +199,10 @@ We furthermore analysed how these two properties are distributed over the 110 cl
 \label{4_compl_univ}
 \end{figure}
 
+We also tested the automata for emptiness, that is, the contrary of universality. From the 11,000 automata, only 63 are empty, which is a percentage of 0.57\%. As one could expect, most of them are concentrated in the classes with low transition and acceptance densities. For example, 44 of these empty automata are in the classes with a transition density of 1.0.
 
-\subsection{Michel Automata}
+
+\subsection{Michel Test Set}
 Besides the test set of the GOAL automata, we did all the tests also on the first four Michel automata:
 \begin{itemize}
 \item Michel N1: 3 states, 7 transitions, 1 accepting state

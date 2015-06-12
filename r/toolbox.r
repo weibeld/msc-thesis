@@ -74,7 +74,7 @@ EffNb <- function(list, invert=FALSE) {
   if (invert) nrow(list[[1]]) - n else n
 }
 
-Stats <- function(list, dat="states", labels=names(list)) {
+Stats <- function(list, dat="states", total=FALSE, total.hours=FALSE) {
   # Get statistics aggregated over entire data frame for a list of data frames
   # Args: list:   a list of data frames
   #       dat:    name of the column for which to calculate the statistics
@@ -85,13 +85,21 @@ Stats <- function(list, dat="states", labels=names(list)) {
   for (df in list) {
     if (any(is.na(df$states))) stop("data frame has NA in column 'states'")
     x <- df[[dat]]
-    row <- data.frame(Construction = labels[i],
+    row <- data.frame(Construction = names(list)[i],
                       Mean         = mean(x),
                       Min.         = min(x),
                       P25          = quantile(x, 0.25, names=FALSE),
                       Median       = median(x),
                       P75          = quantile(x, 0.75, names=FALSE),
                       Max.         = max(x))
+    if (total) {
+      tot <- sum(x)
+      row <- cbind(row, data.frame(Total=tot))
+      if (total.hours) {
+        h <- round(tot / 360)
+        row <- cbind(row, data.frame(`$\\approx$ hours`=h, check.names=FALSE))
+      }
+    }
     if (i == 1) res <- row else res <- rbind(res, row)
     i <- i + 1
   }
@@ -142,37 +150,44 @@ StatsGoal <- function(list, dat="states") {
   res.list
 }
 
-MichelTable <- function(list, dat="states", labels=names(list)) {
+MichelTable <- function(list, dat="states", fit.fun=TRUE, std.err=TRUE) {
   # Combine results for Michel automata in a single data frame
-  # Args: list:   named list of Michel result data frames
-  #       dat:    name of the column to display in the result
-  #       labels: character vector with a label for each data frame in 'list'
-  # Returns: a data frame with one row for each data frame in 'list'
+  # Args: list:    named list of Michel result data frames
+  #       dat:     name of the column to display in the result
+  #       fit.fun: add column with fitted state growth function (an)^n
+  #       std.err: add column with std. error of fitted function
+  # Returns: data frame with one row for each data frame in 'list'
   #----------------------------------------------------------------------------#
   i <- 1
   for (df in list) {
-    x <- c(3, 4, 5, 6)
-    y <- df[[dat]]
-    fit <- nls(y ~ (a*x)^x, start=list(a=1))
-    a <- summary(fit)$parameters[1]
-    std.err <- summary(fit)$parameters[2]
-    row <- data.frame(Construction = labels[i],
-                      `3 states`   = df[1, dat],
-                      `4 states`   = df[2, dat],
-                      `5 states`   = df[3, dat],
-                      `6 states`   = df[4, dat],
-                      `Fitted curve` = paste0("$(", Float(a, d=3), "n)^n$"),
-                      `Std. error`   = paste0(Float(std.err*100, d=2), "\\%"),
-                      check.names=FALSE)
+    row <- data.frame(Construction = names(list)[i],
+                      `Michel 1`   = df[1, dat],
+                      `Michel 2`   = df[2, dat],
+                      `Michel 3`   = df[3, dat],
+                      `Michel 4`   = df[4, dat], check.names=FALSE)
+    if (fit.fun) {
+      x <- c(3, 4, 5, 6)
+      y <- df[[dat]]
+      fit <- nls(y ~ (a*x)^x, start=list(a=1))
+      a <- summary(fit)$parameters[1]
+      text <- paste0("$(", Float(a, d=2), "n)^n$")
+      row <- cbind(row, data.frame(`Fitted curve`=text, check.names=FALSE))
+      if (std.err) {
+        s <- summary(fit)$parameters[2]
+        text <- paste0(Float(s*100, d=2), "\\%")
+        row <- cbind(row, data.frame(`Std. error`=text, check.names=FALSE))
+      }
+    }
     if (i == 1) res <- row else res <- rbind(res, row)
     i <- i + 1
   }
   res
 }
 
-MichelBarplot <- function(list, dat="states", ylim=c(0, max(sapply(lapply(list, `[`, dat), max))),
-                          gap=1, lab.rot=45, lab.dst=0.33, lin=FALSE,
-                          lin.col="gray", lin.lty="dotted", lin.lwd=par("lwd"), yaxp=par("yaxp"), ...) {
+MichelBarplot <- function(list, dat="states", gap=1, lab.rot=45, lab.dst=0.33,
+                          lin=FALSE, lin.col="gray", lin.lty="dotted",
+                          lin.lwd=par("lwd"), yaxp=par("yaxp"),
+                          ylim=c(0, max(sapply(lapply(list, `[`, dat), max))), ...) {
   # Create a barplot with one bar group for every construction
   # Args: list:    named list of Michel result data frames
   #       dat:     column name of the data to plot
@@ -238,6 +253,7 @@ MatrixTestset <- function(df) {
   #----------------------------------------------------------------------------#
   if ("complete"  %in% colnames(df)) col <- "complete"  else
   if ("universal" %in% colnames(df)) col <- "universal" else
+  if ("empty"     %in% colnames(df)) col <- "empty"     else
   stop("could not find column 'complete' or 'universal' in data frame")
   nb.yes <- integer()
   for (t in Dt()) {
@@ -263,11 +279,12 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, include.rownames=FAL
   # If 'align' is not specified, set it explicitely to not leave it to 'xtable'
   if (is.null(align)) align.auto <- "r"  # Extra column for rownames
 
-  # Formatting data frame
+  # If input is data frame: format it
   if (is.data.frame(x)) {
     if (length(format) == 1) format <- rep_len(format, ncol(x))
     i <- 1
     for (col in x) {
+      # Format numbers and keep them right-aligned
       if (class(col) == "numeric" | class(col) == "integer") {
         # Format 'numeric' and 'integer' columns, result is 'character'
         if (format[i] == "f") x[[i]] <- Float(col, d=digits) else
@@ -275,7 +292,7 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, include.rownames=FAL
         # Even though the column is now 'character', we want it right-aligned
         if (is.null(align)) align.auto <- paste0(align.auto, "r")
       }
-      # If the column is 'character' or 'factor'
+      # If the column is 'character' or 'factor', do left-align
       else {
         if (is.null(align)) align.auto <- paste0(align.auto, "l")
       }
@@ -284,7 +301,7 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, include.rownames=FAL
     
   } else
 
-  # Formatting matrix
+  # If input is matrix: format it
   if (is.matrix(x)) {
     if (format[1] == "f") x <- Float(x, d=digits) else
     if (format[1] == "d") x <- Int(x)
@@ -292,13 +309,16 @@ LatexTable <- function(x, format="f", digits=1, align=NULL, include.rownames=FAL
     if (is.null(align))
       for (i in seq(1, ncol(x))) align.auto <- paste0(align.auto, "r")
   }
+
   else stop("argument 'x' must be data frame or matrix, found ", class(x))
 
+  # Use the automatically determined alignment if no 'align' is specified
   if (is.null(align)) align <- align.auto
 
-  # Create the LaTeX code
+  # Create the LaTeX table
   library(xtable)
-  print(xtable(x, align=align), include.rownames=include.rownames, floating=FALSE, ...)
+  print(xtable(x, align=align), include.rownames=include.rownames,
+        sanitize.text.function=identity, floating=FALSE, ...)
 }
 
 MatrixAgg <- function(lst.m, func=mean) {

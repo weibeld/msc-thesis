@@ -161,21 +161,28 @@ Summarising we can say that transition densities between 1.4 and 1.8 produce the
 \subsection{Michel Test Set}
 We complemented the first four Michel automata with the six versions of the Fribourg constructions that are listed in Section~\ref{4_internal}. All complementation tasks were successful, as we did not set a timeout or memory limit. Remember that the first four Michel automata have 3, 4, 5, and 6 states, respectively. The sizes of the resulting complements are presented in Figure~\ref{i.m.states} in table form and visualised as a grouped barplot.
 
-\begin{figure}[ht]
-  \centering
-  \begin{subtable}{0.75\textwidth}
-    \centering
-    \input{figures/r/internal/michel/s.table.tex}
-  \end{subtable}
-
-  \begin{subfigure}{0.7\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/r/internal/michel/s.barplot.pdf}
-    \caption{Complement sizes of the first four Michel visualised as a barplot. The bars 1 to 4 of each group correspond to Michel automata 1 to 4.}
-  \end{subfigure}
-\caption{Complement sizes of the Michel automata in table form and visualised as a barplot. Each version of the Fribourg construction is represented by four bars, which stand for Michel automata 1 to 4, respectively.}
+\begin{table}[ht]
+\centering
+\input{figures/r/internal/michel/s.table.tex}
+\caption{Complement sizes of the first four Michel automata.}
 \label{i.m.states}
-\end{figure}
+\end{table}
+
+% \begin{figure}[ht]
+%   \centering
+%   \begin{subtable}{0.75\textwidth}
+%     \centering
+%     \input{figures/r/internal/michel/s.table.tex}
+%   \end{subtable}
+
+%   \begin{subfigure}{0.7\textwidth}
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/r/internal/michel/s.barplot.pdf}
+%     \caption{Complement sizes of the first four Michel visualised as a barplot. The bars 1 to 4 of each group correspond to Michel automata 1 to 4.}
+%   \end{subfigure}
+% \caption{Complement sizes of the Michel automata in table form and visualised as a barplot. Each version of the Fribourg construction is represented by four bars, which stand for Michel automata 1 to 4, respectively.}
+% \label{i.m.states}
+% \end{figure}
 
 Looking at the results reveals two things. First, Michel automata result in very large complements. For example, Michel 4, which has six states, results in a complement with 287,907 states with the plain Fribourg construction. This is a state growth of $(1.354n)^n$. Exactly this state explosion is the aim of Michel automata, which have been developed with the goal to crate a set of automata that is extremely hard to complement.
 
