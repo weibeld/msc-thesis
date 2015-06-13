@@ -5,6 +5,7 @@ GetData <- function() {
   # Test set analysis
   cmpl <<- ReadSingle("completeness/completeness.csv")
   univ <<- ReadSingle("universality/universality.csv")
+  empt <<- ReadSingle("emptiness/emptiness.csv")
   
   # Internal: GOAL test set
   i.g.all <<- ReadSubdirs("internal/goal")[c(1, 8, 7, 2, 3, 5, 4, 6)]
@@ -27,8 +28,7 @@ GetData <- function() {
 }
 
 All <- function() {
-  Completeness()
-  Universality()
+  GoalTestSet()
   IntGoal()
   IntMichel()
   ExtGoal()
@@ -36,28 +36,41 @@ All <- function() {
   Appendices()
 }
 
-Completeness <- function() {
-  dir <- .MkDir("completeness")
+GoalTestSet <- function() {
+  dir <- .MkDir("testset")
+  
+  # Completeness
   m <- MatrixTestset(cmpl)
-  # LaTeX table
-  file <- paste0(dir, "/table.tex")
-  LatexTable(m, format="d", include.rownames=TRUE, align="r|rrrrrrrrrr",
-             hline.after=0, file=file)
-  # Persp plot
-  file <- paste0(dir, "/persp.pdf")
-  .ComplUnivPersp(m, file)
+  .GoalTestSetTable(m, paste0(dir, "/compl.table.tex"))
+  .GoalTestSetPersp(m, paste0(dir, "/compl.persp.pdf"))
+
+  # Universality
+  m <- MatrixTestset(univ)
+  .GoalTestSetTable(m, paste0(dir, "/univ.table.tex"))
+  .GoalTestSetPersp(m, paste0(dir, "/univ.persp.pdf"))
+
+  # Emptiness
+  m <- MatrixTestset(empt)
+  .GoalTestSetTable(m, paste0(dir, "/empt.table.tex"))
+  .GoalTestSetPersp(m, paste0(dir, "/empt.persp.pdf"))
 }
 
-Universality <- function() {
-  dir <- .MkDir("universality")
-  m <- MatrixTestset(univ)
-  # LaTeX table
-  file <- paste0(dir, "/table.tex")
-  LatexTable(m, format="d", include.rownames=TRUE, align="r|rrrrrrrrrr",
+.GoalTestSetTable <- function(m, file) {
+  options(warn=-1)  # Disable warnings (because of custom column type 'R')
+  LatexTable(m, format="d", include.rownames=TRUE, align="r|RRRRRRRRRR",
              hline.after=0, file=file)
-  # Persp plot
-  file <- paste0(dir, "/persp.pdf")
-  .ComplUnivPersp(m, file)
+  options(warn=0)  # Re-enable warnings
+}
+
+.GoalTestSetPersp <- function(m, file) {
+  pdf(file=file, width=6, height=4.5)
+  par(mar=c(0.125, 2, 0, 0.5))
+  # Draw persp plot. Note: cex.axis applies only to tick marks
+  Persp(m, zlim=c(0, 100), theta=-44, phi=15, lin=TRUE, lin.xy=list(x=3, y=1),
+        lin.col="gray", col="lightskyblue", shade=0.6, ltheta=-90, lphi=30, zlab="",
+        xlab="Transition density", ylab="Acceptance density", cex.axis=0.95)
+  text(-0.75, 0.03, "Number of automata", srt=92, xpd=TRUE)
+  dev.off()
 }
 
 IntGoal <- function() {
@@ -278,21 +291,6 @@ Appendices <- function() {
     rows <- c(rows, sample(x, size=round((1 - rm.perc) * length(x))))
     df[rows,]
   })
-}
-
-
-.ComplUnivPersp <- function(m, file) {
-  # Draw persp plot for the number of complete and universal automata in the
-  # GOAL test set
-  #----------------------------------------------------------------------------#
-  pdf(file=file, width=6, height=4.5)
-  par(mar=c(1, 3, 0, 0.5))
-  # Draw persp plot. Note: cex.axis applies only to tick marks
-  Persp(m, zlim=c(0, 100), theta=-44, phi=25, lin=TRUE, lin.xy=list(x=3, y=1),
-        lin.col="gray", col="deepskyblue", shade=0.6, ltheta=-90, lphi=30, zlab="",
-        xlab="Transition density", ylab="Acceptance density", cex.axis=0.95)
-  text(-0.75, 0.03, "Number of automata", srt=92, xpd=TRUE)
-  dev.off()
 }
 
 .BaseDir <- function() { "~/Desktop/thesis/report/figures/r" }

@@ -1,37 +1,96 @@
-\documentclass[standard]{styles/thesis}
-% Option 'standard': class [a4paper]{report} with package a4wide
-%                    textwidth (Satzspiegelbreite): 5.875 inches
-% Option 'koma'    : class {scrreprt}
-%                    textwidth: 5.7874 inches = 14.7cm (with default DIV=10)
+%==============================================================================%
+% Preamble
+%==============================================================================%
 
-\usepackage[a4paper,width=160mm,top=28mm,bottom=28mm,bindingoffset=0mm]{geometry}
+\documentclass[a4paper]{report}
 
-\usepackage{enumitem}
-\setlist{nosep} % or \setlist{noitemsep} to leave space around whole list
+%------------------------------------------------------------------------------%
+% Packages
+%------------------------------------------------------------------------------%
 
+% Standard stuff
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+% Page setup
+\usepackage{geometry}
+\geometry{a4paper,width=160mm,top=28mm,bottom=28mm,bindingoffset=0mm}
+
+% TikZ
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+
+% Allow literal typing of ä, ö, ü, etc.
+\usepackage[utf8]{inputenc}
+
+% Zero parindent, non-zero parskip
+\usepackage{parskip}
+
+% Allow definition of new table column types with \newcolumntype
+\usepackage{array}
+
+% Table of contents for chapters
+\usepackage{minitoc}
+
+% 'subfigure' and 'subtable' environments
 \usepackage{caption}
 \usepackage{subcaption}
 
-\usepackage{booktabs}
+% Smart filename extension recognition (allow dots in file names)
+\usepackage{grffile}  
 
-\usepackage{grffile}  % Allow dots in graphics file names
-
+% Page headers and footers
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-
 \fancyhead{}                          % Clear default header settings
 \fancyhead[L]{\nouppercase\leftmark}  % Current chapter on left
 \fancyfoot{}                          % Clear default footer settings
 \fancyfoot[C]{\thepage}               % Page number in the middle
 
-%\renewcommand{\footrulewidth}{0.4pt}
+% Globally customise 'itemize' and 'enumerate'
+\usepackage{enumitem}
+\setlist{nosep} % or \setlist{noitemsep} to leave space around whole list
+\setitemize{itemsep=3pt}
+\setenumerate{itemsep=3pt}
 
-\renewcommand{\em}[1]{\textsf{#1}}
 
+%------------------------------------------------------------------------------%
+% Command redefinitions
+%------------------------------------------------------------------------------%
+
+% URL style (command \url)
+\renewcommand\UrlFont{\color{red}\sffamily}%\itshape}
+
+
+%------------------------------------------------------------------------------%
+% New commands
+%------------------------------------------------------------------------------%
+
+% Include commands with TikZ drawings
+\input{input/tikz.tex}
+
+% Set standard table spacings
+\newcommand{\tablestyle}{
+  \renewcommand{\arraystretch}{1.15}
+  \renewcommand{\tabcolsep}{0.2cm}
+}
+\tablestyle
+
+% Shorthand commands
 \newcommand{\goal}{GOAL}
+\newcommand{\om}{{$\omega$}}
+\newcommand{\aom}{{$a^\omega$}}
+\newcommand{\Bp}{{$B^\prime$}}
+\newcommand{\tec}[1]{\textsf{#1}}
 
-\parskip0.25\baselineskip
-\parindent0pt
+% Custom table column: fixed width, horizontally and vertically centered
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+
+%==============================================================================%
+% Main body
+%==============================================================================%
 
 \title{Empirical Performance Investigation of a Büchi\\Complementation Construction}
 \author{Daniel Weibel}
@@ -39,7 +98,6 @@
 
 \begin{document}
 \maketitle
-
 
 % Order of the front matter is: abstract, dedication, acknowledgements,
 % table of contents
@@ -107,8 +165,7 @@ First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsch
 \input{chapters/app_times.tex}
 
 
-
-\bibliographystyle{styles/bibstyle}
+\bibliographystyle{bibstyle}
 \bibliography{../bib/buchi_compl}
 
 

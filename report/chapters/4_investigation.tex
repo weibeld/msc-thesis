@@ -128,16 +128,18 @@ We performed complementation-equivalence tests for the Fribourg construction wit
 Doubtlessly, it would be desirable to test more, and especially bigger and more diverse automata. However, by doing so one would quickly face practical problems due to long complementation times with bigger automata and larger alphabets, and high memory usage. For our current purpose, however, the tests we did are enough for us to be confident that our implementation is correct.
 
 \section{Test Data}
-The core of this thesis is to empirically investigate the performance of the Fribourg construction. To this end, we ``feed'' a set of concrete automata to the Fribourg construction and analyse the results. This set of automata is the test data and is of crucial importance for the validity of the performance investigation. Test data should not be biased in favour or unfavour of one of the tested algorithms. Ideally, publicly available, or even standardised, test data is used, that has been previously used in other experiments. Furthermore, test data should cover interesting cases that reveal important aspects about the algorithm.
+The core of this thesis is to empirically investigate the performance of the Fribourg construction. To this end, we ``feed'' concrete automata to the Fribourg construction and analyse the results. This set of automata is our3 test data and is of crucial importance for the validity of the performance investigation. Test data should not be biased in favour or unfavour of one of the tested algorithms. Ideally, publicly available, or even standardised, test data is used, that has been previously used in other experiments. Furthermore, test data should cover interesting cases that reveal important aspects about the algorithm.
 
 For our investigation we chose two test sets that are publicly known or available and cover very different scenarios. While one of them consists of 11,000 automata and tries to cover a broad range of ``everyday'' complementation problems, the other one consists of just 4 automata, that are however very special. We call the former one the \goal{} test set and the latter on the Michel test set, and we are going to describe them in the following two sections.
 
 
 \subsection{GOAL Test Set}
 \label{4_goal_testset}
+
+\subsubsection{Introduction}
 The \goal{} test set has been created by Tsai~et~al. for the experiments described in the the paper \textit{State of Büchi Complementation}~\cite{2010_tsai}. In this paper, the authors carry out empirical performance investigations of Büchi complementation constructions that are very similar to our own investigations. The experiments were run with the \goal{} tool, hence the name \goal{} test set. The idea leading the design of this test set was to generate a large set of complementation problems with various difficulty levels.
 
-The test set consists of 11,000 automata of size 15, and with an alphabet size of 2. It is structured into 110 classes that are combinations of two parameters, the so called transition density and the acceptance density. Simply speaking, the transition density determines the number of transitions in an automaton, and the acceptance density determines the number of accepting states.
+The test set consists of 11,000 automata of size 15, and with an alphabet size of 2. Within the given constraints, the 11,000 automata were generated at random. The test set is furthermore structured into 110 classes that are combinations of two parameters, the so called transition density and the acceptance density. Simply speaking, the transition density determines the number of transitions in an automaton, and the acceptance density determines the number of accepting states.
 
 More precisely, the transition density $t$ is defined as follows. Let $n$ be the number of states of automaton $A$, and $t$ its transition density. Then $A$ contains $tn$ transitions for each symbol of the alphabet\footnote{In the case $tn$ is not an integer, it is rounded up to the next integer.}. That is, if one of our test set automata with 15 states and the alphabet ${0, 1}$ has a transition density of 2, then it contains exactly 30 transtions for symbol $0$ and 30 transitions for symbol $1$. Consequently, each state has on average two outgoing and two incoming transitions for each symbol. Therefore, the transition density can also be seen as the average number of outgoing and incoming transitons per alphabet symbol that a state has.
 
@@ -149,55 +151,77 @@ t^\prime& = \{ 1.0,\,1.2,\,1.4,\,1.6,\,1.8,\,2.0,\,2.2,\,2.4,\,2.6,\,2.8,\,3.0 \
 a^\prime & = \{ 0.1,\,0.2,\,0.3,\,0.4,\,0.5,\,0.6,\,0.7,\,0.8,\,0.9,\,1.0 \}
 \end{align*}
 
-The 110 classes result from the Cartesian product of $t^\prime$ and $a^\prime$. Each class consequently contains 100 automata. In this thesis, we will often present these classes as a $11 \times 10$ matrix where the rows represent the transition densities $t^\prime$, and the columns represent the acceptance densities $a^\prime$. Within the given constraints, the 11,000 automata were generated at random.
+The 110 classes result from the Cartesian product of $t^\prime$ and $a^\prime$. Each class consequently contains 100 automata. In this thesis, we will often present these classes as a $11 \times 10$ matrix where the rows represent the transition densities $t^\prime$, and the columns represent the acceptance densities $a^\prime$.
 
-The original \goal{} test set includes another set of 11,000 automata with the same specifications as the first one, except that the size of the automata is 20 instead of 15. In their paper~\cite{2010_tsai}, Tsai~et~al. repeated their experiments with this size 20 test set. In our own investigations we will however only use the size 15 test set. On the one hand, we think that repeating the experiments with the size-20 test set would add only a limited benefit to the insight already gained from the size-15 test set. It might be more beneficial to do further tests with a more diverse type of data (like the Michel test set that we describe in the next section). On the other hand, the size-20 test set may cause practical problems in terms of required computing and time resources. We restrict ourselves therefore to the size-15 test set, and when we refer to the \goal{} test set, we strictly mean the size-15 test set throughout the rest of this thesis.
+There is a second \goal{} test set that is similar to the one that we just described, except that the automata sizes are 20 instead of 15. Tsai~et~al.~\cite{2010_tsai} did their experiments with both, the size-15 (as the primary), and the size-20 (as the scondary) test set. For our own experiments we will however not use the size-20 test set. First, we think that repeating the experiments with the size-20 test set would add only a limited amount of insight. It might be more beneficial to do further tests with a more diverse type of test data, like for example the Michel test set that we describe in the next section. Furthermore, the bigger automata sizes in the size-20 test set are likely to cause practical problems in terms of computing and time resources (see Section~\ref{4_exec_env}). We decided therefore to restrict ourselves to the size-15 test set. When we refer to \textit{the} \goal{} test set throughout the rest of this thesis, we specifically mean the size-15 test set.
 
-The \goal{} test set is publicly available from the \goal{} website via the following link: \url{http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?media=goal:ciaa2010_automata.tar.gz}.
+The \goal{} test sets (both, size-15 and size-20) are publicly available on the \goal{} website via the following link: \url{http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?media=goal:ciaa2010_automata.tar.gz}.
 
-We tested each of the 11,000 automata for completeness and universality. As GOAL provides no commands for testing completeness and universality, we created the additional GOAL plugin \textsf{ch.unifr.goal.util} that implements these two operations and makes them accessible over the command line interface. The results of our tests are the following.
+\subsubsection{Analysis}
+
+We analysed some properties of the \goal{} test set that might be of importance for the interpretation of the results of our Fribourg construction. In particular, we tested how many automata of the \goal{} test set are \textit{complete}, \textit{universal}, or \textit{empty}.
+
+An automaton is complete if every state has at least one outgoing transition for every symbol of the alphabet. Universality means that an automaton accepts \textit{every} word that can be generated from its alphabet. Emptiness is the contrary of universality and means that an automaton does not accept \textit{any} word (except the empty word $\epsilon$).
+
+To know how many automata of the test set are complete is relevant because the R2C optimisation of the Fribourg construction only works on complete input automata. Universality and emptiness are interesting because their respective complement sizes have a lower bound of 1. The complement of a universal automaton is an empty automaton, which can be represented by a single state, and the complement of an empty automaton is a universal automaton which can be represented by a single state as well. In this way we can get an idea about the efficiency of the Fribourg construction in terms of produced unreachable and dead states, an aspect that we will investigate with the R option (see Section~\ref{4_exp_setup}.
+
+\goal{} provides a command for testing emptiness of an automaton. However, it does not provide commands for testing completeness and universality. We therefore implemented these commands on our own as a separate \goal{} plugin (\textsf{ch.unifr.goal.util}, also available as described in Appendix~\ref{app_plugin}). The tests were executed in the execution environment as described in Section~\ref{4_exec_env}. The overall results are as follows.
 
 \begin{itemize}
 \item 990 of the 11,000 automata are complete (9\%)
-\item 6,796 of the 11,000 automata are universal (61.8\%)
+\item 6,796 of teh 11,000 automata are universal (61.8\%)
+\item 63 of the 11,000 automata are empty (0.6\%)
 \end{itemize}
+
+We furthermore tested how these numbers are distributed over the 110 transition/acceptance density classes.
 
 We furthermore analysed how these two properties are distributed over the 110 classes of transition/acceptance density combinations. The results follow below in table form and as a three-dimensional visualisation.
 
-\begin{figure}
-  \centering
-  \hfill
-  \renewcommand{\tabcolsep}{0.1cm}
-  \begin{subtable}[t]{0.45\textwidth}
-    \centering
-    \input{figures/r/completeness/table.tex}
-    \caption{Completeness}
-  \end{subtable}
-  \hfill
-  \begin{subtable}[t]{0.45\textwidth}
-    \centering
-    \input{figures/r/universality/table.tex}
-    \caption{Universality}
-  \end{subtable}
-  \renewcommand{\tabcolsep}{0.2cm}
-  \hfill
 
-  \hfill
-  \begin{subfigure}[t]{0.475\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/r/completeness/persp.pdf}
-    \caption{Completeness}
+% Format matrices
+\renewcommand{\tabcolsep}{0.05cm}
+\renewcommand{\arraystretch}{1.05}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{1.5em}}
+
+\begin{figure}[htb]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \begin{subtable}{0.47\textwidth}
+    \input{figures/r/testset/compl.table.tex}
+    \end{subtable}
+    \hfill
+    \begin{subfigure}{0.52\textwidth}
+    \includegraphics[width=\textwidth]{figures/r/testset/compl.persp.pdf}
+    \end{subfigure}
+  \caption{Completeness}
   \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.475\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/r/universality/persp.pdf}
-    \caption{Universality}
+
+ \begin{subfigure}{\textwidth}
+    \begin{subtable}{0.47\textwidth}
+    \input{figures/r/testset/univ.table.tex}
+    \end{subtable}
+    \hfill
+    \begin{subfigure}{0.52\textwidth}
+    \includegraphics[width=\textwidth]{figures/r/testset/univ.persp.pdf}
+    \end{subfigure}
+  \caption{Universality}
   \end{subfigure}
-  \hfill
+
+  \begin{subfigure}{\textwidth}
+    \begin{subtable}{0.47\textwidth}
+    \input{figures/r/testset/empt.table.tex}
+    \end{subtable}
+    \hfill
+    \begin{subfigure}{0.52\textwidth}
+    \includegraphics[width=\textwidth]{figures/r/testset/empt.persp.pdf}
+    \end{subfigure}
+  \caption{Emptiness}
+  \end{subfigure}
 \caption{Completeness and universality in the GOAL test set.}
 \label{4_compl_univ}
 \end{figure}
+
+\tablestyle  % Reset old table style
 
 We also tested the automata for emptiness, that is, the contrary of universality. From the 11,000 automata, only 63 are empty, which is a percentage of 0.57\%. As one could expect, most of them are concentrated in the classes with low transition and acceptance densities. For example, 44 of these empty automata are in the classes with a transition density of 1.0.
 
@@ -211,10 +235,42 @@ Besides the test set of the GOAL automata, we did all the tests also on the firs
 \item Michel N4: 6 states, 34 transitions, 1 accepting state
 \end{itemize}
 
+\newcommand{\subwidth}{0.42}
+
+\begin{figure}[htb]
+\centering
+  \begin{subfigure}[t]{\subwidth\textwidth}
+  \MichelOne
+  \caption{Michel 1 ($m=1$)}
+  \end{subfigure}
+  \begin{subfigure}[t]{\subwidth\textwidth}
+  \MichelTwo
+  \caption{Michel 2 ($m=2$)}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{\subwidth\textwidth}
+  \MichelThree
+  \caption{Michel 3 ($m=3$)}
+  \end{subfigure}
+  \begin{subfigure}[b]{\subwidth\textwidth}
+  \MichelFour
+  \caption{Michel 4 ($m=4)$}
+  \end{subfigure}
+\caption{The Michel automata with $m = \{1,\dots,4\}$, an alphabet size of $m+1$, and $m+2$ states.}
+\end{figure}
+
+\MichelOne
+\MichelTwo
+\MichelThree
+\MichelFour
+
+\Automaton
+
 These are the Michel automata that can be processes with our implementation and on our execution environment. Complementing Michel automata N5 and above would already by far exceed our available computing and time resources.
 
 
 \section{Experimental Setup}
+\label{4_exp_setup}
 
 \subsection{Internal Tests}
 \label{4_internal}
@@ -344,6 +400,7 @@ The presence of aborted complementation task require the consideration of the so
 
 
 \subsection{Execution Environment}
+\label{4_exec_env}
 We executed the experiments on a high performance computing (HPC) computer cluster called UBELIX at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}. This cluster consists of different types of Linux-driven HPC computing nodes, and is managed by Oracle Grid Engine\footnote{\url{http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html}} (formerly known as Sun Grid Engine) version 6.2. Oracle Grid Engine is a so called load scheduler that is responsible for automatically distributing computing tasks to computing nodes.
 
 The basic workflow of working on the cluster is to prepare a so called job and specify the resources that the job requires for running (time, memory, number of CPU cores, and so on). Then the job can be submitted to the grid engine. The grid engine first puts incoming jobs in a queue and then automatically dispatches them to suitable computing nodes as soon as the required capacity is available.
