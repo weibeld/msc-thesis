@@ -1,85 +1,122 @@
+In this chapter we come to the core of this thesis, namely the empirical performance investigation of the Fribourg construction. We are interested in two things. First, how the different versions of the Fribourg construction compare to each other. That is, which combination of optimisations makes the Fribourg construction most efficient? Second, we want to know how the Fribourg construction peforms compared to other complementation constructions. Throughout this thesis, we will refer to the first question as the \textit{internal} investigations, and to the second question as the \textit{external} investigations.
 
-In this chapter we come to the core of this thesis, namely to test how the Fribourg construction performs on real test automata. We are interested in two things. First, how the different versions of the Fribourg construction compare to each other. That is, with which optimisations the Fribourg construction is most efficient. Second, we compare the Fribourg construction to other complementation constructions. We can refer ot the first type of investigations as the \textit{internal} tests, and to the second one as the \textit{external} tests.
+To do an empirical performance investigation we need an implementation of the Fribourg construction. We decided to create this implementation as a part of an existing \om-automata tool called \goal\footnote{\url{http://goal.im.ntu.edu.tw/}}. This tool already contains implementations of various Büchi complementation constructions, so that once our own implementation of the Fribourg construction is in place, we can easily compare it to other constructions (that is, performing the external tests).
 
-To do these investigations, we implemented the Fribourg construction as a plugin for an \om-automata manipulation tool called GOAL. GOAL already contains implementations of the most important Büchi complementation constructions. That is, with our plugin, the Fribourg construction lives next to these other constructions in the GOAL tool, and can be easily compared to them. With the plugin in place, we then performed the actual internal and external tests. To do so, we defined a set of test data consisting of totally 22.000 automata. The performance investigation consists then in basically complementing each of these automata with the different constructions, and comparing the results. Our main performance metric is the number of generated states for the output automata. The computations, which due to the complexity of Büchi complementation are quite heavy, were executed on a high-performance computing cluster at the University of Bern, Switzerland.
+Next, we need test data. That is, a set of automata on which to the different complementation constructions. We defined two, very different, test sets. One contains a large number of randomly generated automata and is referred to as the \goal{} test set, and the other contains a very small number of very special automata and is referred to as the Michel test set.
 
-In this chapter, we are going to describe each of these points, including our concrete experiment setup. The results of the tests are presented and discussed in Section~\ref{results}.
+Finally, the experiments need to be executed. Since the complementation of all the automata in our test set with many different constructions is a rather heavy computation task, we decided to make use of a professional high-performance computing (HPC) environment. All the experiments have been carried out on the computer cluster UBELIX at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}.
+
+In this chapter, we are going to describe each of these points in separate sections. Section~\ref{4_exp_setup} also includes our concrete experimental setup, where we present which constructions we are executing for which test data, and what are the allocated resources and imposed constraints. The results of the experiments will finally be presented in Chapter~\ref{chap_results}.
+
 
 \section{Implementation}
+
+
+
 \subsection{GOAL}
-\label{goal}
-GOAL stands for Graphical Tool for Omega-Automata and Logics and has been developed at the National University of Taiwan since 2007~\cite{2007_goal,2008_goal_ext}. The tool is based on the three pillars, \om-automata, temporal logic formulas, and games. It allows to create instances of each of these types, and manipulate them in a multitude of ways. Relevant for our purposes are the \om-automata capabilities of GOAL.
+\label{4_goal}
+\goal{} stands for \textit{Graphical Tool for Omega-Automata and Logics} and is being developed since 2007 at the National Taiwan University (NTU), Department of Information Management\footnote{\url{http://exp.management.ntu.edu.tw/en/IM}}. It has been presented in various scientific publications~\cite{2007_goal}\cite{2008_goal_ext}\cite{2009_goal}\cite{2013_goal}. The tool is freely available on the website \url{http://goal.im.ntu.edu.tw}. It is a Java program, and thus works on all platforms with a Java runtime environment\footnote{The version of the runtime environment should be 6 or higher (Java 1.6).}.
 
-With GOAL, one can create Büchi, Muller, Rabin, Streett, parity, generalised Büchi, and co-Büchi automata, either by manually defining them, or by having them randomly generated. It is then possible to perform a plethora of operations on these automata. The entirety of provided operations are too many to list, but they include containment testing, equivalence testing, minimisation, determinisation, conversions to other \om-automata types, product, intersection, and, of course, complementation.
+\goal{} allows to graphically and interactively create and manipulate different types of \om-automata, including non-deterministic Büchi automata. The palette of provided manipulations is vast and ranges from input testing, over conversions to other types of non-deterministic \om-automata, to implementations of graph layout algorithms. Figure~\ref{goal_gui} shows a screenshot of \goal's graphical user interface with an open menu showing the breadth of possible manipulations for \om-automata. 
 
-All this is accessible by both, a graphical and a command line interface. The graphical interface is shown in Figure~\ref{goal_gui}. Automata are displayed in the main editor window of the GUI. They can be freely edited, such as adding or removing states and transitions, and arranging the layout. There are also various layout algorithms for automatically laying out large automata. Most of the functionality provided by the graphical interface is also accessible via a command line mode. This makes it suitable for automating the execution of operations.
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.5]{figures/goal_gui.png}
-\caption{Graphical interface of GOAL.}
+\begin{figure}[htb!]
+\centering
+\includegraphics[width=0.4\textwidth]{figures/goal.png}
+\caption{The graphical user interface of \goal{} (here version 2014-11-17, which is, at the time of this writing the latest one) with a non-deterministic Büchi automaton in the editor window and an open menu showing the different types of manipulations that are provided for \om-automata.}
 \label{goal_gui}
-\end{center}
-\end{figure} 
+\end{figure}
 
-For storing automata, GOAL defines an own XML-based file format, called GOAL File Format, usually indicated by the file extension gff.
+Relevant for our purposes are the complementation constructions for non-deterministic Büchi automata that \goal{} provides. Also here, \goal{} comes up with a comprehensive offer. In the 2014-11-17 version of \goal{}, there are 10 pre-implemented complementation constructions for NBW. Table~\ref{goal_constructions} summarises these constructions and indicates the authors and the publications on which the implementations are based.
 
-An important design concept of GOAL is modularity. GOAL uses the Java Plugin Framework (JPF)~\footnote{http://jpf.sourceforge.net/}, a library for building modular and extensible Java applications. A JPF application defines so-called extension points for which extensions are provided. These extensions contain the actual functionality of the application. Extensions and extension points are bundled in plugins, the main building block of a JPF application. It is therefore possible to extend an existing JPF application by bundling a couple of new extensions for existing extensions points in a new plugin, and installing this plugin into the existing application. On the next start of the application, the new functionality will be included, all without requiring to recompile the existing application or to even have its source code.
-
-GOAL provides a couple of extensions points, such as \textit{Codec}, \textit{Layout}, or \textit{Complementation Construction}. An extension for \textit{Codec}, for example, allows to add the handling of a new file format which GOAL can read from and write to. With an extension for \textit{Layout} one can add a new layout algorithm for laying out automata in the graphical interface. And an extension to \textsf{Complementation Construction} allows to add a new complementation construction to GOAL. This is how we added the Fribourg construction to GOAL, as we will further explain in Section~\ref{implementation}.
-
-There are a couple of Büchi complementation constructions pre-implemented in GOAL. Table~\ref{goal_constructions} summarises them, showing for each one its name on the graphical interface and in the command line mode, and the reference to the paper introducing it. As can be seen, the most important representants of all the four approaches (Ramsey-based, determinisation-based, rank-based, and slice-based, see Chapter~\ref{background}) are present. In addition to the listed constructions, GOAL also contains Kurshan's construction and classic complementation. These are for complementing DBW and NFA/DFA, respectively, and thus not relevant to us.
-
-\begin{table}
-\caption{The complementation constructions implemented in GOAL (version 2014-11-17).}
-\begin{center}
-\begin{tabular}{|l|l|l|}
+\begin{table}[htb!]
+\centering
+\begin{tabular}{rlllr}
 \hline
-Name & Command line & Reference \\
+\# & Identifier & Name/description & Authors (year) & Ref. \\
 \hline
-Ramsey-based construction & ramsey & Sistla, Vardi, Wolper (1987)~\cite{PrasadSistla1987217} \\
-\hline
-Safra's construction & safra & Safra (1988)~\cite{1988_safra_1} \\
-\hline
-Modified Safra's construction & modfiedsafra & Althoff (2006)~\cite{2006_althoff} \\
-\hline
-Muller-Schupp construction & ms & Muller, Schupp (1995)~\cite{Muller199569} \\
-\hline
-Safra-Piterman construction & piterman & Piterman (2007)~\cite{2007_piterman} \\
-\hline
-Via weak alternating parity automaton & wapa & Thomas (1999)~\cite{1999_thomas} \\
-\hline
-Via weak alternating automaton & waa & Kupferman, Vardi (2001) \cite{Kupferman:2001} \\
-\hline
-Rank-based construction & rank & Schewe (2009) \cite{schewe2009buchi} \\
-\hline
-Slice-based construction (preliminary) & slice -p & Vardi, Wilke (2007) \cite{vardi2007automata} \\
-\hline
-Slice-based construction & slice & Kähler, Wilke (2008) \cite{2008_kaehler} \\
+1 & Ramsey & Ramsey-based construction & Sistla, Vardi, Wolper (1987) & \cite{PrasadSistla1987217} \\
+2 & Safra & Safra construction & Safra (1988) & \cite{1988_safra_1} \\
+3 & ModifiedSafra & Modification by Althoff & Althoff (2006) & \cite{2006_althoff} \\
+4 & Piterman & Safra-Piterman construction & Piterman (2007) & \cite{2007_piterman} \\
+5 & MS & Muller-Schupp construction & Muller, Schupp (1995) & \cite{Muller199569} \\
+6 & Rank & Rank-based construction & Schewe (2009) & \cite{schewe2009buchi} \\
+7 & WAPA & Via weak alternating parity automata & Thomas (1999) & \cite{1999_thomas} \\
+8 & WAA & Via weak alternating automata & Kupferman, Vardi (2001) & \cite{Kupferman:2001} \\
+9 & Slice+P & Slice-based construction (earlier) & Vardi, Wilke (2007) & \cite{vardi2007automata} \\
+10 & Slice & Slice-based construction (later) & Kähler, Wilke (2008) & \cite{2008_kaehler} \\
 \hline
 \end{tabular}
-\end{center}
+\caption{The pre-implemented NBW complementation constructions in \goal{} (version 2014-11-17).}
 \label{goal_constructions}
 \end{table}
 
-One of the constructions can be set as the default complementation construction. It is then possible to invoke this construction with the shortcut Ctrl-Alt-C. Furthermore, the default complementation constructions will be used for the containment and equivalence operations on Büchi automata, as they include complementation.
+The construction in Table~\ref{goal_constructions} are sorted by the four fundamental complementation approaches. The first one, Ramsey, is the only construction belonging to the Ramsey-based complementation approach. The following four constructions, Safra, ModifiedSafra, Piterman, and MS, belong to the determinization-based approach. Rank, WAPA, and WAA are representants of the Rank-based approach. Finally, Slice and Slice+P belong to the slice-based approach.
 
-Complementation constructions in GOAL can define a set of options that can be set by the user. In the graphical interface this is done at the start of the operations via a dialog window, in the command line mode the options are specified as command line arguments. Figure~\ref{goal_complementation_options} shows the options dialog of the Safra-Piterman construction. Complementation options allow to play with different configurations and variants of a construction, and we will make use of them for including the optimisations presented in Chapter~\ref{fribourg_construction} to our implementation of the Fribourg construction.
+Slice and Slice+P are combined in a single construction in \goal{} but the two specific constructions can be selected by the means of an option. If the P option of Slice is activated, then the Slice+P construction is used, and otherwise the Slice construction is used. In our experiments, we will use the Slice+P version, hoever, we will still refer to this construction as simply Slice in its short form.
+
+Almost the entire functionality of \goal{} is also available via a command line interface. This makes it suitable for automatic batch operation, as it is needed for our experiments. For storing automata, \goal{} defines its own file format called GFF (\goal{} file format) which is based on XML and is typically used with the filename extension \textsf{.gff}.
+
+At this point, it is worth pointing at a related project of the same research group, called the Büchi Store. This is an online repository of classified and tagged \om-automata that can be downloaded in different formats (including GFF). The Büchi Store is located on \url{http://buchi.im.ntu.edu.tw/} and has also been described in a scientific publication~\cite{2011_buchi_store}. Furthermore, there is a binding in \goal{} to the Büchi Store, so that the contents of the store can be directly accessed from \goal{}. For our project we did not make use the Büchi Store, but it is might be an interesting option for related projects.
+
+% GOAL stands for Graphical Tool for Omega-Automata and Logics and has been developed at the National University of Taiwan since 2007~\cite{2007_goal,2008_goal_ext}. The tool is based on the three pillars, \om-automata, temporal logic formulas, and games. It allows to create instances of each of these types, and manipulate them in a multitude of ways. Relevant for our purposes are the \om-automata capabilities of GOAL.
+
+% With GOAL, one can create Büchi, Muller, Rabin, Streett, parity, generalised Büchi, and co-Büchi automata, either by manually defining them, or by having them randomly generated. It is then possible to perform a plethora of operations on these automata. The entirety of provided operations are too many to list, but they include containment testing, equivalence testing, minimisation, determinisation, conversions to other \om-automata types, product, intersection, and, of course, complementation.
+
+% All this is accessible by both, a graphical and a command line interface. The graphical interface is shown in Figure~\ref{goal_gui}. Automata are displayed in the main editor window of the GUI. They can be freely edited, such as adding or removing states and transitions, and arranging the layout. There are also various layout algorithms for automatically laying out large automata. Most of the functionality provided by the graphical interface is also accessible via a command line mode. This makes it suitable for automating the execution of operations.
+
+% \begin{figure}
+% \begin{center}
+% \includegraphics[scale=0.5]{figures/goal_gui.png}
+% \caption{Graphical interface of GOAL.}
+% \label{goal_gui}
+% \end{center}
+% \end{figure} 
+
+% For storing automata, GOAL defines an own XML-based file format, called GOAL File Format, usually indicated by the file extension gff.
+
+% An important design concept of GOAL is modularity. GOAL uses the Java Plugin Framework (JPF)~\footnote{http://jpf.sourceforge.net/}, a library for building modular and extensible Java applications. A JPF application defines so-called extension points for which extensions are provided. These extensions contain the actual functionality of the application. Extensions and extension points are bundled in plugins, the main building block of a JPF application. It is therefore possible to extend an existing JPF application by bundling a couple of new extensions for existing extensions points in a new plugin, and installing this plugin into the existing application. On the next start of the application, the new functionality will be included, all without requiring to recompile the existing application or to even have its source code.
+
+% GOAL provides a couple of extensions points, such as \textit{Codec}, \textit{Layout}, or \textit{Complementation Construction}. An extension for \textit{Codec}, for example, allows to add the handling of a new file format which GOAL can read from and write to. With an extension for \textit{Layout} one can add a new layout algorithm for laying out automata in the graphical interface. And an extension to \textsf{Complementation Construction} allows to add a new complementation construction to GOAL. This is how we added the Fribourg construction to GOAL, as we will further explain in Section~\ref{implementation}.
+
+% There are a couple of Büchi complementation constructions pre-implemented in GOAL. Table~\ref{goal_constructions} summarises them, showing for each one its name on the graphical interface and in the command line mode, and the reference to the paper introducing it. As can be seen, the most important representants of all the four approaches (Ramsey-based, determinisation-based, rank-based, and slice-based, see Chapter~\ref{background}) are present. In addition to the listed constructions, GOAL also contains Kurshan's construction and classic complementation. These are for complementing DBW and NFA/DFA, respectively, and thus not relevant to us.
+
+% One of the constructions can be set as the default complementation construction. It is then possible to invoke this construction with the shortcut Ctrl-Alt-C. Furthermore, the default complementation constructions will be used for the containment and equivalence operations on Büchi automata, as they include complementation.
+
+% Complementation constructions in GOAL can define a set of options that can be set by the user. In the graphical interface this is done at the start of the operations via a dialog window, in the command line mode the options are specified as command line arguments. Figure~\ref{goal_complementation_options} shows the options dialog of the Safra-Piterman construction. Complementation options allow to play with different configurations and variants of a construction, and we will make use of them for including the optimisations presented in Chapter~\ref{fribourg_construction} to our implementation of the Fribourg construction.
 
 
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.5]{figures/goal_complementation_options.png}
-\caption{Complementation constructions in GOAL can have a set user-selectable options. Here the options of the Safra-Piterman construction.}
-\label{goal_complementation_options}
-\end{center}
-\end{figure}
+% \begin{figure}
+% \begin{center}
+% \includegraphics[scale=0.5]{figures/goal_complementation_options.png}
+% \caption{Complementation constructions in GOAL can have a set user-selectable options. Here the options of the Safra-Piterman construction.}
+% \label{goal_complementation_options}
+% \end{center}
+% \end{figure}
 
-For most complementation constructions (all listed in Table~\ref{goal_constructions} except the Ramsey-based construction) there is also a version for step-by-step execution. In this case, the constructions define so-called steps and stages, through which the user can iterate independently. This is a great way for understanding how a complementation construction works, and for investigating specific cases in order to potentially further improve the construction. 
+% For most complementation constructions (all listed in Table~\ref{goal_constructions} except the Ramsey-based construction) there is also a version for step-by-step execution. In this case, the constructions define so-called steps and stages, through which the user can iterate independently. This is a great way for understanding how a complementation construction works, and for investigating specific cases in order to potentially further improve the construction. 
 
 
 \subsection{Implementation of the Construction}
 \label{implementation}
+
+\subsubsection{The Extensible Plugin Architecture of \goal}
+\goal{} has been designed from the ground up to be modular and extensible. To this end, it has been created with the Java Plugin Framework (JPF)\footnote{\url{http://jpf.sourceforge.net/}}. This framework allows to build applications whose functionality can be easily and seamlessly extended by writing additional plugins for it. These plugins can be installed in the main application without the need to recompile the whole application. Rather, the plugin is compiled separately, and in order to install the plugin, it is enough to copy the resulting bytecode files to the directory tree of the main application. It is not even necessary to know the source code of the main application in order to write a plugin. The clear interfaces of JPF itself, and the documentations of the relevant classes of the main application are principally all that a plugin writer needs to know.
+
+In some more detail, JPF requires an application to define so called extension points. For a given extension point, one or more so called extensions can be provided. These extensions contain the actual functionality. One of the extension points that \goal{} provides is called \textsf{Complementation Construction}. All the complementation constructions that \goal{} contains (see the listing in Table~\ref{goal_constructions}) are basically extensions to this extension point. In order to add the Fribourg construction to \goal{}, we thus have to implement it as a further extension to the extension point \textsf{Complementation Construction}. A plugin, finally, is an arbitrary group of extensions (and extension points) that is bundled together and given a name. Once a plugin is compiled and installed, the new extensions are mapped to the corresponding extension points, and the functionality provided by the new extensions is seamlessly integrated in the main application.
+
+
+
+ It is not necessary to have the source code of the main application at all in order to write a plugin. The clear interfaces of JPF, and the 
+
+
+
+ Rather, the plugin is compiled separately. To install the plugin, it is then enough to copy the resulting Java bytecode files to the 
+
+
+\subsubsection{The Fribourg Construction Plugin}
+
+
+
 We implemented the Fribourg construction, including its optimisations, in Java as a plugin for GOAL. This means that after installing out plugin to an existing GOAL installation\footnote{As the plugin interfaces of GOAL have recently changed, the can be used only for GOAL versions 2014-11-17 and newer.}, the Fribourg construction will be an integral part of GOAL and can be used in the same way as any other pre-existing complementation construction.
 
 To keep the Fribourg construction flexible, we made use of options. The three optimisations described in Section~\ref{optimisations} are presented to the user as selectable options. Additionally, we included several further options. Table~\ref{goal_fribourg_options} lists them all. For convenience, we use for each options a short code name, which is also used as the option name in the command line mode.
@@ -151,39 +188,19 @@ t^\prime& = \{ 1.0,\,1.2,\,1.4,\,1.6,\,1.8,\,2.0,\,2.2,\,2.4,\,2.6,\,2.8,\,3.0 \
 a^\prime & = \{ 0.1,\,0.2,\,0.3,\,0.4,\,0.5,\,0.6,\,0.7,\,0.8,\,0.9,\,1.0 \}
 \end{align*}
 
-The 110 classes result from the Cartesian product of $t^\prime$ and $a^\prime$. Each class consequently contains 100 automata. In this thesis, we will often present these classes as a $11 \times 10$ matrix where the rows represent the transition densities $t^\prime$, and the columns represent the acceptance densities $a^\prime$.
+The 110 classes result from the Cartesian product of $t^\prime$ and $a^\prime$. Each class consequently contains 100 automata. Throughout this thesis, we will often present these classes as a $11 \times 10$ matrix where the rows represent the transition densities $t^\prime$, and the columns represent the acceptance densities $a^\prime$.
 
-There is a second \goal{} test set that is similar to the one that we just described, except that the automata sizes are 20 instead of 15. Tsai~et~al.~\cite{2010_tsai} did their experiments with both, the size-15 (as the primary), and the size-20 (as the scondary) test set. For our own experiments we will however not use the size-20 test set. First, we think that repeating the experiments with the size-20 test set would add only a limited amount of insight. It might be more beneficial to do further tests with a more diverse type of test data, like for example the Michel test set that we describe in the next section. Furthermore, the bigger automata sizes in the size-20 test set are likely to cause practical problems in terms of computing and time resources (see Section~\ref{4_exec_env}). We decided therefore to restrict ourselves to the size-15 test set. When we refer to \textit{the} \goal{} test set throughout the rest of this thesis, we specifically mean the size-15 test set.
+There is a second \goal{} test set that is similar to the one that we just described, except that the automata sizes are 20 instead of 15. Tsai~et~al.~\cite{2010_tsai} did their experiments with both, the size-15 (as the primary), and the size-20 (as the scondary) test set. For our own experiments we we are not using the size-20 test set. First, we think that repeating the experiments with the size-20 test set would add only a limited amount of insight. It might be more beneficial to do further tests with a more diverse type of test data, like for example the Michel test set that we describe in the next section. Furthermore, the bigger automata sizes in the size-20 test set are likely to cause practical problems in terms of computing and time resources (see Section~\ref{4_exec_env}). We decided therefore to restrict ourselves to the size-15 test set, and when we refer to \textit{the} \goal{} test set throughout the rest of this thesis, we specifically mean the size-15 test set.
 
 The \goal{} test sets (both, size-15 and size-20) are publicly available on the \goal{} website via the following link: \url{http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?media=goal:ciaa2010_automata.tar.gz}.
 
 \subsubsection{Analysis}
 
-We analysed some properties of the \goal{} test set that might be of importance for the interpretation of the results of our Fribourg construction. In particular, we tested how many automata of the \goal{} test set are \textit{complete}, \textit{universal}, or \textit{empty}.
-
-An automaton is complete if every state has at least one outgoing transition for every symbol of the alphabet. Universality means that an automaton accepts \textit{every} word that can be generated from its alphabet. Emptiness is the contrary of universality and means that an automaton does not accept \textit{any} word (except the empty word $\epsilon$).
-
-To know how many automata of the test set are complete is relevant because the R2C optimisation of the Fribourg construction only works on complete input automata. Universality and emptiness are interesting because their respective complement sizes have a lower bound of 1. The complement of a universal automaton is an empty automaton, which can be represented by a single state, and the complement of an empty automaton is a universal automaton which can be represented by a single state as well. In this way we can get an idea about the efficiency of the Fribourg construction in terms of produced unreachable and dead states, an aspect that we will investigate with the R option (see Section~\ref{4_exp_setup}.
-
-\goal{} provides a command for testing emptiness of an automaton. However, it does not provide commands for testing completeness and universality. We therefore implemented these commands on our own as a separate \goal{} plugin (\textsf{ch.unifr.goal.util}, also available as described in Appendix~\ref{app_plugin}). The tests were executed in the execution environment as described in Section~\ref{4_exec_env}. The overall results are as follows.
-
-\begin{itemize}
-\item 990 of the 11,000 automata are complete (9\%)
-\item 6,796 of teh 11,000 automata are universal (61.8\%)
-\item 63 of the 11,000 automata are empty (0.6\%)
-\end{itemize}
-
-We furthermore tested how these numbers are distributed over the 110 transition/acceptance density classes.
-
-We furthermore analysed how these two properties are distributed over the 110 classes of transition/acceptance density combinations. The results follow below in table form and as a three-dimensional visualisation.
-
-
 % Format matrices
 \renewcommand{\tabcolsep}{0.05cm}
 \renewcommand{\arraystretch}{1.05}
 \newcolumntype{R}{>{\raggedleft\arraybackslash}p{1.5em}}
-
-\begin{figure}[htb]
+\begin{figure}[htb!]
   \centering
   \begin{subfigure}{\textwidth}
     \begin{subtable}{0.47\textwidth}
@@ -218,26 +235,56 @@ We furthermore analysed how these two properties are distributed over the 110 cl
   \caption{Emptiness}
   \end{subfigure}
 \caption{Completeness and universality in the GOAL test set.}
-\label{4_compl_univ}
+\label{4_testset_analysis}
 \end{figure}
-
 \tablestyle  % Reset old table style
 
-We also tested the automata for emptiness, that is, the contrary of universality. From the 11,000 automata, only 63 are empty, which is a percentage of 0.57\%. As one could expect, most of them are concentrated in the classes with low transition and acceptance densities. For example, 44 of these empty automata are in the classes with a transition density of 1.0.
+We analysed some properties of the \goal{} test set that may be of importance for the interpretation of the results of our experiments. In particular, we tested how many automata of the \goal{} test set are \textit{complete}, \textit{universal}, and \textit{empty}.
+
+An automaton is complete if every state has at least one outgoing transition for every symbol of the alphabet. Universality means that an automaton accepts \textit{every} word that can be generated from its alphabet. Emptiness is the contrary of universality and means that an automaton does not accept \textit{any} word (except the empty word $\epsilon$).
+
+To know how many automata are complete is relevant because the R2C optimisation of the Fribourg construction only applies to complete automata. Universality and emptiness are interesting because their respective complement sizes have a lower bound of 1. The complement of a universal automaton is an empty automaton, which can be represented by a single state, and the complement of an empty automaton is a universal automaton which can be represented by a single state as well. In this way we can get an idea of how many unreachable and dead states the Fribourg construction produces. If the produced complement of a universal automata has, say, 2,000 states then 1,999 states of this automata are actually unnecessary as the same automaton could be represented by a single state. We will investigate this aspect to some extent with the R option for the Fribourg construction (see Section~\ref{4_exp_setup}.
+
+\goal{} provides a command for testing emptiness of an automaton. However, it does not provide commands for testing completeness and universality. We therefore implemented these commands on our own as a separate \goal{} plugin (\textsf{ch.unifr.goal.util}, also available as described in Appendix~\ref{app_plugin}). The tests were executed in the execution environment as described in Section~\ref{4_exec_env}. The overall results are as follows.
+
+\begin{itemize}
+\item 990 of the 11,000 automata are complete (9\%)
+\item 6,796 of the 11,000 automata are universal (61.8\%)
+\item 63 of the 11,000 automata are empty (0.6\%)
+\end{itemize}
+
+In addition to these overall results, we wanted to know how these properties are distributed over the 110 transition/acceptance density classes. Therefore, we counted the number of complete, universal, and empty automata for each of these 110 classes. This naturally results in three-dimensional data where two dimensions are constituted by the transition density and acceptance density (to form the 110 classes), and the third dimension is the number of automata having a specific property. There are several ways to represent such data, and two of them are matrices and so called perspective plots. In Figure~\ref{4_testset_analysis} we present our results in both of these ways. 
+
+The matrices have 11 rows and 10 columns. The rows represent the transition densities and the columns represent the acceptance densities. The cells represent the measured values for the class constituted by the transition density of its row and the acceptance density of its column. We will use this matrix representation again throughout the rest of this thesis. The perspective plots represent the transition densities, acceptance densities, and measured values along three axes, $x$, $y$, and $z$. The individual data points are connected by lines so that a grid emerges that can be seen to form a three-dimensional surface. Perspective plots can be seen as three-dimensional visualisations of matrices where the cell values extend as ``heights'' along the $z$-axis in the three-dimensional space. However, perspective plots are typically rotated, and this rotation is chosen for making the presented data optimally visible. In Figure~\ref{4_testset_analysis}, looking at the perspective plots is like looking at the corresponding matrices from the upper left corner. We will use perspective plots throughout the rest of this thesis. While their relation to matrices is the same, their rotation will be different. For example, in Chapter~\ref{chap_results}, the viewpoint of the perspective plots will correspond to looking from the bottom right corner at the corresponding matrices.
+
+Regarding the data itself, we can identify the following points. With 9\%, a relatively small number of the automata is complete. This affects the R2C optimisation, which therefore makes a difference to only 9\% of the test data, while leaving 91\% unaffected. We can see that there are no complete automata in classes with transition densities up to 1.6, and then starting from 1.8 the number starts to increase up to a ratio of 34--40\% at a transition density of 3.0. Naturally, a higher number of transitions in the automata increases the probability that each state has at least one outgoing transition for every symbol of the alphabet. Considering that a transition density of, for example, 3.0 means that each state has on average three outgoing transitions for every symbol of the alphabet, this ratios might seem rather small. However, a single incomplete state is enough to make the whole automaton incomplete, even though all the other states would be complete. With a total number of 15 states, the probability of an incomplete state is apparently still quite high, even for a transition density of 3.0, as our empirical data suggests. Naturally, the acceptance density does not influcence the ratio of complete automata.
+
+The ratios look very different for universality. With 61.8\%, a very high number of automata in the test set is universal. This high number might result from the small alphabet of just two symbols of the test automata. With a smaller alphabet, there are fewer possible words, and thus a higher probability that an automaton accepts all the possible words. It would be interesting to investigate the universality ratio of similar automata with larger alphabet sizes. As for completeness, the ratio of universal automata also increases with the transition density, although much faster up to a ratio of 100\%. In addition, we can see a slightly higher number of universal automata in classes with higher acceptance densities (although the pattern is clearly dominated by the transition density). We can summarise this, by saying that more transitions and more accepting states increase the probability that a given word is accepted, and thus the probability that an automaton accepts all the possible words.
+
+The other extreme is the percentage of empty automata, which is just 0.6\%, or 63 instances. Apparently the probability that an automaton of size 15 and with 15 to 45 transitions per alphabet symbol accepts no words at all is very small. The probability is highest in automata with low transition densities and acceptance densities. 
 
 
 \subsection{Michel Test Set}
-Besides the test set of the GOAL automata, we did all the tests also on the first four Michel automata:
+Our second test set is very different from the first one. It consists of few well-defined, rather than a large number of random automata. These automata are the Michel automata with $m=\{1,\dots,4\}$, that we call Michel 1, Michel 2, Michel 3, and Michel 4, respectively.
+
+Michel automata have been introduced in 1988 by Max Michel in order to prove a lower bound for the state growth of Büchi complementation of $(n-2)!$, where $n$ is the number of states of the input automaton~\cite{michel1988}\cite{1996_thomas}. Michel constructed a family of automata, characterised by the parameter $m$, that have $m+1$ alphabet symbols, and $m+2$ states. He proved that the complements of these automata cannot have less than $m!$ states. Since the number of states of the input automata is $n = m + 2$, the state growth in terms of input and output states is $(n-2)!$, which is around $(0.36n)^n$.
+
+Michel automata are thus very hard automata, and that is why we chose them as our second test set. By testing our Fribourg construction on very hard automata, we can empirically determine ``lower bounds for the lower bounds'' for the state complexity of our construction. For example, if in our experiments we observe a state growth of a Michel automaton of, say, $(0.99n)^n$, then the real (theoretical) lower bound of the construction is either $(0.99n)^n$ or higher. But it cannot be less than $(0.99n)^n$, because with our experiment we have a proof that there exists an automaton on which our construction produces a state growth of $(0.99n)^n$.
+
+Michel automata are very hard to complement, but of course we cannot prove that they are the \textit{hardest} ones (of their respective size) for our construction. If for example, the Michel automaton with six states (Michel 4), produces a state growth of $(0.99n)^n$, then we don't know if this is the hardest automaton of size 6 for our construction (in which case the real state complexity of our construction would be $(0.99n)^n$), or if there is another automaton of size 6 that produces an even larger complement (in which case the real state complexity of our construction would be higher than $(0.99n)^n$). However, since Michel automata are so hard, we think that they give a useful approximation of a state complexity lower bound of our construction.
+
+In Figure~\ref{4_michel_automata} we present the four Michel automata with $m=\{1,\dots,4\}$, as they are defined in~\cite{michel1988} and~\cite{1996_thomas}. They are in particular:
 \begin{itemize}
-\item Michel N1: 3 states, 7 transitions, 1 accepting state
-\item Michel N2: 4 states, 14 transitions, 1 accepting state
-\item Michel N3: 5 states, 23 transitions, 1 accepting state
-\item Michel N4: 6 states, 34 transitions, 1 accepting state
+\item Michel 1: 3 states, 2 symbols,  7 transitions
+\item Michel 2: 4 states, 3 symbols, 14 transitions
+\item Michel 3: 5 states, 4 symbols, 23 transitions
+\item Michel 4: 6 states, 5 symbols, 34 transitions
 \end{itemize}
 
-\newcommand{\subwidth}{0.42}
+All Michel automata have a single accepting state. The reason that we included only the first four Michel automata are of practical nature. Michel automata are so hard, that starting from Michel 5, the required computing and time resources are so high, that it would become practically infeasible for us to carry out the complementation process. We present some extrapolations on this topic when we discuss the results of the Michel experiments in Chapter~\ref{chap_results}.
 
-\begin{figure}[htb]
+\newcommand{\subwidth}{0.42}
+\begin{figure}[htb!]
 \centering
   \begin{subfigure}[t]{\subwidth\textwidth}
   \MichelOne
@@ -257,16 +304,8 @@ Besides the test set of the GOAL automata, we did all the tests also on the firs
   \caption{Michel 4 ($m=4)$}
   \end{subfigure}
 \caption{The Michel automata with $m = \{1,\dots,4\}$, an alphabet size of $m+1$, and $m+2$ states.}
+\label{4_michel_automata}
 \end{figure}
-
-\MichelOne
-\MichelTwo
-\MichelThree
-\MichelFour
-
-\Automaton
-
-These are the Michel automata that can be processes with our implementation and on our execution environment. Complementing Michel automata N5 and above would already by far exceed our available computing and time resources.
 
 
 \section{Experimental Setup}
