@@ -1,6 +1,7 @@
 \section{Internal Tests}
 
 \subsection{GOAL Test Set}
+\label{5_internal_goal}
 First of all, let us see how many unsuccessful complementation tasks there were with the internal tests on the \goal{} test set. Table~\ref{i.g.out_table} shows the number of timeouts and memory excesses for each of the eight tested versions of the Fribourg construction.
 
 \begin{table}[ht]
@@ -159,107 +160,131 @@ Summarising we can say that transition densities between 1.4 and 1.8 produce the
 
 
 \subsection{Michel Test Set}
-We complemented the first four Michel automata with the six versions of the Fribourg constructions that are listed in Section~\ref{4_internal}. All complementation tasks were successful, as we did not set a timeout or memory limit. Remember that the first four Michel automata have 3, 4, 5, and 6 states, respectively. The sizes of the resulting complements are presented in Figure~\ref{i.m.states} in table form and visualised as a grouped barplot.
+\label{5_internal_michel}
+Our second test set consists of the four Michel automata with $m=\{1,\dots,4\}$ that are listed in Figure~\ref{4_michel_automata}. They have 3, 4, 5, and 6 states, respectively. Our main motivation to use these automata is to test our complementation construction on very difficult automata. In this way we can get an idea about the worst-case state complexity of our construction.
 
-\begin{table}[ht]
+We complemented the four Michel automata with the six versions of the Fribourg construction which are listed in Section~\ref{4_internal}. We did not impose a time or memory limitation for the individual complementation tasks, as we wanted every task to finish. The resulting complement sizes are listed in Table~\ref{i.m.states}.
+
+\begin{table}[htb]
 \centering
 \input{figures/r/internal/michel/s.table.tex}
-\caption{Complement sizes of the first four Michel automata.}
+\caption{Complement sizes of the Michel automata with $m=\{1,\dots,4\}$ and 3, 4, 5, and 6 states, respectively. }
 \label{i.m.states}
 \end{table}
 
-% \begin{figure}[ht]
-%   \centering
-%   \begin{subtable}{0.75\textwidth}
-%     \centering
-%     \input{figures/r/internal/michel/s.table.tex}
-%   \end{subtable}
+In the second-last column ``Fitted curve'' of Table~\ref{i.m.states}, we fitted a function of the form $(an)^n$ to the measured data points of the previous four columns. These data points consist of the sizes of the four Michel automata (3, 4, 5, and 6) as. The fitted function $(an)^n$ can be seen as an approximated generalisation of the state growth, where $n$ is the size of the input automaton. The last colum ``Std. error'' shows the standard error that resulted from the fit of the previous column.
 
-%   \begin{subfigure}{0.7\textwidth}
-%     \centering
-%     \includegraphics[width=\textwidth]{figures/r/internal/michel/s.barplot.pdf}
-%     \caption{Complement sizes of the first four Michel visualised as a barplot. The bars 1 to 4 of each group correspond to Michel automata 1 to 4.}
-%   \end{subfigure}
-% \caption{Complement sizes of the Michel automata in table form and visualised as a barplot. Each version of the Fribourg construction is represented by four bars, which stand for Michel automata 1 to 4, respectively.}
-% \label{i.m.states}
-% \end{figure}
+We can see in Table~\ref{i.m.states} that the state growths are indeed very large. For example, complementing Michel~4, which has six states, with the plain Fribourg construction results in a complement of 287,907 states. However, the optimisations R2C, M1, and M2 have a large influence on the complement sizes. If we consider Michel~4, then the R2C optimisation alone reduces the complement size from 287,907 to 168,291 which is a reduction of 51.5\%. The M1 optimisation has an eve larger influence as it reduces the complement size from 287,907 to 81,765 which is a reduction of 71.6\%. Adding M2 to M1 further reduces the complement size of Fribourg+M1 by 30.1\% (from 81,765 to 57,116). Finally, adding R2C on top of M1 and M2 brings a further reduction of of 23\% (from 57,116 to 43,957). If we compare the most efficient version (Fribourg+M1+M2+R2C) with the least efficient one (Fribourg), then the three optimisations reduce the complement size by 85.7\%, or in other words, the complement size of Fribourg+M1+M2+R2C is 15.3\% of the complement size of Fribourg.
 
-Looking at the results reveals two things. First, Michel automata result in very large complements. For example, Michel 4, which has six states, results in a complement with 287,907 states with the plain Fribourg construction. This is a state growth of $(1.354n)^n$. Exactly this state explosion is the aim of Michel automata, which have been developed with the goal to crate a set of automata that is extremely hard to complement.
+It is interesting to see that for the Michel automata Fribourg+M1+M2 is more efficient than Fribourg+M1. For the \goal{} test set, Friburg+M1+M2 had a slighly higher overall median than Fribourg+M1 although it had a slightly lower overall mean. We identified in Section~\ref{5_internal_goal} that the M2 optimisation has a positive effect only on some automata, and that these are mostly the hard automata. Michel automat are very hard automata, and indeed the M2 optmisation has a considerably positive effect. These results support thus the observation we made in Section~\ref{5_internal_goal}.
 
-This also shows why we were only able to complement the first four Michel automata. If we assume the same state growth of $(1.354n)^n$ for the fifth Michel automaton, Michel 5, with seven states, then the complement would have around 6.9 million states. The execution time for Michel 4 with the plain Friboug construction was 100,976 CPU time seconds ($\approx$ 180 hours). If we assume a linear relation between the number of generated states and the execution time, then Michel 5 would have an execution time of more than 2.4 million seconds, which is around 279 days. This estimation is still a very conservative, as the relation between complement size and execution time is not linear but seems to be exponential as well (see table with exeuction times in appendix). 
+The special version Fribourg+R yields very small complements compared to the other versions. This tells us that the complements of the other versions contain a large number of unreachable and dead states. For example, the complement of Michel~4 of Fribourg+R (3,315 states) is 1.2\% of the size of the complement of Fribourg. This means that 98.8\% of the 287,907 states of the complement of Fribourg are unreachable and dead states. This is actually not surprising, because, following the proof of Michel~\cite{michel1988}\cite{1996_thomas}, the smallest possible complement of Michel~4 has 24 states. This is because Michel~4 has $m=4$ and Michel proved that the complement has at least size $m!$. This means that that the Fribourg construction is very far from reaching these optimal complement sizes.
+
+Up to now we just looked at the specific results of Michel~4. The fitted functions of the form $(an)^n$ summarise the results of all the four Michel automata. These functions give us reference points for the worst-case state complexities of the different versions of the Fribourg construction. For example, for the plain Fribourg construction with its fitted function of $(1.35n)^n$, we know now empirically that this construction produces complements of size $(1.35n)^n$, where $n$ is the size of the input automaton. This means that the real (theoretical) worst-case complexity cannot be lower than $(1.35n)^n$ (but it can still be higher). This bound decreases for the different versions of the Fribourg construction until $(0.99n)^n$ for Fribourg+M1+M2+R2C. This value is still greater than the lower bound of $(0.76n)^n$ for Büchi complementation determined by Yan~\cite{2006_yan}.
+
+We also measured the execution times for the individual complementation tasks. This time was measured in CPU time, that is, the time the task is running on the CPU. Table~\ref{i.m.times} shows the measured values in seconds. We can see that the difference between the least and most efficient version is bigger than for the complement sizes. For example for Michel~4, Fribourg+M1+M2+R2C is more than 43 times faster than Fribourg (2,332.6 seconds compared to 100,976 seconds). In more familiar unities, this corresponds to approximately 39 minutes for Fribourg+M1+M2+R2C against 28 hours for Fribourg. We also fitted functions of the form $(an)^n$ to the measured execution times where $n$ is the number of states of the input automaton, and the value of the function is the execution time of the taks in CPU time seconds.
+
+\begin{table}[htb!]
+\centering
+\input{figures/r/internal/michel/t.table.tex}
+\caption{Execution times.}
+\label{i.m.times}
+\end{table}
+
+The fitted functions that we calculated for the measured complement sizes and execution times are based on four data points and basically only valid for the first four Michel automata. They can thus not be used to reliably extrapolate values for larger Michel automata. However, it is still interesting to do such an extrapolation in order to see the involved complexity and to show why we were restricted to include only the first four Michel automata in the test set. In Table~\ref{i.m.extrapolation}, we show extrapolated values for the complement sizes and execution times for the plain Fribourg construction (the least efficient one), based on the corresponding fitted functions. The table includes the values for the Michel automat 5 to 8, which have 7 to 10 states. 
+
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{lrrr}
+\hline
+Automaton & Compl. size $(1.35n)^n$ & Exec. time $(1.14n)^n$ & $\approx$ days/months/years \\
+\hline
+Michel 5 &       6,882,980 &      2,020,385 &     23 days \\
+Michel 6 &     189,905,394 &     46,789,245 &     18 months \\
+Michel 7 &   5,939,189,262 &  1,228,250,634 &     39 years \\
+Michel 8 & 207,621,228,081 & 36,039,825,529 &  1,142 years \\
+\hline
+\end{tabular}
+\caption{Extrapolated values for the complement sizes and execution times for the Michel automata with $m=\{5,\dots,10\}$ with the plain Fribourg construction.}
+\label{i.m.extrapolation}
+\end{table}
+
+According to the fitted state growth function, the complement of Michel~5 would have nearly 7 million states, and the complement of Michel~8 even more than 207 billions. Already the computation of the 7 million states of Michel~5 would most probably exceed the available memory resources in our computing environment. Regarding the extrapolated exeution times, the complementation of Michel~5 would take 23 days. This would similarly exceed the maximum running time of a job on the computer cluster on which we executed the computations. And even without these restriction, at least starting from Michel~6, the exectuion times between 18 months and 1,142 years are clearly too long to be included in a master's thesis.
 
 
 
 
 \section{External Tests}
-\label{ext}
+\label{5_external}
+In the external tests we compare the results of the most efficient version of the Fribourg construction to the results of three pre-implemented constructions in \goal. These constructions are Piterman+EQ+RO, Slice+P+RO+MADJ+EG, and Rank+TR+RO. The most efficient version of the Fribourg construction differs for the two test sets. For the \goal{} test set it is Fribourg+M1+R2C, and for the Michel test set it is Fribourg+M1+M2+R2C. In the following two sections we present the results of all these constructions on the two test sets.
+
 
 \subsection{GOAL Test Set}
+\label{5_external_goal}
+For the \goal{} test set we compared Fribourg+M1+R2C with Piterman+EQ+RO, Slice+P+RO+MADJ+EG, and Rank+TR+RO. As for the internal tests, we set a time limit of 600 seconds CPU time, and a memory limit determined by a Java heap size of 1 GB per complementation task. If a task does not finish within these limits, it is aborted and marked as either a timed out or memory exceeded. Table~\ref{e.g.outs} shows the number of timeouts and memory excesses that we observed for the four constructions.
+
 
 \begin{table}[ht]
 \centering
 \input{figures/r/external/goal/outs.tex}
 \caption{Number of timeouts and memory excesses.}
+\label{e.g.outs}
 \end{table}
 
-\begin{itemize}
-\item With Rank
-  \begin{itemize}
-  \item 7,204 effective samples (3,796 uncompleted tasks, 34.51\%)
-  \end{itemize}
-\item Without Rank
-  \begin{itemize}
-  \item 10,998 effective samples (2 uncompleted tasks, 0.02\%)
-  \end{itemize}
-\end{itemize}
+Most striking in Table~\ref{e.g.outs} is the high number of unsuccessful tasks for the Rank construction. 3,317 of the 11,000 automata (33.8\%) were aborted due to a timeout, and further 83 (0.8\%) due to a memory excess. Regarding the other constructions, there are just two timeouts for the Piterman, and one timeout for the Fribourg construction.
 
-
-\subsubsection{With Rank}
+Determining the effective samples of these runs gives a number of 7,204 automata (65.5\%). In Figure~\ref{e.g.stripchart.with_rank} we present the complement sizes of these 7,204 effective samples as a stripchart. Looking at this picture makes the reason for the high number of aborted tasks of the Rank construction apparent. Rank+TR+RO produces a very big number of very large complements compared to the other constructions. 
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.75\textwidth]{figures/r/external/goal/s.stripchart.with_rank.pdf}
 \caption{Complement sizes of the 7,204 effective samples.}
+\label{e.g.stripchart.with_rank}
 \end{figure}
+
+But from the stripchart in Figure~\ref{e.g.stripchart} alone we cannot yet tell whether the Rank construction \textit{generally} produces larger complements than the other constructions, or if this holds just for \textit{some} automata. Therefore, we calculated further statistics of the complement sizes of the 7,204 effective samples in Table~\ref{e.g.stats.with_rank}. 
 
 \begin{table}[ht]
 \centering
 \input{figures/r/external/goal/s.stats.with_rank.tex}
 \caption{Aggregated statistics of complement sizes of the 7,204 effective samples.}
+\label{e.g.stats.with_rank}
 \end{table}
 
-\begin{table}[ht]
-\centering
-\input{figures/r/external/goal/t.stats.with_rank.tex}
-\caption{Aggregated statistics of the running times of the 7,204 effective samples.}
-\end{table}
+And indeed, the 25th percentile and the median of Rank are higher than for Piterman and Slice, but still lower than for our Fribourg construction. However, the picture changes dramatically for the 75th percentile where the value of Rank is more than four times higher than the value for Fribourg. Also the mean of Rank is many times higher than the means of all the other constructions. A possible explanation for this is that the Rank construction performs comparably with the other constructions on easy automata. For the one half of easier automata of the 7,204 effective samples, Rank performs even better than our Fribourg construction, as shown by the median values. For harder automata, however, the performance of Rank is decreased tremendously, and the construction results in very large complements that are beyond any comparison wihth the complements of the other constructions. In addition, the automata that are hardest for Rank are not even included in this analysis. These are the 34.5\% of the test set that Rank could not complete within the given resource restrictions. If we would have these results and include them in the analysis, then the picture would probably look even much more distorted.
 
+What we cannot tell is whether the automata which are hard for Rank are the same that are hard for the other constructions. However, as we will see later, we think that this is not necessarily the case.
 
-\subsubsection{Without Rank}
+Given the large number of unsuccessful complementation tasks of Rank we decided to do the main analysis and comparison of the results without the Rank construction. Because with the Rank construction would basically exclude more than one third of the taks that have been successfully completed by the other constructions from the result analysis. Our main interest is to compare the performance of the Fribourg construction to the other constructions. Above we have already compared it to the special behaviour of the Rank construction, and by excluding Rank from the further analysis, we can compare the Fribourg constructions in full detail with the Piterman and Slice constructions.
 
+Without Rank there are 10,998 effective samples, that is, there are only two automata that have not been completed by all the three of Piterman, Slice, and Fribourg. In Figure~\ref{e.g.stripchart} we display the complement sizes of these 10,998 effective samples as a stripchart.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.75\textwidth]{figures/r/external/goal/s.stripchart.pdf}
 \caption{Complement sizes of the 10,998  effective samples.}
+\label{e.g.stripchart}
 \end{figure}
+
+From the stripchart we can see that Fribourg and Slice have a comparable distribution of complement sizes, whereas Piterman has a considerably higher concentration of small complement sizes. We can say that Piterman generally produces smaller complement than Fribourg and Slice.
+
+We present the statistics of these distributions in Table~\ref{e.g.stats}. 
+Indeed, for all statistics Piterman has values that are in the order of magnitudes lower than the ones of Fribourg and Slice. It is interesting that this order of magnitude for the mean, 25th percentile, median, and 75th percentile is very roughly five. It seems that Piterman produces throughout complements that are around five times smaller than the complements of Fribourg and Slice.
 
 
 \begin{table}[ht]
 \centering
 \input{figures/r/external/goal/s.stats.tex}
 \caption{Aggregated statistics of complement sizes of the 10,998 effective samples without Rank.}
+\label{e.g.stats}
 \end{table}
 
-\begin{table}[ht]
-\centering
-\input{figures/r/external/goal/t.stats.tex}
-\caption{Aggregated statistics of the running times of the 10,998 effective samples without Rank.}
-\end{table}
+Comparing Fribourg and Slice, there is a slight favour for Slice. Mean, 25th percentile, median, and 75th percentile are lower for Slice than for Fribourg by 6.7\%, 21.6\%, 12.4\%, and 11.6\%, respectively. We have to conclude that from an overall point of view, the Fribourg construction has the second-worst performance for the \goal{} test set after Piterman and Slice, and before Rank.
 
-% Persp plots
+But now let us look at the results for the 110 classes of transition density and acceptance density classes of the \goal{} test set. As already for the internal tests, we take the median complement size as our statistic of interest and calculate it for each of the 110 classes. The results as perspective plots are shown in Figure~\ref{e.g.persp}. The same data in matrix form can be found in Appendix~\ref{app_matrices}.
+
 \renewcommand{\perspwidth}{0.3}
-
 \begin{figure}[ht]
 \centering
   \hfill
@@ -281,35 +306,57 @@ This also shows why we were only able to complement the first four Michel automa
   \caption{Fribourg+M1+R2C}
   \end{subfigure}
   \hfill
-\caption{Median complement sizes.}
+\caption{Median complement sizes (10,998 samples)}
+\label{e.g.persp}
 \end{figure}
 
+First of all, note that the data displayed in the perspective plot of Fribourg+M1+R2C in Figure~\ref{e.g.persp} (c) is the same as the one from the internal tests in in Figure~\ref{i.g.persp_2} (b). The only difference is the range of the $z$-axis, which in Figure~\ref{i.g.persp_2} ranges from 0 to 6,500, and in Figure~\ref{e.g.persp} from 0 to only 3,000.
 
+We can see that the pattern for Fribourg and Slice are very similar. The median complement sizes in the individual classes do not differ a lot, both relatively and absolutely. However, the medians of Fribourg seem to be throughout (with some exceptions) slightly higher than the ones of Slice. This means that Fribourg and Slice seem to have similar strengths and weaknesses, but Slice is slightly more efficient on the tested automata.
+
+Piterman, as expected, has medians that are throughout multiple times lower than the corresponding medians of Fribourg and Slice. The basic pattern, however, is still similar. There is a mountain ridge along the classes with a transition density of 1.6 with its top in the class with transition density 1.6 and acceptance density 0.1. Thus, this supports our claim from before that throughout all of the tested automata, Piterman produces complements that are multiple times smaller than the corresponding ones of Fribourg and Slice.
 
 \subsection{Michel Automata}
+\label{5_external_michel}
+We tested the same three third-party constrcutions, Piterman+EQ+RO, Slice+P+RO+MADJ+EG, and Rank+TR+RO on the Michel automata 1 to 4 and compared the results with the version of the Friboug construction that was most efficient on the Michel automata in the internal tests. This version is Fribourg+M1+M2+R2C. As for the internal tests, we did not set a time or memory limitation as we wanted every task to successfully finish.
 
-
-
+The resulting complement sizes are shown in Table~\ref{e.m.states}. Again, we fitted a function of the form $(an)^n$ to the four measured data points of each construction and calculated the standard error of this fit.
 
 \begin{figure}[ht]
-  \centering
-  \begin{subtable}{0.75\textwidth}
-    \centering
-    \input{figures/r/external/michel/s.table.tex}
-    \caption{Complement sizes of the first four Michel automata.}
-  \end{subtable}
-
-  \begin{subfigure}{0.75\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/r/external/michel/s.barplot.pdf}
-    \caption{Complement sizes of the first four Michel visualised as a barplot. The bars 1 to 4 of each group correspond to Michel automata 1 to 4.}
-  \end{subfigure}
-  \caption{Complement sizes of Michel automata.}
+\centering
+\input{figures/r/external/michel/s.table.tex}
+\caption{Complement sizes of the first four Michel automata.}
+\label{e.m.states}
 \end{figure}
 
+Considering the results of the \goal{} test set, the results in Table~\ref{e.m.states} are surprising. Rank is the most efficient construction. It produces the smallest complements for all Michel automata, and with $(0.91n)^n$ it has the flattest fitted curve of all constructions. This is surprising because for the \goal{} test set, Rank produced by far the largest complements, and 34.5\% of the test data could not even be completed within the given time and memory limits. With the Michel automata, however, the case seems to be reversed and Rank produces by far the smallest complements.
+
+Rank is followed by the Fribourg construction, which has the second-smallest complements for Michel~3 and~4, and with $(0.99n)^n$ the second-flattest fitted curve. The complements of Michel~2, 3, and~4 of the Fribourg construction are bigger than the ones of the Rank construction by 48.6\%, 68.2\%, and 69.2\%, respectively. With this, our Fribourg construction is relatively close to the clear winner, which is the Rank construction.
+
+The next in the ranking is the Slice construction with a fitted curve of $(1.18n)^n$. for Michel~1 to~3, this is actually the worst construction, but then for Michel~4, the complement is smaller than the one of Piterman what results in the flatter fitted curve. The gap to the second-ranked construction, Fribourg, is big. The complement sizes of Michel~2 to~4 exceed the ones of Fribourg by 60.2\%, 114.2\%, and 180.2\%, respectively. This is also a remarkable point, because for the \goal{} test set, Fribourg and Slice showed a very similar performance.
+
+The last in the ranking is Piterman with a fitted curve of $(1.25n)^n$. However, special for Piterman is that it has the smallest complement for Michel~1 (together with Rank), the second-smallest for Michel~2, the third-smallest for Michel~3, and the largest for Michel~4. It is actually the large complement of Michel~4 that makes Piterman having the steepest fitted curve. However, it is still remarkable that the construction which is by far the most efficient on the \goal{} test set produces so much worse results for the Michel automata than all the other constructions. Compared with the Rank construction, Piterman's complements of Michel~2 to~4 are 38.7\%, 174.3\%, and 573.6\%, respectively, bigger. And this is exactly the Rank construction that performed so much worse on the \goal{} test set that it made a comparison with the Piterman construction nearly impossible. Compared to the Fribourg construction, Piterman produces slightly smaller complements for Michel~1 and~2, but larger ones for Michel~3 and~4. Namely, they are 63.1\% and 298.2\% larger than the corresponding ones of the Fribourg construction.
+
+Summarising we can say that the ranking of the constructions for the Michel test set is exactly the reverse of the ranking for the \goal{} test set. The by far worst construction for the \goal{} test set (Rank) is the best one for the Michel test set, and the by far best construction for the \goal{} test set (Piterman) is the worst one for the Michel test set (at least for Michel~4). For the Fribourg construction this means that it ``advances'' from rank 3 of 4 for the \goal{} test set to rank 2 of 4 for the Michel test set.
+
+We also measured the execution times of the individual complementation tasks in CPU time seconds. The results are shown in Table~\ref{e.m.times}.
 
 \begin{table}[ht]
 \centering
-\input{figures/r/external/michel/s.table.tex}
+\input{figures/r/external/michel/t.table.tex}
 \caption{Execution times for the first four Michel automata.}
+\label{e.m.times}
 \end{table}
+
+Most interesting in this table is the column with the times for Michel~4. The time difference between the best and the worst construction is enormous. While the Rank construction took just 30 seconds to complement Michel~4, the Piterman construction took 75,917.4 seconds which is approximately 21 hours. This is more than 2500 times longer than the Rank construction. Of course the Piterman construction produced a bigger automata, which naturally requires more time, however, the automaton produced by the Piterman construction is just around 6.7 times bigger than the one of the Rank construction. This means that the Piterman construction must include very inefficient processes before finally arriving at the output automaton.
+
+Furthermore, we can see in Table~\ref{e.m.times} that also the Fribourg construction took relatively long to complement Michel~4 compared to Rank, namely 2,332.6 seconds which are approximately 39 minutes. This is 77.8 times longer than the 30 seconds of Rank. At the same time, Fribourg's complement has just 68.2\% more states than Rank's complement. Also compared to the Slice construction the Fribourg construction is slow for Michel~4. Slice's complement is 2.8 times bigger than Fribourg's complement, but with 159.5 seconds the complementation of slice was 14.6 times faster than the complementation of Fribourg.
+
+So there seems to an inefficiency in the Fribourg construction in terms of execution time for the complementation of Michel~4. However, this inefficiency is by far not as pronounced as for Piterman. While the complement of Piterman is just 4 times bigger, the execution time of Piterman is 32.5 times longer than the one of the Fribourg construction. One could also look at it from the other side and say that not the Fribourg construction is unefficient on Michel~4, but that Rank and Slice are extraordinarily efficient on this automaton.
+
+Finally, these interesting differences in the execution time can only be observed for Michel~4. For Michel~3 there are also differences but they are by far not as pronounced as for Michel~4. If the computational resources would only allow it, it would be very intersting to see how the behaviour is for Michel~5 and beyond. One thing that stays the same for all the four Michel automata is that Rank is always the fastest and Piterman always the slowest construction.
+
+
+\section{Summary and Discussion of the Results}
+
+\section{Limitations of the Approach}

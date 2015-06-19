@@ -227,31 +227,54 @@ ExtGoal <- function() {
 IntMichel <- function() {
   dir <- .MkDir("internal/michel")
 
-  # Table with complement sizes
-  file <- paste0(dir, "/s.table.tex")
-  df <- MichelTable(i.m)
-  LatexTable(df, format="d", align="rlrrrrrr", file=file)
+  # # Table with complement sizes
+  # file <- paste0(dir, "/s.table.tex")
+  # df <- MichelTable(i.m)
+  # LatexTable(df, format="d", align="rlrrrrrr", file=file)
 
-  # Table with execution times
-  file <- paste0(dir, "/t.table.tex")
-  df <- MichelTable(i.m, dat="cpu_time")
-  LatexTable(df, align="rlrrrrrr", file=file)
+  # # Table with execution times
+  # file <- paste0(dir, "/t.table.tex")
+  # df <- MichelTable(i.m, dat="cpu_time")
+  # LatexTable(df, align="rlrrrrrr", file=file)
 
-  # Barplot with complement sizes
-  file <- paste0(dir, "/s.barplot.pdf")
-  pdf(file=file, width=7, height=5)
-  par(mar=c(7.5, 6, 1, 0.125))
-  MichelBarplot(i.m, ylim=c(0, 300000), col="white", lin=TRUE)
-  text(x=-5.5, y=150000, labels="Complement size", srt=90, xpd=TRUE)
-  dev.off()
+  # # Barplot with complement sizes
+  # file <- paste0(dir, "/s.barplot.pdf")
+  # pdf(file=file, width=7, height=5)
+  # par(mar=c(7.5, 6, 1, 0.125))
+  # MichelBarplot(i.m, ylim=c(0, 300000), col="white", lin=TRUE)
+  # text(x=-5.5, y=150000, labels="Complement size", srt=90, xpd=TRUE)
+  # dev.off()
 
-  # Barplot with execution times
-  file <- paste0(dir, "/t.barplot.pdf")
-  pdf(file=file, width=7, height=5)
-  par(mar=c(7.5, 6, 1, 0.125))
-  MichelBarplot(i.m, dat="cpu_time", col="white", lin=TRUE)
-  text(x=-5.5, y=50000, labels="Running time (sec.)", srt=90, xpd=TRUE)
-  dev.off()
+  # # Barplot with execution times
+  # file <- paste0(dir, "/t.barplot.pdf")
+  # pdf(file=file, width=7, height=5)
+  # par(mar=c(7.5, 6, 1, 0.125))
+  # MichelBarplot(i.m, dat="cpu_time", col="white", lin=TRUE)
+  # text(x=-5.5, y=50000, labels="Running time (sec.)", srt=90, xpd=TRUE)
+  # dev.off()
+
+  # Extrapolation table
+  secyear <- 31557600  # Seconds per year: 60 * 60 * 24 * 365.25
+  secday  <- 86400     # Seconds per day:  60 * 60 * 24
+  # Coeffcients a of the fitted functions (an)^n
+  coef.1.states <- 1.35433834768346   # Fribourg (complement size)
+  coef.1.time   <- 1.13678482617192   # Fribourg (execution time)
+  coef.2.states <- 0.990158872019168  # Fribourg+M1+M2+R2C (complement size)
+  coef.2.time   <- 0.605960897580839  # Fribourg+M1+M2+R2C (execution time)
+  x <- 7:10
+  y.1.states <- sapply(x, function(n) { (coef.1.states*n)^n })
+  y.1.time   <- sapply(x, function(n) { (coef.1.time*n)^n })
+  y.2.states <- sapply(x, function(n) { (coef.2.states*n)^n })
+  y.2.time   <- sapply(x, function(n) { (coef.2.time*n)^n })
+  df <- data.frame(`States $(1.35n)^n$`=y.1.states,
+             `Time $(1.14n)^n$`=y.1.time,
+             `$\approx$ days/years`=ifelse(y.1.time/secyear < 1.5, paste0(round(y.1.time/secday), " days"), paste0(round(y.1.time/secyear), " years")),
+             `States $(0.99n)^n$`=y.2.states,
+             `Time $(0.61n)^n$`=y.2.time,
+             `$\approx$ days/years`=ifelse(y.2.time/secyear < 1.5, paste0(round(y.2.time/secday), " days"), paste0(round(y.2.time/secyear), " years")),
+             check.names=FALSE)
+  rownames(df) <- paste0("Michel ", x)
+  df 
 }
 
 
@@ -282,7 +305,7 @@ ExtMichel <- function() {
   par(mar=c(8, 6, 1, 0.125))
   MichelBarplot(e.m, dat="cpu_time", ylim=c(0, 80000), col="white", lin=TRUE)
   text(x=-3.25, y=40000, labels="Running time (sec.)", srt=90, xpd=TRUE)
-  dev.off()
+  dev.off()            
 }
 
 

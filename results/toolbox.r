@@ -150,12 +150,14 @@ StatsGoal <- function(list, dat="states") {
   res.list
 }
 
-MichelTable <- function(list, dat="states", fit.fun=TRUE, std.err=TRUE) {
+MichelTable <- function(list, dat="states", fit.fun=TRUE, std.err=TRUE, raw=FALSE) {
   # Combine results for Michel automata in a single data frame
   # Args: list:    named list of Michel result data frames
   #       dat:     name of the column to display in the result
   #       fit.fun: add column with fitted state growth function (an)^n
   #       std.err: add column with std. error of fitted function
+  #       raw:     if TRUE, print fitted curve and std. error as raw numbers,
+  #                if FALSE, format them for LaTeX printing
   # Returns: data frame with one row for each data frame in 'list'
   #----------------------------------------------------------------------------#
   i <- 1
@@ -170,11 +172,13 @@ MichelTable <- function(list, dat="states", fit.fun=TRUE, std.err=TRUE) {
       y <- df[[dat]]
       fit <- nls(y ~ (a*x)^x, start=list(a=1))
       a <- summary(fit)$parameters[1]
-      text <- paste0("$(", Float(a, d=2), "n)^n$")
+      if (raw) text <- paste0("(", a, "n)^n")
+      else     text <- paste0("$(", Float(a, d=2), "n)^n$")
       row <- cbind(row, data.frame(`Fitted curve`=text, check.names=FALSE))
       if (std.err) {
         s <- summary(fit)$parameters[2]
-        text <- paste0(Float(s*100, d=2), "\\%")
+        if (raw) text <- paste0(s*100, "%")
+        else     text <- paste0(Float(s*100, d=2), "\\%")
         row <- cbind(row, data.frame(`Std. error`=text, check.names=FALSE))
       }
     }
