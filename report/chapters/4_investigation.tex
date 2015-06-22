@@ -63,7 +63,7 @@ At this point, it is worth pointing at a related project of the same research gr
 
 \subsection{Implementation of the Construction}
 \label{4_implementation}
-\subsubsection{The Fribourg Construction Plugin}
+\subsubsection{The \goal{} Plugin}
 \goal{} has been designed from the ground up to be modular and extensible. To this end, it has been created with the Java Plugin Framework (JPF)\footnote{\url{http://jpf.sourceforge.net/}}. This framework allows to build applications whose functionality can be easily and seamlessly extended by writing additional plugins for it. These plugins can be installed in the main application without the need to recompile the whole application. Rather, the plugin is compiled separately and the resulting bytecode files are copied to the directory tree of the main application. It is not even necessary to know the source code of the main application in order to write a plugin. The interfaces of JPF itself, and the documentations of the relevant classes of the main application are all that a plugin writer needs to know.
 
 In some more detail, JPF requires an application to define so called \textit{extension points}. For any extension point, multiple \textit{extensions} can be provided. These extensions contain the actual functionality of the application. A JPF application basically consists of extensions that are plugged into their corresponding extension points. A plugin is an arbitrary bundle of extensions and extension points. It is the basic unit of organisation in the Java Plugin Framework.
@@ -136,7 +136,7 @@ We tested the Fribourg construction in different versions with all the options t
 \item Fribourg+MACC
 \end{itemize}
 
-We tested each version with 1,000 randomly generated automata. The automata had a size of 4 and an alphabet size between 2 and 4. The pre-implemented construction we tested against, was the Piterman construction. The result was that all the tests were successful, that is, there was not a single counterexample.
+We tested each version with 1,000 randomly generated automata. The automata had a size of 4 and an alphabet size between 2 and 4. The pre-implemented construction we tested against, was the Piterman construction. The computations were executed on the UBELIX computer cluster that is described in Section~\ref{4_exec_env}. The result was that all the tests were successful, that is, there was not a single counterexample.
 
 With a size of 4, the automata used for the tests are rather small, and it would be interesting to do the tests with bigger automata. However, our limited computing and time resources prevented us from doing so. The equivalence test of \goal{} is implemented as reciprocal containment tests, which include complementation. That is, the overall test includes the complementation of the complements of the test automata. By using bigger test automata, their complements might be already so big that a further complementation is practically infeasible with our available resources. Nevertheless, we think that the high number of performed tests confirms the correctness of our construction with a high probability.
 
@@ -171,13 +171,12 @@ a^\prime & = \left( 0.1,\,0.2,\,0.3,\,0.4,\,0.5,\,0.6,\,0.7,\,0.8,\,0.9,\,1.0 \r
 \end{align*}
 Thus, there is one class whose automata have a transition density of 1.0 and an acceptance density of 0.1, another class with a transition density of 1.0 and an acceptance density of 0.2, and so on. Each of the 110 classes contains 100 automata
 
-When Tsai~et~al. created the \goal{} test set, they created the automata within the given constraints of 15 states, an alphabet size of 2, and the appropriate transition densities and acceptance densities at random. According to~\cite{2010_tsai}, they chose this structure and parameter values in order to generate a broad range of complementation problems ranging from easy to hard.
+When Tsai~et~al. created the \goal{} test set, they created the automata within the given constraints of any class at random. They chose this structure and parameter values in order to generate a broad range of complementation problems ranging from easy to hard~\cite{2010_tsai}.
 
 
 \subsubsection{Further Properties: Completeness, Universality, and Emptiness}
 
-% Format matrices
-\renewcommand{\tabcolsep}{0.05cm}
+\renewcommand{\tabcolsep}{0.05cm}   % Change table spacings
 \renewcommand{\arraystretch}{1.05}
 \newcolumntype{R}{>{\raggedleft\arraybackslash}p{1.5em}}
 \begin{figure}[htb!]
@@ -190,7 +189,7 @@ When Tsai~et~al. created the \goal{} test set, they created the automata within 
     \begin{subfigure}{0.52\textwidth}
     \includegraphics[width=\textwidth]{figures/r/testset/compl.persp.pdf}
     \end{subfigure}
-  \caption{Completeness}
+  \caption{Number of \textit{complete} automata per class.}
   \end{subfigure}
 
  \begin{subfigure}{\textwidth}
@@ -201,7 +200,7 @@ When Tsai~et~al. created the \goal{} test set, they created the automata within 
     \begin{subfigure}{0.52\textwidth}
     \includegraphics[width=\textwidth]{figures/r/testset/univ.persp.pdf}
     \end{subfigure}
-  \caption{Universality}
+  \caption{Number of \textit{universal} automata per class}
   \end{subfigure}
 
   \begin{subfigure}{\textwidth}
@@ -212,56 +211,45 @@ When Tsai~et~al. created the \goal{} test set, they created the automata within 
     \begin{subfigure}{0.52\textwidth}
     \includegraphics[width=\textwidth]{figures/r/testset/empt.persp.pdf}
     \end{subfigure}
-  \caption{Emptiness}
+  \caption{Number of \textit{empty} automata per class}
   \end{subfigure}
-\caption{Completeness and universality in the GOAL test set.}
-\label{4_testset_analysis}
+\caption{Number of complete, universal, and empty automata for each of the 110 classes of transition density/acceptance density combinations. Each class contains 100 automata.}
+\label{testset_analysis}
 \end{figure}
-\tablestyle  % Reset old table style
+\tablestyle  % Reset old table spacings
 
-We analysed some properties of the \goal{} test set that may be of importance for the interpretation of the results of our experiments. In particular, we tested how many automata of the \goal{} test set are \textit{complete}, \textit{universal}, and \textit{empty}.
+We analysed the properties of completeness, universality, and emptiness\footnote{An automaton is \textit{complete} if every state has at least one outgoing transition for every symbol of the alphabet. An automaton is \textit{universal} if it accepts every word that can be generated from its alphabet. An automaton is \textit{empty} if it does not accept anything (except the empty word $\epsilon$).} of the automata in the \goal{} test set. To know about these properties is useful for the interpretation of the results of our study. For example, the R2C optimisation applies only to complete automata, thus it is interesting to know how many automata are complete. The smallest possible complements of universal and empty automata have a size of 1. Thus, we can see how many ``superfluous'' states a construction produces when complementing a universal or empty automaton.
 
-An automaton is complete if every state has at least one outgoing transition for every symbol of the alphabet. Universality means that an automaton accepts \textit{every} word that can be generated from its alphabet. Emptiness is the contrary of universality and means that an automaton does not accept \textit{any} word (except the empty word $\epsilon$).
+\goal{} provides a command for testing emptiness. However, it does not provide commands for testing completeness and universality. We therefore implemented these commands on our own and bundled them as a separate \goal{} plugin. The plugin is called \textsf{ch.unifr.goal.util} and also publicly available as described in Appendix~\ref{app_plugin}.
 
-To know how many automata are complete is relevant because the R2C optimisation of the Fribourg construction only applies to complete automata. Universality and emptiness are interesting because their respective complement sizes have a lower bound of 1. The complement of a universal automaton is an empty automaton, which can be represented by a single state, and the complement of an empty automaton is a universal automaton which can be represented by a single state as well. In this way we can get an idea of how many unreachable and dead states the Fribourg construction produces. If the produced complement of a universal automata has, say, 2,000 states then 1,999 states of this automata are actually unnecessary as the same automaton could be represented by a single state. We will investigate this aspect to some extent with the R option for the Fribourg construction (see Section~\ref{4_exp_setup}.
+With these \goal{} commands we tested each of the 11,000 automata for the three properties. On one hand, we want to know how many complete, universal, and empty automata are there in total. On the other hand, we also want to know how these properties are distributed across the 110 classes of transition density/acceptance density combinations. Thus, we also determined the number of complete, universal, and empty automata for each class. The computations were executed on the UBELIX computer cluster that is described in Section~\ref{4_exec_env}.
 
-\goal{} provides a command for testing emptiness of an automaton. However, it does not provide commands for testing completeness and universality. We therefore implemented these commands on our own as a separate \goal{} plugin (\textsf{ch.unifr.goal.util}, also available as described in Appendix~\ref{app_plugin}). The tests were executed in the execution environment as described in Section~\ref{4_exec_env}. The overall results are as follows.
-
+The resulting overall numbers are the following:
 \begin{itemize}
 \item 990 of the 11,000 automata are complete (9\%)
 \item 6,796 of the 11,000 automata are universal (61.8\%)
 \item 63 of the 11,000 automata are empty (0.6\%)
 \end{itemize}
 
-In addition to these overall results, we wanted to know how these properties are distributed over the 110 transition/acceptance density classes. Therefore, we counted the number of complete, universal, and empty automata for each of these 110 classes. This naturally results in three-dimensional data where two dimensions are constituted by the transition density and acceptance density (to form the 110 classes), and the third dimension is the number of automata having a specific property. There are several ways to represent such data, and two of them are matrices and so called perspective plots. In Figure~\ref{4_testset_analysis} we present our results in both of these ways. 
+The fact that only 9\% of the automata are complete means that the R2C optimisation of the Fribourg construction affects only 9\% of the test data. This is an interesting fact for the analysis of the effect the R2C optimisation has on the overall performance of the construction. A surprisingly high number of 61.8\% of the automata are universal. A reason might be the small alphabet of the \goal{} test set automata, which has just two symbols. With a certain number of transitions in the automata, there seems to be a high probability that the automata are universal. Conversely, the number of empty automata is very low. This can be seen as the reverse of the same effect that causes the number of universal automata to be high.
 
-The matrices have 11 rows and 10 columns. The rows represent the transition densities and the columns represent the acceptance densities. The cells represent the measured values for the class constituted by the transition density of its row and the acceptance density of its column. We will use this matrix representation again throughout the rest of this thesis. The perspective plots represent the transition densities, acceptance densities, and measured values along three axes, $x$, $y$, and $z$. The individual data points are connected by lines so that a grid emerges that can be seen to form a three-dimensional surface. Perspective plots can be seen as three-dimensional visualisations of matrices where the cell values extend as ``heights'' along the $z$-axis in the three-dimensional space. However, perspective plots are typically rotated, and this rotation is chosen for making the presented data optimally visible. In Figure~\ref{4_testset_analysis}, looking at the perspective plots is like looking at the corresponding matrices from the upper left corner. We will use perspective plots throughout the rest of this thesis. While their relation to matrices is the same, their rotation will be different. For example, in Chapter~\ref{chap_results}, the viewpoint of the perspective plots will correspond to looking from the bottom right corner at the corresponding matrices.
+In Figure~\ref{testset_analysis}, we show the number of complete, universal, an d empty automata per class. In this figure we introduce by the way two ways for representing per-class data that we will use throughout this thesis. On the left side of Figure~\ref{testset_analysis} the per-class data is represented as matrices. These matrices always have 11 rows and 10 columns, and the rows always represent the transition densities and the columns represent the acceptance densities. On the right side of Figure~\ref{testset_analysis}, the same data is visualised as so called perspective plots. The corner of the perspective plots that is closest to the viewer corresponds to the upper-left corner of the corresponding matrices. Thus, looking at a perspective plots is like looking at the corresponding matrix from the upper-left corner. The advantage of matrices is that they show all the data values explicitly. The advantage of perspective plots is that they show the patterns in the data more intuitively. When we present the results of our study in Chapter~\ref{chap_results}, we will mainly use perspective plots, however, we will give all the corresponding matrices in Appendix~\ref{app_matrices}.
 
-Regarding the data itself, we can identify the following points. With 9\%, a relatively small number of the automata is complete. This affects the R2C optimisation, which therefore makes a difference to only 9\% of the test data, while leaving 91\% unaffected. We can see that there are no complete automata in classes with transition densities up to 1.6, and then starting from 1.8 the number starts to increase up to a ratio of 34--40\% at a transition density of 3.0. Naturally, a higher number of transitions in the automata increases the probability that each state has at least one outgoing transition for every symbol of the alphabet. Considering that a transition density of, for example, 3.0 means that each state has on average three outgoing transitions for every symbol of the alphabet, this ratios might seem rather small. However, a single incomplete state is enough to make the whole automaton incomplete, even though all the other states would be complete. With a total number of 15 states, the probability of an incomplete state is apparently still quite high, even for a transition density of 3.0, as our empirical data suggests. Naturally, the acceptance density does not influcence the ratio of complete automata.
+Regarding the complete automata per class in Figure~\ref{testset_analysis}~(a), we can see their number increases with the transition density. Up to a transition density of 1.6 there are no complete automata at all, and then it starts to increase up to a number between 34 and 40 for the transition density of 3.0. Since each class contains exactly 100 automata, these numbers are percentages at the same time. That the number of complete automata increases with the transition density is because a higher number of transitions per alphabet symbol in the automaton increases the probability that each state has at least one outgoing transition for each alphabet symbol. For example, with a transition density of 1.0 and 15 states, the automaton contains exactly 15 transtitions for each alphabet symbol. It is still possible that this automaton is complete, but the probability is very low, because there must be a one-to-one mapping of transitions and states. On the other hand, with a transition density of 3.0, there would be 45 transitions per alphabet symbol, and the probability that each state gets one of them is much higher.
 
-The ratios look very different for universality. With 61.8\%, a very high number of automata in the test set is universal. This high number might result from the small alphabet of just two symbols of the test automata. With a smaller alphabet, there are fewer possible words, and thus a higher probability that an automaton accepts all the possible words. It would be interesting to investigate the universality ratio of similar automata with larger alphabet sizes. As for completeness, the ratio of universal automata also increases with the transition density, although much faster up to a ratio of 100\%. In addition, we can see a slightly higher number of universal automata in classes with higher acceptance densities (although the pattern is clearly dominated by the transition density). We can summarise this, by saying that more transitions and more accepting states increase the probability that a given word is accepted, and thus the probability that an automaton accepts all the possible words.
+The number of universal automata per class in Figure~~\ref{testset_analysis}~(b) also increases with the transition density, although much stronger. While in the classes with a transition density of 1.0, there are between 3 and 10 universal automata, in the classes with a transition density of 3.0 there are between 97 and 100. As already mentioned, the small alphabet size of the \goal{} test set automata and a sufficiently high number of transitions results in a high probability that an automaton accepts every possible word, and thus is universal. In Figure~\ref{testset_analysis}~(b) we can also see that low acceptance densities result by trend in slightly fewer universal automata. This is because with fewer accepting states there is less chance that a given word is accepted. As we identified the small alphabet size as a possible reason for the high number of universal automata, it would be interesting to test how many universal automata there are in similar automata with a bigger alphabet size.
 
-The other extreme is the percentage of empty automata, which is just 0.6\%, or 63 instances. Apparently the probability that an automaton of size 15 and with 15 to 45 transitions per alphabet symbol accepts no words at all is very small. The probability is highest in automata with low transition densities and acceptance densities. 
+Conversely to the high number of universal automata, the number of empty automata is very low. The totally 63 empty automata are mainly concentrated in the upper-left corner of the matrix in Figure~\ref{testset_analysis}~(c). That is, the automata with a low transition density and a low acceptance density have the highest probability to no accept any word, and thus being empty. The reasons for this are basically the opposite reasons for the distribution of the universal automata.
 
 
 \subsection{Michel Test Set}
-Our second test set is very different from the first one. It consists of few well-defined, rather than a large number of random automata. These automata are the Michel automata with $m=\{1,\dots,4\}$, that we call Michel 1, Michel 2, Michel 3, and Michel 4, respectively.
+The Michel test set is very different from the \goal{} test set. It consists of a family of automata, the Michel automata, which exhibit an especially heavy state growth for complementation.
 
 Michel automata have been introduced in 1988 by Max Michel in order to prove a lower bound for the state growth of Büchi complementation of $(n-2)!$, where $n$ is the number of states of the input automaton~\cite{michel1988}\cite{1996_thomas}. Michel constructed a family of automata, characterised by the parameter $m$, that have $m+1$ alphabet symbols, and $m+2$ states. He proved that the complements of these automata cannot have less than $m!$ states. Since the number of states of the input automata is $n = m + 2$, the state growth in terms of input and output states is $(n-2)!$, which is around $(0.36n)^n$.
 
-Michel automata are thus very hard automata, and that is why we chose them as our second test set. By testing our Fribourg construction on very hard automata, we can empirically determine ``lower bounds for the lower bounds'' for the state complexity of our construction. For example, if in our experiments we observe a state growth of a Michel automaton of, say, $(0.99n)^n$, then the real (theoretical) lower bound of the construction is either $(0.99n)^n$ or higher. But it cannot be less than $(0.99n)^n$, because with our experiment we have a proof that there exists an automaton on which our construction produces a state growth of $(0.99n)^n$.
+The state growth of Michel automata is so heavy that for practical reasons we are restricted to include only the first four Michel autoamta, that is the ones with $m=\{1,\dots,4\}$, in our test set. For the Michel automata with $m \geq 5$, the required time and computing power for complemeting them with our implementation would by far exceed our available resources. We present some extrapolations in this direction in Section~\ref{5_internal_michel}. Despite the small number of automata in the test set, we can still obtain very interesting results from them, as we will see in Chapter~\ref{chap_results}.
 
-Michel automata are very hard to complement, but of course we cannot prove that they are the \textit{hardest} ones (of their respective size) for our construction. If for example, the Michel automaton with six states (Michel 4), produces a state growth of $(0.99n)^n$, then we don't know if this is the hardest automaton of size 6 for our construction (in which case the real state complexity of our construction would be $(0.99n)^n$), or if there is another automaton of size 6 that produces an even larger complement (in which case the real state complexity of our construction would be higher than $(0.99n)^n$). However, since Michel automata are so hard, we think that they give a useful approximation of a state complexity lower bound of our construction.
-
-In Figure~\ref{4_michel_automata} we present the four Michel automata with $m=\{1,\dots,4\}$, as they are defined in~\cite{michel1988} and~\cite{1996_thomas}. They are in particular:
-\begin{itemize}
-\item Michel 1: 3 states, 2 symbols,  7 transitions
-\item Michel 2: 4 states, 3 symbols, 14 transitions
-\item Michel 3: 5 states, 4 symbols, 23 transitions
-\item Michel 4: 6 states, 5 symbols, 34 transitions
-\end{itemize}
-
-All Michel automata have a single accepting state. The reason that we included only the first four Michel automata are of practical nature. Michel automata are so hard, that starting from Michel 5, the required computing and time resources are so high, that it would become practically infeasible for us to carry out the complementation process. We present some extrapolations on this topic when we discuss the results of the Michel experiments in Chapter~\ref{chap_results}.
+The four Michel automata in our test set are shown in Figure~\ref{michel_automata}. We will call them Michel~1, Michel~2, Michel~3, and Michel~4, respectively. As mentioned, Michel automata have $m+2$ states and an alphabet size of $m+1$. Furthermore, they all have a single accepting state. Our Michel automata 1 to~4 have thus 3, 4, 5, and 6 states, and alphabet sizes of 2, 3, 4, and 5, respectively.
 
 \newcommand{\subwidth}{0.42}
 \begin{figure}[htb!]
@@ -281,39 +269,33 @@ All Michel automata have a single accepting state. The reason that we included o
   \end{subfigure}
   \begin{subfigure}[b]{\subwidth\textwidth}
   \MichelFour
-  \caption{Michel 4 ($m=4)$}
+  \caption{Michel 4 ($m=4$)}
   \end{subfigure}
 \caption{The Michel automata with $m = \{1,\dots,4\}$, an alphabet size of $m+1$, and $m+2$ states.}
-\label{4_michel_automata}
+\label{michel_automata}
 \end{figure}
+
+The interesting thing about the high complementation state-complexity of Michel automata is that they allow to ``elicit'' large number of states from the complementation constructions that we investigate in our study. In the theoretical approach to Büchi complementation, the main performance metric is the worst-case state complexity. This is the maximum number of states that a construction can produce, in function of the number of states of the input automaton. If for example a construction has a worst-case complexity of $(0.76n)^n$, then, if the input automaton has size $n$, the maximum size of the complement is $(0.76n)^n$.
+
+Thus, if with the complementation of a Michel automata we measure a certain state growth for one of the constructions, say $(0.99n)^n$, then we can deduce that the worst-case complexity of this construction must be greater than or equal to $(0.99n)^n$. In this way, we can get an idea about the lower bounds for the worst-case complexities of our investigated constructions.
+
+This concludes the presentation of the test data for our study. In the next section we are describe the experimental setup in which this test data is used.
 
 
 \section{Experimental Setup}
 \label{4_exp_setup}
+In this section we describe the concrete experiments that we executed, including the allocated resources and imposed constraints. As mentioned, the experiments are divided into the internal tests and external tests. In the internal tests we compare different versions of the Fribourg construction with each other. In the external tests, we compare one (the most performant) version of the Fribourg construction with other well-known complementation constructions.
 
-\subsection{Internal Tests}
+The internal and external test, are done with both, the \goal{} and the Michel test set. Thus, there are four groups of experiments: internal--\goal, internal--Michel, external--\goal, and external--Michel.
+
+In Section~\ref{4_internal}, we present the versions of the Fribourg construction used for the internal tests. These versions differ for the \goal and the Michel test set, and we present them separately. In Section~\ref{4_external}, we present the version of the Fribourg construction used for the external tests (which is also different for the \goal and the Michel test set), and the concrete versions of the third-party construction against which we compare the Fribourg construction. In Section~\ref{4_exec_env}, we describe the computing environment in which the experiments were executed. Finally, in Section~\ref{4_limits}, we present the time and memory limits that were imposed on the experiments. 
+
+\subsection{Constructions for the Internal Tests}
 \label{4_internal}
-In the internal tests our aim is to compare different versions of the Fribourg construction. A specific version of the Fribourg construction is composed of a combination of options. Options can be the 
-
-As presented in Section~\ref{optimisations}, there are three optimisations to the Fribourg construction:
-\begin{itemize}
-\item R2C: if the input automaton is complete, remove all states whose rightmost colour is 2
-\item M1: merge certain adjacent sets within a state
-\item M2: reduce 2-coloured sets (requires M1)
-\end{itemize}
-
-Furthermore, our GOAL plugin includes, among others, the following options:
-\begin{itemize}
-\item C: make the input automaton complete (by adding a sink state)
-\item R: remove unreachable and dead states from the output automaton
-\end{itemize}
-
-The versions of the Fribourg construction that we chose for our internal tests consist of combinations of these five options. According to the nature of the two test sets (the GOAL test set and the Michel automata), we chose two different sets of versions for the two test sets. We are now first going to describe the setup for the GOAL test set and then the one for the Michel test set.
-
+The versions of the Fribourg construction used for the internal tests consist of combinations of the three optimisations R2C, M1, and M2, and of the additional options C and R (see list of options for the Fribourg construction in Table~\ref{goal_options}). The sets of versions are different for the two test sets. Our aim in choosing specific versions was to find the most performant version of the Fribourg construction for each test set.
 
 \subsubsection{GOAL Test Set}
-
-For the tests on the GOAL test set, we chose the following eight versions of the Fribourg construction:
+For the internal test with GOAL test set, we use the following eight versions of the Fribourg construction:
 \begin{enumerate}
 \item Fribourg
 \item Fribourg+R2C
@@ -325,47 +307,18 @@ For the tests on the GOAL test set, we chose the following eight versions of the
 \item Fribourg+R
 \end{enumerate}
 
-The first version is the plain Fribourg construction without any optimisations or options. The next two versions are devoted to investigate the R2C optimisation. Version 2 applies the optimsation only to the automata which happen to be complete (and as we have seen in Section~\ref{goal_testset} these are 9\%). Version 3, on the other hand, makes all input automata preliminarily complete by adding a sink state, so that the R2C optimisation can be applied to \textit{all} automata. The question here is, does it pay off to increase the size of the automata by one (for adding the sink state) but then being able to apply R2C, or is it better to not add the extra state but then not applying R2C neither?
+Version~1 is the plain Fribourg construction without any optimisations or options. Version~2 and~3 aim at investigating the R2C optimisation. In Version~2, the R2C optimisation is applied only to complete input automata, and as we have seen in Section~\ref{4_goal_testset} these are just 9\% of the automata. Version 3, on the other hand, makes all input automata complete so that the R2C optimisation can be applied to all automata. The question is whether it is worth to increase the size of an automaton by one (for adding the sink state) and then being able to apply the R2C optimisation, or not.
 
-Similar investigations about the R2C optimisation of the Fribourg construction have been made by Göttel~\cite{2013_bsc_goettel}. In particular, he compared Version 1 in our above listing with Version 3. His results were that the mean complement sizes of Version 3 are higher than in Version 1. He evaluated, however, only the mean values, but looking closely at the results suggests that the median values could be in favour of Version 3. Therefore, we decided to reinvestigate this question. Indeed, in our own results the median complement sizes of Version 3 are considerably lower than the ones of Version 1 and Version 2. We will further elaborate on this point in Chapter~\ref{chap_results}.
+A very similar question has been investigated in previous work about the Fribourg construction by Göttel~\cite{2013_bsc_goettel}. In terms of our above listing, he compared Version 1 with Version 3, by also using the \goal{} test set as the test data. His result was that the overall mean complement size of Version~3 is higher than for Version~1. By looking closely at his results we suppose however that the median complement size (which was not recorded by Göttel) might be lower for Version~3 than for Version~1. This would be an interesing relation, and therefore, we decided to reinvestigate this question. 
 
-Versions 4 and 5 in our above listing are for investigating the M1 and M2 optimisations. As M2 requires M1, there are only these two possible combinations. Versions 6 and 7 then enhance the ``better'' one of Version 4 and 5 with R2C and its alternative R2C+C. As we will see in Chapter~\ref{chap_results}, the better one of Version 4 and 5 in terms of median complement sizes is Version 4. That is, the application of M2 results in a decline, rather than a gain, in performance compared to the application of M1 alone. We have to note at this point that such results are always specific to the used the test set, and not universally valid. With a different test set, Version 5 might indeed be better than Version 4. As we will see in the next section, this is the case for our alternative test set consisting of the first four Michel automata.
+Versions 4 and 5 aim at investigating the M1 and M2 optimisations. As M2 can only be applied together with M1, there are only these two possible combinations. As we will see in Chapter~\ref{chap_results}, Version~4 shows a better performance for the \goal{} test set than Version~5. Therefore, we do not further investigate any versions containing Fribourg+M1+M2. However, in Version~6, we further improve Version~4 by adding R2C to Fribourg+M1. In Version~7, we replace R2C by the R2C+C variant. Finally, Version~8 is the same as Version~1, but all unreachable and dead states are removed from the output automaton. This allows to determine the number of unreachable an dead states that have been produced by Version~1.
+
+Versions 6 and 7 then enhance the ``better'' one of Version 4 and 5 with R2C and its alternative R2C+C. As we will see in Chapter~\ref{chap_results}, the better one of Version 4 and 5 in terms of median complement sizes is Version 4. That is, the application of M2 results in a decline, rather than a gain, in performance compared to the application of M1 alone. We have to note at this point that such results are always specific to the used the test set, and not universally valid. With a different test set, Version 5 might indeed be better than Version 4. As we will see in the next section, this is the case for our alternative test set consisting of the first four Michel automata.
 
 Version 8, finally, is again the plain Fribourg construction, but this time the output automata are reduced by removing their unreachable and dead states. Comparing the results of Version 8 with Version 1 gives an idea of how many unreachable and dead states the Fribourg construction produces. This is inspired by the paper of the GOAL authors~\cite{2011_tsai} in which the number of unreachable and dead states is one of the main metrics for assessing the performance of a construction.
 
-% As in Section~\ref{optimisations}, we refer to the first optimisation as R2C, the second one as M1, and the third one as M2. These optimisations have the following dependencies:
-% \begin{enumerate}
-% \item R2C can only be applied if the input automaton is complete
-% \item M2 can only be applied if M1 is also applied
-% \end{enumerate}
-
-% Regarding the dependency of R2C, there are two possibilities. First (\em{R2C-A}), the R2C optimisation is selectively applied to the input automata which are complete, and not to the others. Second (\em{R2C-B}), all automata are made complete beforehand (by adding a sink state), and then the R2C optimisation is applied to all the automata.
-
-% Göttel ~\cite{2013_bsc_goettel} has compared \em{R2C-B} to a plain version of the Fribourg construction where no optimisations at all are applied. He used the same test data as we do. The result was that \em{R2C-B} produces on average slightly less states, but the peak number of generated states are higher than in the plain version. It will be interesting to see if we can replicate these results, and how the selective application of the R2C optimisation (\em{R2C-A}) performs compared to \em{R2C-B}.
-
-% Regarding the dependencies of the M1 and M2 optimisation, there are only two cases we can test. First, M1 alone, and second, M1 and M2 together. Assuming that the R2C optimisation adds a certain performance gain on top of an existing construction, we can then combine the better one of \em{M1} and \em{M1+M2} with R2C. We can already reveal at this point that \em{M1} performs slightly better than \em{M1+M2} on our test set, even though \em{M1+M2} has a better theoretical worst-case complexity. This topic is further discussed in Chapter~\ref{chap_results}. Thus, the version that we will want to test is \em{M1+R2C}.
-
-% Furthermore, we can also investigate the effect of some generic optimisations on our construction. The most generic optimisations, which are included in most complementation constructions in GOAL, and also our plugin with the Fribourg construction, are:
-% \begin{enumerate}
-% \item Maximise the acceptance set of the input automaton (MACC)
-% \item Remove unreachable and dead states from the output automaton (R)
-% \end{enumerate}
-
-% By applying these two optimisations to the best version of the Fribourg construction, we can see how far we can go with tweaking our construction, with respect to our set of test automata.
-
-% Summarising, for the internal tests we are going to carry out runs of the following versions of the Fribourg construction:
-% \begin{enumerate}
-% \item \em{Fribourg}
-% \item \em{Fribourg+R2C}
-% \item \em{Fribourg+R2C+C}
-% \item \em{Fribourg+M1}
-% \item \em{Fribourg+M1+M2}
-% \item \em{Fribourg+M1+R2C}
-% \item \em{Fribourg+M1+R2C+MACC+R}
-% \end{enumerate}
-
 \subsubsection{Michel Test Set}
-The versions we tested for the Michel test set are the following:
+For the internal tests with the Michel test set, we use the following six versions of the Fribourg construction:
 \begin{enumerate}
 \item Fribourg
 \item Fribourg+R2C
@@ -375,64 +328,67 @@ The versions we tested for the Michel test set are the following:
 \item Fribourg+R
 \end{enumerate}
 
-The rationale for choosing these versions is basically the same as for the GOAL test set with the following differences. First, Michel automata are complete, thus it is not necessary to apply the C option. Rather, R2C will automatically apply to all automata. Second, the aim of Version 5 is again to enhance the better one of Versions 3 and 4 with R2C. However, contrarily to the \goal{} test set Fribourg+M1+M2 is better than Fribourg+M1 for the Michel automata. That is why Version 5 is Fribourg+M1+M2+R2C.
+The reaons for selecing these versions is basically the same as for the GOAL test set. However, there are the following differences. First, the Michel automata are complete, thus there is no need to include the C option. Second, for the Michel test set, Fribourg+M1+M2 is more performant than Fribourg+M1. For the \goal{} test set, the contrary is the case. This is why in Version~5 we add R2C to Fribourg+M1+M2 rather than to Fribourg+M1, because, as mentioned, our aim is to identify the most performant version for each test set.
 
 
-\subsection{External Tests}
-In the so called external tests we compare the best version of the Fribourg construction with different complementation constructions, again for both the GOAL test set and the Michel test set. The concrete constructions we compared for the external tests are the following.
+\subsection{Constructions for the External Tests}
+The constructions used for the external tests consist of the most performant version of the Fribourg construction for each test set, and a fixed set of third-party constructions that are implemented in \goal.
 
+Regarding the third-party construcions, theoretically all the constructions listed in Table~\ref{goal_constrcutions} could be used. However, practical reasons prevent us from doing so. In preliminary tests we observed that most of these constructions are very inefficient, or inefficiently implemented, for the automata in the \goal{} test set. Using these constrcutions for our external tests would cause the required memory and time resources to be prohibitively high. According to our tests, this excludes all but the Piterman, Slice, Rank, and Safra constructions from being used. A similar experience has been made by Tsai~et~al. in their own empirical study with \goal~\cite{2011_tsai}. They observed that the Ramsey construction could not complete the complementation of any automata in the \goal{} test set within the time limit of 10 minues and memory limit of 1 GB.
+
+Considering these restrictions, we decided to include only the Piterman, Slice, and Rank construction in our external tests. These constructions are furthermore the main representants of three of the four main complementation approaches, determinization-based, rank-based, and slice-based. The fourth approach would be Ramsey-based, but as mentioned, the Ramsey construction in \goal{} is not efficient enough. It would have been possible to also include the Safra construction, but as it belongs to the determinization-based approach and we already have the Piterman construction, we decided to not include it.
+
+For the Slice construction, we chose the Slice+P version (see Table~\ref{goal_constrcutions}) by Vardi and Wilke~\cite{vardi2007automata}. According to Tsai~et~al.~\cite{2011_tsai} this version has a lower worst-case complexity than the alternative Slice version by Kähler and Wilke~\cite{2008_kaehler}.
+
+The Piterman, Rank, and Slice constructions also have a bunch of options in \goal (for a complete list of their options it is best to consult the help page for the \textsf{complement} command in the command line interface of \goal\footnote{Type \textsf{gc help complement}.}). For each construction we included those options that are set by default in the \goal{} GUI, except the MACC and R options. The reason to exclude these options is that they are not part of the actual construction, but they just modify the input and output automata, respectively.
+
+We made an exception for the Piterman construction where we also excluded the SIM option. The reason for this is that the SIM option simplifies the intermediate NPW of the Piterman construction, which can also be seen as a modification of an (intermediate) output automaton.
+
+Altogether, this gives the following three constructions that we used for the external tests:
 \begin{enumerate}
 \item Piterman+EQ+RO
 \item Slice+P+RO+MADJ+EG
 \item Rank+TR+RO
-\item Fribourg+M1+R2C (\goal{} test set) and Fribourg+M1+M2+R2C (Michel test set)
 \end{enumerate}
 
-For the alternative constructions, we chose the Piterman, Slice, and Rank construction. These constructions are representative for three of the four main complementation approaches, determinization-based, slice-based, and rank-based. The fourth complementation approach is Ramsey-based and there is an implementation of the Ramsey construction in \goal{}. However, in preliminary tests, we realised that this construction is not performant enough to be used on our test sets within our time and memory constraints. The authors of \goal{} came to a similar conclusion when they made similar experiments on the \goal{} test set~\cite{2011_tsai}. In their case, the Ramsey construction could not complete any of the 11,000 automata within the set time and memory constraints, and they went on to do the result analysis without the Ramysey construction.
+Regarding the Fribourg construction, we chose the most performant version for each test set. These versions are:
+\begin{enumerate}
+\item Fribourg+M1+R2C for the \goal{} test set
+\item Fribourg+M1+M2+R2C for the Michel test set
+\end{enumerate}
 
-The same applies to all the other constructions that are implemented in \goal{}. We did preliminary tests with all of them and saw that only the three mentioned constructions, Piterman, Slice, and Rank, can be resonably used on the \goal{} test set\footnote{The Safra construction would also have been possible, but the Safra construction is similar to the Piterman construction.}.
-
-The three chosen constructions also have optimisations in their implementations in \goal{}. To have a fair comparison to the best version of the Fribourg construction, which also uses optimisations, we activated the optimisation of these constructions as well. In particular, we chose those optimisations which are set as default in the \goal{} GUI for each construction.
-
-We use Fribourg+M1+R2C for the \goal{} test set and Fribourg+M1+M2+R2C for the Michel test set. This is because these two versions are the most performant ones for the respective test sets.
-
-
-% \textbf{Justification why to use only piterman, slice, and rank}$\\$
-% Notes in UBELIX/jobs/2014-10-09: $\\$
-% Made test with complementing the first 10 of the size 15 test set with all constructions, and only piterman, slice, and rank (and safra) completed all of them. $\\$
-% See Tsai (2011)~\cite{2011_tsai} page 5: they compared ramsey, piterman, rank, and slice. But ramsey couldn't complement any of the 11,000 automata of size 15. $\\$
-% Ramsey, piterman, rank, and slice are representative for the four main complementatio approaches: Ramsey-based, determinization-based, rank-based, and slice-based.
-
-
-\subsection{Time and Memory Limits}
-We defined a time limit of 600 seconds CPU time and a memory limit of 1 GB per complementation task in the GOAL test set. That means, if the complementation of a single automaton is not finished after 600 seconds CPU time or uses more than 1 GB memory, the task is aborted and marked as a \textit{timeout} or \textit{memory excess}.
-
-These limits correspond to the ones used by the experiments of the \goal{} authors~\cite{2011_tsai}. However, from their paper it is not clear if their time limit is in CPU time or wallclock time. But since they used different computing nodes, our results regarding the number of timeouts will anyway differ from theirs.
-
-The reason for these limits is simply the restricted amount of time and memory resources that we have available for the experiments. In an ideal world, we would let every complementation task run to its end, no matter how long it takes and how much memory it uses. This would give a perfectly unbiased picture of the results. By setting time and memory limits, we basically exclude the most difficult automata from the experiment. However, as mentioned, the practical reasons of limited time and computing power force as to make this compromise.
-
-The timeout and memory limit of 1 GB apply just to the automata of the \goal{} test set. For the Michel test set we did not set a timeout because we wanted each one of the four automata to finish. The longest complementation task of a Michel automaton consequently durated 109,810 seconds which is about 28 hours. We set a very high memory limit of 14 GB for the Michel test set to avoid memory excesses as we wanted each automaton to successfully complete. The number of 14 GB is determined by the physically available memory on the used computing nodes. All Michel automata successfully completed with this amount of memory.
-
-The timeout was implemented by the means of the \textsf{ulimit} Bash builtin\footnote{\url{http://linux.die.net/man/1/bash}}, which allows to set a maximum time after which running processes are killed. The memory limit was implemented by setting the maximum size of the Java heap, which can be done by the \textsf{-Xmx} option to the Java Virtual Machine (JVM). The heap is the main memory area of Java and the place where all the objects reside. Note that since our memory limit defines actually the size of the Java heap, the total amount of memory used by the process is higher than our limit, as Java has some other memory areas, for example for the JVM itself. However, this is a rather constant amount of memory and independent from the current automaton, so it does not disturb the relative comparisons of the results.
-
-The presence of aborted complementation task require the consideration of the so called effective samples in the result analysis, as introduced in the experiment paper of the \goal{} authors. The effective samples are those automata which have been successfully completed by \textit{all} constructions that are to be compared to each other. Imagine two constructions $A$ and $B$ where $A$ is successful complementing all the automata, whereas $B$ has timeouts or memory excesses at 100 of the automata. If we would now take, for example, the median complement sizes of the two result sets without first extracting the effective samples, then $B$ is likely be assessed as too good relative to $A$, because $B$'s results do not include the 100 automata at which it failed, and which are thus likely to have large complement sizes with $B$. The same 100 automata would however be included in the results of $A$. Therefore, all the result analysis of the experiments with the \goal{} test sets, that we present in Chapter~\ref{chap_results}, are based on the effective samples of the result sets. 
-
+% Justification to use only Piterman, Slice, and Rank
+% UBELIX/jobs/2014-10-09:
+% Complemented the first 10 of the size-15 test set with all constructions, and only Piterman, Slice, Rank, and Safra completed all of them.
+% See Tsai (2011) page 5: they compared Ramsey, Piterman, Rank, and Slice. But Ramsey couldn't complement any of the 11,000 automata of size 15 within the time nd memory limits
+% Ramsey, Piterman, Rank, and Slice are representative for the four main complementatio approaches, Ramsey-based, determinization-based, rank-based, and slice-based.
 
 \subsection{Execution Environment}
 \label{4_exec_env}
-We executed the experiments on a high performance computing (HPC) computer cluster called UBELIX at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}. This cluster consists of different types of Linux-driven HPC computing nodes, and is managed by Oracle Grid Engine\footnote{\url{http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html}} (formerly known as Sun Grid Engine) version 6.2. Oracle Grid Engine is a so called load scheduler that is responsible for automatically distributing computing tasks to computing nodes.
+As mentioned, we ran all the experiments on the high performance computing (HPC) computer cluster UBELIX of the University of Bern\footnote{\url{http://ubelix.unibe.ch}}. UBELIX consists of different types of computers (called \textit{nodes}) on which the tasks (called \textit{jobs}) of the cluster uers are run.
 
-The basic workflow of working on the cluster is to prepare a so called job and specify the resources that the job requires for running (time, memory, number of CPU cores, and so on). Then the job can be submitted to the grid engine. The grid engine first puts incoming jobs in a queue and then automatically dispatches them to suitable computing nodes as soon as the required capacity is available.
-
-A job in our case is the execution of a construction (or version of the Fribourg construction) over an entire test set. Thus, we were running 22 jobs in total. We arranged that all jobs were run on identical nodes with the following specifications:
-
+We ensured that all our experiments run on similar nodes. These nodes have the following specifications:
 \begin{itemize}
-\item Processor: Intel Xeon E5-2665 2.40GHz (64 bit)
-\item CPU cores: 16
+\item Processor: Intel Xeon E5-2665 2.40GHz
+\item Architecture: 64 bit
+\item CPUs (cores): 16
+\item Memory (RAM): 64 GB or 256 GB
 \item Operating System: Red Hat Enterprise Linux 6.6
+\item Java platform: OpenJDK Java 6u34
+\item Shell: GNU Bash 4.1.2
 \end{itemize}
 
-Since we use the execution time (CPU time) as a secondary metrics, next to the complement sizes, it is important that all complementation tasks are executed on the same type of hardware. \goal{} is multithreaded and thus the jobs may use multiple CPU cores. The number of CPU cores a job may use is not restricted (up to the number of available cores on the node, in our case 16), but our observation is that the jobs use a rather small number of cores (2--3). Note that the measurement of the execution time is not affected by the number of cores a process uses, as the CPU times are measured separately on each core and then added together.  
+The experiments with the \goal{} test set were run on nodes with 64 GB RAM, and the experiments with the Michel test set on special high-memory nodes with 256 GB RAM. Apart from the memory, the specificaions of these nodes are identical. The use of the high-memory nodes for the Michel test set was required, because the maximally allocatable memory per CPU core of the nodes with 64 GB memory is 4 GB, and this was not enough to complement the Michel automata. With the high-memory nodes, on the other hand, a total of 16 GB can be allocated per CPU core which is enough to complement all the Michel automata in our test set with all the constructions.
+
+Regarding multicore usage, the behaviour of our runs depends on \goal, and thus ultimately on Java. \goal{} is programmed multi-threaded and thus can use multiple CPUs. Theoretically, our tasks can use up to the total number of 16 CPUs of a node. However, we observed that our \goal{} complementation task most likely use 2--4 CPUs\footnote{We can just indirectly guess this number by comparing the measured CPU times and real times.}.
+
+We also measured the execution time of each complemenation task as CPU time and real time (also known as wallclock time)\footnote{These measurements were done with the \textsf{time} reserved word of Bash.}. The CPU time is the time a process is actually executed by the CPU. The real time is the time that passes from the start of a process until its termination, and thus includes the time the process is not executed by the CPU (idle time). If a process runs on multiple CPUs, the CPU time is counted on each CPU separately and finally summed up. This means that for multicore execution (as in our case), the CPU time may be higher than the real time. For single-core exeution this is not possible, and the CPU time can only be equal to or lower than the real time. In the analysis of our results, we sometimes present statistics of the execution times. These times are always \textit{CPU times}.
+
+The complementation tasks are executed via the command line interface of \goal. The complementation of each automata is run by a separate invocation of \goal. That means that for each automaton a new Java Virtual Machine (JVM) is started up. Consequently, this JVM startup time is included in the measured execution times. According to our observations, this JVM startup time is a constant of approximately two CPU time seconds.
+
+The cluster itself is managed by Oracle Grid Engine (formerly known as Sun Grid Engine) version 6.2\footnote{\url{http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html}}. This is a load scheduler that automatically dispatches incoming jobs from cluster users to nodes with enough free resources and capacity.
+
+A computer cluster is a multi-user environment and a node can be used by multiple users at the same time. Thus the used nodes may be under different levels of loads for different experiments, depending on how many other users are using the same node and how heavy their computation tasks are. At the moment we don't know whether this has an influence on our experiments, especially on the measurement of the execution time. We observed variatoins in the measured CPU time for similar tasks. This would also have an influence on the time limit that we describe in the next section. For the moment, we leave further investigations on this topic for future work.
 
 % \begin{itemize}
 % \item mpi.q
@@ -454,6 +410,20 @@ Since we use the execution time (CPU time) as a secondary metrics, next to the c
 %   \item $\rightarrow$ 16 GB RAM per core (slot)
 %   \end{itemize}
 % \end{itemize}
+
+\subsection{Time and Memory Limits}
+\label{4_limits}
+We defined a time limit of 600 seconds CPU time and a memory limit of 1 GB per complementation task in the GOAL test set. That means, if the complementation of a single automaton is not finished after 600 seconds CPU time or uses more than 1 GB memory, the task is aborted and marked as a \textit{timeout} or \textit{memory excess}.
+
+These limits correspond to the ones used by the experiments of the \goal{} authors~\cite{2011_tsai}. However, from their paper it is not clear if their time limit is in CPU time or wallclock time. But since they used different computing nodes, our results regarding the number of timeouts will anyway differ from theirs.
+
+The reason for these limits is simply the restricted amount of time and memory resources that we have available for the experiments. In an ideal world, we would let every complementation task run to its end, no matter how long it takes and how much memory it uses. This would give a perfectly unbiased picture of the results. By setting time and memory limits, we basically exclude the most difficult automata from the experiment. However, as mentioned, the practical reasons of limited time and computing power force as to make this compromise.
+
+The timeout and memory limit of 1 GB apply just to the automata of the \goal{} test set. For the Michel test set we did not set a timeout because we wanted each one of the four automata to finish. The longest complementation task of a Michel automaton consequently durated 109,810 seconds which is about 28 hours. We set a very high memory limit of 14 GB for the Michel test set to avoid memory excesses as we wanted each automaton to successfully complete. The number of 14 GB is determined by the physically available memory on the used computing nodes. All Michel automata successfully completed with this amount of memory.
+
+The timeout was implemented by the means of the \textsf{ulimit} Bash builtin\footnote{\url{http://linux.die.net/man/1/bash}}, which allows to set a maximum time after which running processes are killed. The memory limit was implemented by setting the maximum size of the Java heap, which can be done by the \textsf{-Xmx} option to the Java Virtual Machine (JVM). The heap is the main memory area of Java and the place where all the objects reside. Note that since our memory limit defines actually the size of the Java heap, the total amount of memory used by the process is higher than our limit, as Java has some other memory areas, for example for the JVM itself. However, this is a rather constant amount of memory and independent from the current automaton, so it does not disturb the relative comparisons of the results.
+
+The presence of aborted complementation task require the consideration of the so called effective samples in the result analysis, as introduced in the experiment paper of the \goal{} authors. The effective samples are those automata which have been successfully completed by \textit{all} constructions that are to be compared to each other. Imagine two constructions $A$ and $B$ where $A$ is successful complementing all the automata, whereas $B$ has timeouts or memory excesses at 100 of the automata. If we would now take, for example, the median complement sizes of the two result sets without first extracting the effective samples, then $B$ is likely be assessed as too good relative to $A$, because $B$'s results do not include the 100 automata at which it failed, and which are thus likely to have large complement sizes with $B$. The same 100 automata would however be included in the results of $A$. Therefore, all the result analysis of the experiments with the \goal{} test sets, that we present in Chapter~\ref{chap_results}, are based on the effective samples of the result sets. 
 
 
 % \begin{enumerate}
