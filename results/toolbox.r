@@ -648,6 +648,17 @@ MarL <- function(size) { mar <- par("mar"); mar[2] <- size; par(mar=mar) }
 MarT <- function(size) { mar <- par("mar"); mar[3] <- size; par(mar=mar) }
 MarR <- function(size) { mar <- par("mar"); mar[4] <- size; par(mar=mar) }
 
+# Convert seconds to minues, hours, and days
+Sec2Min  <- function(sec) { sec / 60       }
+Sec2Hrs  <- function(sec) { sec / 3600     }  # 60 * 60
+Sec2Days <- function(sec) { sec / 86400    }  # 60 * 60 * 24
+Sec2Yrs  <- function(sec) { sec / 31557600 }  # 60 * 60 * 24 * 365.25
+
+Perc <- function(n1, n2) {
+  # How many percents is 'n1' of 'n2'? 'n2' is taken as 100%
+  #----------------------------------------------------------------------------#
+  (100 * n1) / n2
+}
 
 Complexity <- function(n, m) {
   # Write two numbers n and m in the form m = (xn)^n

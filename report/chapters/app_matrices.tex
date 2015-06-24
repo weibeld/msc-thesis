@@ -1,34 +1,9 @@
 Bla bla bla
 
-
 \renewcommand{\arraystretch}{1.4}
 \renewcommand{\subwidth}{0.48}
 
 \newcolumntype{R}{>{\raggedleft\arraybackslash}p{2.25em}}
-
-% Force single floating figure to top of page
-% \makeatletter
-% \setlength{\@fptop}{0pt}
-% \makeatother
-
-\begin{figure}[h]
-  \centering
-  \begin{scriptsize}
-  \renewcommand{\tabcolsep}{0.05cm}
-  \begin{subtable}[t]{\subwidth\textwidth}
-    \centering
-    \input{figures/r/external/goal/matrices/s.median.Piterman+EQ+RO.tex}
-    \caption{Piterman+EQ+RO}
-  \end{subtable}
-  \hfill
-  \begin{subtable}[t]{\subwidth\textwidth}
-    \centering
-    \input{figures/r/external/goal/matrices/s.median.Slice+P+RO+MADJ+EG.tex}
-    \caption{Slice+P+RO+MADJ+EG}
-  \end{subtable}
-\end{scriptsize}
-\caption{Median complement sizes of the 10,998 effective samples of the external tests without the Rank construction. The rows (1.0 to 3.0) are the transition densities, and the columns (0.1 to 1.0) are the acceptance densities.}
-\end{figure}
 
 \begin{figure}
   \centering
@@ -87,6 +62,31 @@ Bla bla bla
 \end{scriptsize}
 \caption{Median complement sizes of the 10,939 effective samples of the internal tests on the \goal{} test set. The rows (1.0 to 3.0) are the transition densities, and the columns (0.1 to 1.0) are the acceptance densities.}
 \label{app_matrices}
+\end{figure}
+
+
+% Force single floating figure to top of page
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+
+\begin{figure}[h]
+  \centering
+  \begin{scriptsize}
+  \renewcommand{\tabcolsep}{0.05cm}
+  \begin{subtable}[t]{\subwidth\textwidth}
+    \centering
+    \input{figures/r/external/goal/matrices/s.median.Piterman+EQ+RO.tex}
+    \caption{Piterman+EQ+RO}
+  \end{subtable}
+  \hfill
+  \begin{subtable}[t]{\subwidth\textwidth}
+    \centering
+    \input{figures/r/external/goal/matrices/s.median.Slice+P+RO+MADJ+EG.tex}
+    \caption{Slice+P+RO+MADJ+EG}
+  \end{subtable}
+\end{scriptsize}
+\caption{Median complement sizes of the 10,998 effective samples of the external tests without the Rank construction. The rows (1.0 to 3.0) are the transition densities, and the columns (0.1 to 1.0) are the acceptance densities.}
 \end{figure}
 
 
