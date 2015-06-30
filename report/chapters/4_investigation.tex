@@ -42,16 +42,16 @@ What we are most interested in, in the context of this thesis, are of course \go
 \hline
 \# & Identifier & Name/description & Authors (year) & Ref. \\
 \hline
-1 & Ramsey & Ramsey-based construction & Sistla, Vardi, Wolper (1987) & \cite{PrasadSistla1987217} \\
-2 & Safra & Safra construction & Safra (1988) & \cite{1988_safra_1} \\
-3 & ModifiedSafra & Modification by Althoff & Althoff (2006) & \cite{2006_althoff} \\
+1 & Ramsey & Ramsey-based construction & Sistla et al. (1987) & \cite{PrasadSistla1987217} \\
+2 & Safra & Safra's construction & Safra (1988) & \cite{1988_safra_1} \\
+3 & ModifiedSafra & Modification of Safra's construction & Althoff et al. (2006) & \cite{2006_althoff} \\
 4 & Piterman & Safra-Piterman construction & Piterman (2007) & \cite{2007_piterman} \\
 5 & MS & Muller-Schupp construction & Muller, Schupp (1995) & \cite{Muller199569} \\
 6 & Rank & Rank-based construction & Schewe (2009) & \cite{schewe2009buchi} \\
 7 & WAPA & Via weak alternating parity automata & Thomas (1999) & \cite{1999_thomas} \\
 8 & WAA & Via weak alternating automata & Kupferman, Vardi (2001) & \cite{Kupferman:2001} \\
-9 & Slice+P & Slice-based construction (earlier) & Vardi, Wilke (2007) & \cite{vardi2007automata} \\
-10 & Slice & Slice-based construction (later) & Kähler, Wilke (2008) & \cite{2008_kaehler} \\
+9 & Slice+P & Slice-based construction & Vardi, Wilke (2007) & \cite{vardi2007automata} \\
+10 & Slice & Modified slice-based construction & Kähler, Wilke (2008) & \cite{2008_kaehler} \\
 \hline
 \end{tabular}
 \caption{The pre-implemented NBW complementation constructions in \goal{} (version 2014-11-17).}
@@ -59,6 +59,10 @@ What we are most interested in, in the context of this thesis, are of course \go
 \end{table}
 
 We sorted the construction in Table~\ref{goal_constructions} according to the four fundamental complementation approaches, Ramsey-based, determinization-based, rank-based, and slice-based. The first construction, Ramsey, is the only construction belonging to the Ramsey-based complementation approach. The following four constructions, Safra, ModifiedSafra, Piterman, and MS, belong to the determinization-based approach. Rank, WAPA, and WAA belong to the rank-based approach. Finally, Slice and Slice+P belong to the slice-based approach. Throughout the rest of this thesis, when we refer to one of \goal's Büchi complementation constructions, we will use the identifiers as defined in Table~\ref{goal_constructions}.
+
+Safra's construction is in fact a determinization construction that converts a non-deterministic Büchi automaton to a deterministic Rabin automaton. The deterministic Rabin automaton can be trivially complemented to a deterministic Streett automaton by replacing the Rabin acceptance condition with a Streett acceptance condition. Finally, the deterministic Streett automaton is converted to a non-deterministic Büchi automaton.
+
+ModifiedSafra uses the same procedure as Safra with the difference that a modified version of Safra's construction for converting a NBW to a DRW is used.
 
 Slice and Slice+P are actually combined in a single construction in \goal. However, one of the two constructions can be selected by the means of the option P. With the P option, the construction by Vardi and Wilke is used, and without the P option, the one by Kähler and Wilke is used. For our study, we will use Vardi and Wilke's construction (with the P option), however, we will usually still refer to this construction as simply Slice.
 

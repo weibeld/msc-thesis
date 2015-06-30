@@ -38,7 +38,7 @@ References
 [8] Kähler, Wilke: Complementation, disambiguation, and determinization of Büchi automata unified, 2008.
 [9] Schewe: Büchi complementation made tight, 2009.
 [10] Thomas: Complementation of Büchi Automata Revisited, 1999.
-[11] Althoff: Observations on Determinization of Bu ̈chi Automata, 2006.
+[11] Althoff: Observations on Determinization of Büchi Automata, 2006.
 
 
 Other constructions in GOAL:	kurshan				DBW complementation

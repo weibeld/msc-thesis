@@ -1,5 +1,7 @@
 \section{Büchi Automata and Other \om-Automata}
 
+Formal definitions for example in~\cite{Thomas:1991}\cite{1996_thomas}\cite{2014_wilke}
+
 \subsection{Büchi Automata}
 Büchi automata are a type of the so-called \om-automata (``omega''-automata). \om-automata are finite state automata that process infinite words. Thus, an \om-automaton never ``stops'' reading a word, because the word it is reading has an infinite number of symbols. But still, \om-automata can accept or reject the words they read by the means of special \textit{acceptance conditions}. In fact, the only difference between classical finite state automata on finite words and \om-automata is the acceptance condition. 
 
@@ -33,7 +35,7 @@ However, this equivalence with the \om-regular languages does only hold for \tex
 
 This means that there exist languages that can be recognised by a non-deterministic Büchi automaton, but not by a deterministic one. A typical example is the language $(0+1)^*1^\omega$. This is the language of all words consisting of 0 and 1 with a finite number of 0 and an infinite number of 1. It is proved in various publications that this language can be recognised by a non-deterministic Büchi automaton, but not by a deterministic Büchi automaton~\cite{1996_vardi}\cite{2002_roggenbach}.
 
-The most important consequence of this fact is that Büchi automata can, in general, not be determinised. This means that it is not possible to turn \textit{every} non-deterministic Büchi automaton into a deterministic one. This contrasts with the case of the classical finite state automata on finite words, where \textit{every} non-deterministic automata (NFA) can be turned into a deterministic automaton (DFA), by the means of, for example, the subset constrution introduced by Rabin in 1959~\cite{1959_rabin}.
+The most important consequence of this fact is that Büchi automata can, in general, not be determinised. This means that it is not possible to turn \textit{every} non-deterministic Büchi automaton into a deterministic one. This contrasts with the case of the classical finite state automata on finite words, where \textit{every} non-deterministic automata (NFA) can be turned into a deterministic automaton (DFA), by the means of, for example, the subset constrution introduced by Rabin and Scott in 1959~\cite{1959_rabin}.
 
 It has been stated that the fact that Büchi automata can in general not be determinised is the main reason that Büchi complementation is such a hard problem~\cite{niessner1997deterministic}. We will see why this is the case below.
 
@@ -76,18 +78,46 @@ The Rabin and Streett acceptance conditions are the negations of each other. Thi
 
 The parity condition assigns a number (color) to each state. A run is accpted if and only if the infinitely often occuring state with the smallest number has an even number.
 
-At this point we will start using a notation for these different types of \om-automata, including Büchi automata, that has been introduced in~\cite{2011_tsai}. It consists of a three-letter acronyme where the first letter is either ``D'' or ``N'' specifying whether the automaton is deterministic or non-deterministc. The second letter is the first letter of the automaton type, that is ``B'' for Büchi, ``M'' for Muller, ``R'' for Rabin, ``S'' for Streett, and ``P'' for parity automata. The third letter is always ``W'' meaning that the automaton runs on classical words, rather than, for example, trees.
+At this point we will start using a notation for the different types of \om-automata that has been used in~\cite{2011_tsai} and~\cite{2007_vardi}. It consists of a three-letter acronymes where the first letter is either ``D'' or ``N'' specifying whether the automaton is deterministic or non-deterministc. The second letter is the first letter of the automaton type, that is ``B'' for Büchi, ``M'' for Muller, ``R'' for Rabin, ``S'' for Streett, and ``P'' for parity automata. The third letter is in our case always ``W'' meaning that the automaton runs on classical words, rather than, for example, trees. Thus, throughout this thesis we will use DBW for deterministic Büchi automata, NBW for non-deterministic Büchi automata, DMW for deterministic Muller automata, and so on.
 
-Thus, throughout this thesis we will use DBW for deterministic Büchi automata, NBW for non-deterministic Büchi automata, DMW for deterministic Muller automata, and so on.
-
-Regarding the expressivity of Muller, Rabin, Streett, and parity automata, they are all equivalent to the \om-regular languages, in both, their deterministic and non-deterministic forms~\cite{Thomas:1991}. This means that NBW, DMW, NMW, DRW, NRW, DSW, NSW, DPW, and NPW are equivalent, and it is just DBW, the deterministic Büchi automata, that have a different expressivity.
+Regarding the expressivity of Muller, Rabin, Streett, and parity automata, it turned out that, like non-deterministic Büchi automata, they are equivalent to the \om-regular languages~\cite{Thomas:1991}. However, unlike Büchi automata, for Muller, Rabin, Streett, and parity automata this equivalence holds for deterministic \textit{and} non-deterministic automata. That is, unlike Büchi automata, these automata \textit{can} be determinised. In summary, there is thus an equivalence between NBW, DMW, NMW, DRW, NRW, DSW, NSW, DPW, NPW, and the \om-regular languages. Only the DBW, as a special case, has a different expressivity, which is a strict subset of the expressivities of the other automata types. 
 
 
 
 \section{Run Analysis in Non-Deterministic Büchi Automata}
 
+There are two basic ways for arraning all runs of a non-deterministic Büchi automaton: run DAGs and trees~\cite{2014_wilke}
 
-\section{History of Büchi Complementation}
+
+\section{Büchi Complementation Constructions}
+Since the introduction of Büchi automata in 1962, many constructions for complementing non-deterministic Büchi automata have been proposed. 
+
+
+
+\subsection{Ramsey-Based Approach}
+The Ramsey-based approach has its name from a Ramsey-based combinatorial argument that is used in the complementation constructions. Ramsey was a British mathematician and logician who lived at the beginning of the 20th century and founded what was later called the \textit{Ramsey theory}, which is a branch of combinatorics~\cite{graham1990ramsey}.
+
+Common to the  Ramsey-based complementation constructions is that they stay exclusively in the framework of Büchi automata. That is, these constructions do not include the conversion of the initial automaton to intermediate automata of different types, as it is for example the case for the determinization-based constructions. Rather, in Ramsey-based constructions, the complement automaton is directly constructed from the input automaton by combinatorial operations.
+
+Büchi's own complementation construction, that he described along with the introduction of Büchi automata in 1962~\cite{buchi1960decision}, is a Ramsey-based construction. For this construction, Büchi used a Ramsey-based combinatorial argument from~\cite{1930ramsey}. This construction has a doubly-exponential worst-case complexity of $2^{2^{O\left(n\right)}}$. This means that given an input automaton with $n$ states, the maximum number of states that the output automaton can have is $2^{2^{O\left(n\right)}}$.
+
+
+
+
+ there are no intermediate automata of different types to which the initial automaton is converted. This
+
+
+
+The first Büchi complementation construction has been proposed by Büchi himself along with the introduction of Büchi automata~\cite{buchi1960decision}. In fact, this construction was a part of the proof of Büchi's Theorem. 
+
+
+\subsection{Determinization-Based Approach}
+
+\subsection{Rank-Based Approach}
+
+\subsection{Slice-Based Approach}
+
+
 Review of proposed Büchi complementation constructions and their complexity
 Introduce worst-case complexity as a performance metric
 Mention the four basic approaches
