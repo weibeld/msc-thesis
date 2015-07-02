@@ -51,6 +51,7 @@ However, non-deterministic Büchi automata cannot be determinised, and hence thi
 
 
 \subsection{Other \om-Automata}
+\label{om-automata}
 After the introduction of Büchi automata in 1962, several other types of \om-automata have been proposed. The most notable ones are Muller automata (Muller, 1963~\cite{1963_muller}), Rabin automata (Rabin, 1969~\cite{rabin1969decidability}), Streett automata (Streett, 1982~\cite{Streett1982121}), and parity automata (Mostowski, 1985~\cite{1985_mostowski}).
 
 These automata differ from Büchi automata only in their acceptance condition, that is, the condition that a run $\rho$ is accepted. Table~\ref{acc_conditions} gives a formal definition of the acceptance conditions of these types of \om-automata.
@@ -78,7 +79,7 @@ The Rabin and Streett acceptance conditions are the negations of each other. Thi
 
 The parity condition assigns a number (color) to each state. A run is accpted if and only if the infinitely often occuring state with the smallest number has an even number.
 
-At this point we will start using a notation for the different types of \om-automata that has been used in~\cite{2011_tsai} and~\cite{2007_vardi}. It consists of a three-letter acronymes where the first letter is either ``D'' or ``N'' specifying whether the automaton is deterministic or non-deterministc. The second letter is the first letter of the automaton type, that is ``B'' for Büchi, ``M'' for Muller, ``R'' for Rabin, ``S'' for Streett, and ``P'' for parity automata. The third letter is in our case always ``W'' meaning that the automaton runs on classical words, rather than, for example, trees. Thus, throughout this thesis we will use DBW for deterministic Büchi automata, NBW for non-deterministic Büchi automata, DMW for deterministic Muller automata, and so on.
+At this point we will start using a notation for the different types of \om-automata that has been used in~\cite{2006_piterman} and~\cite{2011_tsai}. It consists of a three-letter acronymes of the form $\{D, W\} \times \{B, M, R, S, P\} \times W$. The first letter, $D$ or $N$ specifies whether the automaton is deterministic or non-deterministc. The second letter is the initial letter of the automaton type, that is, $B$ for Büchi, $M$ for Muller, $R$ for Rabin, $S$ for Streett, and $P$ for parity automata. The third letter specifies on which the automaton runs, and is in our case always $W$ meaning ``words''. Thus, throughout this thesis we will use DBW for deterministic Büchi automata, NBW for non-deterministic Büchi automata, DMW for deterministic Muller automata, and so on.
 
 Regarding the expressivity of Muller, Rabin, Streett, and parity automata, it turned out that, like non-deterministic Büchi automata, they are equivalent to the \om-regular languages~\cite{Thomas:1991}. However, unlike Büchi automata, for Muller, Rabin, Streett, and parity automata this equivalence holds for deterministic \textit{and} non-deterministic automata. That is, unlike Büchi automata, these automata \textit{can} be determinised. In summary, there is thus an equivalence between NBW, DMW, NMW, DRW, NRW, DSW, NSW, DPW, NPW, and the \om-regular languages. Only the DBW, as a special case, has a different expressivity, which is a strict subset of the expressivities of the other automata types. 
 
@@ -95,25 +96,60 @@ Since the introduction of Büchi automata in 1962, many constructions for comple
 
 
 \subsection{Ramsey-Based Approach}
-The Ramsey-based approach has its name from a Ramsey-based combinatorial argument that is used in the complementation constructions. Ramsey was a British mathematician and logician who lived at the beginning of the 20th century and founded what was later called the \textit{Ramsey theory}, which is a branch of combinatorics~\cite{graham1990ramsey}.
+The Ramsey-based approach has its name from a Ramsey-based combinatorial argument that is used in the complementation constructions. Ramsey was a British mathematician who lived at the beginning of the 20th century and founded a branch of combinatorics called the Ramsey theory~\cite{graham1990ramsey}.
 
-Common to the  Ramsey-based complementation constructions is that they stay exclusively in the framework of Büchi automata. That is, these constructions do not include the conversion of the initial automaton to intermediate automata of different types, as it is for example the case for the determinization-based constructions. Rather, in Ramsey-based constructions, the complement automaton is directly constructed from the input automaton by combinatorial operations.
+Common to the  Ramsey-based complementation constructions is that they stay completely within in the framework of Büchi automata. That is, they do not include intermediate automata of different types, as for example the determinization-based constructions. Rather, Ramsey-based constructions construct the complement automata directly by combinatorial operations on the states and transitions.
 
-Büchi's own complementation construction, that he described along with the introduction of Büchi automata in 1962~\cite{buchi1960decision}, is a Ramsey-based construction. For this construction, Büchi used a Ramsey-based combinatorial argument from~\cite{1930ramsey}. This construction has a doubly-exponential worst-case complexity of $2^{2^{O\left(n\right)}}$. This means that given an input automaton with $n$ states, the maximum number of states that the output automaton can have is $2^{2^{O\left(n\right)}}$.
+The first Büchi complementation construction at all was described by Büchi himself, along with the introduction of Büchi automata in 1962~\cite{buchi1960decision}. This complemenation construction is a Ramsey-based construction. It involves a combinatorial argument based on work by Ramsey~\cite{1930ramsey}. The construction is complicated, and has a doubly-exponential worst-case state complexity of $2^{2^{O\left(n\right)}}$~\cite{vardi2005buchi}. This means that if we assume, for example, the concrete complexity to be $2^{2^n}$, then an automaton with 6 states may result in a complement with at most $2^{2^6}$ states, which is more than 18 quintillions (18 billion billions).
 
+The complexity of this worst-case is very high, and it would probably be impossible to complement such a worst-case automaton in practice. This is why all the subsequent complementation constructions, until today, have the goal to reduce this worst-case complexity. In this way, the worst-case state complexity became the main measure of performance for Büchi complementation constructions.
 
+Another Ramsey-based construction has been introduced by Sistla, Vardi, and Wolper in 1987~\cite{PrasadSistla1987217} (first published in 1985~\cite{1985_sistla}). It is an improvement of Büchi's construction and the first one that involves only an exponential, instead of a doubly-exponential, worst-case state complexity. The complexity of this construction has been calculated to be $O\left(2^{4n^2}\right)$ (see~\cite{1988_safra_2}\cite{Pecuchet198695}).
 
-
- there are no intermediate automata of different types to which the initial automaton is converted. This
-
-
-
-The first Büchi complementation construction has been proposed by Büchi himself along with the introduction of Büchi automata~\cite{buchi1960decision}. In fact, this construction was a part of the proof of Büchi's Theorem. 
+The Ramsey-based approach is the oldest of the four approaches and it was particularly 
 
 
 \subsection{Determinization-Based Approach}
+The determinization-based complementation constructions proceed by converting the non-deterministic Büchi automaton to a deterministic automaton (of a different type), complementing the deterministic automaton, and finally converting the complement automaton back to a non-deterministic Büchi automaton. The idea behind this is that the complementation of deterministic automata is generally much easier than the complementation of non-deterministic automata. The complementation problem is then in fact reduced to finding conversions between different types of automata.
+
+As we have seen, a conversion from non-deterministic Büchi automata (NBW) to deterministic Büchi automata (DBW) is generally not possible, because of the inequivalence of these two automata classes. However, NBW are equivalent to the deterministic automata of the other \om-automata types that we described in Section~\ref{om-automata} (DMW, DRW, DSW, and DPW). Hence, the determinization-based constructions include the conversion of a NBW to one of these deterministic automata as the first step.
+
+An early determinization-based construction has been described by Safra in 1988~\cite{1988_safra_2}. Safra's main work consists in fact of a determinization construction for converting a non-deterministic Büchi automaton (NBW) to a deterministic Rabin automaton (DRW). This determinization construction (Safra's construction) leads with some additional steps to a complementation construction. The concrete conversion steps for this complementation construction are described by Safra as follows.
+\begin{enumerate}
+\item NBW $\longrightarrow$ DRW
+\item DRW $\longrightarrow$ DSW (complementation)
+\item DSW $\longrightarrow$ DRW
+\item DRW $\longrightarrow$ NBW
+\end{enumerate}
+
+First, the non-deterministic Büchi automaton is converted to an equivalent determnistic Rabin automaton. This is the actual Safra's construction. The deterministic Rabin automaton is then complemented to a deterministic Streett automaton, which can be trivially done by exchanging the Rabin acceptance condition of the DRW with a Street acceptance condition. This is possible, because the Rabin and the Street acceptance conditions are negations of each other (see Section~\ref{om-automata}). The resulting complement deterministic Street automaton is then converted via a deterministic Rabin automaton to a non-deterministic Büchi automaton by conversion that are also described in Safra's paper. The worst-case state complexity of the entire construction is $2^{O\left(n\, \text{log} \, n\right)}$, and thus much lower than the previous Ramsey-based constructions by Sistla et al.~\cite{PrasadSistla1987217} and Büchi~\cite{buchi1960decision}.
+
+Many of the other determinization-based complementation constructions are based on improvements of Safra's determinization construction. For example, in 1995 Muller and Schupp proposed an alternative construction for converting NBW to DRW~\cite{Muller199569}. This construction uses so-called Muller-Schupp trees instead of Safra trees as an internal structure. Like Safra's construction, the worst-case state complexity of this construction is $2^{O\left(n\, \text{log} \, n\right)}$. It is said that the Muller-Schupp construction is simpler than Safra's construction, but produces larger automata in many cases~\cite{2006_althoff}. A comparison of the Muller-Schupp construction and Safra's construction can also be found in~\cite{2006_althoff}.
+
+Another improved variant of Safra's determinization construction has been proposed in 2007 by Piterman from EPF Lausanne~\cite{2007_piterman} (first published at a conference in 2006~\cite{2006_piterman}). The main difference to Safra's construction is that Piterman's determinization construction results in a deterministic parity automaton, rather than in a deterministic Rabin automaton. The determnistic parity automaton can then be easily complemented (for example, by increasing the number of each state by 1) to another deterministic parity automaton, which in turn can be converted back to a non-deterministic Büchi automaton. The steps for this complementation construction are thus as follows.
+\begin{enumerate}
+\item NBW $\longrightarrow$ DPW
+\item DPW $\longrightarrow$ DPW (complementation)
+\item DPW $\longrightarrow$ NBW
+\end{enumerate}
+
+The worst-case state complexity of Piterman's determinization construction is much lower than Safra's construction, because Piterman further compacts the internal tree structure used by Safra. Furthermore, the conversion of the complement DPW to the NBW can be done directly, whereas with Safra's construction the complement DSW first has to be converted to a DRW before converting it to the final NBW. This all makes Piterman's construction very efficient. The worst-case state complexity of the entire complementation construction has been calculated to be $n^{2n}$.
+
 
 \subsection{Rank-Based Approach}
+The rank-based approach was the third complementation approach that has been proposed. Rank-based constructions neither involve Ramsey theory, nor do they require determinisation. Rather, rank-based constructions directly build up the output automaton step-by-step in a similar fashion as the subset construction for determinising classical finite state automata on finite words.
+
+They start building the output automaton with an initial state and then repeatedly add successor states to all of the so-far unprocessed states of this intermediate output automaton. Like in the subset construction, the output-states (states of the output automaton) ``contain'' in some form the input-states (states of the input automaton) that are input-successors of the input states in the preceding output-state. However, unlike in the subset construction, an output-state may have multiple successors on a given alphabet symbol (the output automaton is not deterministic), and the output states contain additional, construction-specific information, which is used to determine whether an output state is accepting or not. In rank-based constructions, this information is among other a so-called rank for each input-state of an output-state.
+
+
+
+
+ Rather, they are based on run analysis by run DAGs and by the assignment of ranks to nodes 
+
+
+Kupferman and Vardi $(0.97n)^n$. 
+
+
 
 \subsection{Slice-Based Approach}
 
