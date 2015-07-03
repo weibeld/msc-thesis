@@ -3,6 +3,7 @@
 Formal definitions for example in~\cite{Thomas:1991}\cite{1996_thomas}\cite{2014_wilke}
 
 \subsection{Büchi Automata}
+\label{buchi_automata}
 Büchi automata are a type of the so-called \om-automata (``omega''-automata). \om-automata are finite state automata that process infinite words. Thus, an \om-automaton never ``stops'' reading a word, because the word it is reading has an infinite number of symbols. But still, \om-automata can accept or reject the words they read by the means of special \textit{acceptance conditions}. In fact, the only difference between classical finite state automata on finite words and \om-automata is the acceptance condition. 
 
 For the case of Büchi automata, this is the Büchi acceptance condition that we describe below.
@@ -110,19 +111,23 @@ The Ramsey-based approach is the oldest of the four approaches and it was partic
 
 
 \subsection{Determinization-Based Approach}
-The determinization-based complementation constructions proceed by converting the non-deterministic Büchi automaton to a deterministic automaton (of a different type), complementing the deterministic automaton, and finally converting the complement automaton back to a non-deterministic Büchi automaton. The idea behind this is that the complementation of deterministic automata is generally much easier than the complementation of non-deterministic automata. The complementation problem is then in fact reduced to finding conversions between different types of automata.
+The determinization-based complementation constructions proceed by converting an NBW to a deterministic automaton, complementing the deterministic automaton, and finally converting the complement automaton back to an NBW. The idea behind this is that the complementation of deterministic \om-automata is easier than the complementation of non-deterministic \om-automata. The complementation problem is then in fact reduced to conversions between different types of automata, especially from the initial NBW to a deterministic automaton.
 
-As we have seen, a conversion from non-deterministic Büchi automata (NBW) to deterministic Büchi automata (DBW) is generally not possible, because of the inequivalence of these two automata classes. However, NBW are equivalent to the deterministic automata of the other \om-automata types that we described in Section~\ref{om-automata} (DMW, DRW, DSW, and DPW). Hence, the determinization-based constructions include the conversion of a NBW to one of these deterministic automata as the first step.
+In Section~\ref{buchi_automata} we have seen that NBW cannot be determinised to DBW because of the expressive inequivalence of deterministic and non-deterministic Büchi automata. However, NBW are equivalent to deterministic Muller, Rabin, Streett, and parity automata. Thus, the determinisation step of determinisation-based complementation constructions refers to the conversion of an NBW to 
 
-An early determinization-based construction has been described by Safra in 1988~\cite{1988_safra_2}. Safra's main work consists in fact of a determinization construction for converting a non-deterministic Büchi automaton (NBW) to a deterministic Rabin automaton (DRW). This determinization construction (Safra's construction) leads with some additional steps to a complementation construction. The concrete conversion steps for this complementation construction are described by Safra as follows.
+An early determinization-based complementation construction has been described by Safra in 1988~\cite{1988_safra_2}. Safra's main focus was a determinisation construction for NBW, but with some additional steps, this gives automatically rise to a complementation construction. The determinisation construction (commonly known as Safra's construction) converts a non-deterministic Büchi automaton to a deterministic Rabin automaton. The worst-case state complexity of this construction is $2^{O\left(n\, \text{log} \, n\right)}$. 
+
+ Safra's actual construction is a construction for converting a NBW to a DRW, that is determinising a Büchi automaton to a Rabin automaton. However, with some additional conversion steps (that are described by Safra as well), Safra's construction leads to a complete complementation construction, in the following way. 
 \begin{enumerate}
-\item NBW $\longrightarrow$ DRW
+\item NBW $\longrightarrow$ DRW (Safra's construction)
 \item DRW $\longrightarrow$ DSW (complementation)
 \item DSW $\longrightarrow$ DRW
 \item DRW $\longrightarrow$ NBW
 \end{enumerate}
 
 First, the non-deterministic Büchi automaton is converted to an equivalent determnistic Rabin automaton. This is the actual Safra's construction. The deterministic Rabin automaton is then complemented to a deterministic Streett automaton, which can be trivially done by exchanging the Rabin acceptance condition of the DRW with a Street acceptance condition. This is possible, because the Rabin and the Street acceptance conditions are negations of each other (see Section~\ref{om-automata}). The resulting complement deterministic Street automaton is then converted via a deterministic Rabin automaton to a non-deterministic Büchi automaton by conversion that are also described in Safra's paper. The worst-case state complexity of the entire construction is $2^{O\left(n\, \text{log} \, n\right)}$, and thus much lower than the previous Ramsey-based constructions by Sistla et al.~\cite{PrasadSistla1987217} and Büchi~\cite{buchi1960decision}.
+
+The Muller-Schupp construction is more intuitive than Safra's construction~\cite{2002_roggenbach}
 
 Many of the other determinization-based complementation constructions are based on improvements of Safra's determinization construction. For example, in 1995 Muller and Schupp proposed an alternative construction for converting NBW to DRW~\cite{Muller199569}. This construction uses so-called Muller-Schupp trees instead of Safra trees as an internal structure. Like Safra's construction, the worst-case state complexity of this construction is $2^{O\left(n\, \text{log} \, n\right)}$. It is said that the Muller-Schupp construction is simpler than Safra's construction, but produces larger automata in many cases~\cite{2006_althoff}. A comparison of the Muller-Schupp construction and Safra's construction can also be found in~\cite{2006_althoff}.
 
