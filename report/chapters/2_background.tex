@@ -101,9 +101,13 @@ The Ramsey-based approach has its name from a Ramsey-based combinatorial argumen
 
 Common to the  Ramsey-based complementation constructions is that they stay completely within in the framework of Büchi automata. That is, they do not include intermediate automata of different types, as for example the determinization-based constructions. Rather, Ramsey-based constructions construct the complement automata directly by combinatorial operations on the states and transitions.
 
+\subsubsection{Büchi, 1962}
+
 The first Büchi complementation construction at all was described by Büchi himself, along with the introduction of Büchi automata in 1962~\cite{buchi1960decision}. This complemenation construction is a Ramsey-based construction. It involves a combinatorial argument based on work by Ramsey~\cite{1930ramsey}. The construction is complicated, and has a doubly-exponential worst-case state complexity of $2^{2^{O\left(n\right)}}$~\cite{vardi2005buchi}. This means that if we assume, for example, the concrete complexity to be $2^{2^n}$, then an automaton with 6 states may result in a complement with at most $2^{2^6}$ states, which is more than 18 quintillions (18 billion billions).
 
 The complexity of this worst-case is very high, and it would probably be impossible to complement such a worst-case automaton in practice. This is why all the subsequent complementation constructions, until today, have the goal to reduce this worst-case complexity. In this way, the worst-case state complexity became the main measure of performance for Büchi complementation constructions.
+
+\subsubsection{Sistla, Vardi, and Wolper, 1985}
 
 Another Ramsey-based construction has been introduced by Sistla, Vardi, and Wolper in 1987~\cite{PrasadSistla1987217} (first published in 1985~\cite{1985_sistla}). It is an improvement of Büchi's construction and the first one that involves only an exponential, instead of a doubly-exponential, worst-case state complexity. The complexity of this construction has been calculated to be $O\left(2^{4n^2}\right)$ (see~\cite{1988_safra_2}\cite{Pecuchet198695}).
 
@@ -113,7 +117,9 @@ The Ramsey-based approach is the oldest of the four approaches and it was partic
 \subsection{Determinization-Based Approach}
 The determinization-based complementation constructions proceed by converting an NBW to a deterministic automaton, complementing the deterministic automaton, and finally converting the complement automaton back to an NBW. The deterministic automaton cannot be a DBW (because NBW and DBW are not equivalent), however it can be a DMW, DRW, DSW, or DPW.
 
-The idea behind this approach is that the complementation of deterministic \om-automata is easier than the complementation of non-deterministic \om-automata. The complementation problem is then in fact reduced to conversions between different types of automata. From these conversions, the conversion from the initial NBW to a deterministic \om-automaton is the most difficult and crucial one. 
+The idea behind this approach is that the complementation of deterministic \om-automata is easier than the complementation of non-deterministic \om-automata. The complementation problem is then in fact reduced to conversions between different types of automata. From these conversions, the conversion from the initial NBW to a deterministic \om-automaton is the most difficult and crucial one.
+
+\subsubsection{Safra, 1988}
 
 The first determinisation-based complementation construction has been described by Safra in 1988~\cite{1988_safra_2}. Safra's main work was actually a determinisation construction for converting an NBW to a DRW. This is what today is known as \textit{Safra's construction}. Safra then describes complementation as a possible application of his determinisation construction. He also presents the additional conversions that are needed for the entire complementation construction. The conversion steps of Safra's complementation procedure are as follows.
 \begin{enumerate}
@@ -127,9 +133,13 @@ The complementation step from a DRW to a DSW that accepts the complement languag
 
 The core is the conversion from NBW to DRW (Safra's construction). This construction is basically a modified subset construction. That is, the output automaton is built up from an initial state step-by-step by adding new states and transitions. The main difference to the subset construction is that in Safra's construction, the output-states consist of trees of subsets of input-states, rather than just of subsets of input-states. These trees of subsets of states are called \textit{Safra trees}. The details of the construction are rather intricate, but well described in~\cite{1988_safra_2}. The deterministic automaton that results from Safra's construction can then be interpreted as a Rabin automaton.
 
-The state growth of Safra's construction is $2^{O\left(n\, \text{log}\, n\right)}$, where $n$ is the number of states of the input automaton. The additional conversions (DSW to DRW, and DRW to NBW) have a lower state complexity than this, so that the overall complexity of the entire complementation procedure is still $2^{O(n\, \text{log}\, n}$. With this, Safra was the first one to describe a Büchi complementation construction with only an exponential complexity. All the previous complementation constructions had at leat a doubly-exponential complexity.
+The state growth of Safra's construction is $2^{O\left(n\, \text{log}\, n\right)}$, where $n$ is the number of states of the input automaton. The additional conversions (DSW to DRW, and DRW to NBW) have a lower state complexity than this, so that the overall complexity of the entire complementation procedure is still $2^{O(n\, \text{log}\, n}$.
+
+\subsubsection{Muller and Schupp, 1995}
 
 Most other determinisation-based complementation constructions are based on improvements of Safra's construction. One of them is the construction for converting NBW to DRW proposed in 1995 by Muller an Schupp. This construction is said to be simpler and more intuitive than Safra's construction~\cite{2002_roggenbach}, however, often produces larger output automata in practice~\cite{2006_althoff}. The theoretically caluclated state complexity of the Muller-Schupp construction is $2^{O\left(n\, \text{log}\, n\right)}$, that is, similar to Safra's construction. A comparison of the Muller-Schupp construction and Safra's construction can be found in~\cite{2006_althoff}.
+
+\subsubsection{Piterman, 2007}
 
 Another improvement of Safra's construction has been proposed in 2007 by Piterman from EPF Lausanne~\cite{2007_piterman} (first presented at a conference in 2006~\cite{2006_piterman}). This construction converts a NBW to a DPW, rather than a DRW. Piterman's construction uses a more compact version of Safra trees, which allows it to produce smaller output automata. The concrete worst-case state growth of Piterman's construction is $2n^nn!$, opposed to $12^nn^{2n}$ of Safra's construction~\cite{2007_piterman}. Complementation with Piterman's construction is done in the following steps.
 \begin{enumerate}
@@ -141,6 +151,36 @@ Another improvement of Safra's construction has been proposed in 2007 by Piterma
 The complementation step from a DPW to a DPW accepting the complement language can be trivially done by, for example, increasing the number of each state by 1. The conversion from a DPW to an NBW can alse be done without major complexity~\cite{2011_tsai}.
 
 \subsection{Rank-Based Approach}
+The rank-based approach was the third of the four proposed main complementation approaches. It does neither include Ramsey theroy, nor determinisation. Rather, it is based on run analysis with run DAGs. The link of run analysis with run DAGs to complementation is as follows. A run DAG allows to summarise all the possible runs of an automaton on a specific word. If all these runs are rejecting, then we say that the entire run DAG is rejecting. In this case, the automaton does not accept the word, and consequently, the complement automaton must accept this word. Conversely, if one or more runs in the run DAG are not rejecting, then the entire run DAG is not rejecting. In this case, the automaton accepts the word, and consequently, the complement automaton must no accept this word.
+
+The information of whether a run DAG is rejecting or not is expressed with so-called ranks. These are numbers that are assigned to the vertices of a run DAG, one rank per vertex. These ranks are assigned in a way that each run of a run DAG eventually gets trapped in a rank. From this information it is then possible to deduce whether the run DAG is rejecting or not. This in turn determines whether the complement automaton must accept the given word, or not.
+
+This entire analysis of run DAGs with ranks is included in a subset construction. This means that the individual run DAGs are not constructed explicitly for each word, but rather implicitly ``on-the-fly'' within the complement automaton under construction. From a practical point of view, this means that rank-based constructions proceed in a subset construction based fashion. That is, the construction of the complement automaton is started with an initial state, and then step-by-step, successor states are added. Each output state consists of subsets of input-states.
+
+\subsubsection{Klarlund, 1991}
+The first rank-based construction has been proposed in 1991 by Klarlund~\cite{1991_klarlund}. However, Klarlund used the term \textit{progress measure} instead of \textit{rank}. This is because he looked at the ranks as a measure for the ``progress'' of a run towards the satisfaction of a certain property. The term \textit{rank} has, to the best of our knowledge, been introduced by Thomas in 1999~\cite{1999_thomas}. Klarlund also did not mention run DAGs, but they are implicit in his description of the construction. The construction works as described above by performing a modified subset construction. 
+
+\subsubsection{Kupferman and Vardi, 1997/2001}
+This construction by Kupferman and Vardi has been published as a preliminary conference version in 1997~\cite{1997_vardi}, and as a journal version in 2001~\cite{Kupferman:2001}. Both publications are entitled ``Weak Alternating Automata Are Not That Weak''. The idea of the construction described by Kupferman and Vardi is the same as Klarlund's construction from 1991~\cite{1991_klarlund}. However, Kupferman and Vardi provide two different descriptions for this idea.
+
+The first description does not use run DAGs and ranks, but rather converst the input automaton to a weak alternating automaton, which is complemented, and then converted back to a non-deterministic Büchi automata. Weak alternating automata (WAA) have been introduced in 1986 by Muller, Saoudi, and Schupp~\cite{1986_muller}. Kupferman and Vardi state that this construction is conceptually simpler and easier implementable than Klarlund's construction~\cite{1991_klarlund}. This first version of Kupferman and Vardi's construction is described in both, the publications from 1997~\cite{1997_vardi} and 2001~\cite{Kupferman:2001}.
+
+The second description in turn is rank-based, as described above, and works in the subset construction fashion without intermediate automata. Kupferman and Vardi point out that this version of the construction is identical to Klarlund's construction. What changes is just the terminology, for example ``ranks'' instead of ``progress measure''. This second version of Kupferman and Vardi's construction is to the best of our knowledge only described in the publication from 2001~\cite{Kupferman:2001}, however, we are not sure, because we could not access the publication from 1997\cite{1997_vardi}.
+
+The automata produced by the two versions of Kupferman and Vardi's construction are identical. The worst-case state complexity has been calculated to be approximately $(6n)^n$~\cite{schewe2009buchi}\cite{2007_vardi}.
+
+\subsubsection{Thomas, 1999}
+This construction by Thomas~\cite{1999_thomas} is based on the WAA construction by Kupferman and Vardi from 1997~\cite{1997_vardi}. It uses the concept of ranks, but does not proceed in the subset construction manner, as Klarlund's construction~\cite{1991_klarlund} and Kupferman and Vardi's second version~\cite{Kupferman:2001}. Rather, it transforms the input NBW to an intermediate automaton, complements it, and converts the result back to an NBW. That is, it proceeds in a similar fashion as Kupferman and Vardi's first version~\cite{1997_vardi}. The type of the intermediate automaton is a weak alternating parity automaton (WAPA), that is, a weak alternating automaton with the parity acceptance condition.
+
+\subsubsection{Friedgut, Kupferman, and Vardi, 2006}
+In 2006, Friedgut, Kupferman, and Vardi published a paper entitled ``Büchi Complementation Made Tighter''~\cite{friedgut2006buchi} (a preliminary version of the paper has appeared in 2004~\cite{2004_friedgut}). There, they describe an improvement to the second (rank-based) version of Kupferman and Vardi's construction from 2001~\cite{Kupferman:2001}. The improvement consists in a more sophisticated ranking function, that is called \textit{tight ranking}. This improvement allows to massively reduce the worst-case state complexity of the construction to $(0.96n)^n$.
+
+\subsubsection{Schewe, 2009}
+With a paper entitled ``Büchi Complementation Made Tight''~\cite{schewe2009buchi}, Schewe proposed in 2009 a further improvement to the construction by Friedgut, Kupferman, and Vardi~\cite{friedgut2006buchi}. The improvement consists in a refinement of the cut-point construction
+
+
+
+
 The rank-based approach was the third complementation approach that has been proposed. Rank-based constructions neither involve Ramsey theory, nor do they require determinisation. Rather, rank-based constructions directly build up the output automaton step-by-step in a similar fashion as the subset construction for determinising classical finite state automata on finite words.
 
 They start building the output automaton with an initial state and then repeatedly add successor states to all of the so-far unprocessed states of this intermediate output automaton. Like in the subset construction, the output-states (states of the output automaton) ``contain'' in some form the input-states (states of the input automaton) that are input-successors of the input states in the preceding output-state. However, unlike in the subset construction, an output-state may have multiple successors on a given alphabet symbol (the output automaton is not deterministic), and the output states contain additional, construction-specific information, which is used to determine whether an output state is accepting or not. In rank-based constructions, this information is among other a so-called rank for each input-state of an output-state.
