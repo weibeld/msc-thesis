@@ -1,3 +1,14 @@
+In this chapter we describe the Fribourg construction, the Büchi complementation construction developed at the University of Fribourg by Joel Allred and Ulrich Ultes-Nitsche. The construction has been published in 2014 as a technical report entitled ``Complementing Büchi Automata with a Subset-tuple Construction''~\cite{2014_joel_ulrich}.
+
+A note on terminology: the authors themselves call their construction ``subset-tuple construction''. This is because a state of the output automaton consists of a tuple of subsets of states of the input automaton. To use a similar naming scheme as other constructions, however, we decided to use the more strking name Fribourg construction.
+
+\section{Basics}
+
+The Friboug construction belongs to the slice-based complementation approach, that is described in Section~\ref{2_slice-based}. It is very similar to the slice-based construction by Vardi and Wilke~\cite{vardi2007automata}. However, the Fribourg construction has been developed independently, and it is not based on Vardi and Wilke's construction. 
+
+
+
+
 
 The Fribourg construction draws from several ideas: the subset construction, run analysis based on reduced split trees, and Kurshan's construction~\cite{Kurshan198759} for complementing DBW. Following the classification we used in Section~\ref{review}, it is a slice-based construction. Some of its formalisations are similar to the slice-based construction by Vardi and Wilke~\cite{vardi2007automata}, however, the Fribourg construction has been developed independently. Furthermore, as we will see in Chapter~\ref{results}, the empirical performance of Vardi and Wilke's construction and the Fribourg construction differ considerably, in favour of the latter.
 
