@@ -1,8 +1,8 @@
 %==============================================================================%
 % Preamble
 %==============================================================================%
-
-\documentclass[a4paper]{report}
+% Options: table: table option for package 'xcolor' for colouring table cells
+\documentclass[a4paper,table]{report}
 
 %------------------------------------------------------------------------------%
 % Packages
@@ -84,9 +84,13 @@
 \newcommand{\Bp}{{$B^\prime$}}
 \newcommand{\tec}[1]{\textsf{#1}}
 \newcommand{\overbar}[1]{$\overline{\text{#1}}$}
+\newcommand{\shade}{\cellcolor{black!5}}  % Shaded table cell
 
 % Custom table column: fixed width, horizontally and vertically centered
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+% Width of a subfigure
+\newcommand{\subwidth}{0.49}
 
 
 %==============================================================================%
@@ -132,17 +136,17 @@ This will be the abstract.
 \newpage
 \input{chapters/3_construction.tex}
 
-\chapter{Empirical Performance Investigation of the Fribourg Construction}
-\label{chap_investigation}
-\minitoc
-\vspace{1cm}
-\input{chapters/4_investigation.tex}
+% \chapter{Empirical Performance Investigation of the Fribourg Construction}
+% \label{chap_investigation}
+% \minitoc
+% \vspace{1cm}
+% \input{chapters/4_investigation.tex}
 
-\chapter{Results and Discussion}
-\label{chap_results}
-\minitoc
-\vspace{1cm}
-\input{chapters/5_results.tex}
+% \chapter{Results and Discussion}
+% \label{chap_results}
+% \minitoc
+% \vspace{1cm}
+% \input{chapters/5_results.tex}
 
 % \chapter{Conclusions}
 % \label{chap_conclusions}

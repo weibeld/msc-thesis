@@ -1,10 +1,100 @@
 In this chapter we describe the Fribourg construction, the Büchi complementation construction developed at the University of Fribourg by Joel Allred and Ulrich Ultes-Nitsche. The construction has been published in 2014 as a technical report entitled ``Complementing Büchi Automata with a Subset-tuple Construction''~\cite{2014_joel_ulrich}.
 
-A note on terminology: the authors themselves call their construction ``subset-tuple construction''. This is because a state of the output automaton consists of a tuple of subsets of states of the input automaton. To use a similar naming scheme as other constructions, however, we decided to use the more strking name Fribourg construction.
+We do not give a formal description of the Fribourg construction in this chapter, because this has already been done in~\cite{2014_joel_ulrich}. Rather, our aim is to give an intuitive and practically oriented description. That means, demonstrating the concrete steps one has to do when sitting with a pencil in front of an automaton to be complemented. Similarly, this chapter does not contain any proofs of the correctness or complexity of the constructions, because they can be found in~\cite{2014_joel_ulrich}.
+
+This chapter is structured as follows. In Section~\ref{3_basics} we present some basic properties of the Fribourg construction and put it in relation with other complementation constructions. In Section~\ref{3_construction}, we describe the actual construction which consists of two stages, the construction of the upper part and the construction of the lower part. We present these two stages in separate sections, together with an example. Finally, in Section~\ref{3_optimsations}, we describe three optimisations for the construction, that have the abbreviations R2C, M1, and M2. These optimisations will also be subject to our empirical performance investigation that we describe in the subsequent chapter.
+
+A note on terminology: the authors themselves call their construction ``subset-tuple construction''. This is because a state of the output automaton consists of a tuple of subsets of states of the input automaton. However, this is also the case for other constructions. To make our construction more distinguishable from the other constructions, we decided to use the more striking name ``Fribourg construction''.
 
 \section{Basics}
+\label{3_basics}
+The Fribourg construction is a \textit{slice-based} complementation construction. That means that, like the other constructions of the slice-based approach (see Section~\ref{2_slice-based}), it is based on reduced split trees. Furthermore, it works in a subset-construction manner, that is, the output automaton is constructed state-by-state, by starting from an initial state.
 
-The Friboug construction belongs to the slice-based complementation approach, that is described in Section~\ref{2_slice-based}. It is very similar to the slice-based construction by Vardi and Wilke~\cite{vardi2007automata}. However, the Fribourg construction has been developed independently, and it is not based on Vardi and Wilke's construction. 
+The output-states are internally structured as tuples of subsets of input-states (each state consists of one tuple). The subsets of a tuple are pairwise disjoint, that is, no tuple contains two times the same input-state. The input-states of a tuple are the same as in the subset construction. The difference to the subset construction is that the input-states are not all in the same set, but distributed over multiple sets. Furthermore, the order of these sets in the tuple matters. This additional structure allows in the end to determine which output-states must be accepting and which not. As a convention, we will refer to the subsets contained by a tuple of an output-state as the \textit{components} of this output-state.
+
+The components of an output-state are determined by a corresponding level of a reduced split tree. According to the terminology of Vardi and Wilke~\cite{vardi2007automata}, we call these levels \textit{slices}. Figure~\label{slices} shows how slices of a reduced split tree determine output-states of the Fribourg construction. The relation works also in the other direction, that is, an output-state of the Fribourg construction determines a slice of a reduced split tree. The rule is simply that each vertex of a slice becomes a component in in the tuple of the output-state, and the order of the vertices is preserved in the order of the components.
+
+\begin{figure}[htb]
+\centering
+\Slices
+\caption{Translation from slices of a reduced split tree (shaded boxes on the left) to output-states of the Fribourg construction (right), and vice versa.}
+\label{slices}
+\end{figure}
+
+
+
+The Fribourg construction belongs to the slice-based complementation approach, that we described in Section~\ref{2_slice-based}. That means that it relies on the analysis of runs of the input automaton with reduced split trees.
+
+The Fribourg construction, as described in \cite{2014_joel_ulrich}, uses right-to-left reduced split trees. This is different from Vardi and Wilke's~\cite{vardi2007automata} and Kähler and Wilke's~\cite{2008_kaehler} slice-based constructions which use left-to-right reduced split trees. However, this choice is arbitrary, and it would be possible to describe the Fribourg construction with left-to-right reduced split trees. However, in this thesis, we will stick with the right-to-left reduced split trees for the Fribourg construction.
+
+At the heart of the Fribourg construction is a mapping between states of the output automaton and levels of a reduced split tree. These levels are called ``slices'' according to the terminology of Vardi and Wilke~\cite{vardi2007automata}. Figure~\ref{slices} shows how this translation works. A slice consists of a sequence of vertices, where each vertex consists of a subset of states of the initial automaton. Such a slice results in a state consisting of a tuple of subsets, where the subsets correspond to the vertices of the slice in the same order.
+
+\begin{figure}[htb]
+\centering
+\Slices
+\caption{Translation from slices of a reduced split tree (shaded boxes on the left) to states of the Fribourg construction (right), and vice versa. A slice is represented as a tuple of subsets of input-states, where each subset corresponds to a vertex on the given level of the reduced split tree.}
+\label{slices}
+\end{figure}
+
+Upper part, lower part --> Kurshan's construction is a special case of the Fribourg construction
+
+
+\section{The Construction}
+\label{4_construction}
+
+
+
+\subsection{Upper Part}
+
+\subsubsection{Description}
+
+- no accepting states
+- complete
+
+
+
+
+\subsubsection{Example}
+
+\begin{figure}
+\centering
+\Automaton
+\caption{Example automaton.}
+\label{example_automaton}
+\end{figure}
+
+
+\begin{figure}[htb]
+\centering
+  \begin{subfigure}[t]{0.49\textwidth}
+  \centering
+  \UpperPartA
+  \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+  \centering
+  \UpperPartB
+  \caption{}
+  \end{subfigure}
+
+  \begin{subfigure}[t]{0.49\textwidth}
+  \centering
+  \UpperPartC
+  \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+  \centering
+  \UpperPartD
+  \caption{}
+  \end{subfigure}
+\caption{The final complement automaton $B$.}
+\label{complement}
+\end{figure}
+
+\subsection{Lower Part}
+
 
 
 
@@ -32,13 +122,7 @@ The structure of \Bp-states is determined by levels of corresponding reduced spl
 
 Figure~\ref{levels_to_states} shows how levels of a right-to-left reduced split tree map to states of the subset-tuple construction. In essence, each node of a level is represented as a set in the state, and the order of the nodes determines the order of the sets in the tuple. [INFORMATION ABOUT ACC AND NON-ACC IS NEEDED IN THE LOWER PART BUT IMPLICIT IN THE STATES OF A]. To determine the successor of a state, say $(\qqm02,\qm1)$, one can regard this state as level of a reduced split tree, determine the next level and map this new level to a state. In the example of Figure~\ref{levels_to_states}, the successor of $(\qqm02,\qm1)$ is determined in this way to $(\qm0,\qm1,\qm2)$.
 
-\begin{figure}
-\begin{center}
-\Slices
-\caption{Mapping from levels of a reduced split tree, to states of the subset-tuple construction.}
-\label{levels_to_states}
-\end{center}
-\end{figure} 
+ 
 
 Apart from this special way of determining successor states, the construction of \Bp proceeds similarly as the subset construction. One small further difference is that if at the end of determining a successor for every state in \Bp, the automaton is not complete, it must be made complete with an \emph{accepting} sink state. The steps for constructing \Bp from $A$ can be summarised as follows.
 
@@ -103,34 +187,40 @@ At first, the extended modified subset construction determines the successor tup
 \end{itemize}
 The predecessor set $s_{pred}$ is the set of $p_{pred}$ that in the corresponding reduced split tree is the parent node of the node corresponding to $s$. Figure~\ref{colours} shows the values of $c(s)$ for all possible situations as two matrices. There is one matrix for the two cases of factor 1 above ($p_{pred}$ has colour 2 or not) and the other two factors are laid out along the rows and columns of either matrix. Note that $c(s_{pred}) = -1$ is only present in the upper matrix, because in this case $p_{pred}$ is a state of the upper part and cannot contain colour 2.
 
-\begin{figure}
-\begin{center}
-\begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
-\hline
-\raggedright $p_{pred}$ has no sets with colour 2 & $s$ non-accepting & $s$ accepting \\
-\hline
-$c(s_{pred}) = -1$ & 0 & 2 \\
-\hline
-$c(s_{pred}) = 0$ & 0 & 2 \\
-\hline
-$c(s_{pred}) = 1$ & 2 & 2 \\
-\hline
-\end{tabular}
-\vskip1em
-\begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
-\hline
-\raggedright $p_{pred}$ has set(s) with colour 2   & $s$ non-accepting & $s$ accepting \\
-\hline
-$c(s_{pred}) = 0$ & 0 & 1 \\
-\hline
-$c(s_{pred}) = 1$ & 1 & 1 \\
-\hline
-$c(s_{pred}) = 2$ & 2 & 2 \\
-\hline
-\end{tabular}
-\caption{Colour rules.}
+\begin{figure}[htb]
+\centering
+  \begin{subtable}[t]{\textwidth}
+  \renewcommand{\arraystretch}{1.3}
+  \centering
+  \begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
+    \hline
+    Colour of $s_{pred}$ & Colour of $s$, if $s$ is non-accepting & Colour of $s$, if $s$ is accepting \\
+    \hline
+    $-1$ & \textbf{0} & \textbf{2} \\
+    0 & \textbf{0} & \textbf{2} \\
+    1 & \textbf{2} & \textbf{2} \\
+    \hline
+  \end{tabular}
+  \caption{Case A: the predecessor state has \textit{no} 2-coloured components}
+  \end{subtable}
+  \vskip0.5cm
+
+  \begin{subtable}[t]{\textwidth}
+  \renewcommand{\arraystretch}{1.3}
+  \centering
+  \begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
+    \hline
+    Colour of $s_{pred}$ & Colour of $s$, if $s$ is non-accepting & Colour of $s$, if $s$ is accepting \\
+    \hline
+    0 & \textbf{0} & \textbf{1} \\
+    1 & \textbf{1} & \textbf{1} \\
+    2 & \textbf{2} & \textbf{2} \\
+    \hline
+  \end{tabular}
+  \caption{Case B: the predecessor state \textit{has} 2-coloured components}
+  \end{subtable}
+\caption{Rules for determining the colour of a component $c$, based on (1) the colour of the predecessor component $c_{pred}$, and (2) whether $c$ is an accepting or non-accepting component. There are two set of rules that are shown in the two subfigures: (a) the predecessor state does not have any components with colour 2, and (b) the predecessor state does have one or more components with colour 2.}
 \label{colours}
-\end{center}
 \end{figure}
 
 We will use the following notation to denote the colour of $s$: $\cl^{s}$ if $c(s) = -1$, $s$ if $c(s) = 0$, $\cl1{s}$ if $c(s) = 1$, and $\cl2{s}$ if $c(s) = 2$. Let us look now at a concrete example of this construction. We will add the lower part to the upper part \Bp in Figure~\ref{upper_part}, and thereby complete the complementation of the example automaton $A$ in Figure~\ref{example_automaton}.
@@ -139,13 +229,39 @@ First of all, we assign colour $-1$ all the sets of the states of \Bp. We might 
 
 We can then continue the construction right with this new state $(\qqm02,\cl2{\qm1})$, and call it $p_{pred}$ in turn. The successing tuple without the colours of $p_{pred}$ is $(\qm0,\qm1,\qm2)$. Since $p_{pred}$ contains a set with colour 2, we have to consult the lower matrix of Figure~\ref{colours} to determine the colours of \qq0, \qq1, and \qq2. For \qq2, we end up with colour 2 ($M_2(3,1)$), because its predecessor set, which is $\cl2{\qm1}$, has colour 2. \qq1 gets colour 1 as it is accepting and its predecessor set, \qqq02, has colour 0 ($M_2(1,2)$). \qq0, which has the same predecessor set, gets colour 0, because it is non-accepting ($M_2(1,1)$). The successor state of $(\qqm02,\cl2{\qm1})$ is thus $(\qm0,\cl1{\qm1},\cl2{\qm2})$.
 
-\begin{figure}
-\begin{center}
-\Complement
+\begin{figure}[htb]
+\centering
+  \begin{subfigure}[t]{0.49\textwidth}
+  \centering
+  \ComplementA
+  \caption{Upper part}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+  \centering
+  \ComplementB
+  \caption{Complete}
+  \end{subfigure}
+
+  \begin{subfigure}[t]{0.49\textwidth}
+  \centering
+  \ComplementC
+  \caption{Upper part}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+  \centering
+  \ComplementD
+  \caption{Complete}
+  \end{subfigure}
 \caption{The final complement automaton $B$.}
 \label{complement}
-\end{center}
-\end{figure} 
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\Complement
+\end{figure}
 
 The construction continues in this way until every state has been processed. The resulting automaton is shown in Figure~\ref{complement}. The last thing that has to be done is to make every state of the lower part that does not contain colour 2 accepting. In our example, this is only one state. The NBW $B$ in Figure~\ref{complement} is the complement of the NBW $A$ in Figure~\ref{example_automaton}, such that $L(B) = \cl1{L(A)}$. This can be easily verified, since $A$ is empty and $B$ is universal (with regard to the single \om-word $a^\omega$).
 

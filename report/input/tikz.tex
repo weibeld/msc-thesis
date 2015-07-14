@@ -33,6 +33,7 @@
 \def\myvdist{0.8cm}     % Level distance of trees
 \def\myhdist{0.35cm}  % Sibling distance of trees
 \def\myndist{0.75cm}  % Node distance for automata
+\def\myndistsmall{0.5cm}
 
 \tikzset{
   font=\sffamily,
@@ -56,7 +57,7 @@
     % minimum width=2em,
     % inner sep=1mm,
     %rounded corners=2mm,
-    minimum height=1.25em,
+    minimum height=1.75em,
     minimum width=1.5em,
     inner sep=0.5mm,
     rounded corners=1.5mm,
@@ -110,8 +111,7 @@
               edge[longer1]       node[pos=0.3,above](m){$a$} (1)
               edge                node[below]           {$a$} (2)
           (1) edge[longer1]       node[pos=0.7,above]   {$a$} (2)
-          (2) edge[my below,loop] node[below]           {$a$} ();
-\node[anchor=base,xshift=-1.5cm] at (m.base){$A=$};  
+          (2) edge[my below,loop] node[below]           {$a$} (); 
 \end{tikzpicture}
 }
 
@@ -341,9 +341,9 @@
   automaton,
   frame/.style={
     draw,rectangle,rounded corners=2mm,
-    minimum width=5.2cm,
-    minimum height=2.22em,
-    fill=black!10
+    minimum width=4.4cm,
+    minimum height=2em,
+    fill=black!5
   }
 ]
 \Tree
@@ -352,24 +352,27 @@
 %                                                 \node[a]{\qq1}; ]
 %                                \node[a]{\qq1}; ]
 %               [.\node[a]{\qq1};  [.\node(m){\qq2};    [.\node{\qq2}; \node{\qq2}; ] ] ] ]
-[.\node{\qq0}; [.\node{\qqq02};  [ .\node(m){\qq0};  \node{\qq0};
+[.\node{\qq0}; [.\node{\qqq02};  [ .\node{\qq0};     \node{\qq0};
                                                      \node[a]{\qq1}; ]
                                    \node[a]{\qq1}; ]
-               [.\node[a]{\qq1}; [.\node(m){\qq2};   \node{\qq2}; ] ] ]
+               [.\node[a]{\qq1}; [.\node{\qq2};      \node(m){\qq2}; ] ] ]
 \begin{scope}[on background layer]
-\node[frame,anchor=east,xshift=0.7mm] (level2) at (m.east) {};
+\node[frame,anchor=east,xshift=0.7mm] (level3) at (m.east) {};
+\node[frame,yshift=\myvdist]          (level2) at (level3) {};
 \node[frame,yshift=\myvdist]          (level1) at (level2) {};
 \node[frame,yshift=\myvdist]          (level0) at (level1) {};
 \end{scope}
 \begin{scope}[every node/.style={xshift=1cm}]
-\node (arrow0) at (level0.east) {$\rightarrow$};
-\node (arrow1) at (level1.east) {$\rightarrow$};
-\node (arrow2) at (level2.east) {$\rightarrow$};
+\node (arrow0) at (level0.east) {$\longleftrightarrow$};
+\node (arrow1) at (level1.east) {$\longleftrightarrow$};
+\node (arrow2) at (level2.east) {$\longleftrightarrow$};
+\node (arrow3) at (level3.east) {$\longleftrightarrow$};
 \end{scope}
 \begin{scope}[every node/.style={xshift=2cm}]
 \node[state] (s0) at (arrow0.east) {$(\qm0)$};
 \node[state] (s1) at (arrow1.east) {$(\qqm02,\qm1)$};
 \node[state] (s2) at (arrow2.east) {$(\qm0,\qm1,\qm2)$};
+\node[state] (s3) at (arrow3.east) {$(\qm0,\qm1,\qm2)$};
 \end{scope}
 % \path[->] (s0) edge node[right] {$a$} (s1)
 %           (s1) edge node[right] {$a$} (s2)
@@ -391,6 +394,64 @@
 \end{tikzpicture}
 }
 
+\newcommand{\UpperPartA}{
+\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\scriptsize
+\node[state,initial] (0)              {$(\qm0)$};
+\begin{scope}[opacity=0]
+  \node[state]         (1) [right=of 0] {$(\qqm02,\qm1)$};
+  \node[state]         (2) [right=of 1] {$(\qm0,\qm1,\qm2)$};
+  \path[->] (0) edge node[above]{$a$} (1)
+            (1) edge node[above]{$a$} (2)
+            (2) edge[my above,loop] node[above]{$a$} ();
+\end{scope}
+\end{tikzpicture}
+}
+
+\newcommand{\UpperPartB}{
+\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\scriptsize
+\node[state,initial] (0)              {$(\qm0)$};
+\node[state]         (1) [right=of 0] {$(\qqm02,\qm1)$};
+\begin{scope}[opacity=0]
+  \node[state]         (2) [right=of 1] {$(\qm0,\qm1,\qm2)$};
+\end{scope}
+\path[->] (0) edge node[above]{$a$} (1);
+\begin{scope}[opacity=0]
+  \path
+            (1) edge node[above]{$a$} (2)
+            (2) edge[my above,loop] node[above]{$a$} ();
+\end{scope}
+\end{tikzpicture}
+}
+
+\newcommand{\UpperPartC}{
+\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\scriptsize
+\node[state,initial] (0)              {$(\qm0)$};
+\node[state]         (1) [right=of 0] {$(\qqm02,\qm1)$};
+\node[state]         (2) [right=of 1] {$(\qm0,\qm1,\qm2)$};
+\path[->] (0) edge node[above]{$a$} (1)
+          (1) edge node[above]{$a$} (2);
+\begin{scope}[opacity=0]
+\path 
+            (2) edge[my above,loop] node[above]{$a$} ();
+\end{scope}
+\end{tikzpicture}
+}
+
+\newcommand{\UpperPartD}{
+\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\scriptsize
+\node[state,initial] (0)              {$(\qm0)$};
+\node[state]         (1) [right=of 0] {$(\qqm02,\qm1)$};
+\node[state]         (2) [right=of 1] {$(\qm0,\qm1,\qm2)$};
+\path[->] (0) edge node[above]{$a$} (1)
+          (1) edge node[above]{$a$} (2)
+          (2) edge[my above,loop] node[above]{$a$} ();
+\end{tikzpicture}
+}
+
 %==============================================================================%
 % Complement automaton B
 %==============================================================================%
@@ -400,9 +461,116 @@
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
 \node[state]           (2)  [right=of 1] {$(\cl^{\qm0},\cl^{\qm1},\cl^{\qm2})$};
 \node[state]           (01) [below=of 0] {$(\qqm02,\cl2{\qm1})$};
-\node[state]           (02) [below=of 01]{$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
 \node[state,xshift=1cm](11) [right=of 01]{$(\qm0,\cl2{\qm1},\qm2)$};
+\node[state]           (02) [below=of 01]{$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
 \node[state,accepting] (12) [below=of 11]{$(\qm0,\cl1{\qm1},\qm2)$};
+\path[->] (0)  edge                node[above]{$a$} (1)
+          (1)  edge                node[above]{$a$} (2)
+          (2)  edge[my above,loop] node[above]{$a$} ()
+          (0)  edge                node[right]{$a$} (01)
+          (01) edge                node[right]{$a$} (02)
+          (02) edge[my below,loop] node[below]{$a$} ()
+          (1)  edge                node[left] {$a$} (11)
+          (11) edge[bend left]     node[right]{$a$} (12)
+          (12) edge[bend left]     node[left] {$a$} (11)
+          (2)  edge                node[right]{$a$} (11);
+\end{tikzpicture}
+}
+
+\newcommand{\ComplementA}{
+\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\scriptsize
+\node[state,initial]   (0)               {$(\cl^{\qm0})$};
+\node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
+\node[state]           (2)  [right=of 1] {$(\cl^{\qm0},\cl^{\qm1},\cl^{\qm2})$};
+\begin{scope}[opacity=0]
+  \node[state]           (01) [below=of 0] {$(\qqm02,\cl2{\qm1})$};
+  \node[state,xshift=1cm](11) [right=of 01]{$(\qm0,\cl2{\qm1},\qm2)$};
+  \node[state]           (02) [below=of 01]{$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
+  \node[state,accepting] (12) [below=of 11]{$(\qm0,\cl1{\qm1},\qm2)$};
+\end{scope}
+\path[->] (0)  edge                node[above]{$a$} (1)
+          (1)  edge                node[above]{$a$} (2)
+          (2)  edge[my above,loop] node[above]{$a$} ();
+\begin{scope}[opacity=0]
+  \path
+            (0)  edge                node[right]{$a$} (01)
+            (01) edge                node[right]{$a$} (02)
+            (02) edge[my below,loop] node[below]{$a$} ()
+            (1)  edge                node[left] {$a$} (11)
+            (11) edge[bend left]     node[right]{$a$} (12)
+            (12) edge[bend left]     node[left] {$a$} (11)
+            (2)  edge                node[right]{$a$} (11);
+\end{scope}
+\end{tikzpicture}
+}
+
+\newcommand{\ComplementB}{
+\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\scriptsize
+\node[state,initial]   (0)               {$(\cl^{\qm0})$};
+\node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
+\node[state]           (2)  [right=of 1] {$(\cl^{\qm0},\cl^{\qm1},\cl^{\qm2})$};
+\node[state]           (01) [below=of 0] {$(\qqm02,\cl2{\qm1})$};
+\node[state,xshift=1cm](11) [right=of 01]{$(\qm0,\cl2{\qm1},\qm2)$};
+\begin{scope}[opacity=0]
+  \node[state]           (02) [below=of 01]{$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
+  \node[state,accepting,opacity=0] (12) [below=of 11]{$(\qm0,\cl1{\qm1},\qm2)$};
+\end{scope}
+\path[->] (0)  edge                node[above]{$a$} (1)
+          (1)  edge                node[above]{$a$} (2)
+          (2)  edge[my above,loop] node[above]{$a$} ()
+          (0)  edge                node[right]{$a$} (01)
+          (1)  edge                node[left] {$a$} (11)
+          (2)  edge                node[right]{$a$} (11);
+\begin{scope}[opacity=0]
+  \path
+            (01) edge                node[right]{$a$} (02)
+            (02) edge[my below,loop] node[below]{$a$} ()
+            (11) edge[bend left]     node[right]{$a$} (12)
+            (12) edge[bend left]     node[left] {$a$} (11);
+\end{scope}
+\end{tikzpicture}
+}
+
+\newcommand{\ComplementC}{
+\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\scriptsize
+\node[state,initial]   (0)               {$(\cl^{\qm0})$};
+\node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
+\node[state]           (2)  [right=of 1] {$(\cl^{\qm0},\cl^{\qm1},\cl^{\qm2})$};
+\node[state]           (01) [below=of 0] {$(\qqm02,\cl2{\qm1})$};
+\node[state,xshift=1cm](11) [right=of 01]{$(\qm0,\cl2{\qm1},\qm2)$};
+\node[state]           (02) [below=of 01]{$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
+\begin{scope}[opacity=0]
+  \node[state,accepting,opacity=0] (12) [below=of 11]{$(\qm0,\cl1{\qm1},\qm2)$};
+\end{scope}
+\path[->] (0)  edge                node[above]{$a$} (1)
+          (1)  edge                node[above]{$a$} (2)
+          (2)  edge[my above,loop] node[above]{$a$} ()
+          (0)  edge                node[right]{$a$} (01)
+          (1)  edge                node[left] {$a$} (11)
+          (2)  edge                node[right]{$a$} (11)
+          (01) edge                node[right]{$a$} (02)
+          (02) edge[my below,loop] node[below]{$a$} ();
+\begin{scope}[opacity=0]
+  \path
+            (11) edge[bend left]     node[right]{$a$} (12)
+            (12) edge[bend left]     node[left] {$a$} (11);
+\end{scope}
+\end{tikzpicture}
+}
+
+\newcommand{\ComplementD}{
+\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\scriptsize
+\node[state,initial]   (0)               {$(\cl^{\qm0})$};
+\node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
+\node[state]           (2)  [right=of 1] {$(\cl^{\qm0},\cl^{\qm1},\cl^{\qm2})$};
+\node[state]           (01) [below=of 0] {$(\qqm02,\cl2{\qm1})$};
+\node[state,xshift=1cm](11) [right=of 01]{$(\qm0,\cl2{\qm1},\qm2)$};
+\node[state]           (02) [below=of 01]{$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
+\node[state]           (12) [below=of 11]{$(\qm0,\cl1{\qm1},\qm2)$};
 \path[->] (0)  edge                node[above]{$a$} (1)
           (1)  edge                node[above]{$a$} (2)
           (2)  edge[my above,loop] node[above]{$a$} ()
