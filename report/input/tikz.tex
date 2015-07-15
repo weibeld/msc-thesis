@@ -30,9 +30,15 @@
 % \def\myvdist{1.2cm}  % Level distance of trees
 % \def\myhdist{0.5cm}  % Sibling distance of trees
 % \def\myndist{1cm}    % Node distance for automata
-\def\myvdist{0.8cm}     % Level distance of trees
+
+% Distance for automata and trees
+\def\myvdist{0.8cm}   % Level distance of trees
 \def\myhdist{0.35cm}  % Sibling distance of trees
 \def\myndist{0.75cm}  % Node distance for automata
+
+% Distances for small automata and trees (\scriptsize}
+\def\myvdistsmall{0.65cm}
+\def\myhdistsmall{0.23cm}
 \def\myndistsmall{0.5cm}
 
 \tikzset{
@@ -50,6 +56,12 @@
   },
   mtrx/.style={
     ampersand replacement=\&  % Can't use & if matrix is inside \newcommand
+  },
+  my tree node/.style={
+    draw,
+    inner sep=0.5mm,
+    minimum height=1.5em,
+    rectangle
   },
   my state/.style={
     draw,
@@ -83,7 +95,7 @@
     node distance=\myndist
   },
   tree/.style={
-    every tree node/.style={my state},
+    every tree node/.style={my tree node},
     a/.style={my accepting},
     level distance=\myvdist,
     sibling distance=\myhdist,
@@ -303,6 +315,45 @@
 }
 
 %==============================================================================%
+% Pair of slices of a reduced split tree (right-to-left)
+%==============================================================================%
+\newcommand{\SlicesOne}{
+\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall]
+\scriptsize
+\Tree
+[.\node{\qq0}; [.\node   {\qqq02}; ]
+               [.\node[a]{\qq1};   ] ] 
+\end{tikzpicture}
+}
+
+\newcommand{\SlicesTwo}{
+\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall]
+\scriptsize
+\Tree
+[.\node{\qqq02}; [.\node   {\qq0}; ]
+                 [.\node[a]{\qq1}; ] ]
+\hspace{1.35cm}
+\Tree
+[.\node[a]{\qq1};   \node{\qq2}; ]
+\end{tikzpicture}
+}
+
+\newcommand{\SlicesThree}{
+\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall]
+\scriptsize
+\Tree
+[.\node{\qq0}; [.\node   {\qq0}; ]
+               [.\node[a]{\qq1}; ] ]
+\hspace{1.35cm}
+\Tree
+[.\node[a]{\qq1}; ]
+\hspace{0.9cm}
+\Tree
+[.\node{\qq2}; \node{\qq2}; ]
+\end{tikzpicture}
+}
+
+%==============================================================================%
 % Run DAG
 %==============================================================================%
 \newcommand{\RunDAG}{
@@ -340,7 +391,7 @@
   every tree node/.append style={fill=white},
   automaton,
   frame/.style={
-    draw,rectangle,rounded corners=2mm,
+    draw,rectangle,
     minimum width=4.4cm,
     minimum height=2em,
     fill=black!5

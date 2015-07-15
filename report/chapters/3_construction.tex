@@ -10,9 +10,9 @@ A note on terminology: the authors themselves call their construction ``subset-t
 \label{3_basics}
 The Fribourg construction is a \textit{slice-based} complementation construction. That means that, like the other constructions of the slice-based approach (see Section~\ref{2_slice-based}), it is based on reduced split trees. Furthermore, it works in a subset-construction manner, that is, the output automaton is constructed state-by-state, by starting from an initial state.
 
-The output-states are internally structured as tuples of subsets of input-states (each state consists of one tuple). The subsets of a tuple are pairwise disjoint, that is, no tuple contains two times the same input-state. The input-states of a tuple are the same as in the subset construction. The difference to the subset construction is that the input-states are not all in the same set, but distributed over multiple sets. Furthermore, the order of these sets in the tuple matters. This additional structure allows in the end to determine which output-states must be accepting and which not. As a convention, we will refer to the subsets contained by a tuple of an output-state as the \textit{components} of this output-state.
+The output-states are internally structured as tuples of subsets of input-states (each state consists of one tuple). The subsets of a tuple are pairwise disjoint, that is, no tuple contains two times the same input-state. The input-states of a tuple are the same as in the subset construction. The difference to the subset construction is that the input-states are not all in the same set, but distributed over multiple sets. Furthermore, the order of these sets in the tuple matters. As a convention, we will refer to the subsets contained by a tuple of an output-state as the \textit{components} of this output-state.
 
-The components of an output-state are determined by a corresponding level of a reduced split tree. According to the terminology of Vardi and Wilke~\cite{vardi2007automata}, we call these levels \textit{slices}. Figure~\label{slices} shows how slices of a reduced split tree determine output-states of the Fribourg construction. The relation works also in the other direction, that is, an output-state of the Fribourg construction determines a slice of a reduced split tree. The rule is simply that each vertex of a slice becomes a component in in the tuple of the output-state, and the order of the vertices is preserved in the order of the components.
+The components output-states are determined by levels of reduced split trees. According to the terminology of Vardi and Wilke~\cite{vardi2007automata}, we call these levels \textit{slices}. Figure~\label{slices} shows how slices of a reduced split tree determine output-states of the Fribourg construction. The relation works also in the other direction, that is, an output-state of the Fribourg construction determines a slice of a reduced split tree. The simple rule is that each vertex of a slice becomes a component in in the tuple of the output-state, and the order of the vertices is preserved.
 
 \begin{figure}[htb]
 \centering
@@ -21,40 +21,45 @@ The components of an output-state are determined by a corresponding level of a r
 \label{slices}
 \end{figure}
 
+This relation between slices of reduced split trees and output-states determines the basic working of the Fribourg construction. It works as follows. Start with an initial output-state containing only the initial input-state in its tuple. This state will be the current state. Translate the current state to a level of a reduced split tree, and, according to the input automaton, determine the next level of the reduced split tree for the first alphabet symbol, say $a$. Translate this new level back to an output-state, and set it as the $a$-successor of the current state. Repeat this procedure for all alphabet symbols, until the current state has a successor for each one. Finally, repeat the entire procedure for each output-state that has no successors yet. As in the subset construction, if a successor state happens to be identical to an already existing state, then just add a transition to this existing state.
 
+What we just described is the very basic working of the Fribourg construction. However, there are additional details. First, there are two passes of this subset-construction-like procedure. The first one results in the so-called \textit{upper part} of the final complement automaton. The second one is applied on the states of the upper part (and all the newly created states), and results in the so-called \textit{lower part} attached to the upper part. These two parts together form the final complement automaton. The terminology ``upper'' and ``lower'' results from the fact that, when doing the construction by hand, the lower part is typically drawn below the upper part.
 
-The Fribourg construction belongs to the slice-based complementation approach, that we described in Section~\ref{2_slice-based}. That means that it relies on the analysis of runs of the input automaton with reduced split trees.
+This distinction between upper and lower part is inspired by Kurshan's construction for complementing deterministic Büchi automata~\cite{Kurshan198759}. In fact, Kurshan's construction is a special case of the Fribourg construction~\cite{2014_joel_ulrich}.
 
-The Fribourg construction, as described in \cite{2014_joel_ulrich}, uses right-to-left reduced split trees. This is different from Vardi and Wilke's~\cite{vardi2007automata} and Kähler and Wilke's~\cite{2008_kaehler} slice-based constructions which use left-to-right reduced split trees. However, this choice is arbitrary, and it would be possible to describe the Fribourg construction with left-to-right reduced split trees. However, in this thesis, we will stick with the right-to-left reduced split trees for the Fribourg construction.
+The upper part of the Fribourg construction does not contain any accepting states. The lower part, in turn, may contain accepting states. A run of the final complement automaton starts in the upper part, and has in each upper-part state the non-deterministic choice to move to the lower part. Once in the lower part, a run cannot return to the upper part anymore. Semantically, the upper part represents anything that can happen in a finite prefix of an \om-word, and the lower part takes care of the infinite behaviour on \om-words.
 
-At the heart of the Fribourg construction is a mapping between states of the output automaton and levels of a reduced split tree. These levels are called ``slices'' according to the terminology of Vardi and Wilke~\cite{vardi2007automata}. Figure~\ref{slices} shows how this translation works. A slice consists of a sequence of vertices, where each vertex consists of a subset of states of the initial automaton. Such a slice results in a state consisting of a tuple of subsets, where the subsets correspond to the vertices of the slice in the same order.
+The fact that the lower part determines the acceptance of a run, requires additional sophistication. This is achieved by the decoration of components. All components of the lower-part states are decorated with one of the three colours 0, 1 and 2. The colour of a component is determined by two things. First, whether the component is accepting or non-accepting. Second, the colour of its predecessor component. The predecessor component $c_{pred}$ of a component $c$ is the component of the predecessor state, that, in terms of reduced split trees, is the parent vertex of the vertex corresponding to component $c$.
 
-\begin{figure}[htb]
-\centering
-\Slices
-\caption{Translation from slices of a reduced split tree (shaded boxes on the left) to states of the Fribourg construction (right), and vice versa. A slice is represented as a tuple of subsets of input-states, where each subset corresponds to a vertex on the given level of the reduced split tree.}
-\label{slices}
-\end{figure}
+Figure showing predecessor component relation
 
-Upper part, lower part --> Kurshan's construction is a special case of the Fribourg construction
+This colouration of components in the lower part requires that during the construction of the lower part, we keep track of two properties of each component. First, whether it is accepting or non-accepting, and second, its predecessor component (or just the colour of its predecessor component).
+
+On a more general note, the Fribourg construction uses a similar idea as Vardi and Wilke's slice-based construction from 2007~\cite{vardi2007automata}. The upper and lower part of the Fribourg construction correspond to the \textit{initial phase} and \textit{repetition phase} of Vardi and Wilke's construction. Furthermore, the colours 0, 1, and 2 of the Fribourg construction correspond to the decorations \textit{inf}, \textit{new}, and \textit{die} of Vardi and Wilke's construction. However, the two constructions still differ in details, especially in the transition from the upper part to the lower part. In any case, the Fribourg construction has been developed independently and is not based on Vardi and Wilke's construction. Rather, the development of the Fribourg construction was based on Kurshan's construction for complementing DBW, which is to the best of our knowledge, not the case for Vardi and Wilke's construction.
+
+Another difference is that the Fribourg construction uses right-to-left reduced split trees, whereas Vardi and Wilke's construction (as well as Kähler and Wilke's construction~\cite{2008_kaehler}) uses left-to-right reduced split trees. This is howevrer an arbitrary choice, and it has no effect on the final complement automaton. It would be possible to describe the Fribourg construction with left-to-right reduced split trees, and Vardi and Wilke's construction with right-to-left reduced split trees. In this thesis, we will stick with the right-to-left reduced split trees for the Fribourg construction.
+
+By using reduced split trees, we consider only greedy runs on prefixes of words. That is, if two or more runs on the same words are after a certain number of steps in the same state, then only one of them is considered, the others are omitted. 
 
 
 \section{The Construction}
-\label{4_construction}
-
+\label{3_construction}
+In this section, we describe the Fribourg construction in some more detail, and we illustrate its application with an example. 
 
 
 \subsection{Upper Part}
 
 \subsubsection{Description}
+The construction of the upper part is simple and works basically as described above. We start with an initial output-state containing only a single component with the initial state of the input automaton. Then, for each output-state $q$ that has no successors so far, we creat a successor slice for each symbol of the alphabet $\alpha$, translate it to a state, and set it as the $\alpha$-successor of $q$. This is repeated until all states have a been processed.
 
-- no accepting states
-- complete
+In case that the resulting automaton is not complete (that is, one or more states do not have successors for certain alphabet symbols), then it is made complete by adding an accepting sink state. This sink state is not actually a part of the upper part, and it is not further processed during the rest of the construction. However, its presence is important in case the upper part is not complete. 
 
-
+The result of this first stage of the construction is a deterministic and complete automaton that does not contain any accepting states (except a possible sink state, but which, as mentioned, does not really belong to the upper part).
 
 
 \subsubsection{Example}
+
+We will illustrate the application of the Fribourg construction with the example automaton in Figure~\ref{example_automaton}. This automaton has only  one single alphabet symbol $a$. This choice was made to keep the example simple, because an alphabet size of, say 2, would double the number of steps and the number of transitions in the output-automaton. However, the procedure for automata with larger alphabets is exactly the same, just repeat the step of creating a successor state for the current state for each alphabet symbol.
 
 \begin{figure}
 \centering
@@ -63,6 +68,9 @@ Upper part, lower part --> Kurshan's construction is a special case of the Fribo
 \label{example_automaton}
 \end{figure}
 
+The example automaton in Figure~\ref{example_automaton} does not accept any word, because it is impossible for any run to visit the only accepting state $q_1$ infinitely many times. The automaton $A$ is thus empty. Consequently, the complement of $A$ is universal, that is, it accepts every possible word\footnote{The only possible \om-word with the alphabet $\Sigma = \{a\}$ is $a^\omega$, that is an infinite sequence of $a$'s.}.
+
+Figure~\ref{steps_upper} shows the complete steps for creating the upper part from the example automaton in Figure~\ref{example_automaton}. In Figure~\ref{steps_upper} (a), we start with a state containing only the component \qq0, because \q0 is the initial state of $A$.
 
 \begin{figure}[htb]
 \centering
@@ -89,11 +97,95 @@ Upper part, lower part --> Kurshan's construction is a special case of the Fribo
   \UpperPartD
   \caption{}
   \end{subfigure}
-\caption{The final complement automaton $B$.}
-\label{complement}
+\caption{Steps for creating the upper part of the complement from the example input-automaton in Figure~\ref{example_automaton}.}
+\label{steps_upper}
 \end{figure}
 
+In Figure~\ref{steps_upper} (b), we determine the $a$-successor of the state $(\qm0)$. As explained, this works by looking at the state as a slice of a reduced split tree, and then creating the succeeding slice. For the case of $(\qm0)$, this gives the following two slices:
+
+\SlicesOne
+
+From the state \q0 in the example automaton $A$, we can reach states \q0, \q1, and \q2 with the symbol $a$. Since \q1 is accepting, it is separated from the other states and put as a separate child to the right of the other child in the new slice. Transforming this new slice back to a state yields $(\qqm02, \qm1)$, which is the $a$-successor of $(\qm0)$. The component \qq1 is furthermore an accepting component, however, this does not matter in the construction of the upper part. Since there is only the single alphabet symbol $a$, we have already created all the successors of $(\qm0)$. If there would be more alphabet symbols, we would have to repeat the same procedure for each symbol.
+
+In Figure~\ref{steps_upper} (c), we create the $a$-successor of the previously created $(\qqm02, \qm1)$. Applying the same procedure as before, we get the following two slices:
+
+\SlicesTwo
+
+Since we use right-to-left reduced split trees, we have to create the new slice from right to left, that is, first determining the children of vertex \q1, and then of \qqq02. From \q1 we can only reach \q2 on symbol $a$, thus the only child of \qq1 is \qq2. From the states in \qqq02, we can reach \q0, \q1, and \q2 on symbol $a$. However, \q1 already appears in the new slice, so it drops out. From the remaining states \q0 and \q1, \q1 is accepting, so it becomes a separate right-child, whereas \q0 becomes the left-child. Translating this slice to a state yields $(\qm0, \qm1, \qm2)$, which is the $a$-successor of $(\qqm02, \qm1)$.
+
+In Figure~\ref{steps_upper} (d), we determine in turn the $a$-successor of $(\qm0, \qm1, \qm2)$. Applying again the slice-procedure, we get the following:
+
+\SlicesThree
+
+Again, we process the vertices of the upper slice from right to left. The only $a$-successor of \q2 in automaton $A$ is \q2, thus \qq2 is the only child of the vertex \qq2 in the upper slice. The state \q1 has \q2 as its $a$-successor. However, \q2 already appears in the new slice, and thus it drops out. Since \q1 has no remaining $a$-successors, the vertex \qq1 in the upper slice remains childless\footnote{In the terminology that we will use starting from the next section, we say that the runs going through this \q1 ``disappear''.}. Finally, the $a$-successors of \q0 are \q0, \q1, and \q2, however, as before, \q2 drops out because it already appears to the right, and \q0 and \q1 are separated because \q1 is accepting. Translating the new slice back to a state results in $(\qm0, \qm1, \qm2)$, whichi s identical to the current state. Thus, instead of adding a new state to the automaton, we just add an $a$-loop to $(\qm0, \qm1, \qm2)$.
+
+At this stage, all the existing states have successors for all the alphabet symbols, and thus the construction of the upper part is completed. The next step is to attach the lower part to the upper part in order to form the final complement automaton.
+
+
+
 \subsection{Lower Part}
+The construction of the lower part takes the states of the previously constructed upper part as input. This means that these states are taken as the initial ``states to be processed''. Thus, the states of the upper part will get additional successors in the lower part, which makes the states of the upper part non-deterministic\footnote{Two points about this non-determinism are interesting. First, the states of the upper part are the only non-deterministic states, all the other states are deterministic. Second, the degree of non-determinism of these states is at most 2, and thus the degree of non-determinism of the entire complement automaton is at most 2.}. The states of the lower part, in turn, are deterministic, and do not have transitions back to the upper part. This means that once a run switches from the upper to the lower part, it stays there infinitely (or dies there). 
+
+The construction of the lower part proceeds principially in the same way as the construction of the upper part. However, it includes some additional ``structure'' in the form of a decoration of the components. In particular, every component of a lower-part state is assigned a colour. This colour is determined at creation time of the containing state, and is never changed\footnote{The colour of a component may be changed with the optimisations described in Section~\ref{3_optimisations}.}. These colours are distinguising features for the containing states. This means that if two states contain the same components in the same order, but the components have different colours, then the two states are different. Clearly, this makes the number of possible states of the lower part much larger than the number of possible states of the upper part.
+
+We denote these three colours for the components of the lower part by 0, 1 and 2. In order to determine the accepting set at the end of the construction, it is necessary to ditinguish the states from the upper part from the states of the lower part. This problem is solved by previously assigning the special colour $-1$ to all components of upper part-states.
+
+The assignment of a colour to a component of a lower-part state depends on three things:
+\begin{enumerate}
+\item Whether the component is accepting or non-accepting
+\item The colour of the predecessor component
+\item Whether the state containing the predecessor component contains any 2-coloured components
+\end{enumerate}
+
+How much to describe the concept of predecessor component, as it is already described in Section~\ref{3_basics}?
+
+The rules for assigning one of the colours 0, 1, and 2 to a component $c$ are shown in Figure~\ref{colour_rules}. There are two different sets of rules for the cases that the state containing the predecessor component \textit{does} (Figure~\ref{colour_rules} (b)), or \textit{does not} ((Figure~\ref{colour_rules} (a)) contain components with colour 2. In each of these cases, the two remaining criteria, whether $c$ is accepting or non-accepting, and the colour of the predecessor component $c_{pred}$, determine a single colour that must be assigned to component $c$ (bold in Figure~\ref{colour_rules}). 
+
+\begin{figure}[htb]
+\centering
+  \begin{subtable}[t]{\textwidth}
+  \renewcommand{\arraystretch}{1.3}
+  \centering
+  \begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
+    \hline
+    Colour of $c_{pred}$ & $c$ is non-accepting & $c$ is accepting \\
+    \hline
+    $-1$ & \textbf{0} & \textbf{2} \\
+    0 & \textbf{0} & \textbf{2} \\
+    1 & \textbf{2} & \textbf{2} \\
+    \hline
+  \end{tabular}
+  \caption{Case A: the predecessor state has \textit{no} 2-coloured components}
+  \end{subtable}
+  \vskip0.5cm
+
+  \begin{subtable}[t]{\textwidth}
+  \renewcommand{\arraystretch}{1.3}
+  \centering
+  \begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
+    \hline
+    Colour of $c_{pred}$ & $c$ is non-accepting & $c$ is accepting \\
+    \hline
+    0 & \textbf{0} & \textbf{1} \\
+    1 & \textbf{1} & \textbf{1} \\
+    2 & \textbf{2} & \textbf{2} \\
+    \hline
+  \end{tabular}
+  \caption{Case B: the predecessor state \textit{has} 2-coloured components}
+  \end{subtable}
+\caption{Rules for determining the colour of a component $c$, based on (1) the colour of the predecessor component $c_{pred}$, and (2) whether $c$ is an accepting or non-accepting component. There are two set of rules that are shown in the two subfigures: (a) the predecessor state does not have any components with colour 2, and (b) the predecessor state does have one or more components with colour 2.}
+\label{colour_rules}
+\end{figure}
+
+In the first case, that the predecessor state contains no 2-coloured components, the possible colours of the predecessor components are $-1$, 0, and 1. Naturally, the predecessor component cannot be 2-coloured, but on the other hand, it might have colour $-1$, if the predecessor state is a state of the upper part. For the other case, that the predecessor state contains 2-coloured components, the possible colours for the predecessor component naturally include colour 2, but do not include colour $-1$, because a state containing 2-coloured components cannot be a state of the upper part.
+
+The purpose of the colours is to signalise the presence or absence of certain runs of the input automaton on a specific word. Note that the complement of a non-deterministic automaton must accept a word if and only if \textit{all} the runs of the input automaton on this words are rejecting. If there is a single run of the input automaton that accepts the word, then the complement automaton must not accept the word. Thus, we need a way to be sure that there are \textit{no} accepting runs of the input automaton on a specific word, and then we can accept this word with the complement automaton. 
+
+The colour 2 is used to signalise the presence of such ``dangerous'' runs that might become accepting in the end. If a component has colour 2, it means that there is a run of the input automaton on the corresponding prefix of the word that has visited at least an accepting input-state since entering the lower part of the output automaton. Since accpeting states always belong to the ``righ children'' in the reduced split tree, this correspond to runs that have at least one ``right-turn''. These runs, and thus the 2-coloured components, must ``disappear'' in order that we can be sure that there are no dangerous runs anymore. Disappearing means that the corresponding vertex in the reduced split tree must become childless.
+
+Colour 1 means basically the same as colour 2, namely that there are runs having right-turns. However, for detecting the disappearances of specific 2-coloured components, we cannot make all components 2-coloured that deserve to be 2-coloured. If in a state there exist already 2-coloured components, then a component that just emerges from a right-turn (and thus deserves colour 2) gets colour 1 instead of colour 2 (see Figure~\ref{colour_rules} (b), first line). If however all the 2-coloured components of a state disappear, then the successors of 1-coloured components become 2-coloured (Figure~\ref{colour_rules} (a), third line). This trick allows us to not miss the disappearance of any 2-coloured components, and consequently the runs of the input automaton that they encompass.
+
+Finally, colour 0 means that the input-runs going through such a component have not made any right-turns, that is, not visited any accepting states since entering the lower part. Such runs are ``safe'' in the sense that so far they bear no risk to become accepting runs.
 
 
 
@@ -187,41 +279,7 @@ At first, the extended modified subset construction determines the successor tup
 \end{itemize}
 The predecessor set $s_{pred}$ is the set of $p_{pred}$ that in the corresponding reduced split tree is the parent node of the node corresponding to $s$. Figure~\ref{colours} shows the values of $c(s)$ for all possible situations as two matrices. There is one matrix for the two cases of factor 1 above ($p_{pred}$ has colour 2 or not) and the other two factors are laid out along the rows and columns of either matrix. Note that $c(s_{pred}) = -1$ is only present in the upper matrix, because in this case $p_{pred}$ is a state of the upper part and cannot contain colour 2.
 
-\begin{figure}[htb]
-\centering
-  \begin{subtable}[t]{\textwidth}
-  \renewcommand{\arraystretch}{1.3}
-  \centering
-  \begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
-    \hline
-    Colour of $s_{pred}$ & Colour of $s$, if $s$ is non-accepting & Colour of $s$, if $s$ is accepting \\
-    \hline
-    $-1$ & \textbf{0} & \textbf{2} \\
-    0 & \textbf{0} & \textbf{2} \\
-    1 & \textbf{2} & \textbf{2} \\
-    \hline
-  \end{tabular}
-  \caption{Case A: the predecessor state has \textit{no} 2-coloured components}
-  \end{subtable}
-  \vskip0.5cm
 
-  \begin{subtable}[t]{\textwidth}
-  \renewcommand{\arraystretch}{1.3}
-  \centering
-  \begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
-    \hline
-    Colour of $s_{pred}$ & Colour of $s$, if $s$ is non-accepting & Colour of $s$, if $s$ is accepting \\
-    \hline
-    0 & \textbf{0} & \textbf{1} \\
-    1 & \textbf{1} & \textbf{1} \\
-    2 & \textbf{2} & \textbf{2} \\
-    \hline
-  \end{tabular}
-  \caption{Case B: the predecessor state \textit{has} 2-coloured components}
-  \end{subtable}
-\caption{Rules for determining the colour of a component $c$, based on (1) the colour of the predecessor component $c_{pred}$, and (2) whether $c$ is an accepting or non-accepting component. There are two set of rules that are shown in the two subfigures: (a) the predecessor state does not have any components with colour 2, and (b) the predecessor state does have one or more components with colour 2.}
-\label{colours}
-\end{figure}
 
 We will use the following notation to denote the colour of $s$: $\cl^{s}$ if $c(s) = -1$, $s$ if $c(s) = 0$, $\cl1{s}$ if $c(s) = 1$, and $\cl2{s}$ if $c(s) = 2$. Let us look now at a concrete example of this construction. We will add the lower part to the upper part \Bp in Figure~\ref{upper_part}, and thereby complete the complementation of the example automaton $A$ in Figure~\ref{example_automaton}.
 
