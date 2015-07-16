@@ -5,6 +5,7 @@
   automata,     % Styles "state", "initial", "accepting"
   backgrounds,  % Predefined layer named "background"
   calc,         % Calculations $...$
+  decorations.markings,
 }
 
 % Strings
@@ -19,11 +20,13 @@
 \newcommand{\cl}[2]{
   \if^#1
     \widehat{#2}
+  \else\if0#1
+    #2
   \else\if1#1
     \overline{#2}
   \else\if2#1
     \overline{\overline{#2}}
-  \fi\fi\fi
+  \fi\fi\fi\fi
 }
 
 % Variables
@@ -108,6 +111,11 @@
     column sep=0.5cm,
     inner sep=0mm,
     ghost/.style={draw=black!20,color=black!20}
+  },
+  % Line with scaled arrow head (requires TikZ library decorations.markings)
+  small arrow/.style={
+    decoration={markings,mark=at position 1 with {\arrow[scale=0.75]{>}}},
+    postaction={decorate}
   }
 }
 
@@ -621,7 +629,7 @@
 \node[state]           (01) [below=of 0] {$(\qqm02,\cl2{\qm1})$};
 \node[state,xshift=1cm](11) [right=of 01]{$(\qm0,\cl2{\qm1},\qm2)$};
 \node[state]           (02) [below=of 01]{$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
-\node[state]           (12) [below=of 11]{$(\qm0,\cl1{\qm1},\qm2)$};
+\node[state,accepting] (12) [below=of 11]{$(\qm0,\cl1{\qm1},\qm2)$};
 \path[->] (0)  edge                node[above]{$a$} (1)
           (1)  edge                node[above]{$a$} (2)
           (2)  edge[my above,loop] node[above]{$a$} ()
@@ -632,6 +640,63 @@
           (11) edge[bend left]     node[right]{$a$} (12)
           (12) edge[bend left]     node[left] {$a$} (11)
           (2)  edge                node[right]{$a$} (11);
+\end{tikzpicture}
+}
+
+%==============================================================================%
+% Component relations between two states
+%==============================================================================%
+\newcommand{\PredCompsOne}{
+\begin{tikzpicture}[automaton,node distance=0.4cm]
+\scriptsize
+\node[state] (1)              {$(\qqm02,\cl2{\qm1})$};
+\node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
+\draw[densely dotted,small arrow]
+($(1.south east)!0.23!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.21!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.68!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.68!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
+\path[->] (1) edge node[right] {$a$} (2);
+\end{tikzpicture}
+}
+
+\newcommand{\PredCompsTwo}{
+\begin{tikzpicture}[automaton,node distance=0.4cm]
+\scriptsize
+\node[state] (1)              {$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
+\node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
+\draw[densely dotted,small arrow]
+($(1.south east)!0.2!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.2!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
+\path[->] (1) edge node[right] {$a$} (2);
+\end{tikzpicture}
+}
+
+\newcommand{\PredCompsThree}{
+\begin{tikzpicture}[automaton,node distance=0.4cm]
+\scriptsize
+\node[state] (1)              {$(\qm0,\cl2{\qm1}, \qm2s)$};
+\node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
+\draw[densely dotted,small arrow]
+($(1.south east)!0.2!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.2!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
+\path[->] (1) edge node[right] {$a$} (2);
 \end{tikzpicture}
 }
 
