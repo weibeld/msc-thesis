@@ -536,6 +536,29 @@
 \end{tikzpicture}
 }
 
+% Complement of the example automaton by applying the M2 optimisation
+\newcommand{\ComplementWithMTwo}{
+\begin{tikzpicture}[automaton]
+\node[state,initial]   (0)               {$(\cl^{\qm0})$};
+\node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
+\node[state]           (2)  [right=of 1] {$(\cl^{\qm0},\cl^{\qm1},\cl^{\qm2})$};
+\node[state]           (01) [below=of 0] {$(\qqm02,\cl2{\qm1})$};
+\node[state,xshift=1cm](11) [right=of 01]{$(\qm0,\cl2{\qm1},\qm2)$};
+\node[state]           (02) [below=of 01]{$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
+\node[state,accepting] (12) [below=of 11]{$(\qm0,\cl2{\qm1},\qm2)*$};
+\path[->] (0)  edge                node[above]{$a$} (1)
+          (1)  edge                node[above]{$a$} (2)
+          (2)  edge[my above,loop] node[above]{$a$} ()
+          (0)  edge                node[right]{$a$} (01)
+          (01) edge                node[right]{$a$} (02)
+          (02) edge[my below,loop] node[below]{$a$} ()
+          (1)  edge                node[left] {$a$} (11)
+          (11) edge                node[right]{$a$} (12)
+          (12) edge[my below,loop] node[below]{$a$} ()
+          (2)  edge                node[right]{$a$} (11);
+\end{tikzpicture}
+}
+
 \newcommand{\ComplementA}{
 \begin{tikzpicture}[automaton,node distance=\myndistsmall]
 \scriptsize
