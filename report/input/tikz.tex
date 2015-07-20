@@ -49,6 +49,9 @@
   %font=\sffamily,
   semithick,
   >=stealth,
+  inv/.style={
+    draw=none
+  },
   longer1/.style={
     shorten >=-0.425mm,
     shorten <=-0.5mm
@@ -72,11 +75,15 @@
     % minimum width=2em,
     % inner sep=1mm,
     %rounded corners=2mm,
-    minimum height=1.75em,
+    minimum height=1.5em,
     minimum width=1.5em,
     inner sep=0.5mm,
     rounded corners=1.5mm,
     rectangle
+  },
+  my state high/.style={
+    my state,
+    minimum height=1.75em
   },
   my accepting/.style={
     double,
@@ -372,6 +379,7 @@
   \node (20) {\q0}; \& \node[a] (21) {\q1}; \& \node (22) {\q2}; \\
   \node (30) {\q0}; \& \node[a] (31) {\q1}; \& \node (32) {\q2}; \\
   \node (40) {\q0}; \& \node[a] (41) {\q1}; \& \node (42) {\q2}; \\
+  \node[inv,yshift=0.3cm] {$\vdots$}; \& \node[inv,yshift=0.3cm] {$\vdots$}; \& \node[inv,yshift=0.3cm] {$\vdots$}; \\
 };
 \path[->]
   (00) edge          (10) edge[longer2] (11) edge (12)
@@ -384,7 +392,7 @@
   (30) edge          (40) edge[longer2] (41) edge (42)
   (31) edge[longer2] (42)
   (32) edge          (42);  
-\node[anchor=base,xshift=-1.5cm] at (20.base) {$\mathcal{G}^A_{a^\omega}=$};      
+%\node[anchor=base,xshift=-1.5cm] at (20.base) {$\mathcal{G}^A_{a^\omega}=$};      
 \end{tikzpicture}
 \LevelSymbols
 }
