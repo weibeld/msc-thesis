@@ -2,7 +2,36 @@ At the beginning of the 1960s, a Swiss logician named Julius Richard Büchi at M
 
 This special type of finite state automaton was later called Büchi automaton.
 
-% Context of study
+\subsection{Context of Study}
+
+Where Büchi complementation is used and why it is important
+
+\begin{itemize}
+\item What are Büchi automata (very short)
+\item What is Büchi complementation (very short)
+\item Application of Büchi complementation (longer)
+  \begin{itemize}
+  \item Main usage in anguage containment: $L_1 \subseteq L_2$ done by testing whether $L_1 \cap \cl1{L_2} = \varnothing$
+    \begin{itemize}
+    \item In terms of automata: $L(A) \subseteq L(A^\prime)$ by testing $L(A) \cap L(\cl1{A^\prime}) = \varnothing$, that is $A^\prime$ must be complemented
+    \end{itemize}
+  \item Important application of language containment: language containment approach to automata-theoretic model checking
+    \begin{itemize}
+    \item Model system as Büchi automaton $M$
+    \item Represent specification properties as Büchi automaton $P$
+    \item Test $L(M) \subseteq L(P)$, that is, $L(M) \cap L(\cl1{P}) = \varnothing$
+    \item Need to complement Büchi automaton $P$, which is very difficult. Alternatives:
+      \begin{itemize}
+      \item Specify property as deterministic Büchi automaton (complementation is easy). Disadvantage: DBW less expressive, less intuitive, larger automata
+      \item Directly represent negation of properites as Büchi automaton. Disadvantage: difficult
+      \item Different approach to automata-theoretic model checking: specify properties as LTL formulas, negate them, and translate to Büchi automaton, model system as labelled transition system and translate to Büchi automaton (used by SPIN). Disadvantage: LTL is less expressive than Büchi automata
+      \end{itemize}
+    \item Importance of more efficient Büchi complementation: so far no tool includes complementation of Büchi automata~\cite{2007_vardi_model_checking}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+
 A Büchi complementation construction takes as input a Büchi automaton $A$ and produces as output another Büchi automaton $B$ which accepts the complement language of the input automaton $A$. Complement language denotes the ``contrary'' language, that is, $B$ must \emph{accept} (over a given alphabet) every word that $A$ \emph{does not} accept, and must in turn \emph{not accept} every word that $A$ \emph{accepts}.
 
 Büchi automata are finite automata (that is, having a finite number of states) which operate on infinite words (that is, words that ``never end''). Operating on infinite words, they belong thus to the category \om-automata. An important application of Büchi automata is in model checking which is a formal system verification technique. There, they are used to represent both, the description of the system to be checked for the presence of a correctness property, and (the negation of) this correctness property itself.
@@ -10,14 +39,21 @@ Büchi automata are finite automata (that is, having a finite number of states) 
 In one approach to model checking, the correctness property is directly specified as a Büchi automaton
 One approach to model checking requires that the Büchi automaton representing the correctness property is complemented. It is here that the problem of Büchi complementation has one of its practical applications. 
 
-% Stating the problem, reason the research is worth tackling
+\subsection{Stating the problem, reason the research is worth tackling}
+
+Regarding the state complexity of Büchi complementation constructions, only the worst-case state growths have been investigated. However, they are a poor guide to actual peformance of constructions~\cite{2011_tsai}. Need for empirical complexity investigations to see the \textit{actual} performance of complementation constructions.
+
 The complementation of non-deterministic Büchi automata is hard. It has been proven to have an exponential lower bound in the number of generated states [cite]. That is, the number of states of the output automaton is, in the worst case, an exponential function of the number of states of the input automaton. However, since the introduction of Büchi automata in the 1960's, significant process in reducing the complexity (in other words, the degree of exponentiality) of the Büchi complementation problem has been made. Some numbers [list complexities of the different constructions].
 
-% Aim and scope
+\subsection{Aim and Scope}
+
+Aim: empirical performance investigation of a specific Büchi complementaiton construction, comparison with other constructions
+
+Scope: two test sets, relatively small automata, no real world or ``typical'' examples,
 
 % Significance: advance knowledge, contribute to solutin of practical problem, novel use of a procedure or technique?
 
-% Overview
+\subsection{Overview}
 
 
 % 2. The Büchi complementation problem
