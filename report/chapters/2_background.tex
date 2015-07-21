@@ -105,7 +105,9 @@ Complementation of non-deterministic automata thus requires
 There are two main structures that are used to investigate all the runs of a non-deterministic \om-automaton on a specific word, directed acyclic graphs (DAGs) and trees~\cite{2014_wilke}. 
 
 \subsection{Run DAGs}
-Run DAGs embody all the runs of a non-deterministic automaton in a special form of a directed acyclic graph. These DAGs are leveled so that each level consists of a vertex for each of the states in the automaton. 
+Run DAGs arrange all the runs of a non-deterministic automaton on a specific word in a directed acyclic graph. This graph is structured into levels, and on each level there is a vertex for every state of the automaton. The width of a run DAG is the number of states on a level, and is thus $n$ if the automaton has $n$ states. The number of levels is infinite for an \om-word.
+
+Figure~\ref{example_automaton_1} shows an example non-deterministic Büchi automaton $A$ that we will use to demonstrate the different run analysis techniques in this and the following sections. Figure~\ref{run_dag} shows the first few levels of the run DAG of the automaton $A$ on the word \aom. 
 
 \begin{figure}
 \centering
@@ -124,18 +126,77 @@ Run DAGs embody all the runs of a non-deterministic automaton in a special form 
 Descriptions: \cite{fogarty2013unifying} (runs are \textit{paths})~\cite{2014_wilke}
 
 \subsection{Run Trees}
+Trees are the second structure that is used for analysing all the runs of a non-deterministic automaton on a specific word. Run trees are the simplest form of the different tree variants. A run tree is basically a direct unwinding of all the runs of an automaton on a word in tree form. Each node in the tree represents a state of the automaton, and each non-deterministic transition in the automaton is representd in the tree as a child of a node.
+
+Figure~\ref{run_tree} shows the first few levels of the run tree of the example automaton $A$ (see Figure~\ref{example_automaton_1}) on the word \aom. A note on notation: during this thesis we will adopt the convention to use rectangles with sharp corners for nodes of a tree. Furthermore, we will use double-lined rectangles for nodes that correspond to a accepting states of the automaton.
+
+\begin{figure}
+\centering
+\RunTree
+\caption{Automaton $A$ and the first five levels of the run tree of the runs of $A$ on the word $a^\omega$.}
+\label{run_tree}
+\end{figure}
+
+Naturally, the number of levels of a run tree is infinite for an \om-word. More importantly, however, the width of a level (number of nodes on a level) is not bounded and may become infinite as well. 
+
+
 
 \subsection{Split Trees}
+A split tree is an enhancement of a run tree where all the non-accepting and accepting children of a node are aggregated so that each node has at most two children, a non-accepting one and an accepting one. This makes a split tree a binary tree. Furthermore, a node of a split tree does not correspond to a single state of the automaton, but to a set of states. In Figure~\ref{split_tree}, we show the first few levels of the split tree of the example automaton $A$ (see Figure~\ref{example_automaton_1}) on the word \aom.
+
 Descriptions: \cite{vardi2007automata}
 
+\begin{figure}
+\centering
+\SplitTreeRightLeft
+\caption{Automaton $A$ and the first five levels of the split tree of the runs of $A$ on the word $a^\omega$.}
+\label{split_tree}
+\end{figure}
+
+Compared to run trees, split trees give up information on individual runs. By looking at the split tree in Figure~\ref{split_tree}, we can see that, for example, there must be a run from \q0 in the root to \q0 at level 4, but we cannot see which states this run visits on its way. What we can however see is that this run for sure does not visit any accepting states, but only non-accepting states. It turns out that with regard to Büchi complementation, this is the actually essential information that we need to know about runs. 
+
+Split trees in fact embody a modified subset construction where accepting and non-accepting successor input-states are not mixed and added as two separate states to the output automaton. Applying this construction to an NBW results in an equivalent NBW whose degree of non-determinism is however reduced to two. Such a construction has been described in~\cite{UltesNitsche2007107}.
+
+In our split tree in Figure~\ref{split_tree} we always put the accepting child to the right of the non-accepting child. This convention is necessary for a property of split trees that leads to \textit{reduced} split trees (see next section), namely the presence or ``greedy'' rightmost runs. Note that the reverse convention, putting the accepting child to the left of the non-accepting child, is also possible. We refer to the former case (accepting right, non-accepting left) as the \textit{right-to-left} version, and to the latter (accepting left, non-accepting right) as the \textit{left-to-right} version.
 
 
 \subsection{Reduced Split Trees}
-Descriptions: \cite{vardi2007automata} \cite{2014_wilke}
+Reduced split trees are split trees where only one occurrence of a state on each level is kept and the others are removed. The state that is kept is either the rightmost one, if right-to-left split trees ar used, or the leftmost one, if left-to-right split trees are used. While both versions are used in the literature, in this this thesis, we will use the right-to-left version. Figure~\ref{reduced_split_tree} shows the first few levels of the (right-to-left) reduced split tree of the automaton $A$ (Figure~\ref{example_automaton_1}) on the word \aom.
 
-Related to Muller-Schupp trees~\cite{Muller199569} (cited in~\cite{fogarty2013unifying})
+\begin{figure}
+\centering
+\ReducedSplitTreeRightLeft
+\caption{Automaton $A$ and the first five levels of the reduced split tree of the runs of $A$ on the word $a^\omega$.}
+\label{reduced_split_tree}
+\end{figure}
 
-Proof that we can keep only the greedy runs~\cite{vardi2007automata} (Lemma 2.6)
+Comparing the reduced split tree with the corresponding split tree (Figure~\ref{split_tree}) reveals which states have been removed in the reduced split tree. The root and level 1 are similar in both trees. On level 2, the state \q2 is removed from the leftmost node, because \q2 already appears farther to the right on this level. On level 3, the state \q2 in the second node from the right is removed because there is already a \q2 to the right of it. As \q2 was the only state of this node, this causes the entire node to disappear. On the same level, \q2 of the leftmost node is also removed for the same reason. On level 4, following the same pattern, three occurrences of \q2 are removed. 
+
+A possible procedure for constructing a new level of a reduced split tree is to start creating children at the rightmost node and then proceed from right to left. In the level under construction, a specific state is only added if it does \textit{not already} occur \textit{to the right} of it. This processing from right to left gives the name to right-to-left reduced split trees.
+
+This omission of states (and thus entire runs) is ``tailored'' to the Büchi complementation problem. It in fact removes all but one of the runs that, after a certain number of steps, end up in the same state. We will call these runs \textit{re-joining} runs. For example, in the split tree in Figure~\ref{split_tree}, there are four runs that, after reading four symbols, ``re-join'' in \q2. In the reduced split tree (Figure~\ref{reduced_split_tree}), three of these re-joining runs are removed and only one is kept.
+
+The run that is kept is always the one that is farthest at the right in the tree, and we call it the \textit{rightmost} run. An alternative name for the rightmost run is \textit{greedy} run. This comes from the fact that this run visits an accepting state earlier than the other re-joining runs. For example, in our previous example with the runs re-joining in \q2, the run that is kept in the reduced split tree visits an accepting state (\q1) already after the first symbol, whereas the other runs visit an accepting state only after the second or third symbol, respectively, or not at all.
+
+Note that visiting an accepting state corresponds to a \textit{right-turn} in a right-to-left split tree. This is because the accepting states are always in the right child of the current node. Thus, the greedy run has actually the earliest right-turn, which in turn is the reason that it is farthest at the right, and thus the rightmost run of all the re-joining runs. In the following, we will use the terms greedy and rightmost interchangeably\footnote{Note that for left-to-right split trees, ``rightmost'' must be substituted by ``leftmost''.}
+
+Summarising, a reduced split tree is thus a split tree where we keep only the rightmost one of a couple of rejoining runs. The base of this rule is the following observation:
+
+\begin{quote}
+\textbf{Any re-joining run is accepting $\Longleftarrow$ the rightmost re-joining run is accepting}
+\end{quote}
+
+That is, if any of the re-joining runs is accepting, then the rightmost run is accepting too, and on the other hand, if the rightmost run is not accepting, then none of the re-joining runs is accepting. A proof of this claim can be found in~\cite{vardi2007automata}\footnote{In this work, the authors use left-to-right split trees, in which case the greedy run is the leftmost rather than the rightmost run.}. 
+
+Coming back to our problem of Büchi complementation, the main information we need from the run analysis of the input automaton is whether \textit{all} the runs on a specific word are non-accepting or not. By considering only greedy runs, we actually test a couple of runs for this property at once. If the greedy run is non-accepting, then we know  instantly that all its related re-joining runs are also non-accepting. If on the other hand the greedy run is accepting, then there is at least one accepting run anyway, and the complement automaton must reject the word. Thus, reduced split trees are a clever way to reduce the problem of analysing the large number of runs of a non-deterministic Büchi automaton on a specific word, by keeping only the information that is essential for the purpose of Büchi complementation.
+
+The most important property of reduced split trees is that their width (the number of states on a level) is bounded by the number of states of the corresponding automaton, and thus finite. This does not hold for split trees. For example, the width of the split tree in Figure~\ref{split_tree} becomes infinite with an infinite number of levels. The width of the reduced split tree in Figure~\ref{reduced_split_tree}, however, never exceeds three, because three is the number of states of the input automaton.
+
+The bounded width of reduced split trees is actually what makes them usable for Büchi complementation constructions, in particular the slice-based construction, including the Fribourg construction. Because in these constructions, levels of reduced split trees define states of the output automaton, and this is only possible if there is a finite number of distinct levels, so that there is a finite number of possible states in the output automaton.
+
+Formal descriptions of reduced split trees can be found in~\cite{vardi2007automata} and~\cite{2014_wilke}. Note that these works use left-to-right split trees, which exchanges the roles of ``right'' and ``left'' with respect to our description.
+
+%Related to Muller-Schupp trees~\cite{Muller199569} (cited in~\cite{fogarty2013unifying})
 
 
 \section{Büchi Complementation Constructions}
