@@ -236,6 +236,20 @@
 }
 
 %==============================================================================%
+% Model checking tree
+%==============================================================================%
+\newcommand{\ModelChecking}{
+\begin{tikzpicture}[every tree node/.style={minimum height=1.5em},sibling distance=1cm,level distance=1cm]
+\footnotesize
+\Tree
+[.\node{Formal verification}; [.\node{$\dots$}; ]
+                              [.\node{Model checking}; [.\node{$\dots$}; ]
+                                                       [.\node{Automata-theoretic}; [.\node{$\dots$}; ]
+                                                                                    [.\node{Language containment approach}; ] ] ] ]
+\end{tikzpicture}
+}
+
+%==============================================================================%
 % Run tree
 %==============================================================================%
 \newcommand{\RunTree}{
