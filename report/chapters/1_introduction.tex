@@ -4,33 +4,67 @@ This special type of finite state automaton was later called Büchi automaton.
 
 \subsection{Context of Study}
 
-Büchi automata are finite state automata that process words of infinite length, so called \om-words. A word is accepted if there is at least one accepting state that is visited infinitely often. The complement of a Büchi automaton $A$ is denoted by $\cl1{A}$ and accepts a word if and only if it is not accepted by $A$.
+%% Büchi automata and Büchi complementation
 
-For a word $\alpha \in \Sigma^\omega$:
+\subsubsection{Büchi Automata and Büchi Complementation}
+
+Büchi automata are finite state automata that process words of infinite length, so called \om-words. If $\Sigma$ is the alphabet of a Büchi automaton, then the set of all the possible \om-words that can be generated from this alphabet is denoted by $\Sigma^\omega$. A word $\alpha \in \Sigma^\omega$ is accepted by a Büchi automaton if it results in at least one run that contains at least one accepting state infinitely often. A run of a Büchi automaton on a word is a sequence of states. Deterministic Büchi automata have exactly one run for each word in $\Sigma^\omega$, whereas non-deterministic Büchi automata may have multiple runs for each word.
+
+The complement of a Büchi automaton $A$ is another Büchi automaton\footnote{The fact that Büchi automata are closed under complementation has been proved by Büchi~\cite{buchi1960decision}, who, to this end, described the first Büchi complementation construction in history.} and is denoted by $\cl1{A}$. Both, $A$ and $\cl1{A}$, share the same alphabet $\Sigma$. Regarding any word $\alpha \in \Sigma^\omega$, the relation between an automaton and its complement is as follows:
 
 \begin{quote}
 \centering
-Word $\alpha$ accepted by $A$ $\Longleftrightarrow$ word $\alpha$ not accepted by $\cl1{A}$
+$\alpha$ accepted by $A$ $\Longleftrightarrow$ $\alpha$ not accepted by $\cl1{A}$
 \end{quote}
 
-So, there is no word of the set of possible words $\Sigma^\omega$ that is accepted or not accepted by \textit{both} of $A$ and its complement $\cl1{A}$.
+That is, all the words that are \textit{accepted} by an automaton are \textit{rejected} by its complement, and all the words that are \textit{rejected} by an automaton are \textit{accepted} by its complement. In other words, there is no single word that is either accepted or rejected by \textit{both} of an automaton and its complement.
 
-One of the main applications of Büchi complementation is language containment of \om-regular languages. This means to find out whether all the words of a language $L_1$ are also contained in another language $L_2$, formally written as $L_1 \subseteq L_2$.
+The complementation of Büchi automata, in particular non-deterministic Büchi automata, is commonly known as ``Büchi complementation'' or the ``Büchi complementation problem''. It is a very complex problem because it exhibits a very high state growth, which is sometimes even called state explosion (in the following, we will use the terms state growth, state explosion, and state complexity interchangeably). State growth denotes the relation of the number of states of a complement $\cl1{A}$ (output of the complementation construction) to the number of states of the automaton $A$ (input to the complementation construction). This relation is for worst-case automata exponential, even for an ideal complementation construction\footnote{Yan proved in 2007 a lower bound for the worst-case state growth of Büchi complementation of $(0.76n)^n$, where $n$ is the number of states of the initial automaton~\cite{DBLP:journals/corr/abs-0802-1226}.}. Even though the state growth that existing complementation constructions produce for many non-worst-case automata is not nearly as high as the worst case, it may still be very high. This is a serious problem, because Büchi complementation has important practical applications (as we will see next), and it is the reason that the quest for more efficient and more practical Büchi complementation constructions is still an active research topic today.
 
-The way this problem is solved is by testing $L_1 \cap \cl1{L_2} = \varnothing$. That is, one takes the intersection of the first (contained) language and the \textit{complement} of the second (containing) language, and tests whether this intersection is empty. If yes, then all the words of $L_1$ are also contained in $L_2$, and $L_1 \subseteq L_2$ is true. If no, then there is at least one word of $L_1$ that is not contained in $L_2$, and $L_1 \subseteq L_2$ is false.
 
-If we represent languages as automata, then the problem becomes $L(A_1) \subseteq L(A_2)$, which is solved by testing $L(A_1) \cap L(\cl1{A_2}) = \varnothing$. That means, we have to complement the automton $A_2$.
+\subsubsection{Language Containment}
+An important application of Büchi complementation is language containment of \om-regular languages. The \om-regular languages form the class of languages that is equivalent to non-deterministic Büchi automata. The language containment problem consists in determining whether $L_1 \subseteq L_2$, that is, whether a language $L_1$ is \textit{contained} in another langauge $L_2$. This is true if every word of $L_1$ is also in $L_2$.
 
-Knowing that the complementation of Büchi automata is used for testing language containment of \om-regular languages, raises the question what is langauge containment of \om-regular langauges used for? In the following, we will briefly present one important application of language containment, namely the language containment approach to automata-theoretic model checking.
+The way $L_1 \subseteq L_2$ is commonly resolved is by testing $L_1 \cap \cl1{L_2} = \varnothing$. Here, $\cl1{L_2}$ denotes the complement language of $L_2$. This means, we have to create the intersection language, say $L_{1,\cl1{2}}$ of $L_1$ and the complement of $L_2$, and then test whether $L_{1,\cl1{2}}$ is empty (that is, contains no words at all). If $L_{1,\cl1{2}}$ is empty, then there is no word of $L_1$ that is not also in $L_2$, and $L_1 \subseteq L_2$ is true. If $L_{1,\cl1{2}}$ is non-empty, then there is at least one word of $L_1$ that is not in $L_2$, and $L_1 \subseteq L_2$ is false.
 
-Automata-theoretic model checking is an approach to model checking, which in turn is an approach to formal verification. Formal verification means the use of mathemtical techniques for proving the correctness of a system (software of hardware) with respect to a specification~\cite{2007_vardi_model_checking}. A typical example is to prove that a system has no deadlocks.
+With this procedure, we in fact reduce the language containment problem to three operations on languages: complementation, intersection, and emptiness testing. By translating the languages $L_1$ and $L_2$ to equivalent automata $A_1$ and $A_2$, and mainpulating the automata instead of the languages, the problem becomes $L(A_1 \cap \cl1{A_2}) = \varnothing$. That is, we complement $A_2$, create the intersection automaton $A_{1,\cl1{2}}$ of $A_1$ and the complement of $A_2$, and test whether the language of $A_{1,\cl1{2}}$ is empty, which is done by directly testing the automaton $A_{1,\cl1{2}}$ for emptiness.
+
+In this way, we reduce the language containment problem of \om-regular languages to three operations on non-deterministic Büchi automata: complementation, intersection, and emptiness testing. Büchi complementation is thus an integral part of the language contaiment problem. However, this does not yet answer our initial question of what is a \textit{concrete} and \textit{practical} application of Büchi complementation. To answer this question, we will in the following describe one important application of langauge containment of \om-regular languages.
+
+
+% One of the main applications of Büchi complementation is language containment of \om-regular languages. This means to find out whether all the words of a language $L_1$ are also contained in another language $L_2$, formally written as $L_1 \subseteq L_2$.
+
+% The way this problem is solved is by testing $L_1 \cap \cl1{L_2} = \varnothing$. That is, one takes the intersection of the first (contained) language and the \textit{complement} of the second (containing) language, and tests whether this intersection is empty. If yes, then all the words of $L_1$ are also contained in $L_2$, and $L_1 \subseteq L_2$ is true. If no, then there is at least one word of $L_1$ that is not contained in $L_2$, and $L_1 \subseteq L_2$ is false.
+
+% If we represent languages as automata, then the problem becomes $L(A_1) \subseteq L(A_2)$, which is solved by testing $L(A_1) \cap L(\cl1{A_2}) = \varnothing$. That means, we have to complement the automton $A_2$.
+
+
+\subsubsection{Language Containment Approach to Automata-Theoretic Model Checking}
+The language containment approach to automata-theoretic model checking is an approach to automata-theoretic model checking, which is an approach to general model checking, which in turn is an approch to formal verification~\cite{2007_vardi_model_checking}. Figure~\ref{model_checking} shows the branch of the family of formal verification techniques that contains the language containment approach to automata-theoretic model checking.
 
 \begin{figure}[htb]
 \centering
 \ModelChecking
-\caption{Branch of the family of formal verification appraoches.}
+\caption{Branch of the family of formal verification techniques that contains the language containment approach to automata-theoretic model checking.}
 \label{model_checking}
 \end{figure}
+
+Formal verification is the use of mathemtical techniques for proving the correctness of a system (software of hardware) with respect to a specified set of properties~\cite{2007_vardi_model_checking}. A typical example is to verify that a program is deadlock-free. In general, formal verification techniques consist of the following three parts~\cite{huth2004logic}:
+
+\begin{enumerate}
+\item A framework for modelling the system to verify
+\item A framework for specifying the properties that the system must satisfy
+\item A verification method for testing whether the system satisfies the properties
+\end{enumerate}
+
+For the language containment approach to automata-theoretic model checking, the frameworks for modelling the system to verify and for specifying the properties to be verified are both Büchi automata. The verification method is to test language containment of the languages corresponding to the two Büchi automata. In more detail, the approach works as we explain in the following.
+
+The system $s$ to be verified is modelled as a Büchi automaton, say $S$. Each word of the language $L(S)$ defined by $S$ corresponds to a possible computation trace of the system $s$. A computation trace is an infinite sequence of ``combinations of properties'' of the system. Such properties can be for example variable values or statuses of individual processes. Each element of a computation trace corresponds to a point in time during the execution of the system\footnote{The infinity of computation traces suggests that this type of formal verification (and model checking in general) is used for systems that are not expected to terminate and  may run indefinitely. This type of systems is called \textit{reactive} systems. They contrasts with systems that are expected to terminate, and, for example, produce a result. For this latter type of systems other formal verification techniques than model checking are used. See for example~\cite{huth2004logic} and~\cite{ben2012mathematical} for works that cover the formal verification of both types of systems.}. Tha language $L(S)$ defines everything the system \textit{can} do.
+
+Property $p$ as automaton $P$. $L(P)$ defines everything that is \textit{allowed} to do with respect to satisfiying the property $p$.
+
+
+Automata-theoretic model checking is an approach to model checking, which in turn is an approach to formal verification. Formal verification means the use of mathemtical techniques for proving the correctness of a system (software of hardware) with respect to a specification~\cite{2007_vardi_model_checking}. A typical example is to prove that a system has no deadlocks.
 
 The langauge containment approach to automata-theoretic model checking works as follows. The system, whose correctness is to prove, is represented as a Büchi automaton, say $S$. This automaton $S$ defines a language $L(S)$, and the words of this language correspond to all the possible computation traces that the system can produce.
 
