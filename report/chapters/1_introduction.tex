@@ -40,6 +40,8 @@ In this way, we reduce the language containment problem of \om-regular languages
 
 
 \subsection{Automata-Theoretic Model Checking via Language Containment}
+
+\subsubsection{How It Works}
 The language containment approach to automata-theoretic model checking is an approach to automata-theoretic model checking, which is an approach to general model checking, which in turn is an approch to formal verification~\cite{2007_vardi_model_checking}. Figure~\ref{model_checking} shows the branch of the family of formal verification techniques that contains the language containment approach to automata-theoretic model checking.
 
 \begin{figure}[htb]
@@ -67,9 +69,9 @@ The verification step then consists in testing $L(S) \subseteq L(P)$, that is, w
 
 This short description points out the application of language containment in formal verification, and, as we know, language containment of \om-regular languages requires Büchi complementation. In the following, we will briefly mention some interesing points about the specific role of Büchi complementation in automata-theoretic model checking.
 
+\subsubsection{Importance of Büchi Complementation}
 
-
-As we have seen in the previous section, solving the language containment problem $L(S) \subseteq L(P)$ is done by translating it to the automata-theoretic problem $L(S \cap \cl1{P}) = \varnothing$. This problem in turn is solved by the following three steps:
+As we have seen in the previous section, solving the language containment problem $L(S) \subseteq L(P)$ is done by translating it to the automata-theoretic problem $L(S \cap \cl1{P}) = \varnothing$, which in turn is solved by the following three steps:
 
 \begin{enumerate}
 \item Construct the \textit{complement} $\cl1{P}$ of the property automaton $P$
@@ -77,70 +79,33 @@ As we have seen in the previous section, solving the language containment proble
 \item Test $A_{S,\cl1{P}}$ for \textit{emptiness}
 \end{enumerate}
 
-Thus, the verification step of the formal verification problem is reduced to three operations on Büchi automata, \textit{complementation}, \textit{intersection}, and \textit{emptiness testing}. Of this triple, complementation is clearly the problem child. While for intersection and emptiness testing there exist efficient solutions~\cite{2007_vardi_model_checking} (cf.~\cite{1996_vardi}), Büchi complementation is so complex that it makes the entire approach nearly inapplicable in practice. According to~\cite{2007_vardi_model_checking} there are so far no verification tools that include Büchi complementation. Instead, the existing practially oriented approaches all circumvent Büchi complementation in different ways.
+The formal verification problem is thus reduced to three operations on Büchi automata, \textit{complementation}, \textit{intersection}, and \textit{emptiness testing}. Complementation is clearly the problem child of this triple. For intersection and emptiness testing of Büchi automata there exist efficient solutions~\cite{2007_vardi_model_checking} (cf.~\cite{1996_vardi}). Büchi complementation, however, is so complex that it makes the entire approach impractical~\cite{1995_tasiran}. According to~\cite{2007_vardi_model_checking}, there are so far no verification tools that include the complementation of a non-deterministic property automaton, because of the sheer time and computing resources that it entails.
 
-One way to cirumvent the need for complementing a non-deterministic Büchi automaton is to represent the property as a determinstic rather than a non-deterministic Büchi automaton.
-The complementation of deterministic Büchi automata is easy and can be done in polynomial time and linear space~\cite{Kurshan198759}.
+Instead, verification tools apply different ways to circumvent the need for complementing non-deterministic property automata. One of them is to use a deterministic, rather than a non-deterministic, Büchi automaton for representing the property~\cite{1995_tasiran}\cite{2007_vardi_model_checking}. This is because the complementation of determinstic Büchi automata is easy (it can be done in polynomial time and linear space~\cite{Kurshan198759}). This has however the disadvantage that the resulting deterministic automaton may be considerably bigger than an equivalent non-deterministic automaton, and that it is generally more complicated and less intuitive to specify a property as a deterministic automaton~\cite{1995_tasiran}.
 
+Another way to cirvumvent the need for Büchi complementation is to use a slightly different approach to automata-theoretic model checking (in Figure~\ref{model_checking}, a sibling of the language containment approach)~\cite{2007_vardi_model_checking}. In this approach, the property is not specified as a Büchi automaton, but as a linear temporal logic (LTL) formula $\varphi$. The formula $\varphi$ is then negated ($\neg\varphi$) and translated to a Büchi automaton $A_{\neg\varphi}$. If $A_S$ is the system automaton, then the verification step is done by testing $L(A_S \cap A_{\neg\varphi}) = \varnothing$. This works because $A_{\neg\varphi}$ is equivalent to $\cl1{A_{\varphi}}$, that is, the complement of the automaton representing the property. In this way we push off complementation from Büchi automata to LTL formulas, in which case it is trivial. A verification tool that uses this approach is the SPIN model checker~\cite{1997_spin}. The disadvantage of this approach is that LTL is less expressive than Büchi automata, and thus allows to express fewer properties. It has even been stated that the set of properties that can be expressed with LTL is unsufficient for industrial applications~\cite{2007_vardi_model_checking}.
 
-Property $p$ as automaton $P$. $L(P)$ defines everything that is \textit{allowed} to do with respect to satisfiying the property $p$.
+Summarising, we can say that automata-theoretic model checking is possible without Büchi complementation. However, the language containment approach with the direct specification of the property as a non-deterministic Büchi automaton has important practical advantages. Thus, finding more efficient ways for the complementation of non-deterministic Büchi automata would be of high practical value~\cite{2007_vardi_model_checking}. This motivates the fundamental topic of this thesis. In the next sections, we will see how our work specifically contributes to this quest.
 
-
-Automata-theoretic model checking is an approach to model checking, which in turn is an approach to formal verification. Formal verification means the use of mathemtical techniques for proving the correctness of a system (software of hardware) with respect to a specification~\cite{2007_vardi_model_checking}. A typical example is to prove that a system has no deadlocks.
-
-The langauge containment approach to automata-theoretic model checking works as follows. The system, whose correctness is to prove, is represented as a Büchi automaton, say $S$. This automaton $S$ defines a language $L(S)$, and the words of this language correspond to all the possible computation traces that the system can produce.
-
-On the other hand, the property that the system must satisfy (for example, deadlock-freeness) is represented as another Büchi automaton, say $P$. The words of the language $L(P)$ correspond to all the possible computation traces that satisfy the property.
-
-With these two representations in place, the verification step is done by testing whether $L(S) \subseteq L(P)$. That is, whether the language defined by the system automaton $S$ is contained in the language defined by the property automaton $P$. As we have seen, this problem is solved by testing whether $L(S) \cap L(\cl1{P}) = \varnothing$. This is in turn algorithmically done by testing $L(S \cap \cl1{P}) = \varnothing$, which includes the following three steps:
-
-\begin{enumerate}
-\item Construct the complement $\cl1{P}$ of the property automaton $P$
-\item Construct the intersection of $S$ and $\cl1{P}$, that is, $A_{S,\cl1{P}} = S \cap \cl1{P}$
-\item Test whether $A_{S,\cl1{P}}$ is empty
-\end{enumerate}
-
-If the emptiness test is positive, then $L(S) \subseteq L(P)$ is true, and the system satsifies the property (for example, deadlock-freeness) with all its possible computation traces. If the emptiness test is negative, then $L(S) \subseteq L(P)$ is false, and there is at least one computation trace of the system that violates the property.
-
-As can be seen from these three steps, the verification problem is reduced to three operations on non-deterministic Büchi automata: (1) complementation, (2) intersection, and (3) emptiness testing. It turns out that intersection and emptiness testing have efficient solutions~\cite{1996_vardi}, whereas 
-
-
-Where Büchi complementation is used and why it is important
-
-\begin{itemize}
-\item What are Büchi automata (very short)
-\item What is Büchi complementation (very short)
-\item Application of Büchi complementation (longer)
-  \begin{itemize}
-  \item Main usage in anguage containment: $L_1 \subseteq L_2$ done by testing whether $L_1 \cap \cl1{L_2} = \varnothing$
-    \begin{itemize}
-    \item In terms of automata: $L(A) \subseteq L(A^\prime)$ by testing $L(A) \cap L(\cl1{A^\prime}) = \varnothing$, that is $A^\prime$ must be complemented
-    \end{itemize}
-  \item Important application of language containment: language containment approach to automata-theoretic model checking
-    \begin{itemize}
-    \item Model system as Büchi automaton $M$
-    \item Represent specification properties as Büchi automaton $P$
-    \item Test $L(M) \subseteq L(P)$, that is, $L(M) \cap L(\cl1{P}) = \varnothing$
-    \item Need to complement Büchi automaton $P$, which is very difficult. Alternatives:
-      \begin{itemize}
-      \item Specify property as deterministic Büchi automaton (complementation is easy). Disadvantage: DBW less expressive, less intuitive, larger automata
-      \item Directly represent negation of properites as Büchi automaton. Disadvantage: difficult
-      \item Different approach to automata-theoretic model checking: specify properties as LTL formulas, negate them, and translate to Büchi automaton, model system as labelled transition system and translate to Büchi automaton (used by SPIN). Disadvantage: LTL is less expressive than Büchi automata
-      \end{itemize}
-    \item Importance of more efficient Büchi complementation: so far no tool includes complementation of Büchi automata~\cite{2007_vardi_model_checking}
-    \end{itemize}
-  \end{itemize}
-\end{itemize}
-
-
-A Büchi complementation construction takes as input a Büchi automaton $A$ and produces as output another Büchi automaton $B$ which accepts the complement language of the input automaton $A$. Complement language denotes the ``contrary'' language, that is, $B$ must \emph{accept} (over a given alphabet) every word that $A$ \emph{does not} accept, and must in turn \emph{not accept} every word that $A$ \emph{accepts}.
-
-Büchi automata are finite automata (that is, having a finite number of states) which operate on infinite words (that is, words that ``never end''). Operating on infinite words, they belong thus to the category \om-automata. An important application of Büchi automata is in model checking which is a formal system verification technique. There, they are used to represent both, the description of the system to be checked for the presence of a correctness property, and (the negation of) this correctness property itself.
-
-In one approach to model checking, the correctness property is directly specified as a Büchi automaton
-One approach to model checking requires that the Büchi automaton representing the correctness property is complemented. It is here that the problem of Büchi complementation has one of its practical applications. 
 
 \subsection{Stating the problem, reason the research is worth tackling}
+Since the introduction of Büchi automata in 1962, many different Büchi complementation constructions have been proposed (see our review in Section~\ref{2_constructions}). The main performance measure for these constructions has usually been their so-called \textit{worst-case state growth} or \textit{worst-case state complexity} (in the following, we will use these two terms interchangeably).
+
+State growth basically denotes the number of states of the output automaton in relation to the number of states of the input automaton to a complementation construction. The worst-case state growth results from a theoretical worst-case automaton and is higher than the state growth of any other automaton. A different way to phrase it is that the worst-case state growth is the maximum number of states that a concstruction actually \textit{can} generate.
+
+While every complemetation construction has different state growths for different input automata, it has just one worst-case state growth. In this way, the worst-case state growth is a single function that can be determined for each construction and be used for comparison with other constructions. 
+
+
+The state growth resulting from an application of a complementation construction is the number of states of the output automaton compared to the number of states of the input automaton. The smaller the size\footnote{With the size of an automaton we the number of state it contain. In the following, we will use the expression ``size of an automaton'' and ``number of states of an automaton'' interchangeably.}. of the output automaton in relation to the size of the input automaton, the better. 
+
+
+
+Performance metric: worst-case state complexity
+
+Optimal if matching lower bound
+
+
+
 
 Regarding the state complexity of Büchi complementation constructions, only the worst-case state growths have been investigated. However, they are a poor guide to actual peformance of constructions~\cite{2011_tsai}. Need for empirical complexity investigations to see the \textit{actual} performance of complementation constructions.
 
