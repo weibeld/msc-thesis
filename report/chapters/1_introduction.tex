@@ -3,7 +3,7 @@ At the beginning of the 1960s, a Swiss logician named Julius Richard Büchi at M
 This special type of finite state automaton was later called Büchi automaton.
 
 \section{Context of Study}
-
+\label{1_context}
 %% Büchi automata and Büchi complementation
 
 \subsection{Büchi Automata and Büchi Complementation}
@@ -89,27 +89,42 @@ Summarising, we can say that automata-theoretic model checking is possible witho
 
 
 \subsection{Stating the problem, reason the research is worth tackling}
-Since the introduction of Büchi automata in 1962, many different Büchi complementation constructions have been proposed (see our review in Section~\ref{2_constructions}). The main performance measure for these constructions has usually been their so-called \textit{worst-case state growth} or \textit{worst-case state complexity} (in the following, we will use these two terms interchangeably).
 
-State growth basically denotes the number of states of the output automaton in relation to the number of states of the input automaton to a complementation construction. The worst-case state growth results from a theoretical worst-case automaton and is higher than the state growth of any other automaton. A different way to phrase it is that the worst-case state growth is the maximum number of states that a concstruction actually \textit{can} generate.
+\subsubsection{Worst-Case State Growth as Main Performance Measure} 
+Since the introduction of Büchi automata in 1962, many different Büchi complementation constructions have been proposed (see our review in Section~\ref{2_constructions}). The main performance measure for these constructions has usually been their so-called \textit{worst-case state growth} or \textit{worst-case state complexity} (in the following, we will use these two terms interchangeably\footnote{Further terms used in the literature are state blow-up or state explosion.}).
 
-While every complemetation construction has different state growths for different input automata, it has just one worst-case state growth. In this way, the worst-case state growth is a single function that can be determined for each construction and be used for comparison with other constructions. 
+State growth basically denotes the number of states of the output automaton in relation to the number of states of the input automaton to a complementation construction. Each automaton has thus its specific own state growth with each construction. The worst-case state growth of a construction results from a theoretical worst-case automaton, which has a higher state growth than any other automaton. In different words, the worst-case state growth is the maximum number of states that a concstruction \textit{can} generate.
 
+The state growth and the resulting time and space complexity is the biggest issue of Büchi complementation. The worst-case state growth seems to ``distill'' this issue to a single number which is practical to use as a concise performance measure and to compare different constructions with each other. Thus, much of the research effort in Büchi complementation construction has gone into reducing the worst-case state growth.
 
-The state growth resulting from an application of a complementation construction is the number of states of the output automaton compared to the number of states of the input automaton. The smaller the size\footnote{With the size of an automaton we the number of state it contain. In the following, we will use the expression ``size of an automaton'' and ``number of states of an automaton'' interchangeably.}. of the output automaton in relation to the size of the input automaton, the better. 
+For example, the complementation construction that has been described in 1962 by Büchi himself~\cite{buchi1960decision} has a doubly exponential worst-case state growth of $2^{2^{O\left(n\right)}}$, where $n$ is the number of states of the input automaton\footnote{In the following, we will always notate state growths as a function of $n$, and $n$ will always be the number of states of the input automaton.}. Note that worst-case state growths are often not given as exact functions, but include the big O notation. A later construction from 1987 by Sistla, Vardi, and Wolper~\cite{PrasadSistla1987217} reduces this worst-case state complexity to a singly exponential funtion of $O\left(2^{4n^2}\right)$. More recently, a construction from 2006 by Friedgut, Kupferman and Vardi from 2006~\cite{friedgut2006buchi} has a worst-caste state complexity of only $(0.96n)^n$.
 
+In parallel to the quest for complementation constructions with a low worst-case state complexity, there is a quest for finding the worst-caste state complexity of Büchi complementation itself. This is done by showing a theoretical minimum state growth of certain automata which even an ideal complementation construction could not undermatch. In this way, one proves a \textit{lower bound} for the worst-case complexity of Büchi complementation (it is still possible that there exist automata with an even higher theoretical minimum state growth). In 1988 Michel proved  such a lower bound of $n!$~\cite{michel1988} (in a different notation approximately $(0.36n)^n$). In 2008, Yan proved a new lower bound of $(0.76n)^n$~\cite{DBLP:journals/corr/abs-0802-1226}. This result is still valid at the time of this writing.
 
+A lower bound of $(0.76n)^n$ means that no complementation construction can ever have a worst-case state growth lower than $(0.76n)^n$. Consequently, a construction that achieves this worst-case state growth is commonly regarded as ``optimal''. 
 
-Performance metric: worst-case state complexity
+\subsubsection{Importance of Empirical Performance Investigations}
+Worst-case state growths are certainly interesting from a theoretical point of view. However, they can be seen as only one aspect of the performance of Büchi complementation constructions. The reality is certainly much more complex. If, for example, one is interested in practical questions (like how does a construction peform on a concrete automaton?), then worst-case state growths are a poor guide to the concrete performance of the construction~\cite{2011_tsai}.
 
-Optimal if matching lower bound
+For example, if we have a concrete automaton, then the worst-case state growth does not reveal anything about how big the complement of this concrete automaton will be. It is not even clear whether in a concrete case a construction with a lower worst-case state growth produces a smaller complement than a construction with a higher worst-case state growth.
 
+Worst-case state growths are mainly meaningful for the worst cases. However, if these worst cases would occur, then all constructions would be far from practical anyway~\cite{1995_tasiran}. If we take for example Friedgut, Kupferman, and Vardi's construction~\cite{friedgut2006buchi} with a worst-case complexity of $(0.96n)^n$, Sistla, Vardi, and Wolper's construction with a worst-case complexity of $O\left(2^{4n^2}\right)$, and a ``worst-case'' automata of, say, 15 states, then the complements of the two constructions would have $2.73 \times 10^17$ (23.7 million billion) and $8.45 \times 10^270$ states, respectively. While this difference is still huge, in practice this does not matter much, because both cases are most likely anyway not feasible in practice.
 
+Hence, with regard to the practical application of Büch complementation (see Section~\ref{1_context}), we believe that it is important to investigate the \textit{actual} performance of Büchi complementation constructions on \textit{concrete} input automata. This is done by \textit{empirical} performance investigations that includes an implementation of the investigated construction, and a set of test data.
+
+There have bee not many empirical investigations of Büchi complementation constructions, and most of the time they have been used as a proof of concept that a given construction \textit{can} be applied in practice. Tasiran et al. (1995)~\cite{1995_tasiran} created an efficient implementation of Safra's complementation construction and used it with the HSIS formal verification tool~\cite{1994_hsis} for automata-theoretic model checking tasks. They could easily complement property automata with some hundreds of states. However, they do not statistically evaluate the results.
+
+In 2003, Gurumurthy et al.~\cite{2003_Gurumurthy} implemented Friedgut, Kupferman, and Vardi's complementation construction~\cite{Kupferman:2001} with different optimisations as part of the tool Wring~\cite{somenzi2000efficient}. They complemented 1000 small automata, that were generated by translation from LTL formulas, and made basic statistical evaluation comparing the effect of the different optimisations on the performance.
+
+In 2006, Althoff et al.~\cite{2006_althoff} implemented Safra's~\cite{1988_safra_2} and Muller and Schupp's~\cite{Muller199569} Büchi determinisation constructions (that can be used as the base for complementation) in a tool called OmegaDet and determinsed the Michel automata~\cite{michel1988} with 2 to 6 states. The result was that that Safra's construction produces smaller automata than Muller and Schupp's construction.
+
+In 2008, Tsay et al.~\cite{2008_goal_ext} in \goal~\cite{2007_goal}\cite{2008_goal_ext}\cite{2009_goal}\cite{2013_goal}
+compared Safra's construction~\cite{1988_safra_2}, Piterman's construction~\cite{2007_piterman}, Thomas's construction~\cite{1999_thomas} (WAPA), and Kupferman and Vardi's construction~\cite{Kupferman:2001} (WAA)
+
+In 2009, Kamarkar and Chakraborty~\cite{2009_karmarkar} proposed an improvement of Schewe's complementation construction~\cite{schewe2009buchi} and implemented it, as well as Schewe's original construction, on top of the model checker NuSMV~\cite{1999_nusmv}\cite{2002_nusmv}. They ran the constructions on 12 test automata and compared the sizes of the output automata with each other. Furthermore, theay did the same tests with the constructions by Friedgut, Kupferman, and Vardi~\cite{Kupferman:2001} and Piterman~\cite{2007_piterman} that are pre-implemented in the \goal tool~\cite{2008_goal_ext}.
 
 
 Regarding the state complexity of Büchi complementation constructions, only the worst-case state growths have been investigated. However, they are a poor guide to actual peformance of constructions~\cite{2011_tsai}. Need for empirical complexity investigations to see the \textit{actual} performance of complementation constructions.
-
-The complementation of non-deterministic Büchi automata is hard. It has been proven to have an exponential lower bound in the number of generated states [cite]. That is, the number of states of the output automaton is, in the worst case, an exponential function of the number of states of the input automaton. However, since the introduction of Büchi automata in the 1960's, significant process in reducing the complexity (in other words, the degree of exponentiality) of the Büchi complementation problem has been made. Some numbers [list complexities of the different constructions].
 
 \subsection{Aim and Scope}
 
