@@ -1,38 +1,45 @@
+In this chapter we treat several topics that serve as a background for the rest of the thesis. In particular, the goal of this chapter is to set the stage for our description of the Fribourg construction in Chapter~\ref{chap_construction}, and the setup of our empirical performance investigation of the Fribourg construction in Chapter~\ref{chap_investigation}, as well as its results in Chapter~\ref{chap_results}.
 
-
+In Section~\ref{2_automata} we summarise some aspects about Büchi automata, as well as about other types of automata on infinite words, that are relevant to the purpose of Büchi complementation. In Section~\ref{2_run_analysis}, we describe the principal techniques for run analysis of non-deterministic automata. This topic has a particular relation to Büchi complementation, and one of the run analysis techniques, reduced split trees, is the core of the Fribourg construction. In Section~\ref{2_review}, we provide a review of proposed Büchi complementation constructions from the introduction of Büchi automata in 1962 until today. We organise the presentation of these constructions along the four main Büchi complementation approaches Ramsey-based, determinisation-based, rank-based, and slice-based. Some of the constructions that we describe in this section will be used in the performance investigation of the Fribourg construction in Chapter~\ref{chap_investigation}.
 
 \section{Büchi Automata and Other Omega-Automata}
-Büchi automata are a type of the so-called \om-automata (``omega''-automata). \om-automata are finite state automata that process infinite words. Thus, an \om-automaton never ``stops'' reading a word, because the word it is reading has an infinite number of symbols. But still, \om-automata can accept or reject the words they read by the means of special \textit{acceptance conditions}. In fact, the only difference between classical finite state automata on finite words and \om-automata is the acceptance condition. 
+\label{2_automata}
+Büchi automata are a type of \om-automata. These are fninite state automata that run on infinite words (so-called \om-words). Externally, \om-automata look the same as the traditional finite state automata on finite words. It is possible to interpret any such automaton on finite words as an \om-automaton, and vice versa.
 
+The difference between \om-automata and automata on finite words is their acceptance condition. An automaton on finite words accepts a word, if after finishing reading it, the automaton is in an accepting state. For \om-automata, this acceptance condition is not possible, because an \om-automaton never finishes reading a word (because the word ``never ends''). Instead, the acceptance condition of \om-automata is defined on the set of the so-called \textit{infinitely recurring states}. We are going to describe this concept in Subsection~\ref{2_buchi_automata} below. 
 
-Formal definitions for example in~\cite{Thomas:1991}\cite{1996_thomas}\cite{2014_wilke}
+In Subsection~\ref{2_buchi_automata} of this section, wer first treat Büchi automata, and in Subsection~\ref{2_om-automata} the principal other types of \om-automata, in particular, Muller, Rabin, Streett, and parity automata. In the latter subsection, we also introduce a shorthand notation for different types of \om-automata that we will use throughout the thesis.
+
+Note that in the entire section we omit overly formal notation and proofs of any kind, because it is not necessary for the aim of this thesis. More comprehensive and formally rigorous treatments of \om-automata can be found, for example, in the works by Thomas~\cite{Thomas:1991,1996_thomas}, or Wilke~\cite{2014_wilke}.
 
 \subsection{Büchi Automata}
-\label{buchi_automata}
-
-
-Descriptions: \cite{Thomas:1991}\cite{2014_wilke}
+\label{2_buchi_automata}
+Below we summarise the aspects of Büchi automata that are most significant for our purposes, including the acceptance condition of Büchi automata, the expressivity of non-deterministic and deterministic Büchi automata, and basics about the complementation of non-deterministic and deterministic Büchi automata. In the course of this, we always stress the difference between deterministic and non-deterministic Büchi automata, as this is one of the main sources for the intricacy of Büchi complementation~\cite{niessner1997deterministic}.  
 
 \subsubsection{Definition and Acceptance Condition}
-
-A Büchi automaton $A$ is defined by the 5-tuple $A = (Q, \Sigma, q_0, \delta, F)$ with the following components:
+A non-deterministic Büchi automaton $A$  is defined by the 5-tuple $A = (Q, \Sigma, \delta, q_0 F)$ with the following components:
 \begin{itemize}
 \item $Q$: a finite set of states
 \item $\Sigma$: a finite alphabet
-\item $q_0$: an initial state, $q_0 \in Q$
 \item $\delta$: a transition function, $\delta: Q \times \Sigma \rightarrow 2^Q$
-\item $F$: a set of accepting states, $F \in 2^Q$
+\item $q_0$: an initial state, $q_0 \in Q$
+\item $F$: a set of accepting states, $F \subseteq Q$
 \end{itemize}
 
-We denote by $\Sigma^\omega$ the set of all words of infinite length over the alphabet $\Sigma$. A Büchi automaton runs on the elements of $\Sigma^\omega$. In the following, we define the acceptance behaviour of a Büchi automaton $A$ on a word $\alpha \in \Sigma^\omega$.
+Note that this is the same definition as for non-deterministic finite state automata on finite words~\cite{hopcroft2006automata}. The difference between Büchi automata and automata on finite words is only the acceptance condition of Büchi automata that we describe below. For deterministic Büchi automata, the definition is similar to the above one, but with a different transition function $\delta$ that returns none or a single state, instead of a set of states
 
-\begin{itemize}
-\item A \emph{run} of Büchi automaton $A$ on a word $\alpha \in \Sigma^\omega$ is a sequence of states $q_0q_1q_2\dots$ such that $q_0$ is $A$'s initial state and $\forall i \geq 0: q_{i+1} \in \delta(q_i, \alpha_i)$
-\item $\textrm{inf}(\rho) \in 2^Q$ is the set of states that occur infinitely often in a run $\rho$
-\item A run $\rho$ is accepting if an only if $\textrm{inf}(\rho) \cap F \neq \varnothing$
-\item A Büchi automaton $A$ accepts a word $\alpha \in \Sigma^\omega$ if and only if there is an accepting run of $A$ on $\alpha$
-\end{itemize}
+An important concept in automata theory the notion of a \textit{run} of an automaton on a given word. A run $\rho$ of automaton $A$ on word $\alpha$ is a sequence of states $q in Q$ that $A$ visits in the process of reading $\alpha$. For finite words, the length of a run is finite as well, however, for \om-words, the length of a run may be infinite. Note that deterministic automata have at most one run for a given word, whereas non-deterministic automata may have multiple possible runs for the same word.
 
+The Büchi acceptance condition decides whether a run $\rho$ is accepting or non-accepting. This in turn determines the acceptance or non-acceptance of a word: a word $\alpha$ is accepted by an automaton $A$, if and only if it has at least one accepting run in $A$. The decision whether a run $\rho$ is accepting or non-accepting is based on the set of \textit{infinitely recurring states} of $\rho$ that we denote by $\textsf{inf}(\rho)$. This set contains all the states that occur infinitely often in $\rho$. In particular, the Büchi acceptance condition is as follows:
+
+\begin{quote}
+\centering
+Run $\rho$ is accepting $\Longleftrightarrow$ $\textsf{inf}(\rho)$ contains at least one accepting state
+\end{quote}
+
+That is, a run is accepting, if and only if the run contains at least one accepting state infintely often. Formally, this can be written as $\textsf{inf}(\rho) \cap F \neq \varnothing$. 
+
+An intuitive way for describing the Büchi acceptance condition has been given by Vardi~\cite{1996_vardi}. If we imagine the automaton having a green light that blinks whenever the automaton visits an accepting state, then the run is accepting if we observe the green light blinking infinitely many times. The fact that there are only finitely man accepting states, but the light blinks infinitely many times, implies that at least one accepting state is being visited infinitely often.
 
 \subsubsection{Expressivity}
 A particularity of Büchi automata is that deterministic and non-deterministic automata are \textit{not} expressively equivalent. In particular, the class of languages corresponding to the deterministic Büchi automata is a strict subset of the class of languages corresponding to the non-deterministic automata. This result has been proved by Büchi himself in his 1962 paper~\cite{buchi1960decision}.
@@ -67,45 +74,98 @@ For non-deterministic Büchi automata, however, there exists no easy solution. T
 % However, non-deterministic Büchi automata cannot be determinised, and hence this straightforward complementation approch is not possible. Consequently, different ways for complementing non-deterministic Büchi automata have to be found, and these ways turn out to be very complex. It is this complexity that makes Büchi complementation an active research topic as, regarding the concrete usages of Büchi complementation in, for example, model checking, it is of great importance to find more and more efficient ways to complement non-deterministic Büchi automata. 
 
 
-\subsection{Other \om-Automata}
-\label{om-automata}
-After the introduction of Büchi automata in 1962, several other types of \om-automata have been proposed. The most notable ones are Muller automata (Muller, 1963~\cite{1963_muller}), Rabin automata (Rabin, 1969~\cite{rabin1969decidability}), Streett automata (Streett, 1982~\cite{Streett1982121}), and parity automata (Mostowski, 1985~\cite{1985_mostowski}).
+\subsection{Other Omega-Automata}
+\label{2_om-automata}
+After the introduction of Büchi automata in 1962, several other types of \om-automata have been introduced. These automata differ from Büchi automata only in their acceptance condition, that is, in the way they decide whether a run $\rho$ is accepting or non-accepting. All these acceptance condition are however based on the set of infintely recurring states $\textsf{inf}(\rho)$ of $\rho$. The following are the most important of these alternative \om-automata along with the year of their introduction.
 
-Description in \cite{2014_wilke}
+\begin{itemize}
+\item Muller automata (1963)~\cite{1963_muller}
+\item Rabin automata (1969)~\cite{rabin1969decidability}
+\item Streett automata (1982)~\cite{Streett1982121}
+\item Parity automata (1985)~\cite{1985_mostowski}
+\end{itemize}
 
-These automata differ from Büchi automata only in their acceptance condition, that is, the condition that a run $\rho$ is accepted. Table~\ref{acc_conditions} gives a formal definition of the acceptance conditions of these types of \om-automata.
+Some of these automata types are used in complementation constructions, especially in determinisation-based complementation constructions (see Section~\ref{2_review}). Table~\ref{acc_conditions} lists the Muller, Rabin, Streett, and parity acceptance conditions, along with the Büchi acceptance condition for comparison.
+
+% After the introduction of Büchi automata in 1962, several other types of \om-automata have been proposed. The most notable ones are Muller automata (Muller, 1963~\cite{1963_muller}), Rabin automata (Rabin, 1969~\cite{rabin1969decidability}), Streett automata (Streett, 1982~\cite{Streett1982121}), and parity automata (Mostowski, 1985~\cite{1985_mostowski}).
+
+% Description in \cite{2014_wilke}
+
+% These automata differ from Büchi automata only in their acceptance condition, that is, the condition that a run $\rho$ is accepted. Table~\ref{acc_conditions} gives a formal definition of the acceptance conditions of these types of \om-automata.
 
 \begin{table}[htb]
 \centering
 \begin{tabular}{lll}
 \hline
-Type & Definitions & Acceptance condition \\
+Type & Definitions & Condition \\
 \hline
-Muller & $F \subseteq 2^Q$ & $\textrm{inf}(\rho) \in F$ \\
-Rabin & $\{(E_1,F_1),\dots,(E_r,F_r)\},\,E_i, F_i \subseteq Q$ & $\exists i: \textrm{inf}(\rho) \cap E_i = \varnothing \, \wedge \, \textrm{inf}(\rho) \cap F_i \neq \varnothing$ \\
-Streett & $\{(E_1,F_1),\dots,(E_r,F_r)\},\,E_i, F_i \subseteq Q$ & $\forall i: \textrm{inf}(\rho) \cap E_i \neq \varnothing \, \vee \, \textrm{inf}(\rho) \cap F_i = \varnothing$ \\
-Parity & $c: Q \rightarrow \{1,\dots,k\},\,k \in \mathbb{N}$ & $\textrm{min}\{c(q)\;|\;q \in \textrm{inf}(\rho) \} \; \textrm{mod} \; 2 = 0$ \\
-Büchi & $F \subseteq Q$ & $\textrm{inf}(\rho) \cap F \neq \varnothing$ \\
+Muller  & $U \subseteq 2^Q$ &
+          $\textsf{inf}(\rho) \in U$ \\
+Rabin   & $\{(U_1,V_1),\dots,(U_r,V_r)\},\,U_i, V_i \subseteq Q$ &
+          $\exists i: \textsf{inf}(\rho) \cap U_i = \varnothing \, \wedge \, \textsf{inf}(\rho) \cap V_i \neq \varnothing$ \\
+Streett & $\{(U_1,V_1),\dots,(U_r,V_r)\},\,U_i, V_i \subseteq Q$ &
+          $\forall i: \textsf{inf}(\rho) \cap U_i \neq \varnothing \, \vee \, \textsf{inf}(\rho) \cap V_i = \varnothing$ \\
+Parity  & $\pi: Q \rightarrow \{1,\dots,k\},\,k \in \mathbb{N}$ &
+          $\textsf{min}(\{\pi(q)\;|\;q \in \textsf{inf}(\rho) \}) \; \textsf{mod} \; 2 = 0$ \\
+Büchi   & &
+          $\textsf{inf}(\rho) \cap F \neq \varnothing$ \\
 \hline
 \end{tabular}
-\caption{Acceptance conditions of Muller, Rabin, Streett, parity, and Büchi automata.}
+\caption{Acceptance conditions of Muller, Rabin, Streett, parity, and Büchi automata. Note that $Q$ denotes the set of states and $F$ the set of accepting states of the corresponding automaton.}
 \label{acc_conditions}
 \end{table}
 
-For the Muller acceptance condition, the set of infinitely occuring states of a run ($\textrm{inf}(\rho)$) must match one of several predefined set of states. The Muller acceptance condition is the most general one, and all the other acceptance conditions in Table~\ref{acc_conditions} can be expressed by the Muller condition~\cite{1999_loeding}.
+Below, we briefly explain the acceptance conditions of Muller, Rabin, Streett, and parity automata in words.
 
-The Rabin and Streett acceptance conditions are the negations of each other. This means that a run satisfies the Rabin acceptance condition, if and only if it does not satisfy the Streett acceptance condition. They both use a list of pairs of state sets. A run is accepted if there is a pair for which the first element contains an infinitely occuring state and the second element does not (Rabin condition), or if for all pairs the first elements do not contain an infinitely occuring state or all the second elements do contain an infinitely occuring state (Streett condition).
+{\setlist[description]{leftmargin=0.5cm, itemsep=\parskip}
+\begin{description}
+\item[Muller acceptance condition]
+Includes a set $U$ of subsets of states. A run $\rho$ is accepting if and only if $\textsf{inf}(\rho)$ equals one of the pre-defined subsets in $U$. The Muller acceptance condition is the most general one, and the Rabin, Streett, parity, and Büchi acceptance conditions can be expressed as Muller acceptance conditions~\cite{2014_wilke,1999_loeding}.
 
-The parity condition assigns a number (color) to each state. A run is accpted if and only if the infinitely often occuring state with the smallest number has an even number.
+\item[Rabin acceptance condition]
+Inludes a list of pairs $(U, V)$ where $U$ and $V$ are subsets of states. A run $\rho$ is accepting if and only if \textit{there is} at least one pair for which $U$ does not contain any states of $\textsf{inf}(\rho)$ \textit{and} $V$ contains at least one state of $\textsf{inf}(\rho)$. A pair $(U, V)$ is called a Rabin pair.
 
-At this point we will start using a notation for the different types of \om-automata that has been used by Piterman~\cite{2006_piterman} and also later by Tsai et al.~\cite{2011_tsai}. It consists of a three-letter acronymes of the form $\{D, W\} \times \{B, M, R, S, P\} \times W$. The first letter, $D$ or $N$ specifies whether the automaton is deterministic or non-deterministc. The second letter is the initial letter of the automaton type, that is, $B$ for Büchi, $M$ for Muller, $R$ for Rabin, $S$ for Streett, and $P$ for parity automata. The third letter specifies on which the automaton runs, and is in our case always $W$ meaning ``words''. Thus, throughout this thesis we will use DBW for deterministic Büchi automata, NBW for non-deterministic Büchi automata, DMW for deterministic Muller automata, and so on.
+\item[Streett acceptance condition]
+Inludes a list of pairs $(U, V)$ where $U$ and $V$ are subsets of states. A run $\rho$ is accepting if and only if \textit{for all} the pairs either $U$ contains at least one state of $\textsf{inf}(\rho)$ \textit{or} $V$ does not contain any states of $\textsf{inf}(\rho)$. A pair $(U, V)$ is called a Streett pair. Note that the Streett condition is the complement of the Rabin condition. This means that if we have two identical Rabin and Streett automata with an identical list of pairs, then the Streett automaton accepts a run if and only if the Rabin automaton does not accept the same run.
 
-Regarding the expressivity of Muller, Rabin, Streett, and parity automata, it turned out that they are equivalent to the \om-regular languages~\cite{Thomas:1991}. However, unlike Büchi automata, for Muller, Rabin, Streett, and parity automata this equivalence holds for deterministic \textit{and} non-deterministic automata. That is, these automata \textit{can} be determinised. In summary, there is thus an equivalence between NBW, DMW, NMW, DRW, NRW, DSW, NSW, DPW, NPW, and the \om-regular languages. Only the DBW, as a special case, has a different expressivity, which is a strict subset of the expressivities of the other automata types. 
+\item[Parity acceptance condition]
+Assigns a number to each of the states of the automaton. A run $\rho$ is accepting if and only if the smallest-numbered element of $\textsf{inf}(\rho)$ has an even number. The numbers that are assigned to the states are sometimes called colours~\cite{1999_loeding}.
+\end{description}}
+
+Regarding the expressivity of these automata, it turns out that they are all equivalent to non-deterministic Büchi automata, and thus to the \om-regular languages~\cite{2014_wilke}. This holds for non-determnistic \textit{and} deterministic automata of these types. That means that, unlike Büchi automata, deterministic and non-deterministic Muller, Rabin, Streett, and parity automata are expressively equivalent.
+
+At this point we introdue a notation that we will occasionally use for denoting different types of \om-automata. This notation has been used by Piterman~\cite{2006_piterman} and later by Tsai et al.~\cite{2011_tsai}. It consists of three-letter acronymes of the form
+\[
+\{N, D\} \times \{B, M, R, S, P\} \times W
+\]
+The first letter specifies whether the automaton is non-deterministic ($N$) or deterministic ($D$). The second letter stands for the acceptance condition: $B$ for Büchi, $M$ for Muller, $R$ for Rabin, $S$ for Streett, and $P$ for parity. The last letter specifies on which structure the automaton runs. In our case these are always words, thus the last letter is always $W$. For example, NBW means non-deterministic Büchi automaton, DBW means deterministic Büchi automaton, NMW means non-deterministic Muller automaton, DMW means deterministic Muller automaton, and so on.
+
+
+% The Rabin and Streett acceptance conditions are the negations of each other. This means that a run satisfies the Rabin acceptance condition, if and only if it does not satisfy the Streett acceptance condition. They both use a list of pairs of state sets. A run is accepted if there is a pair for which the first element contains an infinitely occuring state and the second element does not (Rabin condition), or if for all pairs the first elements do not contain an infinitely occuring state or all the second elements do contain an infinitely occuring state (Streett condition).
+% \end{description}}
+
+% All these automata types are equivalent to the \om-regular languages~\cite{2014_wilke}.
+
+% \subsubsection{Muller}
+% For the Muller acceptance condition, the set of infinitely occuring states of a run ($\textsf{inf}(\rho)$) must match one of several predefined set of states. The Muller acceptance condition is the most general one, and all the other acceptance conditions in Table~\ref{acc_conditions} can be expressed by the Muller condition~\cite{1999_loeding}.
+
+% \subsubsection{Rabin}
+% The Rabin and Streett acceptance conditions are the negations of each other. This means that a run satisfies the Rabin acceptance condition, if and only if it does not satisfy the Streett acceptance condition. They both use a list of pairs of state sets. A run is accepted if there is a pair for which the first element contains an infinitely occuring state and the second element does not (Rabin condition), or if for all pairs the first elements do not contain an infinitely occuring state or all the second elements do contain an infinitely occuring state (Streett condition).
+
+% The parity condition assigns a number (color) to each state. A run is accpted if and only if the infinitely often occuring state with the smallest number has an even number.
+
+% At this point we will start using a notation for the different types of \om-automata that has been used by Piterman~\cite{2006_piterman} and also later by Tsai et al.~\cite{2011_tsai}. It consists of a three-letter acronymes of the form $\{D, W\} \times \{B, M, R, S, P\} \times W$. The first letter, $D$ or $N$ specifies whether the automaton is deterministic or non-deterministc. The second letter is the initial letter of the automaton type, that is, $B$ for Büchi, $M$ for Muller, $R$ for Rabin, $S$ for Streett, and $P$ for parity automata. The third letter specifies on which the automaton runs, and is in our case always $W$ meaning ``words''. Thus, throughout this thesis we will use DBW for deterministic Büchi automata, NBW for non-deterministic Büchi automata, DMW for deterministic Muller automata, and so on.
+
+% Regarding the expressivity of Muller, Rabin, Streett, and parity automata, it turned out that they are equivalent to the \om-regular languages~\cite{Thomas:1991}. However, unlike Büchi automata, for Muller, Rabin, Streett, and parity automata this equivalence holds for deterministic \textit{and} non-deterministic automata. That is, these automata \textit{can} be determinised. In summary, there is thus an equivalence between NBW, DMW, NMW, DRW, NRW, DSW, NSW, DPW, NPW, and the \om-regular languages. Only the DBW, as a special case, has a different expressivity, which is a strict subset of the expressivities of the other automata types. 
 
 
 
-\section{Run Analysis in Non-Deterministic Automata}
-In a deterministic automaton, every input word has exactly one run. In a non-deterministic automaton, however, an input word may have a large number of different runs. It is this fact that generally makes the complementation of non-deterministic automata much harder than the complementation of deterministic automata. Because for the complementation of an automaton $A$ to its complement automaton $B$, there is the following principle:
+\section{Run Analysis of Non-Deterministic Automata}
+\label{2_run_analysis}
+
+In a deterministic automaton, every input word has exactly one run. In a non-deterministic automaton, however, an input word may have a large number of different runs.
+
+It is this fact that generally makes the complementation of non-deterministic automata much harder than the complementation of deterministic automata. Because for the complementation of an automaton $A$ to its complement automaton $B$, there is the following principle:
 
 \begin{quote}
 \centering
@@ -140,7 +200,7 @@ Figure~\ref{example_automaton_1} shows an example non-deterministic Büchi autom
 Descriptions: \cite{fogarty2013unifying} (runs are \textit{paths})~\cite{2014_wilke}
 
 \subsection{Run Trees}
-Trees are the second structure that is used for analysing all the runs of a non-deterministic automaton on a specific word. Run trees are the simplest form of the different tree variants. A run tree is basically a direct unwinding of all the runs of an automaton on a word in tree form. Each node in the tree represents a state of the automaton, and each non-deterministic transition in the automaton is representd in the tree as a child of a node.
+Trees are the second structure that is used for analysing all the runs of a non-deterministic automaton on a specific word. Run trees are the simplest form of the different tree variants. A run tree is basically a direct unwinding of all the runs of an automaton on a word in tree form. Uach node in the tree represents a state of the automaton, and each non-deterministic transition in the automaton is representd in the tree as a child of a node.
 
 Figure~\ref{run_tree} shows the first few levels of the run tree of the example automaton $A$ (see Figure~\ref{example_automaton_1}) on the word \aom. A note on notation: during this thesis we will adopt the convention to use rectangles with sharp corners for nodes of a tree. Furthermore, we will use double-lined rectangles for nodes that correspond to a accepting states of the automaton.
 
@@ -214,7 +274,7 @@ Formal descriptions of reduced split trees can be found in~\cite{vardi2007automa
 
 
 \section{Büchi Complementation Constructions}
-\label{2_constructions}
+\label{2_review}
 Since the introduction of Büchi automata in 1962, many constructions for complementing non-deterministic Büchi automata have been proposed. 
 
 
@@ -246,12 +306,19 @@ The idea behind this approach is that the complementation of deterministic \om-a
 \subsubsection{Safra, 1988}
 
 The first determinisation-based complementation construction has been described by Safra in 1988~\cite{1988_safra_2}. Safra's main work was actually a determinisation construction for converting an NBW to a DRW. This is what today is known as \textit{Safra's construction}. Safra then describes complementation as a possible application of his determinisation construction. He also presents the additional conversions that are needed for the entire complementation construction. The conversion steps of Safra's complementation procedure are as follows.
-\begin{enumerate}
-\item NBW           $\longrightarrow$ DRW           (Safra's construction)
-\item DRW           $\longrightarrow$ \overbar{DSW} (complementation)
-\item \overbar{DSW} $\longrightarrow$ \overbar{DRW}
-\item \overbar{DRW} $\longrightarrow$ \overbar{NBW}
-\end{enumerate}
+
+
+% Simulate enumerate with a table
+\newlength{\myitemindent}
+\setlength{\myitemindent}{\itemindent+1pt}
+\hspace{\myitemindent}
+{\renewcommand{\tabcolsep}{4pt}
+\begin{tabular}{lllll}
+1. & NBW       & $\longrightarrow$ & DRW      & (Safra's construction) \\
+2. & DRW       & $\longrightarrow$ & \ob{DSW} & (Complementation)      \\
+3. & \ob{DSW}  & $\longrightarrow$ & \ob{DRW} &                        \\
+4. & \ob{DRW}  & $\longrightarrow$ & \ob{NBW} &                        \\
+\end{tabular}}
 
 The complementation step from a DRW to a DSW that accepts the complement language can be trivially done by interpreting the Rabin acceptance condition as a Streett acceptance condition. This is possible, because these two acceptance conditions are the negations of each other (see Section~\ref{om-automata}. The conversions from DSW to DRW, and from DRW to NBW are not of major difficulty or complexity, and are described by Safra in~\cite{1988_safra_2} (Lemma~3 and Lemma~5).
 
@@ -270,11 +337,16 @@ Descriptionof Muller-Schupp trees: \cite{2006_althoff}
 \subsubsection{Piterman, 2007}
 
 Another improvement of Safra's construction has been proposed in 2007 by Piterman from EPF Lausanne~\cite{2007_piterman} (first presented at a conference in 2006~\cite{2006_piterman}). This construction converts a NBW to a DPW, rather than a DRW. Piterman's construction uses a more compact version of Safra trees, which allows it to produce smaller output automata. The concrete worst-case state growth of Piterman's construction is $2n^nn!$, opposed to $12^nn^{2n}$ of Safra's construction~\cite{2007_piterman}. Complementation with Piterman's construction is done in the following steps.
-\begin{enumerate}
-\item NBW           $\longrightarrow$ DPW (Piterman's construction)
-\item DPW           $\longrightarrow$ \overbar{DPW} (complementation)
-\item \overbar{DPW} $\longrightarrow$ \overbar{NBW}
-\end{enumerate}
+
+% Simulate enumerate with a table
+\setlength{\myitemindent}{\itemindent+1pt}
+\hspace{\myitemindent}
+{\renewcommand{\tabcolsep}{4pt}
+\begin{tabular}{lllll}
+1. & NBW       & $\longrightarrow$ & DPW      & (Piterman's construction) \\
+2. & DPW       & $\longrightarrow$ & \ob{DPW} & (Complementation)      \\
+3. & \ob{DPW}  & $\longrightarrow$ & \ob{NBW} &                        \\
+\end{tabular}}
 
 The complementation step from a DPW to a DPW accepting the complement language can be trivially done by, for example, increasing the number of each state by 1. The conversion from a DPW to an NBW can alse be done without major complexity~\cite{2011_tsai}.
 
@@ -568,8 +640,8 @@ A comparison of the rank-based and slice-based complementation approaches has be
 % \begin{itemize}
 % % \item $\Sigma^\omega$ is the set of all possible words of infinite length over alphabet $\Sigma$
 % \item A \emph{run} of Büchi automaton $A$ on a word $\alpha \in \Sigma^\omega$ is a sequence of states $q_0q_1q_2\dots$ such that $q_0$ is $A$'s initial state and $\forall i \geq 0: q_{i+1} \in \delta(q_i, \alpha_i)$
-% \item $\textrm{inf}(\rho) \in 2^Q$ is the set of states that occur infinitely often in a run $\rho$
-% \item A run $\rho$ is accepting if an only if $\textrm{inf}(\rho) \cap F \neq \varnothing$
+% \item $\textsf{inf}(\rho) \in 2^Q$ is the set of states that occur infinitely often in a run $\rho$
+% \item A run $\rho$ is accepting if an only if $\textsf{inf}(\rho) \cap F \neq \varnothing$
 % \item A Büchi automaton $A$ accepts a word $\alpha \in \Sigma^\omega$ if and only if there is an accepting run of $A$ on $\alpha$
 % \end{itemize}
 
@@ -614,26 +686,26 @@ A comparison of the rank-based and slice-based complementation approaches has be
 
 % % The best-known ones are Muller (1963)~\cite{1963_muller}, Rabin (1969)~\cite{rabin1969decidability}, Streett (1982)~\cite{Streett1982121}, and parity (1985)~\cite{1985_mostowski} automata. 
 
-% All these automata differ from Büchi automata, and among each other, only in their acceptance condition, that is, the condition for accepting or rejecting a run $\rho$. We can write a general definition of \om-automata that covers all of these types as $(Q, \Sigma, q_0, \delta, Acc)$. The only difference to the 5-tuple defining Büchi automata is the last element, $Acc$, which is a general acceptance condition. We list the acceptance condition of all the different \om-automata types below~\cite{1999_loeding}. Note that again a run $\rho$ is a sequence of states, and $\textrm{inf}(\rho)$ is the set of states that occur infinitely often in run $\rho$. 
+% All these automata differ from Büchi automata, and among each other, only in their acceptance condition, that is, the condition for accepting or rejecting a run $\rho$. We can write a general definition of \om-automata that covers all of these types as $(Q, \Sigma, q_0, \delta, Acc)$. The only difference to the 5-tuple defining Büchi automata is the last element, $Acc$, which is a general acceptance condition. We list the acceptance condition of all the different \om-automata types below~\cite{1999_loeding}. Note that again a run $\rho$ is a sequence of states, and $\textsf{inf}(\rho)$ is the set of states that occur infinitely often in run $\rho$. 
 
 % % Itemize of all acceptance conditions, including Büchi
 % \begin{tabular}{|l|l|l|}
 % \hline
 % \textbf{Type} & \textbf{Definitions} & \textbf{Run $\rho$ accepted if and only if\dots} \\
 % \hline
-% Büchi & $F \subseteq Q$ & $\textrm{inf}(\rho) \cap F \neq \varnothing$ \\
+% Büchi & $F \subseteq Q$ & $\textsf{inf}(\rho) \cap F \neq \varnothing$ \\
 % \hline
-% Muller & $F \subseteq 2^Q$ & $\textrm{inf}(\rho) \in F$ \\
+% Muller & $F \subseteq 2^Q$ & $\textsf{inf}(\rho) \in F$ \\
 % \hline
-% Rabin & $\{(E_1,F_1),\dots,(E_r,F_r)\},\,E_i, F_i \subseteq Q$ & $\exists i: \textrm{inf}(\rho) \cap E_i = \varnothing \, \wedge \, \textrm{inf}(\rho) \cap F_i \neq \varnothing$ \\
+% Rabin & $\{(E_1,F_1),\dots,(E_r,F_r)\},\,E_i, F_i \subseteq Q$ & $\exists i: \textsf{inf}(\rho) \cap E_i = \varnothing \, \wedge \, \textsf{inf}(\rho) \cap F_i \neq \varnothing$ \\
 % \hline
-% Streett & $\{(E_1,F_1),\dots,(E_r,F_r)\},\,E_i, F_i \subseteq Q$ & $\forall i: \textrm{inf}(\rho) \cap E_i \neq \varnothing \, \vee \, \textrm{inf}(\rho) \cap F_i = \varnothing$ \\
+% Streett & $\{(E_1,F_1),\dots,(E_r,F_r)\},\,E_i, F_i \subseteq Q$ & $\forall i: \textsf{inf}(\rho) \cap E_i \neq \varnothing \, \vee \, \textsf{inf}(\rho) \cap F_i = \varnothing$ \\
 % \hline
-% Parity & $c: Q \rightarrow \{1,\dots,k\},\,k \in \mathbb{N}$ & $\textrm{min}\{c(q)\;|\;q \in \textrm{inf}(\rho) \} \; \textrm{mod} \; 2 = 0$ \\
+% Parity & $c: Q \rightarrow \{1,\dots,k\},\,k \in \mathbb{N}$ & $\textrm{min}\{c(q)\;|\;q \in \textsf{inf}(\rho) \} \; \textrm{mod} \; 2 = 0$ \\
 % \hline
 % \end{tabular}
 
-% In the Muller acceptance condition, the set of infinitely occuring states of a run ($\textrm{inf}(\rho)$) must match a predefined set of states.
+% In the Muller acceptance condition, the set of infinitely occuring states of a run ($\textsf{inf}(\rho)$) must match a predefined set of states.
 % % The Muller acceptance condition is the most general one, and all of the other listed conditions can be expressed as a Muller acceptance condition~\cite{1999_loeding}.
 % The Rabin and Streett conditions use pairs of state sets, so-called accepting pairs. The Rabin and Streett conditions are the negations of each other. This allows for easy complementation of deterministic Rabin and Streett automata~\cite{1999_loeding}, which will be used for certain Büchi complementation construction, as we will see in Section\ref{review}. The parity condition assigns a number (color) to each state and accepts a run if the smallest-numbered of the infinitely often occuring states has an even number. For all of these automata there exist non-deterministic and deterministic versions, and we will refer to them as NMW, DMW (for non-deterministic and deterministic Muller automata), and so on.
 
@@ -719,7 +791,7 @@ A comparison of the rank-based and slice-based complementation approaches has be
 
 % As a starting point, let us look at the complementation problem for normal finite state automata on finite words. Normal finite state automata recognise the regular languages and are also closed under complementation. For deterministic finite state automata, a possible complementation algorithm consists in simply inverting the accepting and non-accepting states of the automaton. Inuitively, every word that leaves the input automaton in an accepting state will leave the output automoaton in a non-accepting state, and vice versa. For the case of non-deterministic automata, one can take adavantage of the fact that every non-deterministic automata can be converted to an equivalent deterministic automaton. A standard algorithm for this conversion is the subset-construction, which is described in detail in [cite Hopcroft, Sec. 2.3.5]. The subset-construction basically takes all the subsets of states of the input automaton as states of the output automaton. A possible complementation algorithm for non-deterministic finite state automata consists thus in determinisation by the subset-construction and complementation by switching accepting and non-accepting states.
 
-% Again, the cases of deterministic and non-deterministic automata are treated separately. For DBW, the method of switching accepting and non-accepting states does not work. Imagine for example that $\rho$ is the run of the word $x \in \Sigma^\omega$ of automaton $A$ (a DBW has exactly one run for every word of $\Sigma^\omega$). If $\textrm{inf}(\rho)$ contains both an accepting and a non-accepting state, then the switching of accepting and non-accepting states has no effect on the acceptance of $x$, as it is accepted in both cases. A working procedure for complementing DBW has been described by Kurshan [cite Kurshan, 1987]. Kurshan's construction is relatively easy and can be described in one sentence: make all states of the input automaton $A$ non-accepting, add another copy of $A$, remove all its accepting states and make the non-accepting states accepting, and finally add transitions from the states of the first copy of $A$ to the corresponding destination states in the second copy of $A$. The resulting automaton is an NBW $B$ that accepts the complement language of the input DBW $A$.
+% Again, the cases of deterministic and non-deterministic automata are treated separately. For DBW, the method of switching accepting and non-accepting states does not work. Imagine for example that $\rho$ is the run of the word $x \in \Sigma^\omega$ of automaton $A$ (a DBW has exactly one run for every word of $\Sigma^\omega$). If $\textsf{inf}(\rho)$ contains both an accepting and a non-accepting state, then the switching of accepting and non-accepting states has no effect on the acceptance of $x$, as it is accepted in both cases. A working procedure for complementing DBW has been described by Kurshan [cite Kurshan, 1987]. Kurshan's construction is relatively easy and can be described in one sentence: make all states of the input automaton $A$ non-accepting, add another copy of $A$, remove all its accepting states and make the non-accepting states accepting, and finally add transitions from the states of the first copy of $A$ to the corresponding destination states in the second copy of $A$. The resulting automaton is an NBW $B$ that accepts the complement language of the input DBW $A$.
 
 % In the case of finite-word automata, the complementation procedure for DFA provided a solution for the complementationn of NFA, because there is a translation from every NFA to an equivalent DFA. For Büchi automata this is however not the case. As mentioned above, there are NBW for which no equivalent DBW exists. We say that NBW can in general not be determinised.
 

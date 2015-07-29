@@ -38,7 +38,10 @@
 \usepackage{subcaption}
 
 % Smart filename extension recognition (allow dots in file names)
-\usepackage{grffile}  
+\usepackage{grffile}
+
+% Adding lengths. e.g. \newlength{\mylen} \setlength{\mylen}{\texwidth+1cm}
+\usepackage{calc}
 
 % Page headers and footers
 \usepackage{fancyhdr}
@@ -83,7 +86,7 @@
 \newcommand{\aom}{{$a^\omega$}}
 \newcommand{\Bp}{{$B^\prime$}}
 \newcommand{\tec}[1]{\textsf{#1}}
-\newcommand{\overbar}[1]{$\overline{\text{#1}}$}
+\newcommand{\ob}[1]{$\overline{\text{#1}}$}
 \newcommand{\shade}{\cellcolor{black!5}}  % Shaded table cell
 
 % Custom table column: fixed width, horizontally and vertically centered

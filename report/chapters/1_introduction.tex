@@ -187,7 +187,7 @@ Questions like this can be attempted to answer by empirical peformance investiga
 
 There have been relatively few empirical attempts in the history of Büchi complementation~\cite{2011_tsai}, compared to the number of theoretical works. In the following, we give  (non-exhaustive) list of empirical works in the past that illustrate the approach, and also show the line of research in which the work of this thesis is situated.
 
-\setlist[description]{leftmargin=0.5cm, itemsep=\parskip}
+{\setlist[description]{leftmargin=0.5cm, itemsep=\parskip}
 \begin{description}
 \item[1995] Tasiran et al.~\cite{1995_tasiran} create an efficient implementation of Safra' construction\cite{1988_safra_2} (determinisation-based) and used it for for automata-theoretic model checking tasks with the HSIS verification tool~\cite{1994_hsis}. They state that they could easily complement property automata with some hundreds of states, however, they do not provide a statistical evaluation of the results.
 
@@ -206,7 +206,7 @@ There have been relatively few empirical attempts in the history of Büchi compl
 \item[2012] Breuers et al.~\cite{2012_breuers} wrap the implementation of their improvement of Sistla, Vardi, and Wolper's construction~\cite{PrasadSistla1987217} in the publicly available tool Alekto\footnote{\url{http://www.automata.rwth-aachen.de/research/Alekto/}}, and and run it on the \goal{} test set. They compare the generated complement sizes, as well as the number of aborted complementation tasks (due to exceeding resource requirements) to the corresponding result for different constructions on the same test set by Tsai et al.~\cite{2011_tsai}.
 
 \item[2013] Göttel~\cite{2013_bsc_goettel} creates a C implementation of the Fribourg construction~\cite{2014_joel_ulrich}, including the R2C optimisation (see Chapter~\ref{chap_construction}), and executes it on the \goal{} test set, as well as on the Michel automata with 3 to 6 states. He analyses the resulting complement sizes and execution times separately for each of the 110 classes that the \goal{} test set consists of. The Fribourg construction\footnote{The authors of the constructions use the name \textit{subset-tuple construction} (see~\cite{2014_joel_ulrich}), however, in this thesis, we will use the name \textit{Fribourg construction}.} is a slice-based complementation construction that is being developed at the university of Fribourg, and which lies at the heart of this thesis. The entire Chapter~\ref{chap_construction} of this thesis is dedicated to explaining the Fribourg construction.
-\end{description}
+\end{description}}
 
 
 \section{Aim and Scope}
