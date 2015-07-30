@@ -258,11 +258,11 @@ A formal description of split trees can be found, for example, in~\cite{vardi200
 
 \subsection{Reduced Split Trees}
 \label{2_red_split_trees}
-Reduced split trees are split trees that sacrifice even more information, but the information that is retained is still sufficient for Büchi complementation. The rule is that on each level, going from right to left or from left to right, only the first occurrence of each state is kept, and the others are omitted. This bounds the maximum width of the tree to the number $n$ of states of the corresponding automaton, because each level of the tree may contain at most $n$ nodes, one for each state of the automaton.
+Reduced split trees are split trees that sacrifice even more information. However, the information that is retained is still sufficient for Büchi complementation. The rule is that on each level, going from right to left or from left to right, only the first occurrence of each state is kept, and the others are omitted. This bounds the maximum width of the tree to the number of states of the corresponding automaton.
 
-The direction in which the first occurrence of a state is determined depends on whether right-to-left or left-to-right split trees are used. In right-to-left split trees, the accepting child is put to the right of the non-accepting child. The split tree in Figure~\ref{split_tree} is thus a right-to-left split tree. In left-to-right split trees, on the other hand, the accepting child is put to the left of the non-accepting child. In the literature both versions are used. For example, Vardi and Wilke~\cite{vardi2007automata} describe the left-to-right version, whereas Fogarty et al.~\cite{fogarty2013unifying} describe the right-to-left version. In this thesis, we will use exclusively the right-to-left version.
+The direction in which the first occurrence of a state is determined depends on whether right-to-left or left-to-right split trees are used. In \textit{right-to-left split trees}, the accepting child is put to the right of the non-accepting child. The split tree in Figure~\ref{split_tree} is thus a right-to-left split tree. In \textit{left-to-right split trees}, on the other hand, the accepting child is put to the left of the non-accepting child. In the literature both versions are used. For example, Vardi and Wilke~\cite{vardi2007automata} describe the left-to-right version, whereas Fogarty et al.~\cite{fogarty2013unifying} describe the right-to-left version. In this thesis, we will use exclusively the right-to-left version.
 
-In a right-to-left reduced split tree, the direction in which the first occurrence of a state is determined is from right to left. This means that only the rightmost occurrence of each state on a level is kept and the others are omitted. Figure~\ref{reduced_split_tree} shows the first five levels of the reduced split tree of the automaton $A$ (Figure~\ref{ex_aut_1}) on the word \aom.
+In a right-to-left reduced split tree, the levels are processed from right to left. This means that only the rightmost occurrence of each state on a level is kept and the others are omitted. Figure~\ref{reduced_split_tree} shows the first five levels of the reduced split tree of the automaton $A$ (Figure~\ref{ex_aut_1}) on the word \aom.
 
 % Reduced split trees are split trees where only one occurrence of a state on each level is kept and the others are removed. The state that is kept is either the rightmost one, if right-to-left split trees ar used, or the leftmost one, if left-to-right split trees are used. While both versions are used in the literature, in this this thesis, we will use the right-to-left version. Figure~\ref{reduced_split_tree} shows the first few levels of the (right-to-left) reduced split tree of the automaton $A$ (Figure~\ref{ex_aut_1}) on the word \aom.
 
@@ -273,24 +273,26 @@ In a right-to-left reduced split tree, the direction in which the first occurren
 \label{reduced_split_tree}
 \end{figure}
 
-As can be seen in Figure~\ref{reduced_split_tree}, each level contains at most one occurrence of each of the states \q0, \q1, and \q2. Comaring the reduced split tree in Figure~\ref{reduced_split_tree} with the split tree in Figure~\ref{split_tree} reveals which states are omitted in the reduced split tree. The root level and level 1 are similar in both trees. On level 2, the state \q2 in the leftmost node is omitted. This is because level 2 has already a \q2 to the right of it, namely in the rightmost node of the level. In level 3, there are two omissions of \q2 for the same reason. One of them causes an entire node to be omitted, because this node contained \q2 as its only state. Finally, on level 4, there are three omissions of \q2.
+As can be seen in Figure~\ref{reduced_split_tree}, each level contains at most one occurrence of each of the states \q0, \q1, and \q2. Comparing the reduced split tree in Figure~\ref{reduced_split_tree} with the split tree in Figure~\ref{split_tree} reveals which states have been omitted in the reduced split tree. The root level and level 1 are similar in both trees. On level 2, the state \q2 in the leftmost node is omitted. This is because there is already a \q2 farther to the right, namely in the rightmost node of level 2. In level 3, there are two omissions of \q2 for the same reason. One of them causes an entire node to disappear, because this node contained \q2 as its only state. Finally, on level 4, there are three omissions of \q2.
 
-In the following, we illustrate what this omission of states entails and why the resulting ``truncated'' run analysis is still meaningful for Büchi complementaton. By omitting states, we obviously omit runs from the tree. This omission of runs is targeted at so-called \textit{re-joining} runs. Re-joining runs are runs that afer a certain number of symbols end up in the same state again. For example, the automaton from Figure~\ref{ex_aut_1} has seven re-joining runs that after four steps end up in the state \q2. This can be easily seen in the corresponding run tree in Figure~\ref{run_tree}. A reduced split tree keeps of all the re-joining runs only exactly one, and the others are removed. This can be seen in Figure~\ref{reduced_split_tree} which contains only one run from the root to \q2 on level 4.
+In the following, we illustrate what this omission of states entails and why the resulting ``truncated'' run analysis is still usabel for Büchi complementaton. By omitting states, we obviously omit runs from the tree. This omission of runs is targeted at so-called \textit{re-joining runs}. Re-joining runs are runs that afer a certain number of steps end up in the same state again. For example, the automaton from Figure~\ref{ex_aut_1} has seven re-joining runs that after four steps end up in the state \q2. This can be easily seen in the corresponding run tree in Figure~\ref{run_tree}. A reduced split tree keeps exactly one of a group of re-joining runs and removes the others. This can be seen in Figure~\ref{reduced_split_tree} which contains only one run from the root to \q2 in four steps.
 
-The re-joining run that is kept is named \textit{rightmost run}. It is called this way, because it is the first of a group of re-joining runs that makes a \textit{right turn} in the corresponding path of the trees. Right turn means the transition from a parent to a right child, that is, an accepting child\footnote{Note that everything we explain here is also valid for left-to-right split trees, but one has to exchange \textit{right}, \textit{rightmost}, and \textit{right turn} with \textit{left}, \textit{leftmost}, and \textit{left turn}, respectively.}. The rightmost run of a group of re-joining runs has the following property:
+The run that is kept is named \textit{rightmost run}. The name refers to the fact that this run is the first of a group of re-joining runs that makes a \textit{right turn} in the corresponding path of the tree. A right turn means the transition from a parent to an accepting child, which are situated to the right of the non-accepting child, hence the name\footnote{Note that everything we explain here is also valid for left-to-right split trees, but one has to exchange \textit{right}, \textit{rightmost}, and \textit{right turn} with \textit{left}, \textit{leftmost}, and \textit{left turn}, respectively.}. The rightmost run of a group of re-joining runs has the following crucial property:
 
 \begin{quote}
 \centering
 Any re-joining run is accepting $\Longrightarrow$ The rightmost re-joining run is accepting
 \end{quote}
 
-That is, if there is an accepting run in a group of re-joining runs, then the rightmost run is so too. On the other hand, if the rightmost run is non-accepting, then all the other re-joining runs are non-accepting as well. A proof of this relation can be found, for example, in~\cite{vardi2007automata}\footnote{Lemma 2.6}.
+That is, if a group of re-joining runs contains an accepting run, then the rightmost run is accepting too. On the other hand, if the rightmost run is non-accepting, then all the other re-joining runs are non-accepting as well. A proof of this relation can be found, for example, in~\cite{vardi2007automata}\footnote{Lemma 2.6}.
 
-Practically, this means that we can reduce the existential question about the presence of acceptance in a group of runs to a single run, namely the rightmost run. Remember that for Büchi complementation we are interested in exactly such an existential question: \textit{is there} an accepting run of the automaton $A$ on the word $\alpha$? If yes (it does not matter how many accepting runs there are), then $A$ accepts $\alpha$ and the complement must not accept it. If no, then $A$ does not accept $\alpha$ and the complement must accept it. By considering only the rightmost runs, we can still reliably answer this question.
+Practically, this means that we can reduce the existential question about the presence of acceptance in a group of runs to the rightmost run. Remember that for Büchi complementation we are interested in exactly such an existential question: is there an accepting run of the automaton $A$ on the word $\alpha$? If yes (it does not matter how many accepting runs there are), then $A$ accepts $\alpha$ and the complement must not accept it. If no, then $A$ does not accept $\alpha$ and the complement must accept it. By considering only the rightmost runs, we can still reliably answer this question.
 
-Thus, reduced split trees reduce the number of runs to include in the run analysis tremendously, but still retain all the needed information for Büchi complementation. Most importantly, they have a finite maximum width, what makes them usable in Büchi complementation constructions, such as the Fribourg construction (see Chapter~\ref{chap_construction}), and other slice-based constructions (see Section~\ref{2_slice-based}).
+Thus, reduced split trees include a tremendous reduction of the number of runs to be analysed, but still retain all the needed information for Büchi complementation. Most importantly, this reduction of runs bounds the width of the trees to a finite number, what makes them usable in Büchi complementation constructions, such as the Fribourg construction (see Chapter~\ref{chap_construction}), and other slice-based constructions (see Section~\ref{2_slice-based}).
 
-Note that an alternative name for rightmost run is \textit{greedy run}~\cite{2014_joel_ulrich}. This name refers to the fact that the rightmost run is the first of a group of re-joining runs that visits an accepting state, what makes it ``greedy''. It is interesting to note that reduced split trees are related to Muller-Schupp trees that are used in the Büchi determinisation construction by Muller and Schupp~\cite{Muller199569} (cf.~\cite{vardi2007automata,fogarty2013unifying}). Finally, formal descriptions of reduced split trees can be found, for example, in~\cite{vardi2007automata} and~\cite{2014_wilke} (left-to-right version), or~\cite{fogarty2013unifying} (right-to-left version).
+Note that an alternative name for rightmost run is \textit{greedy run}~\cite{2014_joel_ulrich}. This name refers to the fact that the rightmost run is the first of a group of re-joining runs that visits an accepting state, what makes it ``greedy''. It is interesting to note that reduced split trees are related to Muller-Schupp trees that are used in the Büchi determinisation construction by Muller and Schupp~\cite{Muller199569} (cf.~\cite{vardi2007automata,fogarty2013unifying}). As a last remark, formal descriptions of reduced split trees can be found, for example, in~\cite{vardi2007automata} and~\cite{2014_wilke} (left-to-right version), or~\cite{fogarty2013unifying} (right-to-left version).
+
+This concludes our presentation of run analysis techniques. In the next section we will review the most prominent Büchi complementation constructions that have been proposed over the past 50 years. Many of them are based on the run analysis techniques that we have described in the present section.
 
 
 % Comparing the reduced split tree with the corresponding split tree (Figure~\ref{split_tree}) reveals which states have been removed in the reduced split tree. The root and level 1 are similar in both trees. On level 2, the state \q2 is removed from the leftmost node, because \q2 already appears farther to the right on this level. On level 3, the state \q2 in the second node from the right is removed because there is already a \q2 to the right of it. As \q2 was the only state of this node, this causes the entire node to disappear. On the same level, \q2 of the leftmost node is also removed for the same reason. On level 4, following the same pattern, three occurrences of \q2 are removed. 
@@ -320,7 +322,35 @@ Note that an alternative name for rightmost run is \textit{greedy run}~\cite{201
 
 \section{Büchi Complementation Constructions}
 \label{2_review}
+
+
 Since the introduction of Büchi automata in 1962, many constructions for complementing non-deterministic Büchi automata have been proposed. 
+
+
+\newcommand{\ii}{\hspace{5mm}}
+\newcommand{\vstrut}{\vphantom{$2^{2^2}$}}
+\begin{longtable}[l]{lll}
+\multicolumn{3}{l}{Ramsey-based approach} \\
+\hline
+\ii\hyperref[2_buchi62]{Büchi} & 1962 & \cite{buchi1960decision} \\
+\ii\hyperref[2_svw87]{Sistla, Vardi, and Wolper} & 1987 & \cite{1985_sistla,PrasadSistla1987217} \\
+\multicolumn{3}{l}{Determinisation-based approach\vstrut} \\
+\hline
+\ii\hyperref[2_safra88]{Safra} & 1988 & \cite{1988_safra_2,1988_safra_1} \\
+\ii\hyperref[2_ms95]{Muller and Schupp} & 1995 & \cite{Muller199569} \\
+\ii\hyperref[2_pit07]{Piterman} & 2007 & \cite{2006_piterman,2007_piterman} \\
+\multicolumn{3}{l}{Rank-based approach\vstrut} \\
+\hline
+\ii\hyperref[2_kla91]{Klarlund} & 1991 & \cite{1991_klarlund} \\
+\ii\hyperref[2_kv01]{Kupferman and Vardi} & 1997/2001 & \cite{1997_vardi,Kupferman:2001} \\
+\ii\hyperref[2_th99]{Thomas} & 1999 & \cite{1999_thomas} \\
+\ii\hyperref[2_fkv06]{Friedgut, Kupferman, and Vardi} & 2006 & \cite{2004_friedgut,friedgut2006buchi} \\
+\ii\hyperref[2_schewe09]{Schewe} & 2009 & \cite{schewe2009buchi} \\
+\multicolumn{3}{l}{Slice-based approach\vstrut} \\
+\hline
+\ii\hyperref[2_vw07]{Vardi and Wilke} & 2007 & \cite{vardi2007automata} \\
+\ii\hyperref[2_kw08]{Kähler and Wilke} & 2008 & \cite{2008_kaehler} \\
+\end{longtable}
 
 
 
@@ -331,12 +361,14 @@ The Ramsey-based approach has its name from a Ramsey-based combinatorial argumen
 Common to the  Ramsey-based complementation constructions is that they stay completely within in the framework of Büchi automata. That is, they do not include intermediate automata of different types, as for example the determinization-based constructions. Rather, Ramsey-based constructions construct the complement automata directly by combinatorial operations on the states and transitions.
 
 \subsubsection{Büchi, 1962}
+\label{2_buchi62}
 
 The first Büchi complementation construction at all was described by Büchi himself, along with the introduction of Büchi automata in 1962~\cite{buchi1960decision}. This complemenation construction is a Ramsey-based construction. It involves a combinatorial argument based on work by Ramsey~\cite{1930ramsey}. The construction is complicated, and has a doubly-exponential worst-case state complexity of $2^{2^{O\left(n\right)}}$~\cite{vardi2005buchi}. This means that if we assume, for example, the concrete complexity to be $2^{2^n}$, then an automaton with 6 states may result in a complement with at most $2^{2^6}$ states, which is more than 18 quintillions (18 billion billions).
 
 The complexity of this worst-case is very high, and it would probably be impossible to complement such a worst-case automaton in practice. This is why all the subsequent complementation constructions, until today, have the goal to reduce this worst-case complexity. In this way, the worst-case state complexity became the main measure of performance for Büchi complementation constructions.
 
-\subsubsection{Sistla, Vardi, and Wolper, 1985}
+\subsubsection{Sistla, Vardi, and Wolper, 1987}
+\label{2_svw87}
 
 Another Ramsey-based construction has been introduced by Sistla, Vardi, and Wolper in 1987~\cite{PrasadSistla1987217} (first published in 1985~\cite{1985_sistla}). It is an improvement of Büchi's construction and the first one that involves only an exponential, instead of a doubly-exponential, worst-case state complexity. The complexity of this construction has been calculated to be $O\left(2^{4n^2}\right)$ (see~\cite{1988_safra_2}\cite{Pecuchet198695}).
 
@@ -350,7 +382,7 @@ The determinization-based complementation constructions proceed by converting an
 The idea behind this approach is that the complementation of deterministic \om-automata is easier than the complementation of non-deterministic \om-automata. The complementation problem is then in fact reduced to conversions between different types of automata. From these conversions, the conversion from the initial NBW to a deterministic \om-automaton is the most difficult and crucial one.
 
 \subsubsection{Safra, 1988}
-
+\label{2_safra88}
 The first determinisation-based complementation construction has been described by Safra in 1988~\cite{1988_safra_2}. Safra's main work was actually a determinisation construction for converting an NBW to a DRW. This is what today is known as \textit{Safra's construction}. Safra then describes complementation as a possible application of his determinisation construction. He also presents the additional conversions that are needed for the entire complementation construction. The conversion steps of Safra's complementation procedure are as follows.
 
 
@@ -375,13 +407,13 @@ Description of Safra trees/construction: \cite{2006_althoff}~\cite{2002_roggenba
 The state growth of Safra's construction is $2^{O\left(n\, \text{log}\, n\right)}$, where $n$ is the number of states of the input automaton. The additional conversions (DSW to DRW, and DRW to NBW) have a lower state complexity than this, so that the overall complexity of the entire complementation procedure is still $2^{O(n\, \text{log}\, n}$.
 
 \subsubsection{Muller and Schupp, 1995}
-
-Most other determinisation-based complementation constructions are based on improvements of Safra's construction. One of them is the construction for converting NBW to DRW proposed in 1995 by Muller an Schupp. This construction is said to be simpler and more intuitive than Safra's construction~\cite{2002_roggenbach}, however, often produces larger output automata in practice~\cite{2006_althoff}. The theoretically caluclated state complexity of the Muller-Schupp construction is $2^{O\left(n\, \text{log}\, n\right)}$, that is, similar to Safra's construction. A comparison of the Muller-Schupp construction and Safra's construction can be found in~\cite{2006_althoff}.
+\label{2_ms95}
+Most other determinisation-based complementation constructions are based on improvements of Safra's construction. One of them is the construction for converting NBW to DRW proposed in 1995 by Muller an Schupp~\cite{Muller199569}. This construction is said to be simpler and more intuitive than Safra's construction~\cite{2002_roggenbach}, however, often produces larger output automata in practice~\cite{2006_althoff}. The theoretically caluclated state complexity of the Muller-Schupp construction is $2^{O\left(n\, \text{log}\, n\right)}$, that is, similar to Safra's construction. A comparison of the Muller-Schupp construction and Safra's construction can be found in~\cite{2006_althoff}.
 
 Descriptionof Muller-Schupp trees: \cite{2006_althoff}
 
 \subsubsection{Piterman, 2007}
-
+\label{2_pit07}
 Another improvement of Safra's construction has been proposed in 2007 by Piterman from EPF Lausanne~\cite{2007_piterman} (first presented at a conference in 2006~\cite{2006_piterman}). This construction converts a NBW to a DPW, rather than a DRW. Piterman's construction uses a more compact version of Safra trees, which allows it to produce smaller output automata. The concrete worst-case state growth of Piterman's construction is $2n^nn!$, opposed to $12^nn^{2n}$ of Safra's construction~\cite{2007_piterman}. Complementation with Piterman's construction is done in the following steps.
 
 % Simulate enumerate with a table
@@ -405,9 +437,11 @@ The information of whether a run DAG is rejecting or not is expressed with so-ca
 This entire analysis of run DAGs with ranks is included in a subset construction. This means that the individual run DAGs are not constructed explicitly for each word, but rather implicitly ``on-the-fly'' within the complement automaton under construction. From a practical point of view, this means that rank-based constructions proceed in a subset construction based fashion. That is, the construction of the complement automaton is started with an initial state, and then step-by-step, successor states are added. Each output state consists of subsets of input-states.
 
 \subsubsection{Klarlund, 1991}
-The first rank-based construction has been proposed in 1991 by Klarlund~\cite{1991_klarlund}. However, Klarlund used the term \textit{progress measure} instead of \textit{rank}. This is because he looked at the ranks as a measure for the ``progress'' of a run towards the satisfaction of a certain property. The term \textit{rank} has, to the best of our knowledge, been introduced by Thomas in 1999~\cite{1999_thomas}. Klarlund also did not mention run DAGs, but they are implicit in his description of the construction. The construction works as described above by performing a modified subset construction. 
+\label{2_kla91}
+The first rank-based construction has been proposed in 1991 by Klarlund~s. However, Klarlund used the term \textit{progress measure} instead of \textit{rank}. This is because he looked at the ranks as a measure for the ``progress'' of a run towards the satisfaction of a certain property. The term \textit{rank} has, to the best of our knowledge, been introduced by Thomas in 1999~\cite{1999_thomas}. Klarlund also did not mention run DAGs, but they are implicit in his description of the construction. The construction works as described above by performing a modified subset construction. 
 
 \subsubsection{Kupferman and Vardi, 1997/2001}
+\label{2_kv01}
 This construction by Kupferman and Vardi has been published as a preliminary conference version in 1997~\cite{1997_vardi}, and as a journal version in 2001~\cite{Kupferman:2001}. Both publications are entitled ``Weak Alternating Automata Are Not That Weak''. The idea of the construction described by Kupferman and Vardi is the same as Klarlund's construction from 1991~\cite{1991_klarlund}. However, Kupferman and Vardi provide two different descriptions for this idea.
 
 The first description does not use run DAGs and ranks, but rather converst the input automaton to a weak alternating automaton, which is complemented, and then converted back to a non-deterministic Büchi automata. Weak alternating automata (WAA) have been introduced in 1986 by Muller, Saoudi, and Schupp~\cite{1986_muller}. Kupferman and Vardi state that this construction is conceptually simpler and easier implementable than Klarlund's construction~\cite{1991_klarlund}. This first version of Kupferman and Vardi's construction is described in both, the publications from 1997~\cite{1997_vardi} and 2001~\cite{Kupferman:2001}.
@@ -424,14 +458,17 @@ Description in \cite{fogarty2013unifying}~\cite{2007_vardi}
 The automata produced by the two versions of Kupferman and Vardi's construction are identical. The worst-case state complexity has been calculated to be approximately $(6n)^n$~\cite{schewe2009buchi}\cite{2007_vardi}.
 
 \subsubsection{Thomas, 1999}
+\label{2_th99}
 This construction by Thomas~\cite{1999_thomas} is based on the WAA construction by Kupferman and Vardi from 1997~\cite{1997_vardi}. It uses the concept of ranks, but does not proceed in the subset construction manner, as Klarlund's construction~\cite{1991_klarlund} and Kupferman and Vardi's second version~\cite{Kupferman:2001}. Rather, it transforms the input NBW to an intermediate automaton, complements it, and converts the result back to an NBW. That is, it proceeds in a similar fashion as Kupferman and Vardi's first version~\cite{1997_vardi}. The type of the intermediate automaton is a weak alternating parity automaton (WAPA), that is, a weak alternating automaton with the parity acceptance condition.
 
 \subsubsection{Friedgut, Kupferman, and Vardi, 2006}
+\label{2_fkv06}
 In 2006, Friedgut, Kupferman, and Vardi published a paper entitled ``Büchi Complementation Made Tighter''~\cite{friedgut2006buchi} (a preliminary version of the paper has appeared in 2004~\cite{2004_friedgut}). There, they describe an improvement to the second (rank-based) version of Kupferman and Vardi's construction from 2001~\cite{Kupferman:2001}. The improvement consists in the so-called \textit{tight ranking}, a more sophisticated ranking function. It allows to massively reduce the worst-case state complexity of the construction to $(0.96n)^n$.
 
 Tight rankings: description in \cite{fogarty2013unifying}~\cite{2007_vardi}
 
 \subsubsection{Schewe, 2009}
+\label{2_schewe09}
 In 2009, Schewe presented another improvement to the construction by Friedgut, Kupferman, and Vardi from 2006~\cite{schewe2009buchi}. His paper is entitled ``Büchi Complementation Made Tight'', which hints at the relation to the paper by Friedgut, Kupferman, and Vardi~\cite{friedgut2006buchi}. Schewe's improvement consists in a further refinement of the construction, in particular the use of turn-wise tests in the cut-point construction step. This improvement allows to further reduce the worst-case state complexity of the construction to $\left(0.76\left(n+1\right)\right)^{n+1}$. This coincides, modulo a polynomial factor, with the lower bound for the state complexity of Büchi complementation of $(0.76n)^n$ that has been previously established by Yan in 2006~\cite{2006_yan}\cite{DBLP:journals/corr/abs-0802-1226}.
 
 This result narrows down the possible range for the real worst-case state complexity of Büchi complementation considerably. It cannot be lower than the lower bound of $(0.76n)^n$ by Yan, and it cannot be higher than the complexity of Schwewe's construction of $\left(0.76\left(n+1\right)\right)^{n+1}$. For this reason, we say that the proven worst-case complexity of a specific construction serves as an upper bound for the actual complexity of the problem.
@@ -445,6 +482,7 @@ Like rank-based constructions, slice-based construction are essentially enhanced
 
 
 \subsubsection{Vardi and Wilke, 2007}
+\label{2_vw07}
 The first slice-based Büchi complementation construction has been proposed in 2007 by Vardi and Wilke~\cite{vardi2007automata}. In this work, the authors review translations from various logics, including monadic second order logic of one successor (S1S), to \om-automata. They devise the slice-based complementation construction as a by-product of a determinisation construction for Büchi automata that they also introduce in this work.
 
 Vardi and Wilke use left-to-right reduced split trees for their construction. That means, accepting states are put to the left of non-accepting states, and only the left most occurrence of each state is kept. The construction works by two passes of the enhanced subset construction. The first one (initial phase) is as described above. The second one (repetition phase), does additionally include decorations of the vertices of the reduced split trees (subsets) consisting of the three labels \textit{inf}, \textit{die}, and \textit{new}. These decoration serves to keep track of the criterion that a word is rejected if and only if all of the branches of the corresponding reduced split tree contain only a finite number of left-turns. The worst-case state complexity of Vardi and Wilke's construction is $(3n)^n$~\cite{vardi2007automata}.
@@ -452,6 +490,7 @@ Vardi and Wilke use left-to-right reduced split trees for their construction. Th
 The slice-based construction by Vardi and Wilke is very similar to the Fribourg construction that we describe in Chapter~\ref{chap_construction}. An obvious difference is that the Fribourg construction uses right-to-left, rather than left-to-right, reduced split trees. However, this is an arbitrary choice, and has no influence on the result of the constructions. Another difference is that the transition from the initial phase to the repetition phase is handled quite differently by Vardi and Wilke, than for the corresponding automata parts in the Fribourg construction.
 
 \subsubsection{Kähler and Wilke, 2008}
+\label{2_kw08}
 The slice-based construction by Kähler and Wilke from 2008~\cite{2008_kaehler} is a generalisation of the construction by Vardi and Wilke from 2007~\cite{vardi2007automata}. Kähler and Wilke proposed a construction idea that can be used for both, complementation and disambiguation. Consequently, this construction is less efficient than Vardi and Wilke's construction. It has a worst-case state complexity of $4(3n)^n$~\cite{2011_tsai}.
 
 A comparison of the rank-based and slice-based complementation approaches has been done by Fogarty, Kupferman, Wilke, and Vardi~\cite{fogarty2013unifying}. In this work, the authors also describe a translation of the slice-based construction by Kähler and Wilke~\cite{2008_kaehler} to a rank-based construction.
