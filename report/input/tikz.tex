@@ -388,7 +388,7 @@
 \newcommand{\RunDAG}{
 \begin{tikzpicture}[dag]  
 \matrix[every node/.style={my state}]{
-  \node (00) {\q0}; \& \node[a,ghost] (01) {\q1}; \& \node[ghost] (02) {\q2}; \\
+  \node (00) {\q0}; \& \node[a] (01) {\q1}; \& \node (02) {\q2}; \\
   \node (10) {\q0}; \& \node[a] (11) {\q1}; \& \node (12) {\q2}; \\
   \node (20) {\q0}; \& \node[a] (21) {\q1}; \& \node (22) {\q2}; \\
   \node (30) {\q0}; \& \node[a] (31) {\q1}; \& \node (32) {\q2}; \\
