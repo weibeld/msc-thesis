@@ -1,45 +1,111 @@
-In this chapter we describe the Fribourg construction, the Büchi complementation construction developed at the University of Fribourg by Joel Allred and Ulrich Ultes-Nitsche. The construction has been published in 2014 as a technical report entitled ``Complementing Büchi Automata with a Subset-tuple Construction''~\cite{2014_joel_ulrich}.
+In this chapter we present the Fribourg construction. This is the Büchi complementation consruction whose  empirical investigation of performance makes up the core of this thesis (Chapters~\ref{chap_investigation} and~\ref{chap_results}). The Fribourg construction belongs to the \textit{slice-based} of the four complementation approaches that we presented in Section~\ref{2_review}. That means it is based on reduced split trees, which we explained in Section~\ref{2_red_split_trees}. The construction has been developed at the University of Fribourg by Joel Allred and Ulrich Ultes-Nitsche\footnote{As mentioned, the authors call their construction\textit{subset-tuple construction}, in this thesis we will however use the name \textit{Fribourg construction}.} . They published a description of the Fribourg construction in 2014 as a technical report entitled ``Complementing Büchi Automata with a Subset-tuple Construction''~\cite{2014_joel_ulrich}.
 
-We do not give a formal description of the Fribourg construction in this chapter, because this has already been done in~\cite{2014_joel_ulrich}. Rather, our aim is to give an intuitive and practically oriented description. That means, demonstrating the concrete steps one has to do when sitting with a pencil in front of an automaton to be complemented. Similarly, this chapter does not contain any proofs of the correctness or complexity of the constructions, because they can be found in~\cite{2014_joel_ulrich}.
+The aim of this chapter is not to give a formally precise description of the Fribourg construction. This has been done very detailed by the authors of the construction in~\cite{2014_joel_ulrich}. The same applies for proofs of correctness and complexity calculations. Rather, the aim of this chapter is to describe the construction in a practically oriented way. We want to convey the concrete actions one has to do when standing with a marker in front of a whiteboard with an automaton to complement. For the formal background we refer at any point to~\cite{2014_joel_ulrich}.
 
-This chapter is structured as follows. In Section~\ref{3_basics} we present some basic properties of the Fribourg construction and put it in relation with other complementation constructions. In Section~\ref{3_construction}, we describe the actual construction which consists of two stages, the construction of the upper part and the construction of the lower part. We present these two stages in separate sections, together with an example. Finally, in Section~\ref{3_optimsations}, we describe three optimisations for the construction, that have the abbreviations R2C, M1, and M2. These optimisations will also be subject to our empirical performance investigation that we describe in the subsequent chapter.
 
-A note on terminology: the authors themselves call their construction ``subset-tuple construction''. This is because a state of the output automaton consists of a tuple of subsets of states of the input automaton. However, this is also the case for other constructions. To make our construction more distinguishable from the other constructions, we decided to use the more striking name ``Fribourg construction''.
+
+
+% formally precise description of the Fribourg construction, or proofs about its correctness and theoretical, because this has already been done by its authors in~\cite{2014_joel_ulrich}. 
+
+% In this chapter we describe the Fribourg construction, the Büchi complementation construction developed at the University of Fribourg by Joel Allred and Ulrich Ultes-Nitsche. The construction has been published in 2014 as a technical report entitled ``Complementing Büchi Automata with a Subset-tuple Construction''~\cite{2014_joel_ulrich}.
+
+% We do not give a formal description of the Fribourg construction in this chapter, because this has already been done in~\cite{2014_joel_ulrich}. Rather, our aim is to give an intuitive and practically oriented description. That means, demonstrating the concrete steps one has to do when sitting with a pencil in front of an automaton to be complemented. Similarly, this chapter does not contain any proofs of the correctness or complexity of the constructions, because they can be found in~\cite{2014_joel_ulrich}.
+
+% This chapter is structured as follows. In Section~\ref{3_basics} we present some basic properties of the Fribourg construction and put it in relation with other complementation constructions. In Section~\ref{3_construction}, we describe the actual construction which consists of two stages, the construction of the upper part and the construction of the lower part. We present these two stages in separate sections, together with an example. Finally, in Section~\ref{3_optimsations}, we describe three optimisations for the construction, that have the abbreviations R2C, M1, and M2. These optimisations will also be subject to our empirical performance investigation that we describe in the subsequent chapter.
+
+% A note on terminology: the authors themselves call their construction ``subset-tuple construction''. This is because a state of the output automaton consists of a tuple of subsets of states of the input automaton. However, this is also the case for other constructions. To make our construction more distinguishable from the other constructions, we decided to use the more striking name ``Fribourg construction''.
 
 \section{Basics}
 \label{3_basics}
-The Fribourg construction is a \textit{slice-based} complementation construction. That means that, like the other constructions of the slice-based approach (see Section~\ref{2_slice-based}), it is based on reduced split trees. Furthermore, it works in a subset-construction manner, that is, the output automaton is constructed state-by-state, by starting from an initial state.
 
-The output-states are internally structured as tuples of subsets of input-states (each state consists of one tuple). The subsets of a tuple are pairwise disjoint, that is, no tuple contains two times the same input-state. The input-states of a tuple are the same as in the subset construction. The difference to the subset construction is that the input-states are not all in the same set, but distributed over multiple sets. Furthermore, the order of these sets in the tuple matters. As a convention, we will refer to the subsets contained by a tuple of an output-state as the \textit{components} of this output-state.
+\subsubsection{High-Level View}
+To begin with, the Fribourg construction consists of two sub-constructions that we call \textit{upper part construction} and \textit{lower part construction}. These two sub-constructions are chained together, such that the output of the upper part construction becomes the input of the lower part construction. Figure~\ref{fribourg_construction} illustrates this in a functional view of the Fribourg construction.
 
-The components output-states are determined by levels of reduced split trees. According to the terminology of Vardi and Wilke~\cite{vardi2007automata}, we call these levels \textit{slices}. Figure~\label{slices} shows how slices of a reduced split tree determine output-states of the Fribourg construction. The relation works also in the other direction, that is, an output-state of the Fribourg construction determines a slice of a reduced split tree. The simple rule is that each vertex of a slice becomes a component in in the tuple of the output-state, and the order of the vertices is preserved.
+\begin{figure}[htb]
+\centering
+\FribourgConstruction
+\caption{Functional view of the Fribourg construction with an automaton $A$ as input and its complement $B$ as output.}
+\label{fribourg_construction}
+\end{figure}
+
+The automaton $A$ to be complemented is the input for the upper part construction. The upper part construction builds up a new automaton by starting with an initial state and adding state by state. The output of the upper part constructio is an intermediate automaton $U$. This intermediate automaton $U$ will be the \textit{upper part} of the final complement automaton. The lower part construction takes $U$ as input and adds further states and transitions to it until finally outputting an automaton $B$ which is the complement of the input automaton $A$. We say that the lower part construction attaches the \textit{lower part} of the final complement automaton to the upper part. This terminology comes from the fact that it is convenient to draw the states of the lower part below the states of the upper part~\cite{2014_joel_ulrich}. This also explains why the two sub-constructions are calleed upper part construction and lower part construction.
+
+
+\subsubsection{Generation of States}
+The two sub-constructions can be seen as modified subset constructions. Like the subset construction, they work on a set of existing states and add to each state one sucessor for each symbol of the alphabet. The principle of how successor states are generated is the same for both sub-construction. The difference between the two is that the lower part construction adds additional information to the states (the colours), so that the states generated by the lower part construction are different from the states generated by the upper part construction. Below we explain this basic principle of how new states are generated.
+
+A state of the Fribourg consists of a tuple (that is, an ordered sequence) of subsets of states of the input automaton (note that we will from now on refer to the states of the input autmaton as the \textit{input-states}, and to the states of the output automaton as \textit{output-states}). This contrasts with the subset construction in which the output-states consist of a single subset of input-states. The states of the Fribourg construction are thus more structured than the states of the subset construction. We refer to the subsets of a tuple of a state as the \textit{components} of this state.
+
+The sequence of components of each state of the Fribourg construction is imposed by a slice (that is, a level) of a reduced split tree. We will explain the process of going from an existing state over the slices of a reduced split tree to a successor state further below. For now, we look at how a slice defines the structure of a state. Figure~\ref{slices} shows a reduced split tree (on the left), and for each slice (framed by a shaded box), the state that this slice would define (on the right).
+% The sequence of components of a specific state is defined by a corresponding slice of a reduced split tree. Figure~\ref{slices} illustrates this idea. Each node in a slice of a reduced split tree gives rise to a component in the corresponding state. Furthermore, the left-right order of the nodes is preserved in the order of the components. It is similarly possible to do the conversion in the reverse direction. That is, an output-state can be interpreted as a slice of a reduced split tree. In this case, it is not possible to whether two adjacent nodes are siblings or not, but as we will see, this is not necessary for the construction.
 
 \begin{figure}[htb]
 \centering
 \Slices
-\caption{Translation from slices of a reduced split tree (shaded boxes on the left) to output-states of the Fribourg construction (right), and vice versa.}
+\caption{Relation between slices of a reduced split tree (left) and states of the output automaton of the Fribourg construction (right). The sequence of nodes in a slice determines the sequence of components in a state.}
 \label{slices}
 \end{figure}
 
-This relation between slices of reduced split trees and output-states determines the basic working of the Fribourg construction. It works as follows. Start with an initial output-state containing only the initial input-state in its tuple. This state will be the current state. Translate the current state to a level of a reduced split tree, and, according to the input automaton, determine the next level of the reduced split tree for the first alphabet symbol, say $a$. Translate this new level back to an output-state, and set it as the $a$-successor of the current state. Repeat this procedure for all alphabet symbols, until the current state has a successor for each one. Finally, repeat the entire procedure for each output-state that has no successors yet. As in the subset construction, if a successor state happens to be identical to an already existing state, then just add a transition to this existing state.
+As can be seen in Figure~\ref{slices}, each node of a slice gives rise to a component in the corresponding state. To this end, it does not matter whether the nodes in the slices are siblings or whather their familial relations are. It is important to note, however, that the order of the nodes in a slice must be preserved in the order of the components in a state. It is similarly possible to interpret a state as a slice of a reduced split tree (indicated by the double-ended arrows in Figure~\ref{slices}). In this case, it is not possible to deduce the ancestors of the resulting nodes, however, this is not necessary for the construction.
 
-What we just described is the very basic working of the Fribourg construction. However, there are additional details. First, there are two passes of this subset-construction-like procedure. The first one results in the so-called \textit{upper part} of the final complement automaton. The second one is applied on the states of the upper part (and all the newly created states), and results in the so-called \textit{lower part} attached to the upper part. These two parts together form the final complement automaton. The terminology ``upper'' and ``lower'' results from the fact that, when doing the construction by hand, the lower part is typically drawn below the upper part.
+The procedure of determing the successor of a given existing state on a certain alphabet symbol is as follows:
+\begin{itemize}
+\item Interpret the existing state as a slice of a reduced split tree
+\item Create the subsequent slice for the appropriate alphabet symbol
+\item Interpret the new slice as a state
+\end{itemize}
+The state that results from thew new slice is the successor of the existing state for the given alphabet symbol. If, for example, we want to define the successor on the symbol $a$ ($a$-successor) of the state $(\qm0)$, then as the first step we would create a slice representation of it that looks like the first slice from the top in Figure~\ref{slices}. Then, we create based on the input automaton the subsequent slice for symbol $a$, that might look like the second slice from the top in Figure~\ref{slices}. Interpreting this slice as a state results in $(\qm02,\qm1)$, which thus is the $a$-successor of $\qm0$.
 
-This distinction between upper and lower part is inspired by Kurshan's construction for complementing deterministic Büchi automata~\cite{Kurshan198759}. In fact, Kurshan's construction is a special case of the Fribourg construction~\cite{2014_joel_ulrich}.
+Of course the translation of states to and from slices is only a mental aid and not a necessary ingredient. It is possible to deduce $(\qm02,\qm1)$ from $\qm0$, in our previous example, directly without the detour over slices of reduced split trees. However, by conceptually harnessing reduced split trees, we get many of the central points of the construction ``for free'', because they are part of the general concept reduced split trees. This includes the splitting of accepting and non-accepting input-states, the placement of the accepting subset to the right of the non-accepting subset, and the retention of only the first occurrence of an input-state from right to left.
 
-The upper part of the Fribourg construction does not contain any accepting states. The lower part, in turn, may contain accepting states. A run of the final complement automaton starts in the upper part, and has in each upper-part state the non-deterministic choice to move to the lower part. Once in the lower part, a run cannot return to the upper part anymore. Semantically, the upper part represents anything that can happen in a finite prefix of an \om-word, and the lower part takes care of the infinite behaviour on \om-words.
+\subsubsection{General Remarks}
 
-The fact that the lower part determines the acceptance of a run, requires additional sophistication. This is achieved by the decoration of components. All components of the lower-part states are decorated with one of the three colours 0, 1 and 2. The colour of a component is determined by two things. First, whether the component is accepting or non-accepting. Second, the colour of its predecessor component. The predecessor component $c_{pred}$ of a component $c$ is the component of the predecessor state, that, in terms of reduced split trees, is the parent vertex of the vertex corresponding to component $c$.
 
-Figure showing predecessor component relation
 
-This colouration of components in the lower part requires that during the construction of the lower part, we keep track of two properties of each component. First, whether it is accepting or non-accepting, and second, its predecessor component (or just the colour of its predecessor component).
+% This derivation of the states from slices of reduced split trees has the effect that an output-state contains at most one occurrence of each input state. In other words, the subsets in a tuple are pairwise disjoint, that is, there are no two subsets in the tuple that share a common input-state. 
 
-On a more general note, the Fribourg construction uses a similar idea as Vardi and Wilke's slice-based construction from 2007~\cite{vardi2007automata}. The upper and lower part of the Fribourg construction correspond to the \textit{initial phase} and \textit{repetition phase} of Vardi and Wilke's construction. Furthermore, the colours 0, 1, and 2 of the Fribourg construction correspond to the decorations \textit{inf}, \textit{new}, and \textit{die} of Vardi and Wilke's construction. However, the two constructions still differ in details, especially in the transition from the upper part to the lower part. In any case, the Fribourg construction has been developed independently and is not based on Vardi and Wilke's construction. Rather, the development of the Fribourg construction was based on Kurshan's construction for complementing DBW, which is to the best of our knowledge, not the case for Vardi and Wilke's construction.
 
-Another difference is that the Fribourg construction uses right-to-left reduced split trees, whereas Vardi and Wilke's construction (as well as Kähler and Wilke's construction~\cite{2008_kaehler}) uses left-to-right reduced split trees. This is howevrer an arbitrary choice, and it has no effect on the final complement automaton. It would be possible to describe the Fribourg construction with left-to-right reduced split trees, and Vardi and Wilke's construction with right-to-left reduced split trees. In this thesis, we will stick with the right-to-left reduced split trees for the Fribourg construction.
+% Effect of reduced split trees is that each output-state contains at most one occurrence of each input-states.
 
-By using reduced split trees, we consider only greedy runs on prefixes of words. That is, if two or more runs on the same words are after a certain number of steps in the same state, then only one of them is considered, the others are omitted. 
+
+% This distinction between upper and lower part is inspired by Kurshan's construction for complementing deterministic Büchi automata~\cite{Kurshan198759}. In fact, Kurshan's construction is a special case of the Fribourg construction~\cite{2014_joel_ulrich}.
+
+% Relation to Vardi and Wilke's construction
+
+
+
+% The Fribourg construction is a \textit{slice-based} complementation construction. That means that, like the other constructions of the slice-based approach (see Section~\ref{2_slice-based}), it is based on reduced split trees. Furthermore, it works in a subset-construction manner, that is, the output automaton is constructed state-by-state, by starting from an initial state.
+
+% The output-states are internally structured as tuples of subsets of input-states (each state consists of one tuple). The subsets of a tuple are pairwise disjoint, that is, no tuple contains two times the same input-state. The input-states of a tuple are the same as in the subset construction. The difference to the subset construction is that the input-states are not all in the same set, but distributed over multiple sets. Furthermore, the order of these sets in the tuple matters. As a convention, we will refer to the subsets contained by a tuple of an output-state as the \textit{components} of this output-state.
+
+% The components output-states are determined by levels of reduced split trees. According to the terminology of Vardi and Wilke~\cite{vardi2007automata}, we call these levels \textit{slices}. Figure~\label{slices} shows how slices of a reduced split tree determine output-states of the Fribourg construction. The relation works also in the other direction, that is, an output-state of the Fribourg construction determines a slice of a reduced split tree. The simple rule is that each vertex of a slice becomes a component in in the tuple of the output-state, and the order of the vertices is preserved.
+
+% \begin{figure}[htb]
+% \centering
+% \Slices
+% \caption{Relation between slices of a reduced split tree (left) and states of the output automaton of the Fribourg construction (right). The sequence of nodes in a slice determines the sequence of components in a state.}
+% \label{slices}
+% \end{figure}
+
+% This relation between slices of reduced split trees and output-states determines the basic working of the Fribourg construction. It works as follows. Start with an initial output-state containing only the initial input-state in its tuple. This state will be the current state. Translate the current state to a level of a reduced split tree, and, according to the input automaton, determine the next level of the reduced split tree for the first alphabet symbol, say $a$. Translate this new level back to an output-state, and set it as the $a$-successor of the current state. Repeat this procedure for all alphabet symbols, until the current state has a successor for each one. Finally, repeat the entire procedure for each output-state that has no successors yet. As in the subset construction, if a successor state happens to be identical to an already existing state, then just add a transition to this existing state.
+
+% What we just described is the very basic working of the Fribourg construction. However, there are additional details. First, there are two passes of this subset-construction-like procedure. The first one results in the so-called \textit{upper part} of the final complement automaton. The second one is applied on the states of the upper part (and all the newly created states), and results in the so-called \textit{lower part} attached to the upper part. These two parts together form the final complement automaton. The terminology ``upper'' and ``lower'' results from the fact that, when doing the construction by hand, the lower part is typically drawn below the upper part.
+
+% This distinction between upper and lower part is inspired by Kurshan's construction for complementing deterministic Büchi automata~\cite{Kurshan198759}. In fact, Kurshan's construction is a special case of the Fribourg construction~\cite{2014_joel_ulrich}.
+
+% The upper part of the Fribourg construction does not contain any accepting states. The lower part, in turn, may contain accepting states. A run of the final complement automaton starts in the upper part, and has in each upper-part state the non-deterministic choice to move to the lower part. Once in the lower part, a run cannot return to the upper part anymore. Semantically, the upper part represents anything that can happen in a finite prefix of an \om-word, and the lower part takes care of the infinite behaviour on \om-words.
+
+% The fact that the lower part determines the acceptance of a run, requires additional sophistication. This is achieved by the decoration of components. All components of the lower-part states are decorated with one of the three colours 0, 1 and 2. The colour of a component is determined by two things. First, whether the component is accepting or non-accepting. Second, the colour of its predecessor component. The predecessor component $c_{pred}$ of a component $c$ is the component of the predecessor state, that, in terms of reduced split trees, is the parent vertex of the vertex corresponding to component $c$.
+
+% Figure showing predecessor component relation
+
+% This colouration of components in the lower part requires that during the construction of the lower part, we keep track of two properties of each component. First, whether it is accepting or non-accepting, and second, its predecessor component (or just the colour of its predecessor component).
+
+% On a more general note, the Fribourg construction uses a similar idea as Vardi and Wilke's slice-based construction from 2007~\cite{vardi2007automata}. The upper and lower part of the Fribourg construction correspond to the \textit{initial phase} and \textit{repetition phase} of Vardi and Wilke's construction. Furthermore, the colours 0, 1, and 2 of the Fribourg construction correspond to the decorations \textit{inf}, \textit{new}, and \textit{die} of Vardi and Wilke's construction. However, the two constructions still differ in details, especially in the transition from the upper part to the lower part. In any case, the Fribourg construction has been developed independently and is not based on Vardi and Wilke's construction. Rather, the development of the Fribourg construction was based on Kurshan's construction for complementing DBW, which is to the best of our knowledge, not the case for Vardi and Wilke's construction.
+
+% Another difference is that the Fribourg construction uses right-to-left reduced split trees, whereas Vardi and Wilke's construction (as well as Kähler and Wilke's construction~\cite{2008_kaehler}) uses left-to-right reduced split trees. This is howevrer an arbitrary choice, and it has no effect on the final complement automaton. It would be possible to describe the Fribourg construction with left-to-right reduced split trees, and Vardi and Wilke's construction with right-to-left reduced split trees. In this thesis, we will stick with the right-to-left reduced split trees for the Fribourg construction.
+
+% By using reduced split trees, we consider only greedy runs on prefixes of words. That is, if two or more runs on the same words are after a certain number of steps in the same state, then only one of them is considered, the others are omitted. 
 
 
 \section{The Construction}
@@ -47,7 +113,8 @@ By using reduced split trees, we consider only greedy runs on prefixes of words.
 In this section, we describe the Fribourg construction in some more detail, and we illustrate its application with an example. 
 
 
-\subsection{Upper Part}
+\subsection{Upper-Part Construction}
+\label{3_upper_part}
 
 \subsubsection{Description}
 The construction of the upper part is simple and works basically as described above. We start with an initial output-state containing only a single component with the initial state of the input automaton. Then, for each output-state $q$ that has no successors so far, we creat a successor slice for each symbol of the alphabet $\alpha$, translate it to a state, and set it as the $\alpha$-successor of $q$. This is repeated until all states have a been processed.
@@ -103,19 +170,25 @@ Figure~\ref{steps_upper} shows the complete steps for creating the upper part fr
 
 In Figure~\ref{steps_upper} (b), we determine the $a$-successor of the state $(\qm0)$. As explained, this works by looking at the state as a slice of a reduced split tree, and then creating the succeeding slice. For the case of $(\qm0)$, this gives the following two slices:
 
+\begin{center}
 \SlicesOne
+\end{center}
 
 From the state \q0 in the example automaton $A$, we can reach states \q0, \q1, and \q2 with the symbol $a$. Since \q1 is accepting, it is separated from the other states and put as a separate child to the right of the other child in the new slice. Transforming this new slice back to a state yields $(\qqm02, \qm1)$, which is the $a$-successor of $(\qm0)$. The component \qq1 is furthermore an accepting component, however, this does not matter in the construction of the upper part. Since there is only the single alphabet symbol $a$, we have already created all the successors of $(\qm0)$. If there would be more alphabet symbols, we would have to repeat the same procedure for each symbol.
 
 In Figure~\ref{steps_upper} (c), we create the $a$-successor of the previously created $(\qqm02, \qm1)$. Applying the same procedure as before, we get the following two slices:
 
+\begin{center}
 \SlicesTwo
+\end{center}
 
 Since we use right-to-left reduced split trees, we have to create the new slice from right to left, that is, first determining the children of vertex \q1, and then of \qqq02. From \q1 we can only reach \q2 on symbol $a$, thus the only child of \qq1 is \qq2. From the states in \qqq02, we can reach \q0, \q1, and \q2 on symbol $a$. However, \q1 already appears in the new slice, so it drops out. From the remaining states \q0 and \q1, \q1 is accepting, so it becomes a separate right-child, whereas \q0 becomes the left-child. Translating this slice to a state yields $(\qm0, \qm1, \qm2)$, which is the $a$-successor of $(\qqm02, \qm1)$.
 
 In Figure~\ref{steps_upper} (d), we determine in turn the $a$-successor of $(\qm0, \qm1, \qm2)$. Applying again the slice-procedure, we get the following:
 
+\begin{center}
 \SlicesThree
+\end{center}
 
 Again, we process the vertices of the upper slice from right to left. The only $a$-successor of \q2 in automaton $A$ is \q2, thus \qq2 is the only child of the vertex \qq2 in the upper slice. The state \q1 has \q2 as its $a$-successor. However, \q2 already appears in the new slice, and thus it drops out. Since \q1 has no remaining $a$-successors, the vertex \qq1 in the upper slice remains childless\footnote{In the terminology that we will use starting from the next section, we say that the runs going through this \q1 ``disappear''.}. Finally, the $a$-successors of \q0 are \q0, \q1, and \q2, however, as before, \q2 drops out because it already appears to the right, and \q0 and \q1 are separated because \q1 is accepting. Translating the new slice back to a state results in $(\qm0, \qm1, \qm2)$, whichi s identical to the current state. Thus, instead of adding a new state to the automaton, we just add an $a$-loop to $(\qm0, \qm1, \qm2)$.
 
@@ -123,7 +196,8 @@ At this stage, all the existing states have successors for all the alphabet symb
 
 
 
-\subsection{Lower Part}
+\subsection{Lower-Part Construction}
+\label{3_lower_part}
 The construction of the lower part takes the states of the previously constructed upper part as input. This means that these states are taken as the initial ``states to be processed''. Thus, the states of the upper part will get additional successors in the lower part, which makes the states of the upper part non-deterministic\footnote{Two points about this non-determinism are interesting. First, the states of the upper part are the only non-deterministic states, all the other states are deterministic. Second, the degree of non-determinism of these states is at most 2, and thus the degree of non-determinism of the entire complement automaton is at most 2.}. The states of the lower part, in turn, are deterministic, and do not have transitions back to the upper part. This means that once a run switches from the upper to the lower part, it stays there infinitely (or dies there). 
 
 The construction of the lower part proceeds principially in the same way as the construction of the upper part. However, it includes some additional ``structure'' in the form of a decoration of the components. In particular, every component of a lower-part state is assigned a colour. This colour is determined at creation time of the containing state, and is never changed\footnote{The colour of a component may be changed with the optimisations described in Section~\ref{3_optimisations}.}. These colours are distinguising features for the containing states. This means that if two states contain the same components in the same order, but the components have different colours, then the two states are different. Clearly, this makes the number of possible states of the lower part much larger than the number of possible states of the upper part.
@@ -243,19 +317,25 @@ Note how we have to keep track for each component of the lower part whether it i
 
 In Figure~\ref{steps_lower} (c), we added the $a$-successor to the state $(\qqm02, \cl2{\qm1})$. Disregarding the colours, this state has the form $(\qm0, \qm1, \qm2)$. Its predecessor state $(\qqm02, \cl2{\qm1})$ contains a 2-coloured component, thus we have to use the colour rules in Figure~\ref{colour_rules} (b). Now we need to know which are the predecessor components of the components in $(\qm0, \qm1, \qm2)$. This information is contained in the two slices of the reduced split tree that were used to determine the structure of the new state. For the case of our two states, the successor relation of their components is as follows:
 
+\begin{center}
 \PredCompsOne
+\end{center}
 
 The predecessor component of \qq0 is \qqq02, which has colour 0. Thus, we have to use the rule in Figure~\ref{colour_rules} (b) line 1, and \qq0 gets the colour 0, because it is non-accepting. The predecessor component of \qq1 is also \qqq02, and we have to use the same rule. However, since \qq1 is accepting, it gets colour 1. Note how the use of colour 1 here prevents the introduction of a further 2-coloured component before an already existing 2-coloured component has disappeared. The predecesor component of \qq2 is the 2-coloured $\cl2{\qm1}$, and thus, according to the rule in Figure~\ref{colour_rules} (b) line 3, \qq2 also gets colour 2.
 
 Next, still in Figure~\ref{steps_lower} (c), we create in turn the successor state of $(\qm0, \cl1{\qm1}, \cl2{\qm2})$. The structure of the components stays the same for the successor. The succesor relation of the two states is as follows:
 
+\begin{center}
 \PredCompsTwo
+\end{center}
 
 The result is that \qq0 gets colour 0, \qq1 gets colour 1, and \qq2 gets colour 2. Thus, the successor state is identical to the current state, and we add loop.
 
 Figure~\ref{steps_lower} (d) includes the remaining for arriving at the final complement automaton. First, we created the $a$-successor of the state $(\qm0, \cl2{\qm1}, \qm2)$. The complement successor relation of this state with its successor is as follows:
 
+\begin{center}
 \PredCompsThree
+\end{center}
 
 According to the rules in Figure~\ref{colour_rules} (b), component \qq0 gets colour 0, \qq1 gets colour 1, and \qq2 gets colour 0. This results in a new state, since the colours are different from the ones in the current state. Interesting here is that we have the case that a 2-coloured component ``disappears''. This is because the component $\cl2{\qm1}$ has no successor component in the successor state. For the $a$-successor of the new state $(\qm0, \cl1{\qm1}, \qm2)$, this means in turn that we have to use the rules in Figure~\ref{colour_rules} (a), what results in the already existing state $(\qm0, \cl2{\qm1}, \qm2)$.
 

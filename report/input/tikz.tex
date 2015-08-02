@@ -85,6 +85,10 @@
     my state,
     minimum height=1.75em
   },
+  my state small/.style={
+    my state,
+    rounded corners=1.1mm
+  },
   my accepting/.style={
     double,
     % double distance=1pt,
@@ -103,6 +107,10 @@
     my above/.style={out=65,in=115},
     my right/.style={out=25,in=335},
     node distance=\myndist
+  },
+  small automaton/.style={
+    automaton,
+    every state/.style={my state small}
   },
   tree/.style={
     every tree node/.style={my tree node},
@@ -124,6 +132,23 @@
     decoration={markings,mark=at position 1 with {\arrow[scale=0.75]{>}}},
     postaction={decorate}
   }
+}
+
+%==============================================================================%
+% Fribourg construction
+%==============================================================================%
+\newcommand{\FribourgConstruction}{
+\begin{tikzpicture}[tbox/.style={draw,align=center,inner sep=1.3mm}]
+\footnotesize
+\draw (-0.25,1) node(a)           {$A$}
+      (2,1)     node(upper)[tbox]{Upper part\\construction}
+      (5,1)     node(lower)[tbox]{Lower part\\construction}
+      (7.25,1)  node(b)          {$B$}
+      (0.6,0)   rectangle (6.4,2);
+\draw[->] (a.east)     -- (upper.west);
+\draw[->] (upper.east) -- node[yshift=0.2cm] {$U$} (lower.west);
+\draw[->] (lower.east) -- (b.west);
+\end{tikzpicture}
 }
 
 %==============================================================================%
@@ -347,38 +372,92 @@
 % Pair of slices of a reduced split tree (right-to-left)
 %==============================================================================%
 \newcommand{\SlicesOne}{
-\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall]
+\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall,
+every tree node/.append style={fill=white},
+frame/.style={
+    draw,rectangle,
+    minimum width=2.125cm,
+    minimum height=2em,
+    fill=black!5
+  },
+small automaton,
+shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 \scriptsize
 \Tree
-[.\node{\qq0}; [.\node   {\qqq02}; ]
-               [.\node[a]{\qq1};   ] ] 
+[.\node{\qq0}; [.\node(bottomleft) {\qqq02}; ]
+               [.\node[a]          {\qq1};   ] ]
+\begin{scope}[on background layer]
+\node[frame,anchor=west,xshift=-0.7mm] (l1) at (bottomleft.west)          {};
+\node[frame]                           (l0) at ($(l1)+(0,\myvdistsmall)$) {};
+\end{scope}
+\node[state,anchor=east] (s0) at ($(l0.west)-(1.3,0)$) {$(\qm0)$};
+\node[state,anchor=west] (s1) at ($(l1.east)+(1.3,0)$) {$(\qqm02,\qm1)$};
+\draw[->,shorten] (s0.east) -- (l0.west);
+\draw[->,shorten] (l1.east) -- (s1.west);
 \end{tikzpicture}
 }
 
 \newcommand{\SlicesTwo}{
-\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall]
+\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall,
+every tree node/.append style={fill=white},
+frame/.style={
+    draw,rectangle,
+    minimum width=2.6cm,
+    minimum height=2em,
+    fill=black!5
+  },
+small automaton,
+shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 \scriptsize
 \Tree
-[.\node{\qqq02}; [.\node   {\qq0}; ]
+[.\node{\qqq02}; [.\node(bottomleft)   {\qq0}; ]
                  [.\node[a]{\qq1}; ] ]
 \hspace{1.35cm}
 \Tree
 [.\node[a]{\qq1};   \node{\qq2}; ]
+\hspace{-1.35cm}
+\begin{scope}[on background layer]
+\node[frame,anchor=west,xshift=-0.7mm] (l1) at (bottomleft.west)          {};
+\node[frame]                           (l0) at ($(l1)+(0,\myvdistsmall)$) {};
+\end{scope}
+\node[state,anchor=east] (s0) at ($(l0.west)-(1.3,0)$) {$(\qqm02,\qm1)$};
+\node[state,anchor=west] (s1) at ($(l1.east)+(1.3,0)$) {$(\qm0, \qm1,\qm2)$};
+\draw[->,shorten] (s0.east) -- (l0.west);
+\draw[->,shorten] (l1.east) -- (s1.west);
 \end{tikzpicture}
 }
 
 \newcommand{\SlicesThree}{
-\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall]
+\begin{tikzpicture}[tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall,
+every tree node/.append style={fill=white},
+frame/.style={
+    draw,rectangle,
+    minimum width=3.5cm,
+    minimum height=2em,
+    fill=black!5
+  },
+small automaton,
+shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 \scriptsize
 \Tree
-[.\node{\qq0}; [.\node   {\qq0}; ]
-               [.\node[a]{\qq1}; ] ]
+[.\node{\qq0}; [.\node(bottomleft) {\qq0}; ]
+               [.\node[a]          {\qq1}; ] ]
 \hspace{1.35cm}
 \Tree
 [.\node[a]{\qq1}; ]
 \hspace{0.9cm}
 \Tree
 [.\node{\qq2}; \node{\qq2}; ]
+\hspace{-1.35cm}
+\hspace{-0.9cm}
+\begin{scope}[on background layer]
+\node[frame,anchor=west,xshift=-0.7mm] (l1) at (bottomleft.west)          {};
+\node[frame]                           (l0) at ($(l1)+(0,\myvdistsmall)$) {};
+\end{scope}
+\node[state,anchor=east] (s0) at ($(l0.west)-(1.3,0)$) {$(\qm0, \qm1,\qm2)$};
+\node[state,anchor=west] (s1) at ($(l1.east)+(1.3,0)$) {$(\qm0, \qm1,\qm2)$};
+\draw[->,shorten] (s0.east) -- (l0.west);
+\draw[->,shorten] (l1.east) -- (s1.west);
 \end{tikzpicture}
 }
 
@@ -425,7 +504,8 @@
     minimum width=4.4cm,
     minimum height=2em,
     fill=black!5
-  }
+  },
+  shorten/.style={shorten >=4mm,shorten <=4mm}
 ]
 \Tree
 % [.\node{\qq0}; [.\node{\qqq02}; [.\node(m){\qq0}; [.\node{\qq0}; \node{\qq0};
@@ -443,18 +523,22 @@
 \node[frame,yshift=\myvdist]          (level1) at (level2) {};
 \node[frame,yshift=\myvdist]          (level0) at (level1) {};
 \end{scope}
-\begin{scope}[every node/.style={xshift=1cm}]
-\node (arrow0) at (level0.east) {$\longleftrightarrow$};
-\node (arrow1) at (level1.east) {$\longleftrightarrow$};
-\node (arrow2) at (level2.east) {$\longleftrightarrow$};
-\node (arrow3) at (level3.east) {$\longleftrightarrow$};
-\end{scope}
+% \begin{scope}[every node/.style={xshift=1cm}]
+% \node (arrow0) at (level0.east) {$\longleftrightarrow$};
+% \node (arrow1) at (level1.east) {$\longleftrightarrow$};
+% \node (arrow2) at (level2.east) {$\longleftrightarrow$};
+% \node (arrow3) at (level3.east) {$\longleftrightarrow$};
+% \end{scope}
 \begin{scope}[every node/.style={xshift=2cm}]
-\node[state] (s0) at (arrow0.east) {$(\qm0)$};
-\node[state] (s1) at (arrow1.east) {$(\qqm02,\qm1)$};
-\node[state] (s2) at (arrow2.east) {$(\qm0,\qm1,\qm2)$};
-\node[state] (s3) at (arrow3.east) {$(\qm0,\qm1,\qm2)$};
+\node[state,anchor=west] (s0) at (level0.east) {$(\qm0)$};
+\node[state,anchor=west] (s1) at (level1.east) {$(\qqm02,\qm1)$};
+\node[state,anchor=west] (s2) at (level2.east) {$(\qm0,\qm1,\qm2)$};
+\node[state,anchor=west] (s3) at (level3.east) {$(\qm0,\qm1,\qm2)$};
 \end{scope}
+\draw[<->,shorten] (level0.east) -- (s0.west);
+\draw[<->,shorten] (level1.east) -- (s1.west);
+\draw[<->,shorten] (level2.east) -- (s2.west);
+\draw[<->,shorten] (level3.east) -- (s3.west);
 % \path[->] (s0) edge node[right] {$a$} (s1)
 %           (s1) edge node[right] {$a$} (s2)
 %           (s2) edge[my below,loop] node[below] {$a$} ();
@@ -476,7 +560,7 @@
 }
 
 \newcommand{\UpperPartA}{
-\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
 \scriptsize
 \node[state,initial] (0)              {$(\qm0)$};
 \begin{scope}[opacity=0]
@@ -490,7 +574,7 @@
 }
 
 \newcommand{\UpperPartB}{
-\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
 \scriptsize
 \node[state,initial] (0)              {$(\qm0)$};
 \node[state]         (1) [right=of 0] {$(\qqm02,\qm1)$};
@@ -507,7 +591,7 @@
 }
 
 \newcommand{\UpperPartC}{
-\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
 \scriptsize
 \node[state,initial] (0)              {$(\qm0)$};
 \node[state]         (1) [right=of 0] {$(\qqm02,\qm1)$};
@@ -522,7 +606,7 @@
 }
 
 \newcommand{\UpperPartD}{
-\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
 \scriptsize
 \node[state,initial] (0)              {$(\qm0)$};
 \node[state]         (1) [right=of 0] {$(\qqm02,\qm1)$};
@@ -582,7 +666,7 @@
 }
 
 \newcommand{\ComplementA}{
-\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
 \scriptsize
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
@@ -610,7 +694,7 @@
 }
 
 \newcommand{\ComplementB}{
-\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
 \scriptsize
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
@@ -638,7 +722,7 @@
 }
 
 \newcommand{\ComplementC}{
-\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
 \scriptsize
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
@@ -666,7 +750,7 @@
 }
 
 \newcommand{\ComplementD}{
-\begin{tikzpicture}[automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
 \scriptsize
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
@@ -692,7 +776,7 @@
 % Component relations between two states
 %==============================================================================%
 \newcommand{\PredCompsOne}{
-\begin{tikzpicture}[automaton,node distance=0.4cm]
+\begin{tikzpicture}[small automaton,node distance=0.4cm]
 \scriptsize
 \node[state] (1)              {$(\qqm02,\cl2{\qm1})$};
 \node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
@@ -710,7 +794,7 @@
 }
 
 \newcommand{\PredCompsTwo}{
-\begin{tikzpicture}[automaton,node distance=0.4cm]
+\begin{tikzpicture}[small automaton,node distance=0.4cm]
 \scriptsize
 \node[state] (1)              {$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
 \node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
@@ -728,9 +812,9 @@
 }
 
 \newcommand{\PredCompsThree}{
-\begin{tikzpicture}[automaton,node distance=0.4cm]
+\begin{tikzpicture}[small automaton,node distance=0.4cm]
 \scriptsize
-\node[state] (1)              {$(\qm0,\cl2{\qm1}, \qm2s)$};
+\node[state] (1)              {$(\qm0,\cl2{\qm1}, \qm2)$};
 \node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
 \draw[densely dotted,small arrow]
 ($(1.south east)!0.2!(1.south west)+(0,0.9mm)$)
