@@ -1,6 +1,8 @@
-In this chapter we present the Fribourg construction. This is the Büchi complementation consruction whose  empirical investigation of performance makes up the core of this thesis (Chapters~\ref{chap_investigation} and~\ref{chap_results}). The Fribourg construction belongs to the \textit{slice-based} of the four complementation approaches that we presented in Section~\ref{2_review}. That means it is based on reduced split trees, which we explained in Section~\ref{2_red_split_trees}. The construction has been developed at the University of Fribourg by Joel Allred and Ulrich Ultes-Nitsche\footnote{As mentioned, the authors call their construction\textit{subset-tuple construction}, in this thesis we will however use the name \textit{Fribourg construction}.} . They published a description of the Fribourg construction in 2014 as a technical report entitled ``Complementing Büchi Automata with a Subset-tuple Construction''~\cite{2014_joel_ulrich}.
+In this chapter we present the Fribourg construction. The Fribourg constructio  is the Büchi complementation consruction whose empirical investigation of performance makes up the core of this thesis (Chapters~\ref{chap_investigation} and~\ref{chap_results}). The Fribourg construction belongs to the \textit{slice-based} complementation approach that we reviewed in Section~\ref{2_slice-based}. This means that it is based on reduced split trees, which we explained in Section~\ref{2_red_split_trees}. Of the two versions of reduced split trees, left-to-right and right-to-left, our description of the Fribourg construction in this chapter uses right-to-left reduced split trees.
 
-The aim of this chapter is not to give a formally precise description of the Fribourg construction. This has been done very detailed by the authors of the construction in~\cite{2014_joel_ulrich}. The same applies for proofs of correctness and complexity calculations. Rather, the aim of this chapter is to describe the construction in a practically oriented way. We want to convey the concrete actions one has to do when standing with a marker in front of a whiteboard with an automaton to complement. For the formal background we refer at any point to~\cite{2014_joel_ulrich}.
+The Fribourg construction is being developed at the University of Fribourg by Joel Allred and Ulrich Ultes-Nitsche\footnote{As mentioned, the authors call their construction\textit{subset-tuple construction}, in this thesis we will however use the name \textit{Fribourg construction}.}. A detailed description of the construction has been published internally in 2014 as a technical report entitled ``Complementing Büchi Automata with a Subset-tuple Construction''~\cite{2014_joel_ulrich}.
+
+The aim of this chapter is not to give a formally precise description of the Fribourg construction. This has been done already by its authors in~\cite{2014_joel_ulrich}. The same applies for proofs of correctness and calculations of complexity. Rather, the aim of this chapter is to describe the construction in an intuitive and practically oriented way. We want to convey the concrete steps to take when, figuratively, standing with a marker in front of a whiteboard with an automaton to complement. For the formal background we refer to~\cite{2014_joel_ulrich}.
 
 
 
@@ -15,11 +17,16 @@ The aim of this chapter is not to give a formally precise description of the Fri
 
 % A note on terminology: the authors themselves call their construction ``subset-tuple construction''. This is because a state of the output automaton consists of a tuple of subsets of states of the input automaton. However, this is also the case for other constructions. To make our construction more distinguishable from the other constructions, we decided to use the more striking name ``Fribourg construction''.
 
-\section{Basics}
+\section{The Construction}
+\label{3_contruction}
+In this section we explain the basic Fribourg construction without any applied optimisations. The construction consists of two sub-constructions that we call the upper-part construction and the lower-part construction. In the following  we first describe the parts of the construction that are common to these two sub-construction (Section~\ref{3_basics}). Then, in Section~\ref{3_upper_part} and~\ref{3_lower_part}, we describe the points that are specific to the upper-part construction and the lower-part construction, respectively. In these two subsections, we also illustrate the application of the construction with a simple example that we work through step by step from the initial input automaton to the final complement automaton.
+
+\subsection{Basics}
 \label{3_basics}
+Below we first give a high-level view of the construction, and then explain how the construction generates new states. The generation of states is the heart of the construction, and common to the two sub-constructions that we explain in detail in the subsequent two subsections.
 
 \subsubsection{High-Level View}
-To begin with, the Fribourg construction consists of two sub-constructions that we call \textit{upper part construction} and \textit{lower part construction}. These two sub-constructions are chained together, such that the output of the upper part construction becomes the input of the lower part construction. Figure~\ref{fribourg_construction} illustrates this in a functional view of the Fribourg construction.
+As mentioned, the Fribourg construction consists of two sub-constructions, the \textit{upper-part construction} and the \textit{lower-part construction}. These two sub-constructions are chained together, such that the output of the upper-part construction becomes the input of the lower-part construction. Figure~\ref{fribourg_construction} illustrates this in a functional view of the Fribourg construction.
 
 \begin{figure}[htb]
 \centering
@@ -28,11 +35,11 @@ To begin with, the Fribourg construction consists of two sub-constructions that 
 \label{fribourg_construction}
 \end{figure}
 
-The automaton $A$ to be complemented is the input for the upper part construction. The upper part construction builds up a new automaton by starting with an initial state and adding state by state. The output of the upper part constructio is an intermediate automaton $U$. This intermediate automaton $U$ will be the \textit{upper part} of the final complement automaton. The lower part construction takes $U$ as input and adds further states and transitions to it until finally outputting an automaton $B$ which is the complement of the input automaton $A$. We say that the lower part construction attaches the \textit{lower part} of the final complement automaton to the upper part. This terminology comes from the fact that it is convenient to draw the states of the lower part below the states of the upper part~\cite{2014_joel_ulrich}. This also explains why the two sub-constructions are calleed upper part construction and lower part construction.
+The automaton $A$ to be complemented is the input for the upper-part construction. The upper-part construction builds up a new automaton by starting with an initial state and adding state by state. The output of the upper part constructio is an intermediate automaton $U$. This intermediate automaton $U$ will be the \textit{upper part} of the final complement automaton. The lower-part construction takes $U$ as input and adds further states and transitions to it until finally outputting an automaton $B$ which is the complement of the input automaton $A$. We say that the lower-part construction attaches the \textit{lower part} of the final complement automaton to the upper part. This terminology comes from the fact that it is convenient to draw the states of the lower part below the states of the upper part~\cite{2014_joel_ulrich}. This also explains why the two sub-constructions are calleed upper-part construction and lower-part construction.
 
 
 \subsubsection{Generation of States}
-The two sub-constructions can be seen as modified subset constructions. Like the subset construction, they work on a set of existing states and add to each state one sucessor for each symbol of the alphabet. The principle of how successor states are generated is the same for both sub-construction. The difference between the two is that the lower part construction adds additional information to the states (the colours), so that the states generated by the lower part construction are different from the states generated by the upper part construction. Below we explain this basic principle of how new states are generated.
+The two sub-constructions can be seen as modified subset constructions. Like the subset construction, they work on a set of existing states and add to each state one sucessor for each symbol of the alphabet. The principle of how successor states are generated is the same for both sub-construction. The difference between the two is that the lower-part construction adds additional information to the states (the colours), so that the states generated by the lower-part construction are different from the states generated by the upper-part construction. Below we explain this basic principle of how new states are generated.
 
 A state of the Fribourg consists of a tuple (that is, an ordered sequence) of subsets of states of the input automaton (note that we will from now on refer to the states of the input autmaton as the \textit{input-states}, and to the states of the output automaton as \textit{output-states}). This contrasts with the subset construction in which the output-states consist of a single subset of input-states. The states of the Fribourg construction are thus more structured than the states of the subset construction. We refer to the subsets of a tuple of a state as the \textit{components} of this state.
 
@@ -56,9 +63,8 @@ The procedure of determing the successor of a given existing state on a certain 
 \end{itemize}
 The state that results from thew new slice is the successor of the existing state for the given alphabet symbol. If, for example, we want to define the successor on the symbol $a$ ($a$-successor) of the state $(\qm0)$, then as the first step we would create a slice representation of it that looks like the first slice from the top in Figure~\ref{slices}. Then, we create based on the input automaton the subsequent slice for symbol $a$, that might look like the second slice from the top in Figure~\ref{slices}. Interpreting this slice as a state results in $(\qm02,\qm1)$, which thus is the $a$-successor of $\qm0$.
 
-Of course the translation of states to and from slices is only a mental aid and not a necessary ingredient. It is possible to deduce $(\qm02,\qm1)$ from $\qm0$, in our previous example, directly without the detour over slices of reduced split trees. However, by conceptually harnessing reduced split trees, we get many of the central points of the construction ``for free'', because they are part of the general concept reduced split trees. This includes the splitting of accepting and non-accepting input-states, the placement of the accepting subset to the right of the non-accepting subset, and the retention of only the first occurrence of an input-state from right to left.
+Note that the translation of states to and from slices is only a mental aid and not a necessary ingredient. It is possible to deduce $(\qm02,\qm1)$ from $\qm0$, in our previous example, directly without the detour over slices of a reduced split tree. However, by conceptually using reduced split trees, we can cover the central points of the state generation process by re-using our knowledge of the previously known and independent concept of reduced split trees. This includes the splitting of accepting and non-accepting input-states, the placement of the accepting subset to the right of the non-accepting subset, and the retention of only the first occurrence of an input-state from right to left.
 
-\subsubsection{General Remarks}
 
 
 
@@ -108,36 +114,33 @@ Of course the translation of states to and from slices is only a mental aid and 
 % By using reduced split trees, we consider only greedy runs on prefixes of words. That is, if two or more runs on the same words are after a certain number of steps in the same state, then only one of them is considered, the others are omitted. 
 
 
-\section{The Construction}
-\label{3_construction}
-In this section, we describe the Fribourg construction in some more detail, and we illustrate its application with an example. 
-
-
 \subsection{Upper-Part Construction}
 \label{3_upper_part}
+In this subsection, we describe the upper-part construction, and demontrate its application with an example. The used example is based on the input automaton in Figure~\ref{ex_aut_2}, and we will continue the same example in the subsequent subsection  about the lower-part construction.
 
 \subsubsection{Description}
-The construction of the upper part is simple and works basically as described above. We start with an initial output-state containing only a single component with the initial state of the input automaton. Then, for each output-state $q$ that has no successors so far, we creat a successor slice for each symbol of the alphabet $\alpha$, translate it to a state, and set it as the $\alpha$-successor of $q$. This is repeated until all states have a been processed.
+The upper-part construction consists only of the generation of new states without any further features. It starts with an inital state containing a single component with the inital state of the input automaton. This first output-state will be the initial state of the final complement automaton. Similarly to the subset construction, each unprocessed state is then processed, which means that, for each symbol of the alphabet, a successor state is determined. This works according to the state generation process that we described in the last section. If the automaton already contains a state that is identical to a newly determined successor state, then only a transition to this existing state is added. If a state has no successor state for a given alphabet symbol, then nothing is added to the automaton. This process is repeated until all states have been processed. At this stage, a deterministic intermediate automaton without any accepting states has been produced. This intermediate automaton is the upper part of the final complement automaton.
 
-In case that the resulting automaton is not complete (that is, one or more states do not have successors for certain alphabet symbols), then it is made complete by adding an accepting sink state. This sink state is not actually a part of the upper part, and it is not further processed during the rest of the construction. However, its presence is important in case the upper part is not complete. 
+A peculiarity is that the upper part must be complete. Completeness of an automaton means that every state has at least one outgoing transition for every symbol of the alphabet. If at the end of the upper-part construction the resulting automaton is not complete, then it must be made complete by adding a sink state. A sink state is a state with a loop transition for every alphabet symbol, and for every incomplete state, the missing transitions are added from these states to the sink state. This sink state that is added to the upper part must furthermore be accepting.
 
-The result of this first stage of the construction is a deterministic and complete automaton that does not contain any accepting states (except a possible sink state, but which, as mentioned, does not really belong to the upper part).
+\begin{figure}[htb]
+\centering
+\Automaton
+\caption{Non-deterministic Büchi automaton used for the examples in this section.}
+\label{ex_aut_2}
+\end{figure}
+
+% The construction of the upper part is simple and works basically as described above. We start with an initial output-state containing only a single component with the initial state of the input automaton. Then, for each output-state $q$ that has no successors so far, we creat a successor slice for each symbol of the alphabet $\alpha$, translate it to a state, and set it as the $\alpha$-successor of $q$. This is repeated until all states have a been processed.
+
+% In case that the resulting automaton is not complete (that is, one or more states do not have successors for certain alphabet symbols), then it is made complete by adding an accepting sink state. This sink state is not actually a part of the upper part, and it is not further processed during the rest of the construction. However, its presence is important in case the upper part is not complete. 
+
+% The result of this first stage of the construction is a deterministic and complete automaton that does not contain any accepting states (except a possible sink state, but which, as mentioned, does not really belong to the upper part).
 
 
 \subsubsection{Example}
+We demonstrate the application of the upper part construction with the example automaton $A$ in Figure~\ref{ex_aut_2}. Note that this automaton has an alphabet size of one, and thus can run only on a single \om-word, namely \aom. Furthermore, the automaton does not accept this word, that is, it does not accept \textit{any} word, which means that it is empty. We selected this specific automaton to keep our example simple and small. However, the construction works exactly similar for non-empty automata with larger alphabets.
 
-We will illustrate the application of the Fribourg construction with the example automaton in Figure~\ref{example_automaton}. This automaton has only  one single alphabet symbol $a$. This choice was made to keep the example simple, because an alphabet size of, say 2, would double the number of steps and the number of transitions in the output-automaton. However, the procedure for automata with larger alphabets is exactly the same, just repeat the step of creating a successor state for the current state for each alphabet symbol.
-
-\begin{figure}
-\centering
-\Automaton
-\caption{Example automaton.}
-\label{example_automaton}
-\end{figure}
-
-The example automaton in Figure~\ref{example_automaton} does not accept any word, because it is impossible for any run to visit the only accepting state $q_1$ infinitely many times. The automaton $A$ is thus empty. Consequently, the complement of $A$ is universal, that is, it accepts every possible word\footnote{The only possible \om-word with the alphabet $\Sigma = \{a\}$ is $a^\omega$, that is an infinite sequence of $a$'s.}.
-
-Figure~\ref{steps_upper} shows the complete steps for creating the upper part from the example automaton in Figure~\ref{example_automaton}. In Figure~\ref{steps_upper} (a), we start with a state containing only the component \qq0, because \q0 is the initial state of $A$.
+The upper-part construction for the input automaotn $A$ from Figure~\ref{ex_aut_2} takes four steps. We show all these steps in Figure~\ref{steps_upper} (a) to (d). Below, we walk through them one by one.
 
 \begin{figure}[htb]
 \centering
@@ -164,40 +167,96 @@ Figure~\ref{steps_upper} shows the complete steps for creating the upper part fr
   \UpperPartD
   \caption{}
   \end{subfigure}
-\caption{Steps for creating the upper part of the complement from the example input-automaton in Figure~\ref{example_automaton}.}
+\caption{Steps of the upper-part construction based on the input automaton in Figure~\ref{ex_aut_2}.}
 \label{steps_upper}
 \end{figure}
 
-In Figure~\ref{steps_upper} (b), we determine the $a$-successor of the state $(\qm0)$. As explained, this works by looking at the state as a slice of a reduced split tree, and then creating the succeeding slice. For the case of $(\qm0)$, this gives the following two slices:
+The first step in Figure~\ref{steps_upper} (a) is to start with the initial state. As can be seen, this state $(\qm0)$ contains only one component with the initial state of the input automaton $A$. This state will be the initial state of the final complement automaton $B$.
+
+The next step Figure~\ref{steps_upper} (b) is to add the $a$-successor of the inital state $(\qm0)$. This is done with the state generation process that we described in the last section. In particular, this means: (1) interpret the state $(\qm0)$ as a slice of a reduced split tree, (2) based on the input automaton $A$, determine the slice of the next level of the tree, and (3) interpret this new slice as a state, which is the $a$-successor of $(\qm0)$. We can illustrate this steps in the following way:
 
 \begin{center}
 \SlicesOne
 \end{center}
 
-From the state \q0 in the example automaton $A$, we can reach states \q0, \q1, and \q2 with the symbol $a$. Since \q1 is accepting, it is separated from the other states and put as a separate child to the right of the other child in the new slice. Transforming this new slice back to a state yields $(\qqm02, \qm1)$, which is the $a$-successor of $(\qm0)$. The component \qq1 is furthermore an accepting component, however, this does not matter in the construction of the upper part. Since there is only the single alphabet symbol $a$, we have already created all the successors of $(\qm0)$. If there would be more alphabet symbols, we would have to repeat the same procedure for each symbol.
+The state $(\qm0)$ results in a slice with only one node containing \qq0. For creating the next slice, we determine the set of states of $A$ that can be reached from \qq0 on symbol $a$, which is \qqqq012. According to the rules of reduced split trees, since \q1 is an accepting state, this set is split into a non-accepting \qqq02, and an accepting \qq1, and the non-accepting set becomes the left child, and the accepting set becomes the right child of the current node. Translating the resulting new slice to a state results in $(\qqm02, \qm1)$, which is thus the $a$-successor of $(\qm0)$.
 
-In Figure~\ref{steps_upper} (c), we create the $a$-successor of the previously created $(\qqm02, \qm1)$. Applying the same procedure as before, we get the following two slices:
+The next step in Figure~\ref{steps_upper} (c) is to determine the $a$-successor the newly created state $(\qqm02, \qm1)$. Applying the same procedure as above, results in the following picture:
 
 \begin{center}
 \SlicesTwo
 \end{center}
 
-Since we use right-to-left reduced split trees, we have to create the new slice from right to left, that is, first determining the children of vertex \q1, and then of \qqq02. From \q1 we can only reach \q2 on symbol $a$, thus the only child of \qq1 is \qq2. From the states in \qqq02, we can reach \q0, \q1, and \q2 on symbol $a$. However, \q1 already appears in the new slice, so it drops out. From the remaining states \q0 and \q1, \q1 is accepting, so it becomes a separate right-child, whereas \q0 becomes the left-child. Translating this slice to a state yields $(\qm0, \qm1, \qm2)$, which is the $a$-successor of $(\qqm02, \qm1)$.
+The state $(\qqm02, \qm1)$ corresponds to a slice with two nodes. For creating the next slice, these nodes must be processed from right to left. Regarding the first node from the right, the set of states that is reachable from \qq1 in $A$ is \qq2, which becomes thus the only child of this node. Regarding the second node, the state set reachable from \qqq02 is \qqqq012. However, \q2 already exists to the right in the new slice, thus it is removed from the set. The resulting set \qqq01 is split into a non-accepting \qq0 and an accepting \qq1, which become the left child and right child of this node, respectively. The resulting slice corresponds to the state $(\qm0, \qm1, \qm2)$, which consequently becomes the $a$-successor of $(\qqm02, \qm1)$.
 
-In Figure~\ref{steps_upper} (d), we determine in turn the $a$-successor of $(\qm0, \qm1, \qm2)$. Applying again the slice-procedure, we get the following:
+The last step in Figure~\ref{steps_upper} (d) consists in determining the $a$-successor of $(\qm0, \qm1, \qm2)$. The state generation procedure in this case looks as follows:
 
 \begin{center}
 \SlicesThree
 \end{center}
 
-Again, we process the vertices of the upper slice from right to left. The only $a$-successor of \q2 in automaton $A$ is \q2, thus \qq2 is the only child of the vertex \qq2 in the upper slice. The state \q1 has \q2 as its $a$-successor. However, \q2 already appears in the new slice, and thus it drops out. Since \q1 has no remaining $a$-successors, the vertex \qq1 in the upper slice remains childless\footnote{In the terminology that we will use starting from the next section, we say that the runs going through this \q1 ``disappear''.}. Finally, the $a$-successors of \q0 are \q0, \q1, and \q2, however, as before, \q2 drops out because it already appears to the right, and \q0 and \q1 are separated because \q1 is accepting. Translating the new slice back to a state results in $(\qm0, \qm1, \qm2)$, whichi s identical to the current state. Thus, instead of adding a new state to the automaton, we just add an $a$-loop to $(\qm0, \qm1, \qm2)$.
+The state results in a slice with three nodes. Again, we have to process these nodes from right to left. The node with \qq2 has non-accepting \qq2 as its only child. Regarding the node with \qq1, the reachable set in $A$ would be \qq2, but since \q2 already exists to the right in the slice, it is omitted, and since this makes the reachable set empty, no child of this node is added to the new slice. Finally, regarding the last node, the set of states reachable from \qq0 is \qqqq012, but again, due to the omission of \q2 and the splitting into a non-accepting and an accepting set, this results in the accepting right child \qq1 and the non-accepting left child \qq0. The state corresponding to this slice is $(\qm0, \qm1, \qm2)$. It is identical to the state we are currently processing, and thus, we just add a transition looping back to itself to $(\qm0, \qm1, \qm2)$.
 
-At this stage, all the existing states have successors for all the alphabet symbols, and thus the construction of the upper part is completed. The next step is to attach the lower part to the upper part in order to form the final complement automaton.
+At this stage, all the states in the intermediate automaton have been processed. Since the resulting automaton is complete, we do not need to add a sink state to it. This means that the uppe-part construction is finished.
+
+Note that in this example, we had to determine only one successor for each state, because there is only one symbol in the alphabet of our example automaton. For input automata with larger alphabets, the procedure that we did for each state must be repeated for each symbol of the alphabet. This increases the number of required steps, however, the basic principles stay exactly the same.
+
+
+
+
+%We will illustrate the application of the Fribourg construction with the example automaton in Figure~\ref{example_automaton}. This automaton has only  one single alphabet symbol $a$. This choice was made to keep the example simple, because an alphabet size of, say 2, would double the number of steps and the number of transitions in the output-automaton. However, the procedure for automata with larger alphabets is exactly the same, just repeat the step of creating a successor state for the current state for each alphabet symbol.
+
+% The example automaton in Figure~\ref{example_automaton} does not accept any word, because it is impossible for any run to visit the only accepting state $q_1$ infinitely many times. The automaton $A$ is thus empty. Consequently, the complement of $A$ is universal, that is, it accepts every possible word\footnote{The only possible \om-word with the alphabet $\Sigma = \{a\}$ is $a^\omega$, that is an infinite sequence of $a$'s.}.
+
+% Figure~\ref{steps_upper} shows the complete steps for creating the upper part from the example automaton in Figure~\ref{example_automaton}. In Figure~\ref{steps_upper} (a), we start with a state containing only the component \qq0, because \q0 is the initial state of $A$.
+
+
+
+% In Figure~\ref{steps_upper} (b), we determine the $a$-successor of the state $(\qm0)$. As explained, this works by looking at the state as a slice of a reduced split tree, and then creating the succeeding slice. For the case of $(\qm0)$, this gives the following two slices:
+
+% \begin{center}
+% \SlicesOne
+% \end{center}
+
+% From the state \q0 in the example automaton $A$, we can reach states \q0, \q1, and \q2 with the symbol $a$. Since \q1 is accepting, it is separated from the other states and put as a separate child to the right of the other child in the new slice. Transforming this new slice back to a state yields $(\qqm02, \qm1)$, which is the $a$-successor of $(\qm0)$. The component \qq1 is furthermore an accepting component, however, this does not matter in the construction of the upper part. Since there is only the single alphabet symbol $a$, we have already created all the successors of $(\qm0)$. If there would be more alphabet symbols, we would have to repeat the same procedure for each symbol.
+
+% In Figure~\ref{steps_upper} (c), we create the $a$-successor of the previously created $(\qqm02, \qm1)$. Applying the same procedure as before, we get the following two slices:
+
+% \begin{center}
+% \SlicesTwo
+% \end{center}
+
+% Since we use right-to-left reduced split trees, we have to create the new slice from right to left, that is, first determining the children of vertex \q1, and then of \qqq02. From \q1 we can only reach \q2 on symbol $a$, thus the only child of \qq1 is \qq2. From the states in \qqq02, we can reach \q0, \q1, and \q2 on symbol $a$. However, \q1 already appears in the new slice, so it drops out. From the remaining states \q0 and \q1, \q1 is accepting, so it becomes a separate right-child, whereas \q0 becomes the left-child. Translating this slice to a state yields $(\qm0, \qm1, \qm2)$, which is the $a$-successor of $(\qqm02, \qm1)$.
+
+% In Figure~\ref{steps_upper} (d), we determine in turn the $a$-successor of $(\qm0, \qm1, \qm2)$. Applying again the slice-procedure, we get the following:
+
+% \begin{center}
+% \SlicesThree
+% \end{center}
+
+% Again, we process the vertices of the upper slice from right to left. The only $a$-successor of \q2 in automaton $A$ is \q2, thus \qq2 is the only child of the vertex \qq2 in the upper slice. The state \q1 has \q2 as its $a$-successor. However, \q2 already appears in the new slice, and thus it drops out. Since \q1 has no remaining $a$-successors, the vertex \qq1 in the upper slice remains childless\footnote{In the terminology that we will use starting from the next section, we say that the runs going through this \q1 ``disappear''.}. Finally, the $a$-successors of \q0 are \q0, \q1, and \q2, however, as before, \q2 drops out because it already appears to the right, and \q0 and \q1 are separated because \q1 is accepting. Translating the new slice back to a state results in $(\qm0, \qm1, \qm2)$, whichi s identical to the current state. Thus, instead of adding a new state to the automaton, we just add an $a$-loop to $(\qm0, \qm1, \qm2)$.
+
+% At this stage, all the existing states have successors for all the alphabet symbols, and thus the construction of the upper part is completed. The next step is to attach the lower part to the upper part in order to form the final complement automaton.
 
 
 
 \subsection{Lower-Part Construction}
 \label{3_lower_part}
+The lower-part construction takes the intermediate automaton resulting from the upper-part construction as input, and adds additional states to it (the lower part of the output automaton). The lower-part construction generates new states basically in the same way as the upper-part construction, however, it adds an additional piece of information to each component of a newly created state, namely its colour. There are three colours, that we denote by 0, 1, and 2, that are assigned to components by the lower-part construction. Additionally, there is the colour $-1$ that is preliminarily assigned to each component of each state of the upper part. This serves to conveniently handle the colour assignment function of the lower-part construction. These colours make states different, that is, if two states have the same sequence of components, but the components have different colours, then the two states are regarded as different states.
+
+The addition of colour assignments is the only difference to the basic state generation procedure that is used in the upper-part construction. In the following, we first describe how the colours are assigned, and after that, give some insight into what the colours actually mean.
+
+Which colour is assigned to a component by the lower-part construction depends on the following three variables:
+\begin{enumerate}
+\item Whether the component is accepting or non-accepting
+\item The colour of the predecessor component
+\item Whether the state containing the predecessor component contains any 2-coloured components
+\end{enumerate}
+
+To this end, we need to explain what an accepting component, and what the predecessor component of a component is. A component is accepting if the states it contains are accepting states in the input automaton. In terms of reduced split trees, a component is accepting if it results from an accepting node in the corresponding slice. 
+
+
+
 The construction of the lower part takes the states of the previously constructed upper part as input. This means that these states are taken as the initial ``states to be processed''. Thus, the states of the upper part will get additional successors in the lower part, which makes the states of the upper part non-deterministic\footnote{Two points about this non-determinism are interesting. First, the states of the upper part are the only non-deterministic states, all the other states are deterministic. Second, the degree of non-determinism of these states is at most 2, and thus the degree of non-determinism of the entire complement automaton is at most 2.}. The states of the lower part, in turn, are deterministic, and do not have transitions back to the upper part. This means that once a run switches from the upper to the lower part, it stays there infinitely (or dies there). 
 
 The construction of the lower part proceeds principially in the same way as the construction of the upper part. However, it includes some additional ``structure'' in the form of a decoration of the components. In particular, every component of a lower-part state is assigned a colour. This colour is determined at creation time of the containing state, and is never changed\footnote{The colour of a component may be changed with the optimisations described in Section~\ref{3_optimisations}.}. These colours are distinguising features for the containing states. This means that if two states contain the same components in the same order, but the components have different colours, then the two states are different. Clearly, this makes the number of possible states of the lower part much larger than the number of possible states of the upper part.
@@ -356,7 +415,8 @@ In this section, we describe three of these optimisations. For easier reference,
 The R2C optimisation can be summarised as follows:
 
 \begin{quote}
-If the input automaton is complete, then states of the lower part whose rightmost component has colour 2 can be omitted.
+\centering
+If the input automaton is complete, then states of the lower part that have a rightmost component with colour 2 can be omitted.
 \end{quote}
 
 This means that if during the construction of the lower part we determine a state that has a 2-coloured rightmost component, then we do not need to add this state to the automaton. This consequently also omits all the potential successors of this state from the automaton.
@@ -436,9 +496,10 @@ In this case, the difference is the marked state $(\qm0, \cl2{\qm1}, \qm2)*$. It
 
 In~\cite{2014_joel_ulrich} (Section 4.H) a very loose upper bound on the number of states of the lower part of $O((0.86n)^n)$ is proposed. This is a significant reduction from the upper bound of $O((1.195n)^n)$ that s achieved with the M1 optimisation. Furthermore, concrete calculations on the M2 optimisation suggest that the real upper bound might be as low as $O((0.76n)^n)$. This coincides with the established lower bound for Büchi complementation by Yan~\cite{DBLP:journals/corr/abs-0802-1226} and would make the construction optimal in the sense of worst-case state complexity. The actual complexity of the M2 optimisation is subject to further research by the authors of the Fribourg construction.
 
-
-
 \cite{2014_joel_ulrich} Section 4.H
+
+
+\section{General Remarks}
 
 
 
