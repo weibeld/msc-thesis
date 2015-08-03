@@ -775,6 +775,96 @@ shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 %==============================================================================%
 % Component relations between two states
 %==============================================================================%
+% \newcommand{\PredCompsFirst}{
+% \begin{tikzpicture}[small automaton,,tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall,
+% every tree node/.append style={fill=white},
+% frame/.style={
+%     draw,rectangle,
+%     minimum width=3.5cm,
+%     minimum height=2em,
+%     fill=black!5
+%   },
+% shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
+% \scriptsize
+% \Tree
+% [.\node{\qq0}; [.\node(bottomleft) {\qq0}; ]
+%                [.\node[a]          {\qq1}; ] ]
+% \hspace{1.35cm}
+% \Tree
+% [.\node[a]{\qq1}; ]
+% \hspace{0.9cm}
+% \Tree
+% [.\node{\qq2}; \node{\qq2}; ]
+% \hspace{-1.35cm}
+% \hspace{-0.9cm}
+% \begin{scope}[on background layer]
+% \node[frame,anchor=west,xshift=-0.7mm] (l1) at (bottomleft.west)          {};
+% \node[frame]                           (l0) at ($(l1)+(0,\myvdistsmall)$) {};
+% \end{scope}
+% \node[state,anchor=west] (1) at ($(l0.east)+(1.3,0)$) {$(\qm0, \qm1,\qm2)$};
+% \node[state,anchor=west] (2) at ($(l1.east)+(1.3,0)$) {$(\qm0, \qm1,\qm2)$};
+% \draw[<->,shorten] (l0.east) -- (1.west);
+% \draw[<->,shorten] (l1.east) -- (2.west);
+% \draw[densely dotted,small arrow]
+% ($(1.south east)!0.2!(1.south west)+(0,0.9mm)$)
+%     -- ($(2.north east)!0.2!(2.north west)-(0,1.5mm)$);
+% \draw[densely dotted,small arrow]
+% ($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+%     -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
+% \draw[densely dotted,small arrow]
+% ($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+%     -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
+% \path[->] (1) edge node[right] {$a$} (2);
+% \node at ($(1.east)+(2mm,0)$) {$p$};
+% \node at ($(2.east)+(2mm,0)$) {$q$};
+% \end{tikzpicture}
+% }
+
+\newcommand{\PredCompsFirst}{
+\begin{tikzpicture}[small automaton,,tree,level distance=\myvdistsmall,sibling distance=\myhdistsmall,
+every tree node/.append style={fill=white},
+frame/.style={
+    draw,rectangle,
+    minimum width=3.5cm,
+    minimum height=2em,
+    fill=black!5
+  },
+shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
+\scriptsize
+\Tree
+[.\node{\qq0}; [.\node(bottomleft) {\qq0}; ]
+               [.\node[a]          {\qq1}; ] ]
+\hspace{1.35cm}
+\Tree
+[.\node[a]{\qq1}; ]
+\hspace{0.9cm}
+\Tree
+[.\node{\qq2}; \node{\qq2}; ]
+\hspace{-1.35cm}
+\hspace{-0.9cm}
+\begin{scope}[on background layer]
+\node[frame,anchor=west,xshift=-0.7mm] (l1) at (bottomleft.west)          {};
+\node[frame]                           (l0) at ($(l1)+(0,\myvdistsmall)$) {};
+\end{scope}
+\node[state,anchor=east] (1) at ($(l0.west)-(1.3,0)$) {$(\qm0, \qm1,\qm2)$};
+\node[state,anchor=east] (2) at ($(l1.west)-(1.3,0)$) {$(\qm0, \qm1,\qm2)$};
+\draw[<->,shorten] (l0.west) -- (1.east);
+\draw[<->,shorten] (l1.west) -- (2.east);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.2!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.2!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+    -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
+\path[->] (1) edge node[right] {$a$} (2);
+\node at ($(1.west)-(2.5mm,0)$) {$p$};
+\node at ($(2.west)-(2.5mm,0)$) {$q$};
+\end{tikzpicture}
+}
+
 \newcommand{\PredCompsOne}{
 \begin{tikzpicture}[small automaton,node distance=0.4cm]
 \scriptsize
