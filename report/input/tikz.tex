@@ -246,7 +246,7 @@
 \draw[->] (3) edge[my right,loop] node[right] {\labsize $\#,1,2,3,4$} ();
 % Node 4
 \node[state,yshift=0.5cm]      (4) [below=of 3]  {\q4};
-\draw[<->] (0) edge node[above,xshift=2mm,yshift=-2mm] {\labsize $4$} (4);
+\draw[<->,shorten >=-0.35mm,shorten <=-0.35mm] (0) edge node[above,xshift=2mm,yshift=-2mm] {\labsize $4$} (4);
 \draw[->] (4) edge[my right,loop] node[right] {\labsize $\#,1,2,3,4$} ();
 \end{tikzpicture}
 }

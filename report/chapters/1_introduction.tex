@@ -178,6 +178,7 @@ Many construction developers aim at bringing the worst-case state growth of thei
 
 
 \subsection{Need for Empirical Investigation of Actual Performance}
+\label{1_empirical}
 Worst-case state growths are interesting from a theoretical point of view, but they are poor guides to the actual performance of a construction~\cite{2011_tsai}. For example, if we have a concrete automaton of, say, 15 states, and we complement it with Schewe's construction, the fact that the worst-case state complexity is $(0.76n)^n n^2$ does not reveal anything about how the construction will perform on this concrete automaton. In any case, we are not expecting the complement to have 1.6 quintillion ($1.6 \times 10^{18}$) states (which would be the worst case), because this would most likely be practically infeasible.
 
 Furthermore, if a construction has a higher worst-case state growth than another, it does not mean that it performs worse on a concrete case. In fact, worst-case state complexities only allow to adequately deduce the performance on the worst-case automata, but not on all the other automata. However, from a practical point of view, these worst cases are not interesting, as their application in practice is anyway infeasible~\cite{1995_tasiran} (at least starting from a certain input automaton size).
