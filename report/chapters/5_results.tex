@@ -5,7 +5,7 @@ Section~\ref{5_internal} presents the results of the internal tests, and Section
 In Section~\ref{5_discussion} we summarise and discuss the most important results and insights gained from the study. Finally, in Section~\ref{5_limitations}, we identify the limitations of our study.
 
 
-\section{Internal Tests}
+\section{Results of the Internal Tests}
 \label{5_internal}
 For the internal tests we tested different versions of the Fribourg construction with both, the \goal{} test set and the Michel test set.
 
@@ -259,7 +259,7 @@ Michel 8 & 10 & 207,621,228,081 & 36,039,825,529 &  1,142 years  \\
 According to the fitted state growth function, the complement of Michel~5 would have nearly 7 million states, and the complement of Michel~8 even more than 207 billion states. Already the computation of the 7 million states of Michel~5 would most probably exceed the available memory resources in our computing environment. Regarding execution time, the complementation of Michel~5 would take 23 days. This would by far exceed the maximal running time of a job on our computer cluster. And even if we would not have these administrative time restriction, the time to wait for the complementation of Michel~5 to~8, between 18 months and 1,142 years, is definitely too long, even for a master's thesis.
 
 
-\section{External Tests}
+\section{Results of the External Tests}
 \label{5_external}
 In the external tests we compared the most efficient version of the Fribourg construction to three other constructions. These constructions are Piterman+EQ+RO, Slice+P+RO+MADJ+EG, and Rank+TR+RO. The most efficient version of the Fribourg construction is Fribourg+M1+R2C for the \goal{} test set, and Fribourg+M1+M2+R2C for the Michel test set. We present the results from these two test sets separately in the following two sections.
 
@@ -406,8 +406,11 @@ So there seems to an inefficiency in the Fribourg construction in terms of execu
 
 Finally, these interesting differences in the execution times between the four constructions can only be observed for Michel~4. For Michel~3 there are also differences but they are by far not as pronounced as for Michel~4. If the computational resources would allow it, it would be very interesting to run the constructions on Michel~5 and beyond. One thing that stays the same for all the four Michel automata is that Rank is always the fastest and Piterman always the slowest construction.
 
-\section{Summary and Discussion of the Results}
+\section{Discussion}
 \label{5_discussion}
 
-\section{Limitations of the Approach}
+\subsection{Sumary of the Results}
+\label{5_summary}
+
+\subsection{Limitations of the Study}
 \label{5_limitations}

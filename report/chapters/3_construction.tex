@@ -2,9 +2,9 @@ In this chapter we present the Fribourg construction. The Fribourg constructio  
 
 The Fribourg construction is being developed at the University of Fribourg by Joel Allred and Ulrich Ultes-Nitsche\footnote{As mentioned, the authors call their construction\textit{subset-tuple construction}, in this thesis we will however use the name \textit{Fribourg construction}.}. A detailed description of the construction has been published internally in 2014 as a technical report entitled ``Complementing Büchi Automata with a Subset-tuple Construction''~\cite{2014_joel_ulrich}.
 
-The aim of this chapter is not to give a formally precise description of the Fribourg construction. This has been done already by its authors in~\cite{2014_joel_ulrich}. The same applies for proofs of correctness and calculations of complexity. Rather, the aim of this chapter is to describe the construction in an intuitive and practically oriented way. We want to convey the concrete steps to take when, figuratively, standing with a marker in front of a whiteboard with an automaton to complement. For the formal background we refer to~\cite{2014_joel_ulrich}.
+The aim of this chapter is to give an intuitive and practically oriented description of the construction. We try to make its concrete application as clear as possible. Our focus lies therefore not on a formal description of the construction. For the formal background, as well as proofs of correctness, we refer to the work by the authors of the construction~\cite{2014_joel_ulrich}.
 
-
+This chapter is structured as follows. In Section~\ref{3_construction}, we describe the basic Fribourg construction. The construction is divided into two sub-constructions, and we explain each of them separately. In Section~\ref{3_optimisations}, we present three optimisations that have been proposed for the Fribourg construction. These optimisations will also be subject to our empirical performance investigation in the next chapter. Finally, in Section~\ref{3_remarks}, we give some general remarks about the Fribourg construction, especially putting it into relation with other complementation constructions.
 
 
 % formally precise description of the Fribourg construction, or proofs about its correctness and theoretical, because this has already been done by its authors in~\cite{2014_joel_ulrich}. 
@@ -19,11 +19,11 @@ The aim of this chapter is not to give a formally precise description of the Fri
 
 \section{The Construction}
 \label{3_contruction}
-In this section we explain the basic Fribourg construction without any applied optimisations. The construction consists of two sub-constructions that we call the upper-part construction and the lower-part construction. In the following  we first describe the parts of the construction that are common to these two sub-construction (Section~\ref{3_basics}). Then, in Section~\ref{3_upper_part} and~\ref{3_lower_part}, we describe the points that are specific to the upper-part construction and the lower-part construction, respectively. In these two subsections, we also illustrate the application of the construction with a simple example that we work through step by step from the initial input automaton to the final complement automaton.
+In this section we explain the basic Fribourg construction without any applied optimisations. The construction consists of two sub-constructions that we call upper-part construction and lower-part construction. In the following  we first describe features that are common to these two sub-construction (Section~\ref{3_basics}). Then, in Section~\ref{3_upper_part} and~\ref{3_lower_part}, we describe in detail the upper-part construction and the lower-part construction, respectively. We illustrate the application of these two sub-construction with an example which we work through step by step.
 
 \subsection{Basics}
 \label{3_basics}
-Below we first give a high-level view of the construction, and then explain how the construction generates new states. The generation of states is the heart of the construction, and common to the two sub-constructions that we explain in detail in the subsequent two subsections.
+Below we first give a high-level view of the construction, and then present the state generation procedure of the construction. The state generation procedure determines a successor state for an existing state, and lies at the heart of the construction. In its basic form, the state generation procedure is common to the two sub-constructions that we present in the next two sections.
 
 \subsubsection{High-Level View}
 As mentioned, the Fribourg construction consists of two sub-constructions, the \textit{upper-part construction} and the \textit{lower-part construction}. These two sub-constructions are chained together, such that the output of the upper-part construction becomes the input of the lower-part construction. Figure~\ref{fribourg_construction} illustrates this in a functional view of the Fribourg construction.
@@ -38,7 +38,7 @@ As mentioned, the Fribourg construction consists of two sub-constructions, the \
 The automaton $A$ to be complemented is the input for the upper-part construction. The upper-part construction builds up a new automaton by starting with an initial state and adding state by state. The output of the upper part constructio is an intermediate automaton $U$. This intermediate automaton $U$ will be the \textit{upper part} of the final complement automaton. The lower-part construction takes $U$ as input and adds further states and transitions to it until finally outputting an automaton $B$ which is the complement of the input automaton $A$. We say that the lower-part construction attaches the \textit{lower part} of the final complement automaton to the upper part. This terminology comes from the fact that it is convenient to draw the states of the lower part below the states of the upper part~\cite{2014_joel_ulrich}. This also explains why the two sub-constructions are calleed upper-part construction and lower-part construction.
 
 
-\subsubsection{Generation of States}
+\subsubsection{State Generation}
 The two sub-constructions can be seen as modified subset constructions. Like the subset construction, they work on a set of existing states and add to each state one sucessor for each symbol of the alphabet. The principle of how successor states are generated is the same for both sub-construction. The difference between the two is that the lower-part construction adds additional information to the states (the colours), so that the states generated by the lower-part construction are different from the states generated by the upper-part construction. Below we explain this basic principle of how new states are generated.
 
 A state of the Fribourg consists of a tuple (that is, an ordered sequence) of subsets of states of the input automaton (note that we will from now on refer to the states of the input autmaton as the \textit{input-states}, and to the states of the output automaton as \textit{output-states}). This contrasts with the subset construction in which the output-states consist of a single subset of input-states. The states of the Fribourg construction are thus more structured than the states of the subset construction. We refer to the subsets of a tuple of a state as the \textit{components} of this state.
@@ -244,13 +244,14 @@ Note that in this example, we had to determine only one successor for each state
 
 \subsection{Lower-Part Construction}
 \label{3_lower_part}
+Below, we describe in detail the lower-part construction. The lower-part construction can be seen as an extended version of the upper-part construction. The difference is that the lower-part construction additionally assigns colours to all the components. These colour assignments are the main subject of our explanations below. After explaining the lowe-part construction, we demonstrate its application by an example. To this end, we will use and continue the same example that we used for the upper-part construction.
 
 \subsubsection{Description}
-The lower-part construction takes the intermediate automaton resulting from the upper-part construction as input, and regards these states as the unprocessed states to be processed. This results in additional successors for the states of the upper part, and finally in the entire lower growing out of the upper part. Note that in the final complement automaton, there will be transitons from the upper part to the lower part, but not back from the lower part to the upper part. That means, once a run enters the lower part, it cannot go back to the upper part anymore.
+The lower-part construction takes the intermediate automaton resulting from the upper-part construction as input. It works on the states of the upper part by regarding them as the unprocessed states to be processed. This results in additional successors for the states of the upper part, and finally in the entire lower part growing out of the upper part. Note that in the final complement automaton, there will be transitons from the upper part to the lower part, but not back from the lower part to the upper part. This means that once a run of the output automaton enters the lower part, it cannot go back to the upper part again.
 
-The basic state generation procedure of the lower-part construction is the same as for the upper-par construction. The difference between the two sub-constructions is that the lower-part construction adds an additional piece of information to the components of new states. This piece information consists of one of three colours, that we denote by 0, 1, and 2. We shed light on the meaning of these colours further below. For now, we explain how the colour of a component is determined.
+The basic state generation procedure of the lower-part construction is similar as in the upper-par construction. The difference between the two sub-constructions is that the lower-part construction adds an additional piece of information to each component of new states. This piece information consists of one of three colours, that we denote by 0, 1, and 2. We shed light on the meaning of these colours further below. For now, we explain how the colour of a component is determined.
 
-The colour of component $c$ of a state $q$ that is being constructed as the successor of an existing state $p$ for a given alphabet symbol, is determined by three pieces of information:
+The colour of component $c$ of a new state $q$ that is the successor (for a given alphabet symbol) of an existing state $p$, is determined by three pieces of information:
 
 \begin{enumerate}
 \item Whether the component $c$ is accepting or non-accepting
@@ -258,15 +259,16 @@ The colour of component $c$ of a state $q$ that is being constructed as the succ
 \item Whether the predecessor state $p$ contains any 2-coloured components
 \end{enumerate}
 
-Regarding the first point, a component is accepting if it corresponds to an accepting node in the slice that defines it. Regarding the second point, each component (except the component of the intial state) has exactly one predecessor component. The predecessor component of a component $c$ is the parent of $c$ in a slice-representation of the two states. It can be imagined as merging the edges between two slices into the two corresponding states. These virtual edges then link each component of the successor state with its predecessor component in the predecessor state. For example, consider the following two states $p$ and $q$, which are created by the state generation procedure on the example input automaton $A$ in Figure~\ref{ex_aut_2}:
+Regarding the first point, a component is accepting if it contains accepting input-states. Regarding the second point, each component $c$ in a state $q$ has exactly one predecessor component $c_{pred}$ in the predecessor state $p$. This relation emerges from the parent-child relation in the reduced split tree representation of the two states. That is, from this perspective $c_{pred}$ is the parent of $c$. Consequently, every component has exactly one predecessor component, but every component may have zero, one, or two successor components. This relation of components can be best illustrated by an example. Consider the following two state $p$ and $q$ and their corresponding slice representation:
+%from this In a slice representation of the two states, $c_{pred}$ is the component corresponding to the node which is the parent of the node corresonding to $c$.  The predecessor component of a component $c$ is the parent of $c$ in a slice-representation of the two states. It can be imagined as merging the edges between two slices into the two corresponding states. These virtual edges then link each component of the successor state with its predecessor component in the predecessor state. For example, consider the following two states $p$ and $q$, which are created by the state generation procedure on the example input automaton $A$ in Figure~\ref{ex_aut_2}:
 
 \begin{center}
 \PredCompsFirst
 \end{center}
 
-Our goal is to identify the predecessor components of the components of state $q$. The slice representation of $q$ and its predecessor state $p$ on the right reveals the relation between the components of the two states, and we see that the predecessor components of \qq0, \qq1, and \qq2 are \qq0, \qq0, and \qq2, respectively. This is indicated by the dotted lines between the two states. For the example later in this section, we will re-use this notaton for indicating predecessor component relations.
+The edges of the slice representation of the states (on the right) can be mentally merged into the states (indicated as dotted lines). This makes the relation between the components of the two states apparent. Regarding the componnets of $q$, we can see that the predecessor component of  \qq0 is \qq0, of \qq1 is \qq0, and of \qq2 is \qq2. On the other hand, regarding the components of $p$, we can see that \qq0 has two successor components (\qq0 and \qq1), \qq1 has no successor components, and \qq2 has one successor component (\qq2). For the case of \qq1 which has no successor components, we say that the input-runs leading through this components ``disappear''.
 
-Having explained the terms accepting component and predecessor component, we can now turn to the actual rules that determine the colour of a given component. One remark is however still necessary. The colouring function needs a way to recognise components that belong to the upper part of the output automaton. A way to guarantee this to preliminarily assign the colour $-1$ to all the components of the upper-part states. Figure~\ref{colour_rules} shows the rules that determine the colour of a component $c$.
+Having explained the terms accepting component and predecessor component, we can now turn to the actual rules that determine the colour of a given component. One remark is however still necessary. The colouring rules need a way to recognise components that belong to the upper part of the output automaton. A way to guarantee this to preliminarily assign the colour $-1$ to all the components of the upper-part states. In the following, we will rely on this convention. Figure~\ref{colour_rules} shows the complete rules for determining the colour of a component $c$.
 
 \begin{figure}[htb]
 \centering
@@ -304,143 +306,58 @@ Having explained the terms accepting component and predecessor component, we can
 \label{colour_rules}
 \end{figure}
 
-As can be seen in Figure~\ref{colour_rules} the colour rules are divided into two cases. Case A applies if the predecessor state does not contain any components with the colour 2, and Case~B applies if the predecessor state contains one or more components with the colour 2. In each of the cases, the colour of a component $c$ is unambiguously determined by the colour of the predecessor component $c_{pred}$, and by the fact whether $c$ is an accepting component or not.
+As can be seen in Figure~\ref{colour_rules} the colour rules are divided into two cases. Case A applies if the predecessor state does not contain any components with the colour 2, and case~B applies if the predecessor state contains one or more components with the colour 2. In each of the cases, the colour of a component $c$ is unambiguously determined by the two remaining factors, colour of the predecessor component $c_{pred}$, and by the fact whether $c$ is an accepting or not. We provide the rationale behind these rules below, when we explain the meaning of the colours.
 
-Note that in Case~A, the possible colours of the predecessor component includes $-1$, but not 2. The missing of~2 is because obviously the colour of the predecessor component cannot be~2, because case A applies only if the predecessor stat contains \textit{no} components with colour~2. The colour of the predecessor component can however be $-1$, if the predecessor state is an upper-part state. In case B, on the other hand, the colour $-1$ is absent, because if the predecessor state contains a 2-coloured component, it cannot be an upper-part state.
+Note that in case~A, the possible colours of the predecessor component includes $-1$, but not 2. The missing of~2 is simply because by definitoin case~A applies only if the predecessor state has no 2-coloured components, thus the colour of the predecessor component cannot be 2. However, in this case, the colour of the predecessor component may be $-1$, namely in the case that the predecessor state is an upper-part state. In case~B, on the other hand, colour $-1$ is missing. This is because case~B applies only if the predecessor state contain 2-coloured components, in which case it cannot be an upper-part state.
 
 % In the first case, that the predecessor state contains no 2-coloured components, the possible colours of the predecessor components are $-1$, 0, and 1. Naturally, the predecessor component cannot be 2-coloured, but on the other hand, it might have colour $-1$, if the predecessor state is a state of the upper part. For the other case, that the predecessor state contains 2-coloured components, the possible colours for the predecessor component naturally include colour 2, but do not include colour $-1$, because a state containing 2-coloured components cannot be a state of the upper part.
 
-Having explained how the colours of components are determined, we now give some insight into the meaning of the colours. The purpose of the colours is to signalise the presence or absence of certain runs of the input automaton (input-runs). We divide these input-runs into \textit{dangerous} and \textit{safe} runs. Dangerous input-runs have visited at least one accepting input-state since entering the lower part (in othe terms, they made a right-turn). These runs are dangerous in the sense that they might become accepting if they keep visiting accepting input states. Safe runs, on the other hand, are runs that have not yet visited any accepting input-states since enetering the lower part. Input-runs that stay safe forever are non-accepting runs in the input automaton. The purpose of the distinction of safe and dangerous input-runs is in the end to recognise whether \textit{all} input-runs on a specific words are safe, that is, non-accepting in the input automaton. Because in this case, the complement automaton must accept this words. In particular, the meaning of the three colours 0, 1, and 2 is as follows:
+Having explained the rules for determining the colours of components, we now give some insight into the meaning of these colours. The purpose of the colours is to signalise the presence or absence of certain runs of the input automaton (input-runs) entailed by a corresponding run of the output automaton (output-run). We divide these input-runs into \textit{dangerous} and \textit{safe} runs. Dangerous input-runs have visited at least one accepting input-state since entering the lower part. These runs are dangerous in the sense that they might become accepting if they keep visiting accepting input-states. Safe runs, on the other hand, are runs that have not yet visited an accepting input-state since enetering the lower part. Input-runs that never become dangerous correspond to non-accepting runs in the input automaton.
+
+The purpose of the distinction of safe and dangerous input-runs is to recognise whether \textit{all} input-runs corresponding to an output-run on a specific word are safe. In this case, the output-run must accept the word. From a practical point of view, the colours of the components of a state determine whether the state must be added to the accepting set (according to a rule that we present at the end of this section). In particular, the meaning of the three colours 0, 1, and 2 is as follows:
 
  % on a specific word. Note that the complement of a non-deterministic automaton must accept a word if and only if \textit{all} the runs of the input automaton on this words are rejecting. If there is a single run of the input automaton that accepts the word, then the complement automaton must not accept the word. Thus, we need a way to be sure that there are \textit{no} accepting runs of the input automaton on a specific word, and then we can accept this word with the complement automaton. 
 
 {\setlist[description]{leftmargin=0.5cm, itemsep=\parskip}
 \begin{description}
 \item[Colour 2]
-Signalises the presence of dangerous input-runs, that is, runs that have visited at least one accepting input-state. Colour 2 appears as soon as runs that have previously been safe visit an accepting component (see Figure~\ref{colour_rules} (a) lines 1 and 2). However, once a component has colour 2, it passes on this colour to all its successor components, no matter if they are accepting or non-accepting (see Figure~\ref{colour_rules} (b) line 3). This means that a path of 2-coloured components can only stop if at some point a component has no successor. In this case, we say that the colour 2 \textit{disappears}.
+Signalises the presence of dangerous input-runs, that is, runs that have visited at least one accepting input-state. Colour 2 appears when a group of input-runs, that have previously been safe, visits an accepting component (see Figure~\ref{colour_rules} (a) lines 1 and 2). However, once a component has colour 2, it passes on this colour to all its successor components, no matter if they are accepting or non-accepting (see Figure~\ref{colour_rules} (b) line 3). This means that a path of 2-coloured components can only be cut if at some point the input-runs going through this component disappear (that is, the components has no successors). In this case, we say for brevity that the 2-coloured components disappears.
 
 
  % the potential to becom accepting. If a component has colour 2, it means that there are input-runs that made a right-turn, in terms of slices of reduced split trees, that is, visited an accepting state (see rules in Figure~\ref{colour_rules} (a) line 1 and 2). Note that all the successor components of a 2-coloured component are also 2-coloured, no matter if they are accepting or non-accepting (Figure~\ref{colour_rules} (b) line 3). A ``string'' of 2-coloured components can only be cut if a 2-coloured component has no successor components (no children in terms of reduced split trees). In this case we say that the 2-coloured component ``disappears''.
 
 \item[Colour 1]
-Means basically the same as colour 2, namely the presence of dangerous runs. The reason that colour 1 exists is a caveat that can arise if we would assign colour 2 to \textit{every} component whose path just made a right-turn. In this case, it could happen that constantly new ``families'' of 2-coloured components appear in a sequence of states, which at the smae time all disappear again. However, because of the constant appearance of new 2-coloured components, the disappearance of the existing 2-coloured components would not noticed, because  the corresponding states always contain 2-coloured components. For this not to happen, if the predecessor state already contains 2-coloured components, then all the components that result from a right-turn get colour 1 instead of colour 2 (see Figure~\ref{colour_rules} (b) line 1). We say that these are dangerous runs that are ``on hold''. That means that at first they only pass on their colour 1 to all their successors (see Figure~\ref{colour_rules} (b) line 2). However, as soon as all the other 2-coloured components in their states disappear, the become ``active'' in the sense that their successors now get colour 2 instead of colour 1 (see Figure~\ref{colour_rules} (a) line 3).
+Means basically the same as colour 2, namely the presence of dangerous runs. The idea behind colour 1 is a caveat that can arise if we would assign colour 2 to \textit{every} component whose corresponding input-runs just visited for the first time an acceptign state. In this case, it could happen that in a sequence of output-states, there are constantly newly appearing 2-coloured components, and at the same time constantly disappearing 2-coloured components. The disappearance of the 2-coloured components means that the dangerous runs disappear, which in fact makes the corresponding output-states safe. However, this disappearance is hidden by the constant appearance of new 2-coloured components. The reason for colour 1 is to prevent this from happening. If the predecessor state already contains 2-coloured components (case~B in Figure~\ref{colour_rules}), then all the components that according to case~A in Figure~\ref{colour_rules} would deserve colour 2, get colour 1 instead (see Figure~\ref{colour_rules} (b) line 1 and 2). We say that these are dangerous runs that are \textit{on hold}. However, as soon as all 2-coloured components disappear, and consequently case~A applies again, then all the successors of the 1-coloured component get colour 2 (see Figure~\ref{colour_rules} (a) line 3). In this way, the dangerous components that were previously on hold, become the new active dangerous components.
 
 % However, the detection of the disappearance of 2-coloured components is important with regard to whether an output-state is made accepting or not, at the end of the construction.
 
 %  we miss the disappearance of 2-coloured components, and thus keep the containing output-state non-accepting instead of accepting. For this reason, the trick with colour 1 works as follows. If the predecessor state already contains 2-coloured components, then every component of the current state that deserves to be 2-coloured gets colour 1 instead of colour 2. This can be seen in Figure~\ref{colour_rules} (b) line 1 and 2. These are actually ``dangerous'' components kept ``on hold'', becaus then trick goes on as follows. As soon as all the 2-coloured components of a state disappear, the successors of all the 1-coloured components get 2-coloured. This can be seen in Figure~\ref{colour_rules} (a) line 3. At this point, these ``dangerous'' components ``on hold'' get the real ``dangerous'' components.
 
 \item[Colour 0]
-Signalises that all input-runs are safe. That means, these input-runs have not yet visited an accepting input-state since entering the lower part. If these runs stay safe indefinitely, then they are non-accepting in the input automaton, which is actually the crucial information that is needed for the complementation construction.
+Signalises that all input-runs are safe. This means that these input-runs have not yet visited an accepting input-state since entering the lower part. If these runs stay safe indefinitely, then they are non-accepting in the input automaton. 
 \end{description}}
 
-In this way, each component of the lower part gets one of the colours 0, 1, or 2. At the end of the construction, these colours determine which states of the lower part become accepting states. The rule is as follows:
+As mentioned, the colours of the components of a state determines if a state must be made accepting. The corresponding rule is as follows:
 
 \begin{quote}
 \centering
-Each state of the lower part containing \textit{no} 2-coloured components is made accepting
+\textit{Each state of the lower part that contains no 2-coloured components is an accepting state.}
 \end{quote}
 
-The rationale behind this rule is that visiting such states infinitely often guarantees that the corresponding input-runs are non-accepting. With the definition of the acceptance set, the lower-part construction is finished. The resulting non-deterministic Büchi automaton, consisting of the upper part and the attachd lower part, constitutes the complement of the input automaton.
+That is, states that contain only 0-coloured and 1-coloured components must be made accepting. The rationale behind this rule is that if an output-run visits such a state infinitely often, then all the input-runs on the corresponding word are non-accepting. For states with only 0-coloured components, this is clear, as colour 0 means that there are no dangerous runs. For states with 1-coloured components, the case is slightly more complicated, because 1-coloured components actually signalise the presence of dangerous runs. However, note that the situation that a state contains 1-coloured components, but no 2-coloured components (case~A in Figure~\ref{colour_rules}), can only occur if previously all 2-coloured components disappeared. If this happens an infinite number of times (which is implied by the output-run visiting this state infinitely often), then an ifninite number of 2-coloured components disappear. This means that all the corresponding dangerous input-runs die after reading a finite number of symbols, which means that none of them can be accepting. Consequently, a state with 1-coloured components also guarantees that all the corresponding input-runs are non-accepting.
 
-
-% and adds additional states to it (the lower part of the output automaton). The lower-part construction generates new states basically in the same way as the upper-part construction, however, it adds an additional piece of information to each component of a newly created state, namely its colour. There are three colours, that we denote by 0, 1, and 2, that are assigned to components by the lower-part construction. Additionally, there is the colour $-1$ that is preliminarily assigned to each component of each state of the upper part. This serves to conveniently handle the colour assignment function of the lower-part construction. These colours make states different, that is, if two states have the same sequence of components, but the components have different colours, then the two states are regarded as different states.
-
-% The addition of colour assignments is the only difference to the basic state generation procedure that is used in the upper-part construction. In the following, we first describe how the colours are assigned, and after that, give some insight into what the colours actually mean.
-
-% Which colour is assigned to a component by the lower-part construction depends on the following three variables:
-% \begin{enumerate}
-% \item Whether the component is accepting or non-accepting
-% \item The colour of the predecessor component
-% \item Whether the state containing the predecessor component contains any 2-coloured components
-% \end{enumerate}
-
-% To this end, we need to explain what an accepting component, and what the predecessor component of a component is. A component is accepting if the states it contains are accepting states in the input automaton. In terms of reduced split trees, a component is accepting if it results from an accepting node in the corresponding slice. 
-
-
-
-% The construction of the lower part takes the states of the previously constructed upper part as input. This means that these states are taken as the initial ``states to be processed''. Thus, the states of the upper part will get additional successors in the lower part, which makes the states of the upper part non-deterministic\footnote{Two points about this non-determinism are interesting. First, the states of the upper part are the only non-deterministic states, all the other states are deterministic. Second, the degree of non-determinism of these states is at most 2, and thus the degree of non-determinism of the entire complement automaton is at most 2.}. The states of the lower part, in turn, are deterministic, and do not have transitions back to the upper part. This means that once a run switches from the upper to the lower part, it stays there infinitely (or dies there). 
-
-% The construction of the lower part proceeds principially in the same way as the construction of the upper part. However, it includes some additional ``structure'' in the form of a decoration of the components. In particular, every component of a lower-part state is assigned a colour. This colour is determined at creation time of the containing state, and is never changed\footnote{The colour of a component may be changed with the optimisations described in Section~\ref{3_optimisations}.}. These colours are distinguising features for the containing states. This means that if two states contain the same components in the same order, but the components have different colours, then the two states are different. Clearly, this makes the number of possible states of the lower part much larger than the number of possible states of the upper part.
-
-% We denote these three colours for the components of the lower part by 0, 1 and 2. In order to determine the accepting set at the end of the construction, it is necessary to ditinguish the states from the upper part from the states of the lower part. This problem is solved by previously assigning the special colour $-1$ to all components of upper part-states.
-
-% The assignment of a colour to a component of a lower-part state depends on three things:
-% \begin{enumerate}
-% \item Whether the component is accepting or non-accepting
-% \item The colour of the predecessor component
-% \item Whether the state containing the predecessor component contains any 2-coloured components
-% \end{enumerate}
-
-% How much to describe the concept of predecessor component, as it is already described in Section~\ref{3_basics}?
-
-% The rules for assigning one of the colours 0, 1, and 2 to a component $c$ are shown in Figure~\ref{colour_rules}. There are two different sets of rules for the cases that the state containing the predecessor component \textit{does} (Figure~\ref{colour_rules} (b)), or \textit{does not} ((Figure~\ref{colour_rules} (a)) contain components with colour 2. In each of these cases, the two remaining criteria, whether $c$ is accepting or non-accepting, and the colour of the predecessor component $c_{pred}$, determine a single colour that must be assigned to component $c$ (bold in Figure~\ref{colour_rules}). 
-
-% \begin{figure}[htb]
-% \centering
-%   \begin{subtable}[t]{\textwidth}
-%   \renewcommand{\arraystretch}{1.3}
-%   \centering
-%   \begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
-%     \hline
-%     Colour of $c_{pred}$ & $c$ is non-accepting & $c$ is accepting \\
-%     \hline
-%     $-1$ & \textbf{0} & \textbf{2} \\
-%     0 & \textbf{0} & \textbf{2} \\
-%     1 & \textbf{2} & \textbf{2} \\
-%     \hline
-%   \end{tabular}
-%   \caption{Case A: the predecessor state has \textit{no} 2-coloured components.}
-%   \end{subtable}
-%   \vskip0.5cm
-
-%   \begin{subtable}[t]{\textwidth}
-%   \renewcommand{\arraystretch}{1.3}
-%   \centering
-%   \begin{tabular}{|C{3cm}|C{3cm}|C{3cm}|}
-%     \hline
-%     Colour of $c_{pred}$ & $c$ is non-accepting & $c$ is accepting \\
-%     \hline
-%     0 & \textbf{0} & \textbf{1} \\
-%     1 & \textbf{1} & \textbf{1} \\
-%     2 & \textbf{2} & \textbf{2} \\
-%     \hline
-%   \end{tabular}
-%   \caption{Case B: the predecessor state \textit{has} 2-coloured components.}
-%   \end{subtable}
-% \caption{Rules for determining the colour of a component $c$. The identifier $c_{pred}$ denotes the predecessor component of $c$.}
-% \label{colour_rules}
-% \end{figure}
-
-% In the first case, that the predecessor state contains no 2-coloured components, the possible colours of the predecessor components are $-1$, 0, and 1. Naturally, the predecessor component cannot be 2-coloured, but on the other hand, it might have colour $-1$, if the predecessor state is a state of the upper part. For the other case, that the predecessor state contains 2-coloured components, the possible colours for the predecessor component naturally include colour 2, but do not include colour $-1$, because a state containing 2-coloured components cannot be a state of the upper part.
-
-% The purpose of the colours is to signalise the presence or absence of certain runs of the input automaton on a specific word. Note that the complement of a non-deterministic automaton must accept a word if and only if \textit{all} the runs of the input automaton on this words are rejecting. If there is a single run of the input automaton that accepts the word, then the complement automaton must not accept the word. Thus, we need a way to be sure that there are \textit{no} accepting runs of the input automaton on a specific word, and then we can accept this word with the complement automaton. 
-
-% \begin{description}
-% \item[Colour 2]
-% Is used to signalise the presence of ``dangerous'' runs, that is, runs that have the potential to becom accepting. If a component has colour 2, it means that there are input-runs that made a ``right-turn'', in terms of slices of reduced split trees, that is, visited an accepting state (see rules in Figure~\ref{colour_rules} (a) line 1 and 2). Note that all the successor components of a 2-coloured component are also 2-coloured, no matter if they are accepting or non-accepting (Figure~\ref{colour_rules} (b) line 3). A ``string'' of 2-coloured components can only be cut if a 2-coloured component has no successor components (no children in terms of reduced split trees). In this case we say that the 2-coloured component ``disappears''.
-
-% \item[Colour 1]
-% Means basically the same as colour 2, namely that there are ``dangerous'' runs. The reason that colour 1 exists is a caveat that could arise if we would assign colour 2 to \textit{every} component that just made a right-turn. In this case, it could happen that we miss the disappearance of 2-coloured components, and thus keep the containing output-state non-accepting instead of accepting. For this reason, the trick with colour 1 works as follows. If the predecessor state already contains 2-coloured components, then every component of the current state that deserves to be 2-coloured gets colour 1 instead of colour 2. This can be seen in Figure~\ref{colour_rules} (b) line 1 and 2. These are actually ``dangerous'' components kept ``on hold'', becaus then trick goes on as follows. As soon as all the 2-coloured components of a state disappear, the successors of all the 1-coloured components get 2-coloured. This can be seen in Figure~\ref{colour_rules} (a) line 3. At this point, these ``dangerous'' components ``on hold'' get the real ``dangerous'' components.
-
-% \item[Colour 0]
-% Means the absence of ``dangerous'' runs. This is because the corresponding input-run did not make any right-turns, that is, they went only through non-accepting states. These runs are ``safe'' in the sense that so far they bear no risk of becoming accepting runs.
-% \end{description}
-
-% Wrapping up, for constructing the lower part of the output automaton, one just has to apply the same successor creation procedure as for the upper part, with the addition of assigning colours to the new states' components according to the rules in Figure~\ref{colour_rules}. In the end, when every state has been processed and the procedure ends, the only thing that is missing is to determine the accepting states of the resulting automaton. The rule is that every state of the lower part that does \textit{not} contain any 2-coloured components is an accepting states. That means that every state of the automaton that contains exclusively 0-coloured and/or 1-coloured components is an accepting state.
-
-% In the following, we demonstrate the application of the lower-part construction by an example.
-
+All these rules and mechanisms become clearer by seeing them in action. Below we demonstrate the application of the lower-part construction by an example.
 
 \subsubsection{Example}
-Below, we demonstrate the application of the lower-part construction with an example. To this end, we continue the example that we left off after the upper-part construction in the last section. We will use the following notation for specifying the colour of a component $\{c\}$:
-\begin{itemize}
-\item $\cl^{\{c\}}$: colour $-1$
-\item $\cl0{\{c\}}$: colour 0 \vphantom{$\cl2{\{c\}}$}  % Strut
-\item $\cl1{\{c\}}$: colour 1 \vphantom{$\cl2{\{c\}}$}  % Strut
-\item $\cl2{\{c\}}$: colour 2
-\end{itemize}
+We continue the complementation of the example automaton $A$ in Figure~\ref{3_ex_aut_2} that we left off after the upper-part construction in the last section. In this section, we step by step add the lower part to the upper part, and in the end we obtain the complement automaton of $A$.
 
-Figure~\ref{steps_lower} shows some of the steps of the construction of the lower part. In Figure~\ref{steps_lower} (a), we start with the upper part that we previously constructed in the last section. The only difference is that we assigned colour $-1$ to all of the components of the upper part.
+Figure~\ref{steps_lower} shows a selection of the steps of the lower-part construction applied to the upper part depicted in Figure~\ref{steps_upper} (d). Note that we use the following notation to indicate the colour of a component $\{q_i, \dots \}$:
+\begin{itemize}
+\item $\cl^{\{q_i, \dots \}}$: colour $-1$
+\item $\cl0{\{q_i, \dots \}}$: colour 0 \vphantom{$\cl2{\{c\}}$}  % Strut
+\item $\cl1{\{q_i, \dots \}}$: colour 1 \vphantom{$\cl2{\{c\}}$}  % Strut
+\item $\cl2{\{q_i, \dots \}}$: colour 2
+\end{itemize}
 
 \begin{figure}[htb]
 \centering
@@ -467,141 +384,197 @@ Figure~\ref{steps_lower} shows some of the steps of the construction of the lowe
   \ComplementD
   \caption{}
   \end{subfigure}
-\caption{Selected steps of the construction of the lower part, starting with the upper part }
+\caption{Selected steps of lower-part construction applied to the upper part depicted in Figure~\ref{steps_upper} (d).}
 \label{steps_lower}
 \end{figure}
 
-In Figure~\ref{steps_lower} (b), we created the $a$-successors of the three states of the upper part. The structure of these new states, apart from the colours, is determined by the same method that we used for the upper part. The only difference in the construction of the lower part is that each component is assigned a colour. For both new states, the predecessor states do not contain any 2-coloured components, thus we only need to consider the colour rules in Figure~\ref{colour_rules} (a). Regarding the colour of the predecessor components, they all have colour $-1$, thus we have to use the rule in Figure~\ref{colour_rules} (a) line 1 for all the new components. In this way, the components \qqq02, \qq0, and \qq2 are assigned colour 0, because they are non-accepting, and component \qq1 gets colour 2, because it is accepting.
+The first step of the lower-part construction in Figure~\ref{steps_lower} (a) is to start with the upper part (as depicted in Figure~\ref{steps_upper} (d)), and assign colour $-1$ to all the components. As mentioned, we use this convention with colour $-1$ throughout this thesis.
 
-Note how we have to keep track for each component of the lower part whether it is accepting or non-accepting, and which is its predecessor component in the predecessor state. 
+The following steps of the lower-part construction consist in fact of the state generation function (as described in Section~\ref{3_basics}) plus the assignment of colours as described above. In Figure~\ref{steps_lower} (b) we add the $a$-successos for all the upper-part states. The state generation procedure results in the successor states $(\qqm02, \qm1)$, $(\qm0, \qm1, \qm2)$, and $(\qm0, \qm1, \qm2)$. To determine the colours of the components of these states, we consult the colour rules in Figure~\ref{colour_rules}. The predecessor states of all the new states do not contain a 2-coloured component, thus case~A in Figure~\ref{colour_rules} (a) applies. Furthermore, since the predecessor states are upper-part states, all the predecessor components have colour $-1$. That means that for each component only the rule in line 1 of Figure~\ref{colour_rules} applies. According to this rule, the non-accepting components get colour 0 and the accepting components get colour 2. This results in the successor states $(\qqm02, \cl2{\qm1})$ for $(\cl^{\qm0})$, $(\qm0, \cl2{\qm1}, \qm2)$ for $(\cl^{\qqm02}, \cl^{\qm1})$, and $(\qm0, \cl2{\qm1}, \qm2)$ for $(\cl^{\qm0}, \cl^{\qm1}, \cl^{\qm2})$. Note that this makes the upper-part states non-deterministic. In particular, this is the way how the runs of the final output automaton can switch non-deterministically to the lower part. 
 
-In Figure~\ref{steps_lower} (c), we added the $a$-successor to the state $(\qqm02, \cl2{\qm1})$. Disregarding the colours, this state has the form $(\qm0, \qm1, \qm2)$. Its predecessor state $(\qqm02, \cl2{\qm1})$ contains a 2-coloured component, thus we have to use the colour rules in Figure~\ref{colour_rules} (b). Now we need to know which are the predecessor components of the components in $(\qm0, \qm1, \qm2)$. This information is contained in the two slices of the reduced split tree that were used to determine the structure of the new state. For the case of our two states, the successor relation of their components is as follows:
+% In Figure~\ref{steps_lower} (b), we created the $a$-successors of the three states of the upper part. The structure of these new states, apart from the colours, is determined by the same method that we used for the upper part. The only difference in the construction of the lower part is that each component is assigned a colour. For both new states, the predecessor states do not contain any 2-coloured components, thus we only need to consider the colour rules in Figure~\ref{colour_rules} (a). Regarding the colour of the predecessor components, they all have colour $-1$, thus we have to use the rule in Figure~\ref{colour_rules} (a) line 1 for all the new components. In this way, the components \qqq02, \qq0, and \qq2 are assigned colour 0, because they are non-accepting, and component \qq1 gets colour 2, because it is accepting.
+
+% Note how we have to keep track for each component of the lower part whether it is accepting or non-accepting, and which is its predecessor component in the predecessor state.
+
+In Figure~\ref{steps_lower} (c), we create the $a$-successor of $(\qqm02, \cl2{\qm1})$. Again, the new state is first determined by the state generation procedure, what results in $(\qm0, \qm1, \qm2)$. Now, we have to determine the colour for each of the components \qq0, \qq1, and \qq2. In this case, the predecessor state $(\qqm02, \cl2{\qm1})$ contains a 2-coloured component, thus case~B of the colour rules in Figure~\ref{colour_rules} applies. Next, we need to know the colour of the predecessor of each component. To figure this out, we refer to the slice representation of the two states that we used for the state generation procedure. As explained earlier, we can mentally merge the edges between the nodes of the slices into the two states. This results in the following picture, where the component relations are indicated by dotted arrows:
 
 \begin{center}
 \PredCompsOne
 \end{center}
 
-The predecessor component of \qq0 is \qqq02, which has colour 0. Thus, we have to use the rule in Figure~\ref{colour_rules} (b) line 1, and \qq0 gets the colour 0, because it is non-accepting. The predecessor component of \qq1 is also \qqq02, and we have to use the same rule. However, since \qq1 is accepting, it gets colour 1. Note how the use of colour 1 here prevents the introduction of a further 2-coloured component before an already existing 2-coloured component has disappeared. The predecesor component of \qq2 is the 2-coloured $\cl2{\qm1}$, and thus, according to the rule in Figure~\ref{colour_rules} (b) line 3, \qq2 also gets colour 2.
+Consequently, the predecessor component of \qq0 and \qq1 is \qqq02, and the predecessor component of \qq2 is $\cl2{\qm1}$. Regarding \qq0 and \qq1, the colour of their predecessor component is 0, thus the rule on line 1 of Figure~\ref{colour_rules} (b) applies. Since \qq0 is non-accepting, it gets colour 0, and since \qq1 is accepting, it gets colour 1. Note how the assignment of colour 1 instead of colour 2 to \qq1 sets it \textit{on hold} because there exists already a 2-coloured component in the predecessor state. Regarding \qq2, the colour of its predecessor component is 2, and thus, according to the rule on line 3 of Figure~\ref{colour_rules} (b) it gets colour 2. This results in the state $(\qm0, \cl1{\qm1}, \cl2{\qm2})$.
 
-Next, still in Figure~\ref{steps_lower} (c), we create in turn the successor state of $(\qm0, \cl1{\qm1}, \cl2{\qm2})$. The structure of the components stays the same for the successor. The succesor relation of the two states is as follows:
+Still in Figure~\ref{steps_lower} (c) we create the $a$-successor of this new state $(\qm0, \cl1{\qm1}, \cl2{\qm2})$. By the state generation procedure, we obtain $(\qm0, \qm1, \qm2)$. Since the predecessor state  $(\qm0, \cl1{\qm1}, \cl2{\qm2})$ has a 2-coloured component, case~B of Figure~\ref{colour_rules} applies. Regarding the predecessors of the components in $(\qm0, \cl1{\qm1}, \cl2{\qm2})$ we observe the following relations:
 
 \begin{center}
 \PredCompsTwo
 \end{center}
 
-The result is that \qq0 gets colour 0, \qq1 gets colour 1, and \qq2 gets colour 2. Thus, the successor state is identical to the current state, and we add loop.
+By applying the appropriate colour rules depending on the colour of the predecessor component and the acceptance or non-acceptance of the component itself, \qq0 gets colour 0, \qq1 gets colour 1, and \qq2 gets colour 2. The resulting state is $(\qm0, \cl1{\qm1}, \cl2{\qm2})$, which is identical to its predecessor state. Consequently, we just add an $a$-loop to $(\qm0, \cl1{\qm1}, \cl2{\qm2})$.
 
-Figure~\ref{steps_lower} (d) includes the remaining for arriving at the final complement automaton. First, we created the $a$-successor of the state $(\qm0, \cl2{\qm1}, \qm2)$. The complement successor relation of this state with its successor is as follows:
+In Figure~\ref{steps_lower} (d), we add the successor of the state $(\qm0, \cl2{\qm1}, \qm2)$. After the state generation procedure that generates $(\qm0, \qm1, \qm2)$, again case~B of the colour rules in Figure~\ref{colour_rules} applies. The predecessor component relations are as follows:
 
 \begin{center}
 \PredCompsThree
 \end{center}
 
-According to the rules in Figure~\ref{colour_rules} (b), component \qq0 gets colour 0, \qq1 gets colour 1, and \qq2 gets colour 0. This results in a new state, since the colours are different from the ones in the current state. Interesting here is that we have the case that a 2-coloured component ``disappears''. This is because the component $\cl2{\qm1}$ has no successor component in the successor state. For the $a$-successor of the new state $(\qm0, \cl1{\qm1}, \qm2)$, this means in turn that we have to use the rules in Figure~\ref{colour_rules} (a), what results in the already existing state $(\qm0, \cl2{\qm1}, \qm2)$.
+By applying the colour rules,  \qq0, gets colour 0, \qq1 gets colour 1, and \qq2 gets colour 0. This results in the state $(\qm0, \cl1{\qm1}, \qm2)$. It is interesting to see that between these two states, the 2-coloured component $\cl2{\qm1}$ disappears, because it has no successors. This disappearance is reflected in the fact that $(\qm0, \cl1{\qm1}, \qm2)$ contains a 1-coloured component but no 2-coloured components, which can only be the case if a 2-coloured component disappears (as we explained above).
 
-At this point, all the states in the automaton have been processed, and the construction is therefore completed. The only thing that remains to be done is to determine the accepting states of the automaton. The rule is that each state of the lower part that does not contain any 2-coloured component is an accepting state. In our automaton this applies only to the state $(\qm0, \cl1{\qm1}, \qm2)$, which is thus the only accepting state of the automaton.
+Still in Figure~\ref{steps_lower} (d), we create the $a$-successor of this new state $(\qm0, \cl1{\qm1}, \qm2)$. After the state generation procedure, which results in $(\qm0, \qm1, \qm2)$, we have to apply case~A of the colour rules in Figure~\ref{colour_rules}, because $(\qm0, \cl1{\qm1}, \qm2)$ does not contain a 2-coloured component. The component relations between the two states are as follows:
 
-It can be easily seen that the automaton in Figure~\ref{steps_lower} accepts the word $a^\omega$, which is not accepted by the input automaton in Figure~\ref{example_automaton}. Thus, the result of our construction is a correct complement of the input automaton.
+\begin{center}
+\PredCompsFour
+\end{center}
 
-A loose upper bound for the worst-case state complexity of the entire construction (including the construction of both, the upper and the lower part) has been calculated to be in $O((1.59n)^n)$, where $n$ is the number of states of the input automaton~\cite{2014_joel_ulrich}. This result is subject to refinement in ongoing research by the authors of the Fribourg construction. As mentioned, this publication (\cite{2014_joel_ulrich}) also contains a formal desciption and a proof of correctness of the construction.
+By applying the appropriate colour rules, \qq0 gets colour 0, \qq1 gets colour 2, and \qq2 gets colour 0, which results in the state $(\qm0, \cl2{\qm1}, \qm2)$. This state already exists in the automaton, and thus we only add an $a$-transition to it.
+
+At this point, all the states in the automaton have been processed. The last thing that remains to do is to define the accepting set. The rule is that every state of the lower part that does not contain any 2-coloured components must be made accepting. In our case, this applies only to the state $(\qm0, \cl1{\qm1}, \qm2)$, and thus, this is the only accepting state of the automaton.
+
+The resulting automaton, as depicted in Figure~\ref{steps_lower} (d), is the final complement automaton $B$. It is easy to verify that this automaton is indeed the complement of the input automaton $A$ in Figure~\ref{ex_aut_2}. Both automata have an alphabet size of one, and thus work only on the word $\Sigma^\omega = \{\alpha^\omega\}$. Whereas $A$ does not accept this word ($A$ is empty), $B$ accepts it ($B$ is universal), and is thus the complement of $A$.
+
+% In Figure~\ref{steps_lower} (c), we added the $a$-successor to the state $(\qqm02, \cl2{\qm1})$. Disregarding the colours, this state has the form $(\qm0, \qm1, \qm2)$. Its predecessor state $(\qqm02, \cl2{\qm1})$ contains a 2-coloured component, thus we have to use the colour rules in Figure~\ref{colour_rules} (b). Now we need to know which are the predecessor components of the components in $(\qm0, \qm1, \qm2)$. This information is contained in the two slices of the reduced split tree that were used to determine the structure of the new state. For the case of our two states, the successor relation of their components is as follows:
+
+% \begin{center}
+% \PredCompsOne
+% \end{center}
+
+% The predecessor component of \qq0 is \qqq02, which has colour 0. Thus, we have to use the rule in Figure~\ref{colour_rules} (b) line 1, and \qq0 gets the colour 0, because it is non-accepting. The predecessor component of \qq1 is also \qqq02, and we have to use the same rule. However, since \qq1 is accepting, it gets colour 1. Note how the use of colour 1 here prevents the introduction of a further 2-coloured component before an already existing 2-coloured component has disappeared. The predecesor component of \qq2 is the 2-coloured $\cl2{\qm1}$, and thus, according to the rule in Figure~\ref{colour_rules} (b) line 3, \qq2 also gets colour 2.
+
+% Next, still in Figure~\ref{steps_lower} (c), we create in turn the successor state of $(\qm0, \cl1{\qm1}, \cl2{\qm2})$. The structure of the components stays the same for the successor. The succesor relation of the two states is as follows:
+
+% \begin{center}
+% \PredCompsTwo
+% \end{center}
+
+% The result is that \qq0 gets colour 0, \qq1 gets colour 1, and \qq2 gets colour 2. Thus, the successor state is identical to the current state, and we add loop.
+
+% Figure~\ref{steps_lower} (d) includes the remaining for arriving at the final complement automaton. First, we created the $a$-successor of the state $(\qm0, \cl2{\qm1}, \qm2)$. The complement successor relation of this state with its successor is as follows:
+
+% \begin{center}
+% \PredCompsThree
+% \end{center}
+
+% According to the rules in Figure~\ref{colour_rules} (b), component \qq0 gets colour 0, \qq1 gets colour 1, and \qq2 gets colour 0. This results in a new state, since the colours are different from the ones in the current state. Interesting here is that we have the case that a 2-coloured component ``disappears''. This is because the component $\cl2{\qm1}$ has no successor component in the successor state. For the $a$-successor of the new state $(\qm0, \cl1{\qm1}, \qm2)$, this means in turn that we have to use the rules in Figure~\ref{colour_rules} (a), what results in the already existing state $(\qm0, \cl2{\qm1}, \qm2)$.
+
+% At this point, all the states in the automaton have been processed, and the construction is therefore completed. The only thing that remains to be done is to determine the accepting states of the automaton. The rule is that each state of the lower part that does not contain any 2-coloured component is an accepting state. In our automaton this applies only to the state $(\qm0, \cl1{\qm1}, \qm2)$, which is thus the only accepting state of the automaton.
+
+% It can be easily seen that the automaton in Figure~\ref{steps_lower} accepts the word $a^\omega$, which is not accepted by the input automaton in Figure~\ref{example_automaton}. Thus, the result of our construction is a correct complement of the input automaton.
+
+A loose upper bound for the worst-case state complexity of the entire construction (including the construction of both, the upper and the lower part) has been calculated to be in $O((1.59n)^n)$~\cite{2014_joel_ulrich}. This result is however subject ongoing research, and may be sharpened to smaller number in future work.
+
+This concludes our explanation of the basic Fribourg construction. In the next section, we present three optimisations that can be applied to the Fribourg construction in order to increase its performance. 
 
 
 \section{Optimisations}
 \label{3_optimisations}
-There are several optimisations to the basic Fribourg construction, which all have the goal to reduce the size of the output automaton. These optimisations are like ``add-ons'' and can  be added to the basic construction and combined in different ways.
+The authors of the Fribourg construction propose three optimisations for the construction~\cite{2014_joel_ulrich}. In this section, we briefly describe each of them. Further details about all the optimisations can be found in~\cite{2014_joel_ulrich}.
 
-In this section, we describe three of these optimisations. For easier reference, we define an abbreviation for each optimisation: R2C, M1, and M2. These optimisations will also be subject to the empirical performance investigation of the Fribourg construction, starting from the next chapter, and there we will use the same abbreviations.
+For easy reference, we define the abbreviations R2C, M1, and M2 for these three optimisations. The optimsiations can be added to the construction like add-ons, and they can be combined in different ways. This results in different \textit{versions} of the Fribourg construction. Throughout this thesis, we specify a specific version of a construction by appending the included optimisations after the construction name. For example, Fribourg+R2C means the Fribourg construction including the R2C optimisation, and Fribourg+M1+R2C means the Fribourg constrution including the M1 and the R2C optimisation.
 
-\subsection{R2C: Remove States with Rightmost 2-Coloured Components}
+\subsection{R2C: Omission of States Whose Rightmost Component is 2-Coloured}
+
 The R2C optimisation can be summarised as follows:
 
 \begin{quote}
 \centering
-If the input automaton is complete, then states of the lower part that have a rightmost component with colour 2 can be omitted.
+\textit{If the input automaton is complete, then states of the lower part whose rightmost component has colour 2 can be omitted.}
 \end{quote}
 
-This means that if during the construction of the lower part we determine a state that has a 2-coloured rightmost component, then we do not need to add this state to the automaton. This consequently also omits all the potential successors of this state from the automaton.
+It is important to highlight that his optimisation can only be applied if the input automaton is complete. We hint at this restriction by the letter C in R2C. If the completeness of the input automaton is given, then the optimisation allows to remove all the states whose rightmost component is 2-coloured. 
 
-The reason for this is the following fact. If the input automaton is complete, then the rightmost component of an output-state \textit{always} has at least one successor component (because of the completeness of the input automaton). However, this applies only to the rightmost component, as the successors of the other components might be omitted, due to the right-to-left precedence in right-to-left reduced split trees.
+The reason that it is allowed to remove these states is as follows. If the input automaton is complete, then evey input-state has at least one successor state on every alphabet symbol. This means that in the corresponding reduced split trees, that are used for the Fribourg construction, the rightmost nodes are guaranteed to have a successor node. Note that this guarantee applies only to the rightmost nodes, because the successors of the other nodes might be omitted in the right-to-left processing of the slices. Consequently, in terms of states, all rightmost components are guaranteed to have a successor component. 
 
-If the colour of the rightmost component is 2, then the successor component inherits this colour 2 (Figure~\ref{colour_rules} (b) line 3). This means inductively that all the successors of a state with a 2-coloured rightmost component will have a 2-coloured rightmost component. Or in other words, there is a 2-coloured component that will never disappear. Since states containing a 2-coloured component are non-accepting, these states form a cycle without a single accepting state, and this cycle can be removed without changing the language of the automaton.
+If the colour of the rightmost component is 2, then all successor components inherits this colour (see the rule on line 3 of Figure~\ref{colour_rules} (b)). Since rightmost colours \textit{always} have a successor, \textit{all} the successor states with a rightmost 2-coloured component will contain a 2-coloured component. And since states containing a 2-coloured component are non-accepting, these stats form a non-accepting cycle in the automaton. Consequently, it is safe to remove this cycle without changing the language of the automaton.
 
-Note, however, that the omission of these states can only be done if the input automaton is complete. 
+In our example from the last section, we could thus remove the states $(\qqm02, \cl2{\qm1})$ and $(\qm0, \cl1{\qm1}, \cl2{\qm2})$ from the output automaton in Figure~\ref{steps_lower} (d). However, remember that this is only allowed if the input automaton is complete, which in our case is true for our input automaton in Figure~\ref{ex_aut_2}. The R2C optimisation is described in~\cite{2014_joel_ulrich} (Section 4.F).
 
 
-\subsection{M1: Merge Components}
-The M1 optimisation allows the merging of adjacent components depending on their colour. With the merging of adjacent components, we mean the replacement of these components with their union (if regarding components as sets). The three merging rules are as follows.
+\subsection{M1: Merging of Adjacent Components}
+The M1 optimisation allows the merging certain combinations of adjacent components depending on their colour. By merging, we mean the creation of the union of two adjacent sets. Components can be merged in three cases in the following way:
 
 \begin{enumerate}
 \item Two adjacent 1-coloured components can be merged to a single 1-coloured component
 \item Two adjacent 2-coloured components can be merged to a single 2-coloured component
-\item A 2-coloured component adjacent to a 1-coloured component (in this order from left to right) can be merged to a single 2-coloured component
+\item Two adjacent 2-coloured and 1-coloured components, where the 1-coloured component is to the right of the 2-coloured component, can be merged to a single 2-coloured component
 \end{enumerate}
 
-These mergings can be done recursively. This means that the result of a merging can again be subject to further merging, until nothing more can be merged. For example, the state $(\qm0, \cl2{\qm1}, \cl2{\qm2}, \cl1{\qm3}, \cl1{\qm4}, \cl2{\qm5})$ can be transformed to $(\qm0, \cl2{\{q_1, q_2, q_3, q_4, q_5\}}$, by the recursively applying the above three merging rules.
+These mergers can be done recursively. This means that the result of a merger is in turn subject to further mergers. For example, given the state $(\qm0, \cl2{\qm1}, \cl2{\qm2}, \cl1{\qm3}, \cl1{\qm4}, \cl2{\qm5})$, the following chain of mergers is possible:
 
-Consequent applying of these mergings reduces the maximal number of states in the output automaton. An upper bound on the number of states in the lower part of the automaton has been calculated to be in $O((1.195n)^n)$, where $n$ is the number of states of the input automaton~\cite{2014_joel_ulrich}. This is considerably lower than the $O((1.59n)^n)$ worst-case state growth of the Fribourg construction without the M1 optimisation. A formal description and a proof of correctness of the M1 optimisation can be found in~\cite{2014_joel_ulrich} (Section 4.E).
+{\renewcommand{\arraystretch}{1.7}
+\begin{tabular}{llll}
+$(\qm0, \cl2{\qm1}, \cl2{\qm2}, \cl1{\qm3}, \cl1{\qm4}, \cl2{\qm5})$ & $\longrightarrow$ & $(\qm0, \cl2{\{q_1,q_2\}}, \cl1{\{q_3,q_4\}}, \cl2{\qm5})$ &
+By rules 1 and 2 \\
+& $\longrightarrow$  & $(\qm0, \cl2{\{q_1,q_2,q_3,q_4}\}, \cl2{\qm5})$ &
+By rule 3 \\
+& $\longrightarrow$ & $(\qm0, \cl2{\{q_1, q_2, q_3, q_4, q_5\}})$ &
+By rule 2
+\end{tabular}}
+
+This means that with the M1 optimisation, we add the state $(\qm0, \cl2{\{q_1, q_2, q_3, q_4, q_5\}})$ to the automaton rather than $(\qm0, \cl2{\qm1}, \cl2{\qm2}, \cl1{\qm3}, \cl1{\qm4}, \cl2{\qm5})$. For the formal description and proof of correctness of the M1 optimisation, we refer to~\cite{2014_joel_ulrich} (Section 4.E).
+
+The application of these mergers obviously reduces the maximum number of states that the construction can produce. The worst-case state growth regarding the number of states of the lower part has been calculated in~\cite{2014_joel_ulrich} to be $(1.195n)^n$. This is added to a worst-case state growth of the upper part of $(0.53n)^n$. It will be a subject of our empirical performance investigation in Chapter~\ref{chap_investigation} to investigate the impact of the M1 optimisation on \textit{acutal} automata.
 
 
-\subsection{M2:  }
-The M2 optimisation is the most involved of the three optimisations. Furthermore, it can only be applied together with the M1 optimisation. The main point of the M2 optimisation can be summarised as follows:
+\subsection{M2: Single 2-Coloured Component}
+The M2 optimisation is the most complicated of the three optimisations. Its effect on the output automaton can be summarised as follows:
 
 \begin{quote}
-Every state of the lower part contains \textit{at most} one 2-coloured component.
+\centering
+\textit{States of the lower part contain at most one 2-coloured component.}
 \end{quote}
 
-The purpose of this restriction is to further reduce the maximal number of states the construction can generate (that is, to reduce the worst-case state complexity of the construction).
+Note that without the M2 optimisation, it is possible that states contain two or more 2-coloured components. This can happen if the predecessor state contains no 2-coloured components and the new state contains multiple accepting components (see colour rules on line 1 and 2 of Figure~\ref{colour_rules} (a)). With the M2 optimisation, in this case only one of the accepting components gets colour 2, and the others get colour 1. The purpose of the M2 optimisation is to further reduce the maximum number of states that the construction can produce. 
+
+It is important to note that the M2 optimsiation is dependent on the M1 optimisation. That means that the M2 optimisation can only be applied if the M1 optimisation is also applied. We selected the abbreviation M2 for this optimisation to highlight that it is based on M1.
+
+Below we first explain how a single 2-coloured component of a state is created. Next, we explain in detail the steps that the disappearance of this single 2-coloured component entails.
+
+\subsubsection{Creation of a 2-Coloured Component}
+As mentioned, when creating a new state, only one of the components, that without the M2 optimisation would become 2-coloured, gets colour 2. This component is defined to be the rightmost of the candidates for colour 2. A possible procedure to ensure this restriction is to determine the colours for the components from right to left, and assign colour 2 only if it has not been previously assigned in the state. If it has been previously assigned, then assign colour 1 instead of 2.
+
+A special case applies if the component that gets assigned colour 2 has a 2-coloured predecessor component and a sibling to the left of it. With sibling we mean an adjacent component that has the same predecessor component. If this two criteria are fulfilled, then the sibling gets colour 2 as well. Note that without this special treatment, it would get colour 1 instead of 2. Thus, there are two 2-coloured components in the state. However, since the M2 optimisation also requires the M1 optimisation to be applied, these two 2-coloured components are merged to a single 2-coloured components. In this way, statement that all states have at most one 2-coloured components is still true.
+
+
+\subsubsection{Actions on the Disappearence of a 2-Coloured Component}
+The restriction of having only one 2-coloured component in a state entails special actions when this 2-coloured components disappears (that is, has no successor components). Imagine a state $p$ with a single 2-coloured component, and its successor state $q$. If after the assignment of colours as described above, $q$ has no 2-coloured component, then we have the situation that the 2-coloured component of $p$ disappeared. The required action in this situation is to change the colour of one of the 1-coloured components of $q$ (if there are any) to 2. If $q$ does not contain any 1-coloured components, then nothing is done and the creation of the state is finished. If $q$ contains exactly one 1-coloured component, then the colour of this component is changed to 2. If $q$ contains multiple 1-coloured components, then the following procedure is applied.
 
 \begin{itemize}
-\item When determining the colours of the components of a new state, the components must be processed from right to left
-\item The first component that according to the rules in Figure~\ref{colour_rules} deserves colour 2 gets colour 2 as usual
+\item Go to the position in $q$ where the successor of the disappeared 2-coloured component of $p$ \textit{would} be
+\item From this position, go to the left until arriving at a 0-coloured component
   \begin{itemize}
-  \item If this component has a sibling\footnote{With sibling we mean having the same predecessor component.} to its left, then this sibling gets colour 2 as well
+  \item If the search arrives at the leftmost component, continue with the rightmost component
   \end{itemize}
-\item From the point on where colour 2 has been assigned to a component (and possibly its sibling), all the further components that according to Figure~\ref{colour_rules} deserve colour 2 get colour 1 instead of colour 2
+\item From this 0-coloured component, go to the left until arriving at the first 1-coloured component
+  \begin{itemize}
+  \item If the search arrives at the leftmost component, continue with the rightmost component
+  \end{itemize}
+\item Change the colour of this 1-coloured component to 2
 \end{itemize}
 
-This leaves the new state in a situation where at most two components have colour 2, namely the first one that deserves it from the right, and its possible sibling. In the case that there was a sibling, the application of the M1 optimisation (which is necessary for the application of the M2 optimisation) merges these two components to a single 2-coloured component. This makes the state in any case having at most one 2-coloured component.
+That is, if there are multiple 1-coloured components in the state, then we select the first 1-coloured component that is to the left of the first 0-coloured component that is to the left of the position where the successor of the disappeared component would be, and change its colour to 2. In the course of this, we understand the relation ``to the left of'' as cyclically, such that the component to the left of the leftmost component is the rightmost component.
 
-This modification of the construction requires further care to be taken when the only 2-coloured component of a state ``disappears'', that is, has no successor components in the state under construction. In this case, one of the 1-coloured components of this state is made accepting. In more detail, the points to consider are as follows.
-
-\begin{itemize}
-\item Disappearance of a 2-coloured component: uf the predecessor of a new state has a 2-coloured component, and if after the assignment of colours to the components of this new state, as described above, the new state has no 2-coloured component, then we say that the 2-coloured component of the predecesor state disappeared.
-\item When the disappearance of a 2-coloured component is detected, and if the state under construction contains at least one 1-coloured component, then the following is done:
-  \begin{itemize}
-  \item The position where the successor component of the disappeared component \textit{would} be is determined
-  \item Select the first 1-coloured component that is to the left of the first a 0-coloured component that is to the left of this position
-    \begin{itemize}
-    \item If the search arrives at the leftmost component of the state, then continue it starting from the rightmost component
-    \item If there is exactly one 1-coloured component in the state, then directly select this component
-    \end{itemize}
-  \item Change the colour of the selected component from 1 to 2
-  \item Mark the state with a special mark (for example a $*$)
-    \begin{itemize}
-    \item This mark distinguished states. That is, if two states have the same components with the same colours, but one has a mark and the other not, then they are two different states.
-    \end{itemize}
-  \end{itemize}
-\end{itemize}
-
-The result of this procedure is that the state has a single 2-coloured component again. However, as mentioned, this state must be accepting, even though it contains a 2-coloured component. It is the purpose of the mark to distinguish this state from other states with a 2-coloured component. The last thing we have to do is to change the acceptance condition to include all states of the lower part containing no 2-coloured components, plus all states having a mark.
+The effect of changing the colour of a 1-coloured component of a state $q$ to 2 is that $q$, which previously contained no 2-coloured  components, now contains a 2-coloured component. However, since a 2-coloured component disappeared, $q$ must still be accepting, even though it contains a 2-coloured component. For this reason, we marks states such as $q$ with a star ($*$). In general, each state that has been subject to a change of a 1-coloured component to a 2-coloured component is marked with a star. Finally, the rule for adding states to the accepting set is changed such that it includes all the states of the lower part that contain no 2-coloured component \textit{and} all the states that contain a 2-coloured component but are marked with a star.
 
 
-\begin{figure}
+Figure~\ref{complement_with_m2} shows the result of applying the Fribourg construction with the M1 and M2 optimisations to the example automaton in Figure~\ref{ex_aut_2}. The difference of this automaton to the complement resulting from the Fribourg construction without the M1 and M2 optimisation (see Figure~\ref{steps_lower} (d)) is the state at the bottom right of the automaton. As can be seen in the figures, without the optimisation the component \qq1 of this state is 1-coloured. With the M1 and M2 optimisations, however, \qq1 is 2-coloured. In both cases, the 2-coloured component of the predecessor state disappeared, however, with the M1 and M2 optimisations, the resulting 1-coloured \qq1 is made 2-coloured. Additionally, the state is marked with a star, so that it is still part of the accepting set. Regarding the successors of this marked state, the same procedure is repeated indefnitely: the 2-coloured component disappears, and one of the 1-coloured components is made 2-coloured. This is the reason why this state has a loop.
+
+\begin{figure}[htb]
 \centering
 \ComplementWithMTwo
-\caption{Result of applying the M2 optimisation to the complementation of the example automaton from Figure~\ref{example_automaton}.}
+\caption{Result of applying the Fribourg construction with the M1 and M2 optimisation to example automaton in Figure~\ref{ex_aut_2}.}
 \label{complement_with_m2}
 \end{figure}
 
-In this case, the difference is the marked state $(\qm0, \cl2{\qm1}, \qm2)*$. It exists, because the 2-coloured component $\cl2{\qm1}$ of the predecessor state disappears. According to the colour rules, the $\cl1{\qm1}$ in the new state then gets colour 1. This is where the construction without the M2 optimisation would left off. With the M2 optimisation, however, we have to select one of the 1-coloured components of the new state and change its colour to colour 2. There is only one 1-coloured component in the state, $\cl1{\qm1}$, and so we change its colour from~1 to~2. We also mark this state with a star. The successor of this marked state happens to be identical with itself (because the component $\cl2{\qm1}$ again disappears), so we add a loop. In the end, the marked state is made accepting.
-
-In~\cite{2014_joel_ulrich} (Section 4.H) a very loose upper bound on the number of states of the lower part of $O((0.86n)^n)$ is proposed. This is a significant reduction from the upper bound of $O((1.195n)^n)$ that s achieved with the M1 optimisation. Furthermore, concrete calculations on the M2 optimisation suggest that the real upper bound might be as low as $O((0.76n)^n)$. This coincides with the established lower bound for Büchi complementation by Yan~\cite{DBLP:journals/corr/abs-0802-1226} and would make the construction optimal in the sense of worst-case state complexity. The actual complexity of the M2 optimisation is subject to further research by the authors of the Fribourg construction.
-
-\cite{2014_joel_ulrich} Section 4.H
+The M2 optimisation further reduces the maximum number of states that the construction can produce. A loose upper bound of $(0.86n)^n$ for the worst-case state growth of the lower part of the automaton has been calculated in \cite{2014_joel_ulrich} (Section 4.H). However, calculations of actual values suggest that the real bound for the lower part might be as low as $(0.76n)^n$. The investigation of the worst-case state complexity of the M1 and M2 optimisation is subject to ongoing research by the authors of the Fribourg construction. Note that $(0.76n)^n$ number of states in the lower part, and thus for the overall complexity of the construction , the size of the upper part of $(0.53n)^n$ must be added to it.
 
 
 \section{General Remarks}
+\label{3_remarks}
+The Fribourg construction has many similarities to the slice-based construction by Vardi and Wilke\cite{vardi2007automata} (see Section~\ref{2_slice-based}) that has been published in 2007. The upper part and lower part of the Fribourg construction correspond to the initial phase and repetition phase of Vardi and Wilke's construction. Furthermore, the colours 0, 1, and 2 of the Fribourg construction correspond to the decorations \textit{inf}, \textit{new}, and \textit{die} of Vardi and Wilke's construction. However, the Fribourg construction has been developed independently, and is not based on Vardi and Wilke's construction.
 
+Rather, the Fribourg construction is based on Kurshan's complementation construction for \textit{deterministic} Büchi automata~\cite{Kurshan198759}. This construction also uses an upper part and a lower part which are both deterministic, except for non-determnistic transitions from the states of the upper part to states of the lower part. The Fribourg construction has emerged as an adaptation of Kurshan's construction for non-determnistic Büchi automata, with the slice-based run analysis appraoch in mind.
+
+With these remarks, we conclude the presnt chapter about the Fribourg construction. At this point, we have provided all the background that is needed for our empirical performance investigation of the Fribourg construction, which we present in the next chapter.
 
 
 % The Fribourg construction draws from several ideas: the subset construction, run analysis based on reduced split trees, and Kurshan's construction~\cite{Kurshan198759} for complementing DBW. Following the classification we used in Section~\ref{review}, it is a slice-based construction. Some of its formalisations are similar to the slice-based construction by Vardi and Wilke~\cite{vardi2007automata}, however, the Fribourg construction has been developed independently. Furthermore, as we will see in Chapter~\ref{results}, the empirical performance of Vardi and Wilke's construction and the Fribourg construction differ considerably, in favour of the latter.

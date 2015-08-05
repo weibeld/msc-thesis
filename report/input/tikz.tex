@@ -71,32 +71,28 @@
   },
   my state/.style={
     draw,
-    % minimum height=1.75em,
-    % minimum width=2em,
-    % inner sep=1mm,
-    %rounded corners=2mm,
     minimum height=1.5em,
     minimum width=1.5em,
     inner sep=0.5mm,
     rounded corners=1.5mm,
     rectangle
   },
-  my state high/.style={
-    my state,
-    minimum height=1.75em
+  my accepting/.style={
+    double,
+    double distance=0.8pt,
+    outer sep=0.7pt,
   },
   my state small/.style={
     my state,
     rounded corners=1.1mm
   },
-  my accepting/.style={
+  my accepting small/.style={
     double,
-    % double distance=1pt,
-    % outer sep=0.9pt,
-    % semithick
-    double distance=0.8pt,
-    outer sep=0.7pt,
-    %semithick
+    double distance=0.65pt,
+    outer sep=0.5pt,
+  },
+  state height/.style={
+    minimum height=1.74em
   },
   automaton/.style={
     every state/.style={my state},
@@ -110,7 +106,8 @@
   },
   small automaton/.style={
     automaton,
-    every state/.style={my state small}
+    every state/.style={my state small},
+    accepting/.style={my accepting small}
   },
   tree/.style={
     every tree node/.style={my tree node},
@@ -644,7 +641,7 @@ shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 
 % Complement of the example automaton by applying the M2 optimisation
 \newcommand{\ComplementWithMTwo}{
-\begin{tikzpicture}[automaton]
+\begin{tikzpicture}[automaton,every state/.style={my state,state height}]
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
 \node[state]           (2)  [right=of 1] {$(\cl^{\qm0},\cl^{\qm1},\cl^{\qm2})$};
@@ -666,7 +663,7 @@ shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 }
 
 \newcommand{\ComplementA}{
-\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall,every state/.style={my state small,state height}]
 \scriptsize
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
@@ -694,7 +691,7 @@ shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 }
 
 \newcommand{\ComplementB}{
-\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall,every state/.style={my state small,state height}]
 \scriptsize
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
@@ -722,7 +719,7 @@ shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 }
 
 \newcommand{\ComplementC}{
-\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall,every state/.style={my state small,state height}]
 \scriptsize
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
@@ -750,7 +747,7 @@ shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 }
 
 \newcommand{\ComplementD}{
-\begin{tikzpicture}[small automaton,node distance=\myndistsmall]
+\begin{tikzpicture}[small automaton,node distance=\myndistsmall,every state/.style={my state small,state height}]
 \scriptsize
 \node[state,initial]   (0)               {$(\cl^{\qm0})$};
 \node[state]           (1)  [right=of 0] {$(\cl^{\qqm02},\cl^{\qm1})$};
@@ -866,54 +863,72 @@ shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 }
 
 \newcommand{\PredCompsOne}{
-\begin{tikzpicture}[small automaton,node distance=0.4cm]
+\begin{tikzpicture}[small automaton,node distance=0.3cm]
 \scriptsize
-\node[state] (1)              {$(\qqm02,\cl2{\qm1})$};
-\node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
+\node[state,state height] (1)              {$(\qqm02,\cl2{\qm1})$};
+\node[state,state height] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
 \draw[densely dotted,small arrow]
-($(1.south east)!0.23!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.23!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.21!(2.north west)-(0,1.5mm)$);
 \draw[densely dotted,small arrow]
-($(1.south east)!0.68!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.68!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
 \draw[densely dotted,small arrow]
-($(1.south east)!0.68!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.68!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
 \path[->] (1) edge node[right] {$a$} (2);
 \end{tikzpicture}
 }
 
 \newcommand{\PredCompsTwo}{
-\begin{tikzpicture}[small automaton,node distance=0.4cm]
+\begin{tikzpicture}[small automaton,node distance=0.3cm]
 \scriptsize
-\node[state] (1)              {$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
-\node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
+\node[state,state height] (1)              {$(\qm0,\cl1{\qm1},\cl2{\qm2})$};
+\node[state,state height] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
 \draw[densely dotted,small arrow]
-($(1.south east)!0.2!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.2!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.2!(2.north west)-(0,1.5mm)$);
 \draw[densely dotted,small arrow]
-($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.79!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
 \draw[densely dotted,small arrow]
-($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.79!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
 \path[->] (1) edge node[right] {$a$} (2);
 \end{tikzpicture}
 }
 
 \newcommand{\PredCompsThree}{
-\begin{tikzpicture}[small automaton,node distance=0.4cm]
+\begin{tikzpicture}[small automaton,node distance=0.3cm]
 \scriptsize
-\node[state] (1)              {$(\qm0,\cl2{\qm1}, \qm2)$};
-\node[state] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
+\node[state,state height] (1)              {$(\qm0,\cl2{\qm1}, \qm2)$};
+\node[state,state height] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
 \draw[densely dotted,small arrow]
-($(1.south east)!0.2!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.2!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.2!(2.north west)-(0,1.5mm)$);
 \draw[densely dotted,small arrow]
-($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.79!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
 \draw[densely dotted,small arrow]
-($(1.south east)!0.79!(1.south west)+(0,0.9mm)$)
+($(1.south east)!0.79!(1.south west)+(0,0.7mm)$)
+    -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
+\path[->] (1) edge node[right] {$a$} (2);
+\end{tikzpicture}
+}
+
+\newcommand{\PredCompsFour}{
+\begin{tikzpicture}[small automaton,node distance=0.3cm]
+\scriptsize
+\node[state,state height] (1)              {$(\qm0,\cl1{\qm1}, \qm2)$};
+\node[state,state height] (2) [below=of 1] {$(\qm0, \qm1, \qm2)$};
+\draw[densely dotted,small arrow]
+($(1.south east)!0.2!(1.south west)+(0,0.7mm)$)
+    -- ($(2.north east)!0.2!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.79!(1.south west)+(0,0.7mm)$)
+    -- ($(2.north east)!0.51!(2.north west)-(0,1.5mm)$);
+\draw[densely dotted,small arrow]
+($(1.south east)!0.79!(1.south west)+(0,0.7mm)$)
     -- ($(2.north east)!0.79!(2.north west)-(0,1.5mm)$);
 \path[->] (1) edge node[right] {$a$} (2);
 \end{tikzpicture}
