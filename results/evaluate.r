@@ -8,7 +8,7 @@ GetData <- function() {
   empt <<- ReadSingle("testset/emptiness/emptiness.csv")
   
   # Internal: GOAL test set
-  i.g.all <<- ReadSubdirs("internal/goal")[c(1, 8, 7, 2, 3, 5, 4, 6)]
+  i.g.all <<- ReadSubdirs("internal/goal")[c(1, 8, 7, 2, 5, 4, 3, 6)]
   i.g <<- Eff(i.g.all)
 
   # Internal: Michel automata
