@@ -1,1 +1,32 @@
-Since between the 2014--08--08 and 2014--11--17 releases of GOAL certain parts of the plugin interfaces have changed, and we adapted our plugin accordingly, the currently maintained version of the plugin works only with GOAL versions 2014-11-17 or newer. It is thus essential for any GOAL user to update to this version in order to use our plugin.
+Below we provide instructions about how to install \goal{} (if not yet installed), and our plugin containing the Fribourg construction.
+
+\subsubsection{\goal}
+\goal{} can be downloaded from \url{http://goal.im.ntu.edu.tw/wiki/doku.php} (requires registration of name and e-mail address). After the download, \goal{} does not require an actual installation. It is run directly from within the donwloaded directory tree. The root directory \texttt{<root>} of this directory tree has the format \texttt{GOAL-YYYYMMDD}, where \texttt{YYYYMMDD} is the release date of the downloaded \goal{} version.
+
+There are two executables for running \goal:
+
+\begin{itemize}
+\item \texttt{<root>/goal}
+\item \texttt{<root>/gc}
+\end{itemize}
+
+The first one, \texttt{<root>/goal}, starts the graphical user interface of \goal. The second one, \texttt{<root>/gc} is the entry point to the command line interface of \goal. For example, running \texttt{<root>/gc help complement} shows the help page for \goal's complementation command.
+
+\textbf{Note for Mac OS X users:} the \goal{} website provides a special Mac OS X version that can be downloaded as a \texttt{.dmg} file. This file installs \goal{} as an application bundle under \texttt{/Applications/GOAL.app}. The root directory \texttt{<root>} of the \goal{} directory tree is in this case \texttt{GOAL.app/Contents/Resources/Java}.
+
+
+\subsubsection{Fribourg Construction Plugin}
+
+For obtaining and installing our plugin to an existing \goal{} installation, execute the following steps:
+
+\begin{enumerate}
+\item Download the plugin from \url{https://frico.s3.amazonaws.com/goal_plugins/ch.unifr.goal.complement.zip}
+\item Unzip the donwloaded file \texttt{ch.unifr.goal.complement.zip}
+\item Move the unzipped directory \texttt{ch.unifr.goal.complement} to \texttt{<root>/plugins}
+\end{enumerate}
+
+This is all. When \goal{} is started for the next time, the Fribourg construction will be included in the graphical user interface, as well as in the command line interface of \goal.
+
+\textbf{Important note:} the Fribourg construction plugin requires \goal{} version 2014--11--17 or later. The plugin does not work with older versions of \goal. This is because between the 2014--08--08 and the 2014--11--17 version, the plugin interfaces of \goal{} have changed.
+
+Note that our additional plugin \texttt{ch.unifr.goal.util}, which contains two commands for testing completeness and universality of automata (only for the command line interface), can be downloaded from \url{https://frico.s3.amazonaws.com/goal_plugins/ch.unifr.goal.util.zip} and installed according to the above instructions.

@@ -64,14 +64,14 @@ public class FribourgComplementInterface extends AbstractComplementConstructionI
   @Override
   public String getHelp() {
     String s = "";
-    s += pad(mCode)     + "Apply optimisation of merging certain adjacent sets.\n";
-    s += pad(m2Code)    + "Apply optimisation of single 2-coloured set. Requires " + mCode + ".\n";
-    s += pad(r2ifcCode) + "If input automaton is complete, remove states with rightmost colour 2.\n";
-    s += pad(cCode)     + "Make input automaton complete. CAUTION: decreases performance.\n"; 
-    s += pad(maccCode)  + "Maximise accepting set of input automaton.\n";
-    s += pad(rCode)     + "Remove unreachable and dead states from OUTPUT automaton.\n";
-    s += pad(rrCode)    + "Remove unreachable and dead states from INPUT automaton.\n";
-    s += pad(bCode)     + "Use the \"bracket notation\" for state labels.";
+    s += pad(r2ifcCode) + "Apply R2C optimisation (remove states with 2-coloured rightmost comp.)\n";
+    s += pad(mCode)     + "Apply M1 optimisation (merging of adjacent components)\n";
+    s += pad(m2Code)    + "Apply M2 optimisation (single 2-coloured component), requires " + mCode + "\n";
+    s += pad(cCode)     + "Make input automaton complete\n"; 
+    s += pad(maccCode)  + "Maximise accepting set of input automaton\n";
+    s += pad(rCode)     + "Remove unreachable and dead states from OUTPUT automaton\n";
+    s += pad(rrCode)    + "Remove unreachable and dead states from INPUT automaton\n";
+    s += pad(bCode)     + "Use the \"bracket notation\" for state labels";
     return s;
   }
 

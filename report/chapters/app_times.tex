@@ -1,37 +1,42 @@
+Below we present statistics about the measured execution times of the complementation tasks on the \goal{} test set. Note that the execution times for the Michel test set are presented in Chapter~\ref{chap_results}.
+
+All the values, except the last column, are in CPU time seconds. Remember that the timeout per complementation task is set to 600 CPU time seconds. This is why all maximum values are below 600.
+
+The second-last column of each table contains the total of the execution times of all the effective samples in the corresponding test. The last column converts these values from seconds to hours.
+
+Note that in general measurements of execution times are dependent on the implementation, execution environment, and on other factors, such as the way the time measurement is done by the operating system, or the current load of the processor. This is why we use the execution times only as an auxiliary performance measure.
+
 % Force single floating figure to top of page
-\makeatletter
-\setlength{\@fptop}{0pt}
-\setlength{\@fpbot}{0pt}
-\setlength{\@fpsep}{20pt}
-\makeatother
+% \makeatletter
+% \setlength{\@fptop}{0pt}
+% \setlength{\@fpbot}{0pt}
+% \setlength{\@fpsep}{50pt}
+% \makeatother
 
+% Fixed width right-aligned and left-aligned columns
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{4em}}
+\newcolumntype{L}{p{11.125em}}
 
-\begin{table}[h]
+\vskip0.5cm
+\begin{table}[htb]
 \centering
 \input{figures/r/internal/goal/t.stats.tex}
-\caption{Execution times in CPU time seconds for the 10,939 effectvie samples of the \goal{} test set.} 
+\caption{Execution times of the 10,939 effective samples of the internal tests on the \goal{} test set. The reported values are in CPU time seconds.} 
 \end{table}
-
-\begin{table}[h]
+\vskip0.25cm
+\begin{table}[htb]
 \centering
 \input{figures/r/external/goal/t.stats.with_rank.tex}
-\caption{Execution times in CPU time seconds for the 7,204 effectvie samples of the \goal{} test set.} 
+\caption{Execution times of the 7,204 effective samples of the external tests (with Rank) on the \goal{} test set. The reported values are in CPU time seconds.}
 \end{table}
 
-\begin{table}[h]
+%Force single floating figure to top of page
+\makeatletter
+\setlength{\@fptop}{5pt}
+\makeatother
+
+\begin{table}[htb]
 \centering
 \input{figures/r/external/goal/t.stats.tex}
-\caption{Execution times in CPU time seconds for the 10,998 effectvie samples of the \goal{} test set without the Rank construction.} 
-\end{table}
-
-\begin{table}[h]
-\centering
-\input{figures/r/internal/michel/t.table.tex}
-\caption{Execution times in CPU time seconds for the four Michel automata.} 
-\end{table}
-
-\begin{table}[h]
-\centering
-\input{figures/r/external/michel/t.table.tex}
-\caption{Execution times in CPU time seconds for the four Michel automata.} 
+\caption{Execution times of the 10,998 effective samples of the external tests (without Rank) on the \goal{} test set. The reported values are in CPU time seconds.} 
 \end{table}

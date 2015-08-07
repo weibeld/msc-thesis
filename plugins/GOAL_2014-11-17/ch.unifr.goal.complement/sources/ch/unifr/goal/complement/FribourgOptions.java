@@ -41,8 +41,8 @@ public class FribourgOptions extends Properties {
   private static final boolean mDefault     = true;
   private static final boolean m2Default    = false;
   private static final boolean bDefault     = false;
-  private static final boolean maccDefault  = true;
-  private static final boolean rDefault     = true;
+  private static final boolean maccDefault  = false;
+  private static final boolean rDefault     = false;
   private static final boolean rrDefault    = false;
 
   // Will be executed when the class is first accessed. This is actually only

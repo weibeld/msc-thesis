@@ -1,4 +1,4 @@
-# R functions for analyising the results of Büchi complementation experiments
+# F functions for analyising the results of Büchi complementation experiments
 # with GOAL on the test automata from the paper "State of Büchi Complementation"
 # 
 # Test automata available on: http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?

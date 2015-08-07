@@ -12,6 +12,9 @@ In Section~\ref{5_discussion} we summarise and discuss the most important result
 
 \section{Results of the Internal Tests}
 \label{5_internal}
+In the internal tests, we run different versions of the Fribourg construction on the \goal{} test set (see Section~\ref{4_goal_testset}), and the Michel test set (see Section~\ref{4_michel_testset}). 
+
+
 The internal tests consists of the testing of different versions of the Fribourg construction with both, the \goal{} test set and the Michel test set (see Section~\ref{4_internal}). The tested construction versions differ for the two test sets. Below, we present the results of these two tests sets separately.
 
 \subsection{GOAL Test Set}
@@ -209,13 +212,13 @@ To this end, we calculated for each transition density/acceptance density class 
 \label{i.g.difficulty}
 \end{figure}
 
-Figure~\ref{i.g.difficulty}, shows a total of  53 easy, 36 medium, and 21 hard classes. The easy classes are mainly those with extreme values. All the classes with a transition density of 0.1, or 2.8 and 3.0, and a high acceptance density of 1.0 are easy. Furthermore, there is a ``triangle'' of easy classes between transition densities 2.0 and 2.6. and acceptance densities 0.5 and 0.9. The closer the transition density is at 2, the higher the acceptance density must be such that the class is classified as easy. The hard classes are roughly those with a transition density between 1.4 and 1.8 and an acceptance density between 0.1 and 0.6. The medium classes finally are located as a ``belt'' around the hard classes.
+Figure~\ref{i.g.difficulty}, shows a total of  53 easy, 36 medium, and 21 hard classes. The easy classes are mainly those with extreme values. All the classes with a transition density of 0.1, or 2.8 and 3.0, and a high acceptance density of 1.0 are easy. Furthermore, there is a ``triangle'' of easy classes between transition densities 2.0 and 2.6. and acceptance densities 0.5 and 0.9. The lower the transition density, the higher the acceptance density must be such that the class is classified as easy. The hard classes are roughly those with a transition density between 1.4 and 1.8 and an acceptance density between 0.1 and 0.6. The medium classes finally are located as a ``belt'' around the hard classes.
 
-It is interesting to see that the hard automata are those with a ``medium'' transition density between 1.4 and 1.8. This means that every state has on average 1.4 to 1.8 outgoing transitions for each symbol of the alphabet. Somehow this specific level of connectivity seems to make the complementation of an automaton very hard. If the connectivity is lower, complementation becomes easier, and if the connectivity is harder, complementation becomes easier as well. A reason that complementation becomes easier for automata with lower transition densities might be that such automata contain unreachable and disconnected state, and thus can be seen as actually containing less than 15 states. We let further investigations on the influence of the transiton density on the complementation difficulty for future work.
+It is interesting to see that the hard automata are those with a ``medium'' transition density between 1.4 and 1.8. This range of transition densities means that every state has on average 1.4 to 1.8 outgoing transitions for each symbol of the alphabet. Somehow this specific level of connectivity seems to make the complementation of an automaton very hard. If the connectivity is lower, complementation becomes easier, and if the connectivity is harder, complementation becomes easier as well. A reason that complementation becomes easier with a lower transition density might be that such automata may contain unreachable and disconnected state. We let further investigations on the influence of the transiton density on the complementation difficulty for future work.
 
 Figure~\ref{i.g.difficulty} also shows that automata with a larger number of accepting states are generally easier to complement. This proposition has been made by Tsai et al.~\cite{2011_tsai}, and it is the base of the MACC option of many complementation construction in \goal{} (see Section~\ref{4_goal}). Summarising, we can say that a transition density between 1.4 and 1.8 makes automata hard to complement, but that this difficulty is alleviated by an increasing acceptance density.
 
-Note that these results are specific to the Fribourg construction, and cannot be directly generalised to other construction. Furthermore the results are based exclusively on the \goal{} test set with its specific types of automata. However, as we will see in the results of the external tests in Section~\ref{5_external_goal}, other complementation constructions show a similar behaviour on the automata of the \goal{} test set.
+Note that these results are specific to the Fribourg construction, and cannot be readily generalised to other constructions. Furthermore the results are based exclusively on the \goal{} test set with its specific types of automata. However, as we will see in the results of the external tests in Section~\ref{5_external_goal}, other complementation constructions show a similar behaviour on the automata of the \goal{} test set.
 
 % It is interesting that the extreme values of transition and acceptance densities result in easy automata. With a transition density of 1.0 and an alphabet size of 2, each of the 15 states has on average two outgoing and two incoming transitions. With a transition density of 3.0, each state has on average 6 outgoing and 6 incoming transitions. These low or high connectivity seems to considerably simplify the complementation task. The same applies to a high acceptance density of 1.0, which means that every state is an accepting state.
 
@@ -228,7 +231,8 @@ Note that these results are specific to the Fribourg construction, and cannot be
 
 \subsection{Michel Test Set}
 \label{5_internal_michel}
-Our second test set consists of the four Michel automata that are listed in Figure~\ref{4_michel_automata} in Section~\ref{4_michel_testset}. They have 3, 4, 5, and 6 states, respectively. The Fribourg construction versions that we tested on the Michel automata are the following.
+The Michel test set consists of the four Michel automata Michel~1, Michel~2, Michel~3, and Michel~4 (characterised by the coefficient $m=\{1,2,3,4\}$) that are shown in Figure~\ref{4_michel_automata}. These automata have 3, 4, 5, and 6 states, respectively. The versions of the Fribourg constrcution that we tested on the Michel test set are the following (see Section~\ref{4_internal}):
+
 \begin{enumerate}
 \item Fribourg
 \item Fribourg+R2C
@@ -238,16 +242,16 @@ Our second test set consists of the four Michel automata that are listed in Figu
 \item Fribourg+R
 \end{enumerate}
 
-The resulting complement sizes are listed in Table~\ref{i.m.states}.
+In Table~\ref{i.m.states}, we present the complement sizes of these versions on the four Michel automata. The column \textit{Fitted curve} contains a function of the form $(an)^n$ that we fitted onto the four $xy$-points of each construction, where the $x$-axis is represents the size of the input automata (in our case 3, 4, 5, and 6), and the $y$-axis represents the size of the corresponding complements. The used fitting method was the method of non-linear least squares. The column \textit{Std. error} shows the standard error that resulted from the fit.
 
 \begin{table}[htb]
 \centering
 \input{figures/r/internal/michel/s.table.tex}
-\caption{Complement sizes of the Michel automata with $m=\{1,\dots,4\}$ and 3, 4, 5, and 6 states, respectively. }
+\caption{Complement sizes of the Michel automata 1 to 4 ($m=\{1,2,3,4\}$), which have 3, 4, 5, and 6 states, respectively. }
 \label{i.m.states}
 \end{table}
 
-In the second-last column ``Fitted curve'' of Table~\ref{i.m.states}, we fitted a function of the form $(an)^n$ to the measured four data points. These data points consist of the sizes of the four Michel automata (3, 4, 5, and 6) as the $x$-values ad the corresponding complement sizes as the $y$-values. The fitted function $(an)^n$ can be seen as an ``averaged'' state growth of these four automata ($n$ is the size of the input automaton). The last column ``Std. error'' contains the standard error that resulted from the fit.
+% In the second-last column ``Fitted curve'' of Table~\ref{i.m.states}, we fitted a function of the form $(an)^n$ to the measured four data points. These data points consist of the sizes of the four Michel automata (3, 4, 5, and 6) as the $x$-values ad the corresponding complement sizes as the $y$-values. The fitted function $(an)^n$ can be seen as an ``averaged'' state growth of these four automata ($n$ is the size of the input automaton). The last column ``Std. error'' contains the standard error that resulted from the fit.
 
 We can see in Table~\ref{i.m.states} that the state growths are indeed very large. For example, complementing Michel~4, which has six states, with the plain Fribourg construction results in a complement of 287,907 states. However, the optimisations R2C, M1, and M2 have a large influence on the complement sizes. If we consider Michel~4, then the R2C optimisation alone reduces the complement size from 287,907 to 168,291 which is a reduction of 51.5\%. The M1 optimisation has an eve larger influence as it reduces the complement size from 287,907 to 81,765 which is a reduction of 71.6\%. Adding M2 to M1 further reduces the complement size of Fribourg+M1 by 30.1\% (from 81,765 to 57,116). Finally, adding R2C on top of M1 and M2 brings a further reduction of of 23\% (from 57,116 to 43,957). If we compare the most efficient version (Fribourg+M1+M2+R2C) with the least efficient one (Fribourg), then the complement size of the former version is only 15.3\% of the complement size of the latter version.
 

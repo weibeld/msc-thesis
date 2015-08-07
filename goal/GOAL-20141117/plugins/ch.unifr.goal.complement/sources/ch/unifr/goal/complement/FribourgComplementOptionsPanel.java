@@ -47,16 +47,19 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
     Box vBox = createYBox();
     Box hBox = createXBox();
 
-    
+    // Option: rightmost colour 2 pruning if input automaton is complete (-r2ifc)
+    r2ifcCheckBox = new JCheckBox("Apply R2C optimisation (remove states with 2-coloured rightmost component)");
+    r2ifcCheckBox.setSelected(FribourgOptions.getR2ifcPref());
+    vBox.add(hBox.add(r2ifcCheckBox));
 
     // Option: component merging optimisation (-m)
-    mCheckBox = new JCheckBox("Apply component merging optimisation (-m1)");
+    mCheckBox = new JCheckBox("Apply M1 optimisation (merging of adjacent components)");
     mCheckBox.setSelected(FribourgOptions.getMPref());
     vBox.add(hBox.add(mCheckBox));
 
     // Option: colour 2 reduction optimisation (-m2). Can only be selected if
     // the -m option is also selected.
-    m2CheckBox = new JCheckBox("Apply colour 2 component reduction optimisation (-m2)");
+    m2CheckBox = new JCheckBox("Apply M2 optimisation (single 2-coloured component)");
     // If merge optimisation is on, initialise checkbox normally
     if (mCheckBox.isSelected()) m2CheckBox.setSelected(FribourgOptions.getM2Pref());
     // Else, set checkbox unchecked (default) and non-editable
@@ -74,33 +77,28 @@ public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions
       }
     });
 
-    // Option: rightmost colour 2 pruning if input automaton is complete (-r2ifc)
-    r2ifcCheckBox = new JCheckBox("If input automaton is complete, apply rightmost colour 2 optimisation (-r2c)");
-    r2ifcCheckBox.setSelected(FribourgOptions.getR2ifcPref());
-    vBox.add(hBox.add(r2ifcCheckBox));
-
     // Option: make input automaton complete (-c)
-    cCheckBox = new JCheckBox("Make input automaton complete if it is incomplete (-c)");
+    cCheckBox = new JCheckBox("Make input automaton complete");
     cCheckBox.setSelected(FribourgOptions.getCPref());
     vBox.add(hBox.add(cCheckBox));
 
     // Option: maximise the accepting states of the input automaton
-    maccCheckBox = new JCheckBox("Maximise the accepting set of the input automaton (-macc)");
+    maccCheckBox = new JCheckBox("Maximise accepting set of input automaton");
     maccCheckBox.setSelected(FribourgOptions.getMaccPref());
     vBox.add(hBox.add(maccCheckBox));
 
     // Option: prune unreachable and dead states from the output automaton
-    rCheckBox = new JCheckBox("Remove unreachable and dead states from the output automaton (-r)");
+    rCheckBox = new JCheckBox("Remove unreachable and dead states from output automaton");
     rCheckBox.setSelected(FribourgOptions.getRPref());
     vBox.add(hBox.add(rCheckBox));
 
     // Option: prune unreachable and dead states from the input automaton
-    rrCheckBox = new JCheckBox("Remove unreachable and dead states from the input automaton (-rr)");
+    rrCheckBox = new JCheckBox("Remove unreachable and dead states from input automaton");
     rrCheckBox.setSelected(FribourgOptions.getRRPref());
     vBox.add(hBox.add(rrCheckBox));
 
     // Option: use the bracket notation
-    bCheckBox = new JCheckBox("Use the \"bracket notation\" for labelling states (-b)");
+    bCheckBox = new JCheckBox("Use the \"bracket notation\" for state labels");
     bCheckBox.setSelected(FribourgOptions.getBPref());
     vBox.add(hBox.add(bCheckBox));
 

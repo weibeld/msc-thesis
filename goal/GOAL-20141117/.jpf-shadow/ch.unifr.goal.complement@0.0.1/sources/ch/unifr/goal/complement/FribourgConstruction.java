@@ -99,7 +99,7 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
      *   - Maximise the accepting state set (if -macc is set)
      *========================================================================*/
     preprocessing = true;
-    stage("Stage 0: Preprocessing input automaton");
+    stage("Stage 1: Pre-process input automaton");
     boolean somethingToPreprocess = false;
 
     // Convert alphabet to classical
@@ -135,16 +135,17 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
     if (options.isC()) {
       if (!isComplete(in)) {
         OmegaUtil.makeTransitionComplete(in);
-        step("Making input automaton complete (-c option).");
+        step("Making input automaton complete.");
       }
-      else step("Input automaton is already complete (-c option).");
+      else step("Input automaton is already complete.");
       somethingToPreprocess = true;
     }
 
     // Inform user whether the -r2ifc option has an effect or not
     if (options.isR2ifc()) {
-      if (isComplete(in)) step("Input automaton is complete. Can apply -r2ifc optimisation.");
-      else step("Input automaton is not complete. Cannot apply -r2ifc optimisation.");
+      if (isComplete(in)) step("Input automaton is complete. Can remove states whose rightmost component has colour 2.");
+      else step("Input automaton is not complete. Cannot remove states whose rightmost component has colour 2.");
+      somethingToPreprocess = true;
     }
 
     // Maximise the accepting set of the input automaton, that is, making as
@@ -159,7 +160,7 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
     }
 
     // If no preprocessing was done
-    if (!somethingToPreprocess) step("Nothing to preprocess.");
+    if (!somethingToPreprocess) step("Nothing to pre-process.");
     preprocessing = false;
 
     // Information possibly affected by preprocessing
@@ -179,7 +180,7 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
     for (int i = 1; i <= 2; i++) {
       // Adding the initial state
       if (i == 1) {
-        stage("Stage 1: Constructing upper part of output automaton");
+        stage("Stage 2: Construct upper part of output automaton");
         STState outInitState = new STState(id++);
         outInitState.addComponent(outInitState.new Component(in.getInitialState(), -1));
         outInitState.makeLabel(options.isB());
@@ -190,7 +191,7 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
       }
       // Stage 2: process all states in the intermediate automaton again
       else if (i == 2) {
-        stage("Stage 2: Constructing lower part of output automaton");
+        stage("Stage 3: Construct lower part of output automaton");
         pendingStates = new StateSet(out.getStates());
       }
       
@@ -366,7 +367,7 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
      *   - Remove unreachable and dead states (if -r is set)
      *   - Convert alphabet back to propositional (if it was propositional)
      *========================================================================*/
-    stage("Stage 3: Postprocessing output automaton");
+    stage("Stage 4: Post-process output automaton");
     boolean somethingToPostprocess = false;
 
     // If the -r option is set, remove unreachable and dead states
@@ -391,10 +392,10 @@ public class FribourgConstruction extends AbstractComplementConstruction<FSA, FS
     }
 
     // If no postprocessing was done
-    if (!somethingToPostprocess) step("Nothing to postprocess.");
+    if (!somethingToPostprocess) step("Nothing to post-process.");
 
     // Finished!
-    stage("Fribourg Construction finished \\(^_^)/");
+    stage("Fribourg construction finished \\(^_^)/");
     return out;
   } // End of construction
 

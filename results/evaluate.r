@@ -89,7 +89,10 @@ IntGoal <- function() {
   file <- paste0(dir, "/t.stats.tex")
   stats <- Stats(i.g, dat="cpu_time", total=TRUE, total.hours=TRUE)
   format <- c("", "f", "f", "f", "f", "f", "f", "f", "d")
-  LatexTable(stats, format=format, digits=1, file=file)
+  align  <- c("rLrrrrrrRr")
+  options(warn=-1)  # Disable warnings (because of custom column type 'R', 'L')
+  LatexTable(stats, format=format, align=align, digits=1, file=file)
+  options(warn=0)  # Re-enable warnings
 
   # Strip chart of states (including decimation to make PDF lighter)
   file <- paste0(dir, "/s.stripchart.pdf")
@@ -151,22 +154,28 @@ ExtGoal <- function() {
   df <- Stats(e.g.with_rank)
   LatexTable(df, format=c("", "f", "d", "f", "f", "f", "d"), file=file)
 
-  # Table with statistics of times (with Rank -> 7,204 effective samples)
-  file <- paste0(dir, "/t.stats.with_rank.tex")
-  stats <- Stats(e.g.with_rank, dat="cpu_time", total=TRUE, total.hours=TRUE)
-  format <- c("", "f", "f", "f", "f", "f", "f", "f", "d")
-  LatexTable(stats, format=format, digits=1, file=file)
-
   # Table with statistics of states (without Rank -> 10,998 effective samples)
   file <- paste0(dir, "/s.stats.tex")
   df <- Stats(e.g)
   LatexTable(df, format=c("", "f", "d", "f", "f", "f", "d"), file=file)
 
+  # Table with statistics of times (with Rank -> 7,204 effective samples)
+  file <- paste0(dir, "/t.stats.with_rank.tex")
+  stats <- Stats(e.g.with_rank, dat="cpu_time", total=TRUE, total.hours=TRUE)
+  format <- c("", "f", "f", "f", "f", "f", "f", "f", "d")
+  align  <- c("rLrrrrrrRr")
+  options(warn=-1)  # Disable warnings (because of custom column type 'R', 'L')
+  LatexTable(stats, format=format, align=align, digits=1, file=file)
+  options(warn=0)  # Re-enable warnings
+
   # Table with statistics of times (without Rank -> 10,998 effective samples)
   file <- paste0(dir, "/t.stats.tex")
   stats <- Stats(e.g, dat="cpu_time", total=TRUE, total.hours=TRUE)
   format <- c("", "f", "f", "f", "f", "f", "f", "f", "d")
-  LatexTable(stats, format=format, file=file, digits=1)
+  align  <- c("rLrrrrrrRr")
+  options(warn=-1)  # Disable warnings (because of custom column types 'R', 'L')
+  LatexTable(stats, format=format, align=align, file=file, digits=1)
+  options(warn=0)  # Re-enable warnings
 
   # Stripchart of complement sizes (with Rank -> 7,204 effective samples)
   file <- paste0(dir, "/s.stripchart.with_rank.pdf")

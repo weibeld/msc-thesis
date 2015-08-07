@@ -43,8 +43,8 @@ public class CompleteCommand extends CommandExpression {
     Object o = aut.eval(ctx);
     // o might be filename, XML string, etc., transform it to FSA object
     FSA a = CmdUtil.castOrLoadFSA(o);
-    if (isComplete(a)) return "true";
-    else               return "false";
+    if (isComplete(a)) return "true\n";
+    else               return "false\n";
   }
 
 

@@ -51,6 +51,6 @@ public class FribourgComplementAction extends AbstractComplementAction<FribourgC
 
   @Override // Abstract method of WindowAction
   public String getToolTip() {
-    return "The ground-breaking Büchi complementation algorithm using a subset-tuple construction.";
+    return "Slice-based complementation construction developed at the University of Fribourg, Switzerland.";
   }
 }

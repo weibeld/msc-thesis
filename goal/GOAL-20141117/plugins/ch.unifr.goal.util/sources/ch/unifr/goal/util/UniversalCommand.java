@@ -48,8 +48,8 @@ public class UniversalCommand extends CommandExpression {
   public Object eval(Context ctx) throws EvaluationException {
     FSA complement = (FSA) complCmd.eval(ctx);
     Emptiness.Result emptResult = Emptiness.isEmpty(complement);
-    if (emptResult.isEmpty()) return "true";
-    else                      return "false";
+    if (emptResult.isEmpty()) return "true\n";
+    else                      return "false\n";
   }
 
 }

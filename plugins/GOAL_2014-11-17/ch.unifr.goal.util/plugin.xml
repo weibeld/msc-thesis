@@ -1,39 +1,38 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 
-<!--
-  Miscellaneous useful commands. Currently, they are only accessible from the
-  command line, but a interface in the GUI could be added in future work.
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- Plugin adding 'complete' and 'universal' commands to the command line   -->
+<!-- inteface of GOAL                                                        -->
+<!--                                                                         -->
+<!-- complete:  test if an automaton is complete                             -->
+<!-- universal: test if an automaton is universal                            -->
+<!--                                                                         -->
+<!-- Note: requires GOAL version 2014-11-17 or later                         -->
+<!--                                                                         -->
+<!-- Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch>          -->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-  Requires GOAL version 2014-11-17 or later.
-
-  Daniel Weibel <daniel.weibel@unifr.ch> Dec. 2014 - May 2015
--->
-
-<plugin id="ch.unifr.goal.util" version="0.0.1">
+<plugin id="ch.unifr.goal.util" version="2015.08.07"
+        vendor="University of Fribourg, Switzerland (Daniel Weibel [daniel.weibel@unifr.ch])">
   
-  <!-- Other plugins whose code is accessed by this plugin-->
+  <!-- Plugins whose code is accessed by this plugin -->
   <requires>
     <import plugin-id="org.svvrl.goal.core" />
     <import plugin-id="org.svvrl.goal.cmd" />
   </requires>
 
-
-  <!-- Declare plugin's code -->
+  <!-- This plugin's code -->
   <runtime>
     <library id="ch.unifr.goal.util" path="classes/" type="code">
       <!-- <export prefix="*" /> --> <!-- If other plugins need to access this plugins's code -->
     </library>
   </runtime>
 
-
- <!-- EXTENSIONS -->
-
-  <!--
-    Complete: test an automaton for completeness
-  -->
-
-  <!-- Command line command -->
+  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <!-- Extensions                                                            -->
+  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <!-- Add 'complete' command to command line interface -->
   <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="CompleteCommand">
     <parameter id="class" value="ch.unifr.goal.util.CompleteCommand"/>
     <parameter id="name"  value="complete"/>
@@ -49,23 +48,16 @@
 <dt>DESCRIPTION</dt>
   <dd>Write "true" to stdout if the input automaton is complete, and "false"
   otherwise. An automaton is complete if every state has at least one outgoing
-  transition for every symbol of the alphabet.
-
-  *** EXISTS CURRENTLY ONLY FOR COMMAND LINE ***</dd>
+  transition for every symbol of the alphabet.</dd>
 
 <dt>EXAMPLE</dt>
-  <dd><pre>complete aut.gff</pre></dd>
+  <dd><pre>complete in.gff</pre></dd>
 </dl> ]]>
       </value>
     </parameter>
   </extension>
 
-
-  <!--
-    Universal: test if the language of an automaton is universal
-  -->
-
-  <!-- Command line command -->
+  <!-- Add 'universal' command to command line interface -->
   <extension plugin-id="org.svvrl.goal.cmd" point-id="CommandExpression" id="UniversalCommand">
     <parameter id="class" value="ch.unifr.goal.util.UniversalCommand"/>
     <parameter id="name"  value="universal"/>
@@ -80,22 +72,16 @@
             FILE_OR_LVAL</dd>
 
 <dt>DESCRIPTION</dt>
-  <dd>Write "true" to stdout if the language of the input automaton is universal,
-  and "false" otherwise. A language over alphabet S is universal if it contains
-  all possible words over S (S star).
-
-  The test is done by complementing the input automaton and testing if the
-  complement is empty.
-
-  By default, the current default complementation construction is used, but the
-  user can choose another one with the -m option.
-
-  *** EXISTS CURRENTLY ONLY FOR COMMAND LINE ***</dd>
+  <dd>Write "true" to stdout if the automaton is universal. An automaton is
+  universal if it accepts all possible words. The test is done by complementing
+  the automaton and testing if the complement is empty. By default, the current
+  default complementation construction is used, but a different construction
+  can be specified with the -m option.</dd>
 
 <dt>EXAMPLE</dt>
-  <dd><pre>universal a.gff</pre></dd>
-  <dd><pre>universal -m slice a.gff</pre></dd>
-  <dd><pre>universal -m slice -p -ro -madj a.gff</pre></dd>
+  <dd><pre>universal in.gff</pre></dd>
+  <dd><pre>universal -m slice in.gff</pre></dd>
+  <dd><pre>universal -m slice -p -ro -madj in.gff</pre></dd>
 </dl> ]]>
       </value>
     </parameter>
