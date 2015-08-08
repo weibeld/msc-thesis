@@ -97,7 +97,7 @@ One of the extension points of \goal{} is called \textsf{ComplementConstruction}
 
 It is thanks to this open architecture of \goal{} that welcomes extension that we were able to seamlessly add the Fribourg construction to this tool. In particular, we created a \goal-plugin that contains the implementation of the Fribourg construction. We present this plugin below.
 
-\subsubsection{The Fribourg Construction Plugin and Its Options}
+\subsubsection{The Fribourg Construction Plugin}
 The name of our plugin containing our implementation of the Fribourg construction is \textsf{ch.unifr.goal.complement}\footnote{By convention, JPF plugins are named after the corresponding Java package.}. The plugin is freely available and can be installed by any \goal{} user. The installation in \goal{} is very easy. We give instructions on how to obtain, install, and use the plugin in Appendix~\ref{app_plugin}.
 
 We aimed at fully integrating the Fribourg construction in \goal. The current version of the plugin includes menu integration of the Fribourg construction, the pertinent saving of option defaults, and a step-by-step execution facility for the Fribourg construction. This last point is a great way for learning how the Fribourg construction works.
@@ -350,37 +350,76 @@ The rationale behind the selection of these versions is basically the same as fo
 
 
 \subsection{External Tests}
-The constructions used for the external tests consist of the most performant version of the Fribourg construction for each test set, and a fixed set of other complementation constructions that are implemented in \goal.
+In the external tests, we compare the results of the best version of the Fribourg construction on each test set, with the results of a set of other complementation constructions that are implemented in \goal. As already mentioned, the best versions of the Fribourg constructions on the two test sets turn out to be the following:
 
-Regarding the other complementation constructions, we could theoretically include all the constructions listed in Table~\ref{goal_constrcutions}. However, practical reasons prevent us from doing so. In preliminary tests we observed that most of these constructions are not efficient enough on the \goal{} test set for our purposes. In simple terms, they take too long and use too much memory. Using these constructions would require higher time and computing resources that we can allocate. According to our tests, this excludes all but  Piterman, Slice, Rank, and Safra from being reasonably used. A similar experience has been made by Tsai~et~al. in their own empirical study~\cite{2011_tsai}. They observed that the Ramsey construction could not complement \textit{any} of the 11,000 automata in the \goal{} test set within the time limit of 10 minutes and memory limit of 1 GB.
+\begin{itemize}
+\item Fribourg+M1+R2C \tabto{4.2cm} for the \goal{} test set
+\item Fribourg+M1+M2+R2C \tabto{4.2cm} for the Michel test set
+\end{itemize}
 
-Considering these restrictions, we decided to include only Piterman, Slice, and Rank in our external tests. These constructions furthermore represent three of the four main complementation approaches, namely the determinisation-based, rank-based, and slice-based approach. The fourth approach would be Ramsey-based, however, as mentioned the implementation of the Ramsey-based construction by Sistla et al.~\cite{1985_sistla} in \goal{} is not efficient enough for our study. It would have been possible to also include Safra. However, as we include Piterman, which is in fact an improvement of Safra (see Section~\ref{2_determinisation-based}, we decided that it is not necessary to additionally include Safra. 
+Regarding which other complementation constructions to use, we principially could use all the constructions listed in Table~\ref{goal_constructions}. However, in preliminary tests we observed that most of these constructions are not performant enough to be reasonably used with the \goal{} test set. Using them would require to allocate very high time and memory resources. Tsai et al.~\cite{2011_tsai} made a similar experience with these constructions in \goal when they observed that Ramsey could not complete any of the 11,000 complementation tasks in the \goal{} test set within the time limit of 10 minutes and a memory limit of 1 GB. 
 
-For Slice, we actually use the construction that is indicated as Slice+P in Table~\ref{goal_constructions}. Slice+P is the construction by Vardi and Wilke~\cite{vardi2007automata}, whereas Slice is the consruction by Kähler and Wilke~\cite{2008_kaehler}. Since the construction by Vardi and Wilke is more efficient than the construction by Kähler and Wilke (see Section~\ref{2_slice-based}), we decided to use Vardi and Wilke's construction, that is Slice+P. Note that in the following, we will nevertheless refer to this construction as Slice, however, we mean by this at any point Vardi and Wilke's construction~\cite{vardi2007automata}.
+ % According to our tests, this excludes all but  Piterman, Slice, Rank, and Safra from being reasonably used. A similar experience has been made by Tsai~et~al. in their own empirical study~\cite{2011_tsai}. They observed that the Ramsey construction could not complement \textit{any} of the 11,000 automata in the \goal{} test set within the time limit of 10 minutes and memory limit of 1 GB.
 
-Piterman, Rank, and Slice also have a set of selectable optimisations in \goal{} (some of these optimisations have been proposed by Tsai et al.~\cite{2011_tsai}). We decided to include the set of optimisations for each of the three constructions that is activated by default in \goal, except the MACC and R optimisations. The reason to exclude MACC and R is that they are not part of the actual construction, but rather just modify the input automaton before the construction starts, or the output automaton after the construction ends, respectively. By otherwise using the default optimisations, we are likely to use the most optimal versions of these constructions. This makes the comparison with the Fribourg construction fair, because for the Fribourg construction we also choose the most optimal version for the external tests.
+There are three constructions that are performant enough to be used with the \goal{} test set for our purposes, namely Piterman, Slice, and Rank. For this reason, we only include these three constructions in the external tests\footnote{Actually, Safra would also be performant enough, but since we can use Piterman, which is an improvement of Safra, we chose to not include Safra.}. Interestingly, these constructions represent three of the four main complementation approaches, namely the determinisation-based (Piterman), the rank-based (Rank), and the slice-based (Slice) approach. In detail we use the following constructions for the external tests:
 
-Note that for Piterman, we also exclude the SIM optimisation, even though it is set by default in \goal. This is because the SIM optimisation of Piterman simplifies the complement DPW of the construction. This can be seen as a similar optimisation as the R option, and thus, we do not want to include it in our tests.
-
-Using the optimisations for Piterman, Slice, and Rank according to these rules, we obtain the precise versions Piterman+EQ+RO, Slice+P+RO+MADJ+EG, and Rank+TR+RO. Regarding the Fribourg construction, we use the best versions for each of the two test sets. As we will see in Chapter~\ref{chap_results}, these are Fribourg+M1+R2C for the \goal{} test set, and Fribourg+M1+M2+R2C for the Michel test set.
-
-Consequently, for the \goal{} test set, the tested constructions are:
-
-\begin{enumerate}
+\begin{itemize}
 \item Piterman+EQ+RO
 \item Slice+P+RO+MADJ+EG
 \item Rank+TR+RO
-\item Fribourg+M1+R2C
-\end{enumerate}
+\end{itemize}
 
-For the Michel test set, on the other hand, the tested constructions are:
+Note that regarding the options, we include those options for each construction which are set as default in their implementation, except the MACC (maximise accepting set of input automaton) and R (remove unreachable and dead states of output automaton) options, because they are not part of the constructions, but rather pre-processing and post-processing steps\footnote{For Piterman, we also exclude the SIM option, which is set by default. This is because it simplifies the intermediate complement parity automaton, which can be seen as a post-processing step.}. Some of the used options are described by Tsai et al. in~\cite{2011_tsai}, in which case we indicate it below.
 
-\begin{enumerate}
-\item Piterman+EQ+RO
-\item Slice+P+RO+MADJ+EG
-\item Rank+TR+RO
-\item Fribourg+M1+M2+R2C
-\end{enumerate}
+Piterman+EQ+RO is the determinisation-based construction by Piterman~\cite{2006_piterman,2007_piterman} with the EQ and RO options of its implementation in \goal. These options are described in \goal{} as follows:
+\begin{itemize}
+\item EQ: merge equivalent states during the conversion of the complement parity automaton to the complement Büchi automaton (described in~\cite{2011_tsai})
+\item RO: reduce transitions in the conversion from the complement parity automaton to the complement Büchi automaton
+\end{itemize}
+
+Slice+P+RO+MADJ+EG is the construction by Vardi and Wilke~\cite{vardi2007automata} with the RO, MADJ, and EG options (note that the P option causes the usage the construction by Vardi and Wilke~\cite{vardi2007automata}, as opposed to the construction by Kähler and Wilke~\cite{2008_kaehler}, which is used without the P option). The options have the following meaning:
+\begin{itemize}
+\item RO: reduce the out-degree of states
+\item MADJ: merge adjacent 0-components or $*$-components (described in~\cite{2011_tsai})
+\item EG: use enhanced guessing (described in~\cite{2011_tsai})
+\end{itemize}
+
+Rank+TR+RO is the rank-based construction by Schewe~\cite{schewe2009buchi} with the TR and RO options. The meaning of these options is as follows:
+\begin{itemize}
+\item TR: use tight rankings
+\item RO: reduce the out-degree of states
+\end{itemize}
+
+Note that in Chapter~\ref{chap_results}, we refer to these three construction as Piterman, Slice, and Rank, for short. However, what we actually mean are the three precise versions as described above.
+
+
+% Considering these restrictions, we decided to include only Piterman, Slice, and Rank in our external tests. These constructions furthermore represent three of the four main complementation approaches, namely the determinisation-based, rank-based, and slice-based approach. The fourth approach would be Ramsey-based, however, as mentioned the implementation of the Ramsey-based construction by Sistla et al.~\cite{1985_sistla} in \goal{} is not efficient enough for our study. It would have been possible to also include Safra. However, as we include Piterman, which is in fact an improvement of Safra (see Section~\ref{2_determinisation-based}, we decided that it is not necessary to additionally include Safra. 
+
+% For Slice, we actually use the construction that is indicated as Slice+P in Table~\ref{goal_constructions}. Slice+P is the construction by Vardi and Wilke~\cite{vardi2007automata}, whereas Slice is the consruction by Kähler and Wilke~\cite{2008_kaehler}. Since the construction by Vardi and Wilke is more efficient than the construction by Kähler and Wilke (see Section~\ref{2_slice-based}), we decided to use Vardi and Wilke's construction, that is Slice+P. Note that in the following, we will nevertheless refer to this construction as Slice, however, we mean by this at any point Vardi and Wilke's construction~\cite{vardi2007automata}.
+
+% Piterman, Rank, and Slice also have a set of selectable optimisations in \goal{} (some of these optimisations have been proposed by Tsai et al.~\cite{2011_tsai}). We decided to include the set of optimisations for each of the three constructions that is activated by default in \goal, except the MACC and R optimisations. The reason to exclude MACC and R is that they are not part of the actual construction, but rather just modify the input automaton before the construction starts, or the output automaton after the construction ends, respectively. By otherwise using the default optimisations, we are likely to use the most optimal versions of these constructions. This makes the comparison with the Fribourg construction fair, because for the Fribourg construction we also choose the most optimal version for the external tests.
+
+% Note that for Piterman, we also exclude the SIM optimisation, even though it is set by default in \goal. This is because the SIM optimisation of Piterman simplifies the complement DPW of the construction. This can be seen as a similar optimisation as the R option, and thus, we do not want to include it in our tests.
+
+% Using the optimisations for Piterman, Slice, and Rank according to these rules, we obtain the precise versions Piterman+EQ+RO, Slice+P+RO+MADJ+EG, and Rank+TR+RO. Regarding the Fribourg construction, we use the best versions for each of the two test sets. As we will see in Chapter~\ref{chap_results}, these are Fribourg+M1+R2C for the \goal{} test set, and Fribourg+M1+M2+R2C for the Michel test set.
+
+% Consequently, for the \goal{} test set, the tested constructions are:
+
+% \begin{enumerate}
+% \item Piterman+EQ+RO
+% \item Slice+P+RO+MADJ+EG
+% \item Rank+TR+RO
+% \item Fribourg+M1+R2C
+% \end{enumerate}
+
+% For the Michel test set, on the other hand, the tested constructions are:
+
+% \begin{enumerate}
+% \item Piterman+EQ+RO
+% \item Slice+P+RO+MADJ+EG
+% \item Rank+TR+RO
+% \item Fribourg+M1+M2+R2C
+% \end{enumerate}
 
 
 % Justification to use only Piterman, Slice, and Rank
@@ -391,9 +430,13 @@ For the Michel test set, on the other hand, the tested constructions are:
 
 \subsection{Time and Memory Limits}
 \label{4_limits}
-We imposed a time and memory limit on every complementation task of the \goal{} test set. For the Michel test set, we did not set any limits, because it consists of a much smaller number of tasks. These limits are based on the limits that have been used by Tsai et al.~\cite{2011_tsai}. Our time limit is 600 seconds CPU time, and our memory limit corresponds to 1 GB Java heap. If a complementation taks is not finished after 600 seconds CPU time, or requires more than 1 GB heap memory, then the tasks aborted.
+Similarly to Tsai et al.~\cite{2011_tsai}, we set a time and  a memory limit for each complementation task of the \goal{} test set. The time limit is 600 seconds (10 minutes) CPU time, and the memory limit is 1 GB for the Java heap memory. These limits roughly conincide with the limits in~\cite{2011_tsai}, which are also 10 minutes and 1 GB, however, it is not specified whether the 10 minutes are CPU time or real time, and whether 1 GB applies to the process' entire memory, or to a portion of it, like the Java heap. Complementation tasks that exceed the time or memory limit are aborted, and consequently do not deliver any results.
 
-The reasons for these limits are our limited computing and time resources. Clearly, the ideal case would be to let every complementation task run to completion, no matter how long it takes and how much memory it uses. However, because of the high complementation complexity that Büchi automata may have, some few extreme cases may cause our available resources to be exceeded\footnote{As we will see in Chapter~\ref{chap_results}, the distribution of the complexity of the tested Büchi automata is extremely right-skewed, that is, most are easy, and very few are hard.}. The study is for example ultimately limited by the physically available memory on the nodes, and the maximum running time of a job permitted by the cluster mangement software . Wit these limits we can thus cut off such extreme cases and keep the required resources for the study in affordable bounds.
+Note that these limits apply only to the \goal{} test set. For the Michel test set, we do not set any limits, because in this case there are only four automata, and we want each of them to be completed.
+
+% We imposed a time and memory limit on every complementation task of the \goal{} test set. For the Michel test set, we did not set any limits, because it consists of a much smaller number of tasks. These limits are based on the limits that have been used by Tsai et al.~\cite{2011_tsai}. Our time limit is 600 seconds CPU time, and our memory limit corresponds to 1 GB Java heap. If a complementation taks is not finished after 600 seconds CPU time, or requires more than 1 GB heap memory, then the tasks aborted.
+
+The reasons for these limits are restricted computing and time resources. Clearly, the ideal case would be to let every complementation task run to completion, no matter how long it takes and how much memory it uses. However, because of the high complementation complexity that Büchi automata may have, some few extreme cases may cause our available resources to be exceeded\footnote{As we will see in Chapter~\ref{chap_results}, the distribution of the complexity of the tested Büchi automata is extremely right-skewed, that is, most are easy, and very few are hard.}. The study is for example ultimately limited by the physically available memory on the nodes, and the maximum running time of a job permitted by the cluster mangement software. Wit these limits we can thus cut off such extreme cases and keep the required resources for the study in affordable bounds.
 
 We implemented the time limit by the means of the \textsf{ulimit} Bash builtin, which allows to set a maximum running times for processes. Processes that reach this time limit are aborted by the operating system.
 

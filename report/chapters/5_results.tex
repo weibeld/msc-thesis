@@ -78,11 +78,11 @@ The stripchart in Figure~\ref{i.g.stripchart} gives a good first impression abou
 
 As can be seen in Table~\ref{i.g.stats}, the mean is for all constructions significantly higher than the median. This is typical for right-skewed distributions. Generally, the median is said to be more robust than the mean, because it is not affected by extreme values. For example, for the distribution $(1,2,3,4,5)$ the mean and the median are both 3. If this distribution happens to contain an extreme value, for example, $(1,2,3,4,1000)$, then the mean is increased to 202, while the median is still 3. Thus, the median better represents the ``typical'' values of a distribution, whereas the mean better reflects the effect of extreme values. Both aspects may be important for the analysis of the data at hand. For our own analyses, we will mainly focus on the median, because we are more interested in the ``typical'' behaviour of the tested constructions. However, we will always put the median in relation with the mean and the the other statistical indicators in Table~\ref{i.g.stats}.
 
-The medians in Table~\ref{i.g.stats} include provide interesting insights. Regarding Fribourg and Fribourg+R2C, there is a decrease of the median complement size from 761 to 689. This is expectable because the R2C removes certain states from the complements of the complete input automata (although the complete input automata make up only 9\% of all automata).
+The medians in Table~\ref{i.g.stats} include provide interesting insights. Fribourg has a median complement size of 761. This means that half of all the complements produced by Fribourg have 761 or fewer states, and the other half has more than 761 states. For Fribourg+R2C, the median decreases from 761 to 689. This is because the R2C optimisation removes states, whose rightmost component has colour 2, from the output automata. However, this applies only to the input automata which are complete, and as we determined in Section~\ref{4_gal_test_set}, these are only 9\% of the \goal{} test set. Considering this, the R2C optimsiation seems to be very effective in reducing complement sizes.
 
-Regarding Fribourg+R2C+C the median complement size drops significantly to 451. This is surprising insofar as Fribourg+R2C+C has the highest mean of all versions, and in the stripchart in Figure~\ref{i.g.stripchart}, it has the longest tail. Thus at first glance, Fribourg+R2C+C might look like the worst version. However, regarding the median, and also the 25th percentile, Fribourg+R2C+C belongs actually to the best versions. On the other hand, regarding the 75th percentile and the maximum, Fribourg+R2C+C has the highest of all values. A possible explanation for this is that the R2C+C option combination makes small complements smaller and large complements larger. We will further elaborate on this phenomenon when we analyse the complement sizes for each of the transition density/acceptance density classes below. 
+Regarding Fribourg+R2C+C the median complement size drops significantly to 451. This is surprising insofar as Fribourg+R2C+C has the highest mean of all versions, and in the stripchart in Figure~\ref{i.g.stripchart}, it has the longest tail. Thus at first glance, Fribourg+R2C+C might look like the version with the worst performance. However, regarding the median (as well as the 25th percentile) Fribourg+R2C+C belongs actually to the best versions. On the other hand, regarding the 75th percentile and the maximum, Fribourg+R2C+C has actually the highest values. A possible explanation for this is that the R2C+C option combination makes easy complementation tasks easier and hard complementation tasks harder. We will further elaborate on this point when analysing the median complement sizes separately for all the transition density/acceptance density classes. 
 
-Regarding Fribourg+M1 and Fribourg+M1+M2, the median of the former is lower than the median of the latter (482 against 496). The same applies to the 25th and 75th percentile. This means that the application of the M1 optimisation alone results in smaller complements than the application of the M1 and M2 optimsiations together. At first sight this is surprising, because Fribourg+M1+M2 has a lower worst-case complexity than Fribourg+M1 (see Section~\ref{3_optimisations}). However, as we already hinted at in Section~\ref{1_empirical} in the introductory chapter, a lower worst-case state complexity does not mean smaller complements in concrete cases. With the results of Fribourg+M1 and Fribourg+M1+M2 we have an empirical evidence for this claim. Note that the mean of Fribourg+M1+M2 is slightly lower than the mean of Fribourg+M1, which might result from the cases where Fribourg+M1 produces larger complements than Fribourg+M1+M2. However, regarding the median, 25t percentile, and 75th percentile values, we still see Fribourg+M1 as the more performant version for the \goal{} test set, as we have indicated in Section~\ref{4_internal}.
+Regarding Fribourg+M1 and Fribourg+M1+M2, the median of Fribourg is lower than the median of the latter (482 against 496). The same applies to the 25th and 75th percentile. This means that the application of the M1 optimisation alone results in smaller complements than the application of the M1 and M2 optimsiations together. At first sight this is surprising, because Fribourg+M1+M2 has a lower worst-case complexity than Fribourg+M1 (see Section~\ref{3_optimisations}). However, as we already hinted at in Section~\ref{1_empirical} in the introductory chapter, a lower worst-case state complexity does not mean smaller complements in concrete cases. With the results of Fribourg+M1 and Fribourg+M1+M2 we have an empirical evidence for this claim. Note that the mean of Fribourg+M1+M2 is slightly lower than the mean of Fribourg+M1, which might result from the cases where Fribourg+M1 produces larger complements than Fribourg+M1+M2. However, regarding the median, 25t percentile, and 75th percentile values, we still see Fribourg+M1 as the more performant version for the \goal{} test set, as we have indicated in Section~\ref{4_internal}.
 
 Fribourg+M1+R2C decreases the median of Fribourg+M1 from 482 to 447. Also the 25th and 75th percentile are decreased. This results from the removal of states that the R2C option allows for the 9\% of complete automata in the \goal{} test set.
 
@@ -140,7 +140,7 @@ Comparing the height of the mountains in the perspective plots with the overall 
 
 % Considering these median complement sizes in the perspective plots, apparently the automata of, for example, the class with a transition density of 1.6 and an acceptance density of 0.3 result in much larger complements than the automata of, for example, the class with a transition density of 3.0 and an acceptance density of 1.0. We could say that the automata of the first class are harder than the automata of the second class. Later in this section, we will try to identify hard, medium, and easy classes. For now, we will however focus on the relative differences between the different versions of the Fribourg construction.
 
-Note that in the following, we will refer to specific points in the perspective plots in the form of coordinats $(t,a)$, where $t$ stands for the transition density, and $a$ for the acceptance density. For example, $(1.6,0.3)$ denotes the point at a transition density of 1.6 and an acceptance density of 0.3.
+Note that in the following, we will refer to specific points in the perspective plots as coordinates of the form $(t,a)$, where $t$ stands for the transition density, and $a$ for the acceptance density. For example, $(1.6,0.3)$ means the point at a transition density of 1.6 and an acceptance density of 0.3.
 
 Let us now turn to the relative differences between the tested constructions. The plots of Fribourg and Fribourg+R2C in Figure~\ref{i.g.persp_1} (a) and (b) are rather similar. For both, the ridge has between 3,500 and 4,000 states with a peak of around 4,900 states at $(1.6, 0.3)$. In fact Fribourg+R2C only improves the performance on the complete input automata, compared to Fribourg. As we have analysed in Section~\ref{4_goal_testset}, the density of complete automata is highest in classes with high transition densities. By looking closely at the two plots, the values for the high transition density classes are indeed slightly lower for Fribourg+R2C than for Fribourg. Obviously, for classes that do not contain any complete automata, the values of the two constructions are identical.
 
@@ -216,9 +216,9 @@ Figure~\ref{i.g.difficulty}, shows a total of  53 easy, 36 medium, and 21 hard c
 
 It is interesting to see that the hard automata are those with a ``medium'' transition density between 1.4 and 1.8. This range of transition densities means that every state has on average 1.4 to 1.8 outgoing transitions for each symbol of the alphabet. Somehow this specific level of connectivity seems to make the complementation of an automaton very hard. If the connectivity is lower, complementation becomes easier, and if the connectivity is harder, complementation becomes easier as well. A reason that complementation becomes easier with a lower transition density might be that such automata may contain unreachable and disconnected state. We let further investigations on the influence of the transiton density on the complementation difficulty for future work.
 
-Figure~\ref{i.g.difficulty} also shows that automata with a larger number of accepting states are generally easier to complement. This proposition has been made by Tsai et al.~\cite{2011_tsai}, and it is the base of the MACC option of many complementation construction in \goal{} (see Section~\ref{4_goal}). Summarising, we can say that a transition density between 1.4 and 1.8 makes automata hard to complement, but that this difficulty is alleviated by an increasing acceptance density.
+Figure~\ref{i.g.difficulty} also shows that automata with a larger number of accepting states are generally easier to complement. This proposition has been made by Tsai et al.~\cite{2011_tsai}, and it is the base of the MACC option (maximising acceptance set) of many complementation construction in \goal{} (see Section~\ref{4_goal}). Summarising, we can say that a transition density between 1.4 and 1.8 makes automata hard to complement, but that this difficulty is alleviated by an increasing acceptance density.
 
-Note that these results are specific to the Fribourg construction, and cannot be readily generalised to other constructions. Furthermore the results are based exclusively on the \goal{} test set with its specific types of automata. However, as we will see in the results of the external tests in Section~\ref{5_external_goal}, other complementation constructions show a similar behaviour on the automata of the \goal{} test set.
+Note that these results are specific to the Fribourg construction, and cannot be readily generalised to other complementation constructions. Furthermore the results are based exclusively on the \goal{} test set with its specific types of automata. However, as we will see in the results of the external tests in Section~\ref{5_external_goal}, other complementation constructions show a similar behaviour on the automata of the \goal{} test set.
 
 % It is interesting that the extreme values of transition and acceptance densities result in easy automata. With a transition density of 1.0 and an alphabet size of 2, each of the 15 states has on average two outgoing and two incoming transitions. With a transition density of 3.0, each state has on average 6 outgoing and 6 incoming transitions. These low or high connectivity seems to considerably simplify the complementation task. The same applies to a high acceptance density of 1.0, which means that every state is an accepting state.
 
@@ -231,7 +231,7 @@ Note that these results are specific to the Fribourg construction, and cannot be
 
 \subsection{Michel Test Set}
 \label{5_internal_michel}
-The Michel test set consists of the four Michel automata Michel~1, Michel~2, Michel~3, and Michel~4 (characterised by the coefficient $m=\{1,2,3,4\}$) that are shown in Figure~\ref{4_michel_automata}. These automata have 3, 4, 5, and 6 states, respectively. The versions of the Fribourg constrcution that we tested on the Michel test set are the following (see Section~\ref{4_internal}):
+The Michel test set consists of the four Michel automata Michel~1, Michel~2, Michel~3, and Michel~4 as pictured in Figure~\ref{4_michel_automata} of Chapter~\ref{chap_investigation}. These automata have of 3, 4, 5, and 6 states, and an alphabet size of 2, 3, 4, and 5, respectively. The versions of the Fribourg construction that we tested on the Michel test set are the following (see Section~\ref{4_internal}):
 
 \begin{enumerate}
 \item Fribourg
@@ -242,35 +242,63 @@ The Michel test set consists of the four Michel automata Michel~1, Michel~2, Mic
 \item Fribourg+R
 \end{enumerate}
 
-In Table~\ref{i.m.states}, we present the complement sizes of these versions on the four Michel automata. The column \textit{Fitted curve} contains a function of the form $(an)^n$ that we fitted onto the four $xy$-points of each construction, where the $x$-axis is represents the size of the input automata (in our case 3, 4, 5, and 6), and the $y$-axis represents the size of the corresponding complements. The used fitting method was the method of non-linear least squares. The column \textit{Std. error} shows the standard error that resulted from the fit.
+Below, we first present the complement sizes of the Michel automata resulting from the different versions. Next, we discuss the corresponding state growths (number of states of the complement relative to the number of states of the input automaton) and bring them in relation with the worst-case state growths. Finally, we present the measured execution times for the individual complementation tasks. 
+
+\subsubsection{Complement Sizes}
+In Table~\ref{i.m.states}, we present the resulting complement sizes for all versions and all the Michel automata. The column \textit{Fitted~curve} contains a function of the form $(an)^n$. This function was obtained by fitting a curve of this form to the four $xy$-points of each construction, with the $x$-values being the sizes of the input automata, and the $y$-values the sizes of the corresponding complements. The used fitting method is the method of non-linear least squares. The column \textit{Std.~error} shows the standard error that results from the fit.
 
 \begin{table}[htb]
 \centering
 \input{figures/r/internal/michel/s.table.tex}
-\caption{Complement sizes of the Michel automata 1 to 4 ($m=\{1,2,3,4\}$), which have 3, 4, 5, and 6 states, respectively. }
+\caption{Complement sizes for the Michel automata 1 to 4. These automata have 3, 4, 5, and 6 states, respectively.}
 \label{i.m.states}
 \end{table}
 
 % In the second-last column ``Fitted curve'' of Table~\ref{i.m.states}, we fitted a function of the form $(an)^n$ to the measured four data points. These data points consist of the sizes of the four Michel automata (3, 4, 5, and 6) as the $x$-values ad the corresponding complement sizes as the $y$-values. The fitted function $(an)^n$ can be seen as an ``averaged'' state growth of these four automata ($n$ is the size of the input automaton). The last column ``Std. error'' contains the standard error that resulted from the fit.
 
-We can see in Table~\ref{i.m.states} that the state growths are indeed very large. For example, complementing Michel~4, which has six states, with the plain Fribourg construction results in a complement of 287,907 states. However, the optimisations R2C, M1, and M2 have a large influence on the complement sizes. If we consider Michel~4, then the R2C optimisation alone reduces the complement size from 287,907 to 168,291 which is a reduction of 51.5\%. The M1 optimisation has an eve larger influence as it reduces the complement size from 287,907 to 81,765 which is a reduction of 71.6\%. Adding M2 to M1 further reduces the complement size of Fribourg+M1 by 30.1\% (from 81,765 to 57,116). Finally, adding R2C on top of M1 and M2 brings a further reduction of of 23\% (from 57,116 to 43,957). If we compare the most efficient version (Fribourg+M1+M2+R2C) with the least efficient one (Fribourg), then the complement size of the former version is only 15.3\% of the complement size of the latter version.
+The first four column of Table~\ref{i.m.states} reveal the massive state growth that the Michel automata provoke. This can be best seen in the results of Michel~4. This automaton has 6 states and an alphabet size of 5. The first tested version, Fribourg, complements Michel~4 to an automaton with 287,907 states. This is a much higher state growth than we observed for any of the automata in the \goal{} test set. Note that the maximum complement size of Fribourg for the \goal{} test set is 37,904 (see Table~\ref{i.g.stats}). However, the \goal{} automata have 15 states, and Michel~4 has just 6 states, which makes a big difference with an exponential state growth. At the end of this section, we extrapolate complement sizes of Michel automata with 7 and more states, by assuming the state growth that we observed for the Michel automata up to 6 states.
 
-It is interesting to see that for the Michel automata Fribourg+M1+M2 is more efficient than Fribourg+M1. For the \goal{} test set, Friburg+M1+M2 had a slightly higher median than Fribourg+M1 although it had a slightly lower mean. We identified in Section~\ref{5_internal_goal} that the M2 optimisation has a positive effect only on some automata, and that these are mostly the hard automata \textcolor{red}{(The automata with acceptance densities up to 0.4)}. Michel automata are very hard automata \textcolor{red}{(The acceptance densities of the four tested Michel automata are 0.25 or less)}, and indeed the M2 optimisation has a considerably positive effect. These results support thus the observation we made in Section~\ref{5_internal_goal}.
+Fribourg+R2C complements Michel~4 to an automaton with 168,291 states (note that Michel automata are complete, and thus the R2C optimisation has an effect). Compared to the result of Fribourg, this is a reduction of 41.5\%. This means that 41.5\% of the states produced by Fribourg have a rightmost component with colour 2, which can be removed.
 
-The special version Fribourg+R yields very small complements compared to the other versions. This tells us that the complements of the other versions contain a large number of unreachable and dead states. For example, the complement of Michel~4 of Fribourg+R (3,315 states) is 1.2\% of the size of the complement of Fribourg. This means that 98.8\% of the 287,907 states of the complement of Fribourg are unreachable and dead states. This is actually not surprising, because, following the proof of Michel~\cite{michel1988}\cite{1996_thomas}, the smallest possible complement of Michel~4 has 24 states. This is because Michel~4 has $m=4$ and Michel proved that the complement has at least size $m!$. This means that that even after reducing all the unreachable and dead states from the complement of Fribourg, an even much smaller complement would still be possible.
+The M1 optimisation of Fribourg+M1 has an even more positive effect than the R2C optimisation. The complement produced by Fribourg+M1 has 81,765 states, which is 71.6\% less than the complement of Fribourg. This indicates that the M1 optimsiation is particularly efficient for hard automata.
 
-Up to now we just looked at the specific results of Michel~4. The fitted functions of the form $(an)^n$ summarise the results of all the four Michel automata. These functions give us reference points for the worst-case state complexities of the different versions of the Fribourg construction. For example, for the plain Fribourg construction with its fitted function of $(1.35n)^n$, we have now the proof that this construction produces complements of size $(1.35n)^n$, where $n$ is the size of the input automaton. This means that the worst-case complexity cannot be lower than $(1.35n)^n$ (but it can still be higher). This bound decreases for the different versions of the Fribourg construction down to $(0.99n)^n$ for Fribourg+M1+M2+R2C.
+Fribourg+M1+M2 complements Michel~4 to an automaton with only 57,116 states. This is smaller than the complement of Fribourg+M1, and the same applies to the other Michel automata. This is interesting, because for the \goal{} test set,  from an overall point of view, Fribourg+M1+M2 is less efficient than Fribourg+M1 (see Table~\ref{i.g.stats}). However, as we analysed for the individual transition density/acceptance density of the \goal{} test set, Fribourg+M1+M2 is actually more efficient than Fribourg+M1 for a certain type of automata. These automata are the ones with a transition density up to 0.4. The four tested Michel automata all have a transition density of 0.25 or less, and thus fall in this category. Hence, the fact that Fribourg+M1+M2 is more efficient on the Michel automata than Fribourg+M1 coincides with this observation for the \goal{} test set.
 
-In Table~\ref{i.m.times} we show the measured execution time in seconds (CPU time) for each complementation task. We can see that the difference between the least and most efficient version is bigger than for the complement sizes. For example for Michel~4, Fribourg+M1+M2+R2C is more than 43 times faster than Fribourg (2,332.6 seconds compared to 100,976 seconds). In more familiar unities, this corresponds to approximately 39 minutes for Fribourg+M1+M2+R2C against 28 hours for Fribourg. We also fitted functions of the form $(an)^n$ to the measured execution times where $n$ is the number of states of the input automaton, and the value of the function is the execution time of the task in CPU time seconds.
+Fribourg+M1+M2+R2C further decreases the complement size of Michel~4 to 43,957
+. Again, this is because the R2C optimisation removes all the states whose rightmost component has colour 2. Compared to Fribourg, the complement produced by Fribourg+M1+M2+R2C is 84.7\% smaller. In other words, the application of all the three optimisations to the Fribourg construction, cuts the complement size of Michel~4 in approximately six and a half.
 
-\begin{table}[htb!]
+Finally, the complement size of Fribourg+R for Michel~4 is 3,315. This means that 284,592, or 98.8\%, of the states produced by Fribourg are unreachable or dead states, that are removed by the R option.
+
+\subsubsection{State Growth Functions}
+
+The heavy state growth of Michel automata make them suitable to be used as lower bounds for the worst-case state complexities of the tested constructions, in case these worst-case complexities have not yet been determined precisely. To this end, we calculated for each construction a state growth function in the second-last column of Table~\ref{i.m.states}.
+
+For Fribourg, the state growth of the Michel automata is $(1.35n)^n$, whereas the determined upper bound for the worst-case is $O((1.59n)^n)$ (see Section~\ref{3_lower_part}). This means that whatever the actual worst-case state growth of Fribourg is, it cannot be lower than $(1.35n)^n$, because with our empirically determined complement sizes of the Michel automata, we have a proof that Fribourg can generate $(1.35n)^n$ many states, with $n$ being the number of states of the input automaton.
+
+Regarding the other versions, for Fribourg+R2C this lower bound is $(1.24n)^n$. However, for Fribourg+R2C, we do not have a theoretically calculated upper bound of the worst-case state complexity. For Fribourg+M1, the state growth of the Michel automata is $(1.10n)^n$, whereas the calculated worst-case state growth is $O((1.195n)^n)$\footnote{This is actually the worst-case state growth of the lower part of the automaton. For the overall worst-case state growth, the maximum number of states of the upper part of $(0.53n)^n$ must be added to it. However, the resulting term is clearly dominated by $O((1.195n)^n)$.}. This means that for Fribourg+M1, the gap between the upper and lower bound is relatively small, and the worst-case state growth cannot be further improved very much.
+
+For Fribourg+M1+M2, the state growth of the Michel automata is $(1.03n)^n$. However, the worst-case state growth has been calculated to be $O((0.86n)^n)$, even with evidence that it might actually be $O((0.76n)^n)$. So, here we seem to have a discrepancy. Whereas we have the empirical proof that Fribourg+M1+M2 can produce $(1.03n)^n$ many states, with $n$ being the number of states of the input automaton, the theoretically calculated results state that Fribourg+M1+M2 can generate at most $O((0.86n)^n)$ or $O((0.76n)^n)$ many states. The reason for this discrepancy might be hidden in the big-$O$ notation. The functions $O((0.86n)^n)$ or $O((0.76n)^n)$ are not exact, but rather the result of omitting constant factors and lower order terms. We leave further investigations on this point for future work.
+
+For the last two versions, Fribourg+M1+M2+R2C and Fribourg+R, the measured state growths are $(0.99n)^n$ and $(0.64n)^n$, respectively. However, for these versions we do not have theoretically calculated upper bounds for the worst-case state complexity.
+
+\subsubsection{Execution Times}
+In Table~\ref{i.m.times}, we present the execution times of the different versions for complementing the Michel automata. The reported values are in in CPU time seconds. As mentioned, the measurement of execution times is dependent on many factors, such as the implementation and the execution environment, and thus should be interpreted with care. However, for the case of the Michel automata, we think that the execution times still provide interesting insights.
+
+\begin{table}[htb]
 \centering
 \input{figures/r/internal/michel/t.table.tex}
-\caption{Execution time in seconds (CPU time) for complementing the Michel automata~1 to~4.}
+\caption{Measured execution times for the Michel automata 1 to 4. These automata have 3, 4, 5, and 6 states, respectively.}
 \label{i.m.times}
 \end{table}
 
-The fitted functions that we calculated for the measured complement sizes and execution times are based on only four data points. This is generally not enough to make reliable extrapolations. However, it is still interesting to do such an extrapolation in order to see the involved complexity and to show why we were restricted to include only the first four Michel automata in the test set. In Table~\ref{i.m.extrapolation}, we show extrapolated values for the complement sizes and execution times for the plain Fribourg construction (the least efficient one), based on the corresponding fitted functions. The table includes the extrapolated values for the Michel automata 5 to 8, which have 7 to 10 states. 
+For Michel~1, all versions take slightly more than 2 seconds. Approximately 2 seconds are actually caused by the start-up of the Java Virtual Machine, which is also included in our time measurements. For Michel~2, all versions take 4 seconds or less, and for Michel~3 all versions are still under 1.5 minutes. For Michel~4, however, the execution times seem to explode. Fribourg takes 100,976.0 seconds, which are approximately 28 hours. However, this time is considerably lower Fribourg+R2C, which takes 27,938.3 seconds, or 7.76 hours. Fribourg+M1 takes 6,508.4 seconds, or 1.8 hours. The best version, Fribourg+M1+M2+R2C, takes 2,332.6 seconds, or 39 minutes. Note that Fribourg+R takes the same time as Fribourg, plus an additional delay to remove the unreachable and dead states.
+
+There are two remarkable points in these execution times. First, the increase of the execution times between Michel~3 and Michel~4 is much bigger than the increase of the complement sizes between Michel~3 and Michel~4. For example, for Fribourg, the complement size of Michel~4 is about 20 times bigger than the complement size of Michel~3. However, the execution time for Michel~4 is approximately 1,138 times bigger than execution time for Michel~3. As another example, for Fribourg+M1+M2+R2C the factors are 14 for the complement size and 216 for the execution time. Second, the differences of the execution times between the different versions are larger than the corresponding differences betwen the complement sizes. For example, for Michel~4, the complement of Fribourg+M1+M2+R2C is around 6.5 times smaller than the complement of Fribourg. However the execution time of Fribourg+M1+M2+R2C is 43 times smaller than the execution time of Fribourg. In summary, this shows that with an increasing number of states the required computation time increases disproportionately.
+
+As promised, below we extrapolate the execution times of larger Michel automata. To this end, we fitted functions of the form $(an)^n$ to the measured execution times in Table~\ref{i.m.times} in the same way as we did for the complement sizes. The parameter $n$ is the number of states of the input automaton, and the value of the functions is the required execution time of the complementation task in CPU time seconds. Based on the fitted functions for Fribourg, we present in Table~\ref{i.m.extrapolation} the extrapolated values for the Michel automata~5 to~8.
+
+
+% The fitted functions that we calculated for the measured complement sizes and execution times are based on only four data points. This is generally not enough to make reliable extrapolations. However, it is still interesting to do such an extrapolation in order to see the involved complexity and to show why we were restricted to include only the first four Michel automata in the test set. In Table~\ref{i.m.extrapolation}, we show extrapolated values for the complement sizes and execution times for the plain Fribourg construction (the least efficient one), based on the corresponding fitted functions. The table includes the extrapolated values for the Michel automata 5 to 8, which have 7 to 10 states. 
 
 
 \begin{table}[htb]
@@ -285,20 +313,53 @@ Michel 7 &  9 &   5,939,189,262 &  1,228,250,634 &     39 years  \\
 Michel 8 & 10 & 207,621,228,081 & 36,039,825,529 &  1,142 years  \\
 \hline
 \end{tabular}
-\caption{Extrapolated values for the complement sizes and execution times (seconds CPU time)  for the Michel automata with $m=\{5,\dots,10\}$ with the Fribourg version of the Fribourg construction.}
+\caption{Extrapolated complement sizes and execution times for the Michel automata~5 to~8 based on the fitted growth functions of Fribourg.}
 \label{i.m.extrapolation}
 \end{table}
 
-According to the fitted state growth function, the complement of Michel~5 would have nearly 7 million states, and the complement of Michel~8 even more than 207 billion states. Already the computation of the 7 million states of Michel~5 would most probably exceed the available memory resources in our computing environment. Regarding execution time, the complementation of Michel~5 would take 23 days. This would by far exceed the maximal running time of a job on our computer cluster. And even if we would not have these administrative time restriction, the time to wait for the complementation of Michel~5 to~8, between 18 months and 1,142 years, is definitely too long, even for a master's thesis.
+As can be seen, the complementation of Michel~5 would take 23 days with Fribourg. This is still a conservative estimation, because, as we have seen, the execution time grows disproportionately fast with an increasing number of states. A duration of 23 days would already exceed the maximum running time of a job on the cluster we use for our experiments. This shows why we restricted ourselves to include only the Michel automata~1 to~4 in the Michel test set. And even if Michel~5 would still be doable, the execution times of 18 months, 39 years, and 1,142 years for Michel~6, 7, and~8, are definitely too long for an empirical study, even if the study is a master's thesis.
+
+
+% According to the fitted state growth function, the complement of Michel~5 would have nearly 7 million states, and the complement of Michel~8 even more than 207 billion states. Already the computation of the 7 million states of Michel~5 would most probably exceed the available memory resources in our computing environment. Regarding execution time, the complementation of Michel~5 would take 23 days. This would by far exceed the maximal running time of a job on our computer cluster. And even if we would not have these administrative time restriction, the time to wait for the complementation of Michel~5 to~8, between 18 months and 1,142 years, is definitely too long, even for a master's thesis.
+
+
+
+
+% The special version Fribourg+R yields very small complements compared to the other versions. This tells us that the complements of the other versions contain a large number of unreachable and dead states. For example, the complement of Michel~4 of Fribourg+R (3,315 states) is 1.2\% of the size of the complement of Fribourg. This means that 98.8\% of the 287,907 states of the complement of Fribourg are unreachable and dead states. This is actually not surprising, because, following the proof of Michel~\cite{michel1988}\cite{1996_thomas}, the smallest possible complement of Michel~4 has 24 states. This is because Michel~4 has $m=4$ and Michel proved that the complement has at least size $m!$. This means that that even after reducing all the unreachable and dead states from the complement of Fribourg, an even much smaller complement would still be possible.
+
+% Up to now we just looked at the specific results of Michel~4. The fitted functions of the form $(an)^n$ summarise the results of all the four Michel automata. These functions give us reference points for the worst-case state complexities of the different versions of the Fribourg construction. For example, for the plain Fribourg construction with its fitted function of $(1.35n)^n$, we have now the proof that this construction produces complements of size $(1.35n)^n$, where $n$ is the size of the input automaton. This means that the worst-case complexity cannot be lower than $(1.35n)^n$ (but it can still be higher). This bound decreases for the different versions of the Fribourg construction down to $(0.99n)^n$ for Fribourg+M1+M2+R2C.
+
+% In Table~\ref{i.m.times} we show the measured execution time in seconds (CPU time) for each complementation task. We can see that the difference between the least and most efficient version is bigger than for the complement sizes. For example for Michel~4, Fribourg+M1+M2+R2C is more than 43 times faster than Fribourg (2,332.6 seconds compared to 100,976 seconds). In more familiar unities, this corresponds to approximately 39 minutes for Fribourg+M1+M2+R2C against 28 hours for Fribourg. We also fitted functions of the form $(an)^n$ to the measured execution times where $n$ is the number of states of the input automaton, and the value of the function is the execution time of the task in CPU time seconds.
+
+
+
 
 
 \section{Results of the External Tests}
 \label{5_external}
-In the external tests we compared the most efficient version of the Fribourg construction to three other constructions. These constructions are Piterman+EQ+RO, Slice+P+RO+MADJ+EG, and Rank+TR+RO. The most efficient version of the Fribourg construction is Fribourg+M1+R2C for the \goal{} test set, and Fribourg+M1+M2+R2C for the Michel test set. We present the results from these two test sets separately in the following two sections.
+The external tests consist of the comparison of the best version of the Fribourg construction on each test set, with three other complementation constructions. These constructions are the following (see Section~\ref{4_external}):
+
+\begin{itemize}
+\item Piterman+EQ+RO
+\item Slice+P+RO+MADJ+EG
+\item Rank+TR+RO
+\end{itemize}
+
+On the other hand, we declared the best versions of the Fribourg construction on the two test sets to be:
+
+\begin{itemize}
+\item Fribourg+M1+R2C    \tabto{4.2cm} for the \goal{} test set
+\item Fribourg+M1+M2+R2C \tabto{4.2cm} for the Michel test set
+\end{itemize}
+
+In the following two sections, we first present the results of these tests on the \goal{} test set (Section~\ref{5_external_goal}), followed by the results on the Michel test set (Section~\ref{5_external_michel}).
 
 
 \subsection{GOAL Test Set}
 \label{5_external_goal}
+
+
+
 As for the internal tests on the \goal{} test set, we set a time limit of 600 seconds CPU time, and a Java heap size limit of 1 GB per complementation task.  Table~\ref{e.g.outs} shows the number of timeouts and memory excesses that we observed for the four constructions.
 
 \begin{table}[ht]
@@ -445,5 +506,41 @@ Finally, these interesting differences in the execution times between the four c
 \subsection{Sumary of the Results}
 \label{5_summary}
 
+- identification of easy, medium and hard automata
+- evidence that the worst-case state complexity does not allow to conclude on the performance of the construciton on concrete cases
+  - examples
+    - Friburg+M1 and Fribourg+M1+M2
+    - Rank on Michel test set
+- extreme differences in execution times, complement sizes (especially for Michel test set)
+
+
+
+
+
 \subsection{Limitations of the Study}
 \label{5_limitations}
+
+\subsubsection{Test Set}
+- diversity of automata
+    - only size 15 (small for practical applications)
+    - only alphabet size of 2
+- many universal automata
+- automata may contain disconneted states
+
+
+
+\subsubsection{Statistical Evaluation}
+- far from exhaustive
+
+
+\subsubsection{Implementation}
+- Java implementaiton is slow
+    - Timeouts and memory excesses. With a more effiicent implementation, probably all automata could be completed (even tough there are not so many timeouts)
+- don't know how other complementation constructions are implemented
+
+
+
+
+
+
+

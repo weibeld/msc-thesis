@@ -512,7 +512,7 @@ By rule 2
 
 This means that with the M1 optimisation, we add the state $(\qm0, \cl2{\{q_1, q_2, q_3, q_4, q_5\}})$ to the automaton rather than $(\qm0, \cl2{\qm1}, \cl2{\qm2}, \cl1{\qm3}, \cl1{\qm4}, \cl2{\qm5})$. For the formal description and proof of correctness of the M1 optimisation, we refer to~\cite{2014_joel_ulrich} (Section 4.E).
 
-The application of these mergers obviously reduces the maximum number of states that the construction can produce. The worst-case state growth regarding the number of states of the lower part has been calculated in~\cite{2014_joel_ulrich} to be $(1.195n)^n$. This is added to a worst-case state growth of the upper part of $(0.53n)^n$. It will be a subject of our empirical performance investigation in Chapter~\ref{chap_investigation} to investigate the impact of the M1 optimisation on \textit{acutal} automata.
+The application of these mergers obviously reduces the maximum number of states that the construction can produce. The worst-case state growth regarding the number of states of the lower part has been calculated in~\cite{2014_joel_ulrich} to be $O((1.195n)^n)$. This must be added to a worst-case state growth of the upper part of $(0.53n)^n$. However, the resulting term is clearly dominated by $O((1.195n)^n)$. It will be a subject of our empirical performance investigation in Chapter~\ref{chap_investigation} to investigate the impact of the M1 optimisation on \textit{acutal} automata.
 
 
 \subsection{M2: Single 2-Coloured Component}
@@ -565,7 +565,7 @@ Figure~\ref{complement_with_m2} shows the result of applying the Fribourg constr
 \label{complement_with_m2}
 \end{figure}
 
-The M2 optimisation further reduces the maximum number of states that the construction can produce. A loose upper bound of $(0.86n)^n$ for the worst-case state growth of the lower part of the automaton has been calculated in \cite{2014_joel_ulrich} (Section 4.H). However, calculations of actual values suggest that the real bound for the lower part might be as low as $(0.76n)^n$. The investigation of the worst-case state complexity of the M1 and M2 optimisation is subject to ongoing research by the authors of the Fribourg construction. Note that $(0.76n)^n$ number of states in the lower part, and thus for the overall complexity of the construction , the size of the upper part of $(0.53n)^n$ must be added to it.
+The M2 optimisation further reduces the maximum number of states that the construction can produce. A loose upper bound of $O((0.86n)^n)$ for the worst-case state growth of the lower part of the automaton has been calculated in \cite{2014_joel_ulrich} (Section 4.H). However, calculations of actual values suggest that the real bound for the lower part might be as low as $O((0.76n)^n)$. The investigation of the worst-case state complexity of the M1 and M2 optimisation is subject to ongoing research by the authors of the Fribourg construction. Note that $O((0.86n)^n)$ or $O((0.76n)^n)$ is the maximum number of states of the lower part, and must be added to the maximum number of $(0.53n)^n$ upper-part states. However, the resulting term is dominated by the function for the lower part, that is, $O((0.86n)^n)$ or $O((0.76n)^n)$.
 
 
 \section{General Remarks}
