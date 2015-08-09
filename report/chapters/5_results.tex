@@ -262,7 +262,7 @@ Fribourg+R2C complements Michel~4 to an automaton with 168,291 states (note that
 
 The M1 optimisation of Fribourg+M1 has an even more positive effect than the R2C optimisation. The complement produced by Fribourg+M1 has 81,765 states, which is 71.6\% less than the complement of Fribourg. This indicates that the M1 optimsiation is particularly efficient for hard automata.
 
-Fribourg+M1+M2 complements Michel~4 to an automaton with only 57,116 states. This is smaller than the complement of Fribourg+M1, and the same applies to the other Michel automata. This is interesting, because for the \goal{} test set,  from an overall point of view, Fribourg+M1+M2 is less efficient than Fribourg+M1 (see Table~\ref{i.g.stats}). However, as we analysed for the individual transition density/acceptance density of the \goal{} test set, Fribourg+M1+M2 is actually more efficient than Fribourg+M1 for a certain type of automata. These automata are the ones with a transition density up to 0.4. The four tested Michel automata all have a transition density of 0.25 or less, and thus fall in this category. Hence, the fact that Fribourg+M1+M2 is more efficient on the Michel automata than Fribourg+M1 coincides with this observation for the \goal{} test set.
+Fribourg+M1+M2 complements Michel~4 to an automaton with only 57,116 states. This is smaller than the complement of Fribourg+M1, and the same applies to the other Michel automata. This is interesting, because for the \goal{} test set,  from an overall point of view, Fribourg+M1+M2 is less efficient than Fribourg+M1 (see Table~\ref{i.g.stats}). However, as we analysed for the individual transition density/acceptance density of the \goal{} test set, Fribourg+M1+M2 is actually more efficient than Fribourg+M1 for a certain type of automata. These automata are the ones with an acceptance density up to 0.4. The four tested Michel automata all have an acceptance density of 0.33 or less, and thus fall in this category. Hence, the fact that Fribourg+M1+M2 is more efficient on the Michel automata than Fribourg+M1 coincides with this observation for the \goal{} test set.
 
 Fribourg+M1+M2+R2C further decreases the complement size of Michel~4 to 43,957
 . Again, this is because the R2C optimisation removes all the states whose rightmost component has colour 2. Compared to Fribourg, the complement produced by Fribourg+M1+M2+R2C is 84.7\% smaller. In other words, the application of all the three optimisations to the Fribourg construction, cuts the complement size of Michel~4 in approximately six and a half.
@@ -589,23 +589,43 @@ Regarding the other tested complementation constructions, Rank has by far the be
 \subsection{Gained Insights}
 \label{5_insights}
 
-A general question, to which our results provide an answer, is: given an automaton with 15 states and an alphabet size of 2, how large can we expect the complement to be? Our results show that a reasonable expectation is a couple of hundreds of states, which corresponds to the median complement size of the \goal{} test set automata for most constructions (except Piterman). The worst-case to reasonably expect is some ten-thousands of states, which corresponds to the maximum complement sizes of the tested constructions (note that we do not know how big the complements of the aborted complementation tasks would be). However, such expectaions vary significantly depending on the transition density and acceptance density of the automaton under consideration. For example, a reasonalb expectation for an automaton with a transition density of 3.0 and an acceptance density of 1.0 is less than hundred states. On the other hand, if the automaton has, for example, a transition density of 1.6 and and an acceptance density of 0.3, then a reasonable expectation is a couple of thousands of states.
+\subsubsection{What to expect from sample automata}
+A question to which our results provide insights is: given an example automaton with 15 states and an alphabet size of 2 (similar to an automaton of the \goal{} test set), what can we expect from its complementation? In which order of magnitude can we expect the size of the complement to be? With our results on the \goal{} test set, we have a large set of empirical data that allow us to draw such conclusions. Our data suggests that a reasonable expectation for the complement size is a couple of hundred states. This corresponds to the median complement sizes of the tested constructions (except Piterman, which has a median complement size below 100 states). A reasonable worst-case to expect, given such an automaton, is a couple of ten-thousand states. This corresponds to the maximum complement sizes of the tested constructions (however, note that we do not know how big the complements of the aborted complementation tasks would be).
+
+Such guidelines can only be provided by empirical studies like our own. Merely knowing the worst-case state complexity of a construction does not allow to make a reasonable expectation of the complement size for a concrete automaton. For example, if we would have a so-called ``optimal'' construction with a worst-case state complexity matching the lower bound of $(0.76n)^n$~\cite{DBLP:journals/corr/abs-0802-1226}, then we could only deduce that in the worst case the complement has 7.14 quadrillion states ($7.14 \times 10^{15}$). This is neither a reasonable expectation (the probability that the current automaton is such a worst case is extremely low), nor is it a helpful information from a practical point of view. It is not a worst case we could prepare our computation environment for, because such a case is most probably infeasible in practice anyway.  
+
+Our results on the \goal{} test set allow furthermore to refine such expectations based on the transition density and acceptance density of the automaton at hand. For example, if the automaton has a transition density of 3.0 and an acceptance density of 1.0, then a reasonable expectation of the complement size is below 100 states (based on the median complement size of this class of the \goal{} test set). On the other hand, if the automaton has, for example, a transition density of 1.6 and an acceptance density of 0.3, then a reasonable expectation would be a couple of thousand states (except for Piterman, in which case it would be below one thousand states).
+
+% A general question, to which our results provide an answer, is: given an automaton with 15 states and an alphabet size of 2, how large can we expect the complement to be? Our results show that a reasonable expectation is a couple of hundreds of states, which corresponds to the median complement size of the \goal{} test set automata for most constructions (except Piterman). The worst-case to reasonably expect is some ten-thousands of states, which corresponds to the maximum complement sizes of the tested constructions (note that we do not know how big the complements of the aborted complementation tasks would be). However, such expectaions vary significantly depending on the transition density and acceptance density of the automaton under consideration. For example, a reasonalb expectation for an automaton with a transition density of 3.0 and an acceptance density of 1.0 is less than hundred states. On the other hand, if the automaton has, for example, a transition density of 1.6 and and an acceptance density of 0.3, then a reasonable expectation is a couple of thousands of states.
+
+\subsubsection{What Makes Automata Hard or Easy}
+Another question of practical interest is: can we tell whether an auotmaton is likely to be hard or easy to complement, before actually complementing it? Our results of the complement sizes for the different transition density/acceptance density classes of the \goal{} test set provide evidence that this is possible. We identified a range of transition densities that cause an automaton to be harder to complement, and we discovered that a lower acceptance density by trend makes the complementation task harder too. These results are based only on the Fribourg construction and on the specific automata of the \goal{} test set. However, it seems likely that different constructions exhibit a similarly structured behaviour on different automata. Hence, by further investigations on this point, it could be possible to establish generally valid, or probably construction-specific, rules for assessing the difficulty of a given automaton.
 
 
-- what to expect from automata of size 15 (like automata in goal test set)
-- which criteria make automata harder to complement
+\subsubsection{Worst-Case Performance Poor Guide to Actual Performance}
+
+
+
 - evidence that a lower worst-case state complexity does not mean better performance on concrete automata (poor guide to acutal performance)
+
+
+\subsubsection{No Best Construction}
 - no best construction, a construction can only be the best relative to a certain automaton or set of automata
-- constructions which are good for one type of automata may be bad for  another type and vice versa
-- support for the portfolio approach of selecting an appropriate construction for a specific automaton at hand (CITATION?)
+- constructions which are good for one type of automata may be bad for  another type and vice versa ("we do not have a solid understanding of the relative merits of these algorithms"~\cite{2007_vardi_model_checking}
+- support for the portfolio approach of selecting an appropriate construction for a specific automaton at hand~\cite{2007_vardi_model_checking}
+
+\subsubsection{Little is known about the behaviour of constructions}
 
 
-- identification of easy, medium and hard automata
-- evidence that the worst-case state complexity does not allow to conclude on the performance of the construciton on concrete cases
-  - examples
-    - Friburg+M1 and Fribourg+M1+M2
-    - Rank on Michel test set
-- extreme differences in execution times, complement sizes (especially for Michel test set)
+
+
+
+
+
+
+
+
+
 
 
 
