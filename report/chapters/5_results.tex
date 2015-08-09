@@ -523,8 +523,82 @@ This concludes the presentation of the results of our empirical performance inve
 
 
 
-\subsection{Sumary of the Results}
+
+
+
+
+
+
+
+
+\subsection{Summary of the Results}
 \label{5_summary}
+
+
+
+\subsubsection{\goal{} Test Set}
+Regarding the different versions of the Fribourg construction, we identified Fribourg+M1+R2C as the version with the best overall performance on the \goal{} test set. Interestingly, the application of the M1 and M2 optimisations together (Fribourg+M1+M2) results in a worse overall performance on the \goal{} test set than the application of the M1 optimisations alone (Fribourg+M1). However, we found out that this penalty introduced by Fribourg+M1+M2 does not apply to all automata types. Actually, Fribourg+M1+M2 has a better performance than Fribourg+M1 for all automata classes with an acceptance density between 0.1 and 0.4. However, for most other automata classes, Fribourg+M1+M2 performs indeed worse than Fribourg+M1, and this is enough to tilt the overall performance in the favour of Fribourg+M1. Another result is that the application of the R2C optimisation together with the C options results in many more large complements, but at the same time in many more small complements than the corresponding version without R2C and C. A way to see this is that R2C and C together make easy complementation tasks easier, an harder complementation tasks harder.
+
+Regarding the other tested constructions, Piterman has a significantly better performance on the \goal{} test set than all the other constructions. This is true from an overall point of view and for each of the transition density/acceptance density classes of the \goal{} test set. The other extreme is Rank, which exhibits significantly worse performance on the \goal{} test set than all the other constructions. The best version of the Fribourg construction on the \goal{} test set (Fribourg+M1+R2C) and Slice have a comparable performance on the \goal{} test set, although there is a slight advantage for Slice.
+
+We identified criteria that make the automata of the \goal{} test set result in larger or smaller complements, or in other words, make automata harder or easier to complement. For the Fribourg construction, the automata with a transition density between 1.4 and 1.8, and an acceptance density between 0.1 and 0.6 are the hardest complementation tasks. A higher or lower transition density makes the complementation of an automaton by trend easier. Furthermore, a higher acceptance density makes the complementation of an automaton by trend easier as well. Our results of Piterman and Slice suggest that these criteria also apply to other complementation constructions.
+
+% Complement characteristics (overall)
+% - Median couple of hundred states (below hundred only Piterman)
+% - 75th percentile 1000-2000 states (by a large margin below 1000 only Piterman)
+% - Maximum couple of 10,000 states
+
+% Fribourg construction
+% - Best version of Fribourg construction on goal test set: Fribourg+M1+R2C
+% - Fribourg+M1 overall better on goal test set than Fribourg+M1+M2
+% - Fribourg+M1+M2 better on automata with transition density up to 0.4 of goal test set than Fribourg+M1
+% - Fribourg+R2C+C has more large complements but lower median complement size than other versions (makes easy automata easier and hard aut. harder)
+
+% Other constructions
+% - Piterman by far better than Fribourg and Slice on goal test set
+% - Fribourg and Slice similar on goal test set (but Slice slightly better)
+% - Rank very bad on goal test set
+
+% Differences between classes
+% - diverse complement sizes in goal test set
+% - same pattern of complement sizes in goal test set for different constructions
+% - Hard automata in goal test have transition density 1.4 - 1.8 and acceptance density up to 0.6 (for Fribourg)
+% - Lower transiton density implies easier, and higher transition density implies easer (for Fribourg)
+% - Higher acceptance density implies easier (for Fribourg)
+% - Difficulty distribution is similar for other constructions (Piterman and Slice
+
+
+\subsubsection{Michel Test Set}
+We identified Fribourg+M1+M2+R2C as the best version of the Fribourg construction on the Michel test set. Interestingly, for the Michel automata, the application of the M1 and M2 optimisation together (Fribourg+M1+M2) results in a significantly better performance than the application of the M1 optimisation alone (Fribourg+M1). However, as we identified for the \goal{} test set, there are indeed certain types of automata for which Fribourg+M1+M2 performs better than Fribourg+M1. The Michel automata seem to belong to these type of automata. Generally, the R2C, M1, and M2 optimisations significantly increase the performance of the Fribourg construction on the Michel automata. Their simultaneous application (Fribourg+M1+M2+R2C) cuts the complement size of the largest Michel automata (Michel~4) by 6.5, and the execution time by 43.3, compared to the Fribourg construction without optimisations.
+
+Regarding the other tested complementation constructions, Rank has by far the best performance on the Michel automata. This is one of the most surprising results, because Rank has by far the worst overal performance on the \goal{} test set. On the other hand, Piterman has by far the worst performance on the largest Michel automaton (Michel~4). This is again surprising, because Piterman has by far the best performance on all the automata types in the \goal{} test set. The best version of the Fribourg construction on the Michel test set (Fribourg+M1+M2+R2C) has the second-best overall performance on the Michel test set after Rank. The gap between Fribourg and the first-placed Rank is smaller than the gap between Fribourg and the third-placed Slice. However, the execution time of Fribourg for Michel~4 is significantly greater than the execution time of Rank and Slice. In general, Rank and Slice can be seen as extremely fast on the largest tested Michel automaton (Michel~4).
+
+
+
+% Fribourg constrcution
+% - Best version of Fribourg construction on michel test set: Fribourg+M1+M2+R2C
+% - Fribourg+M1+M2 better on michel test set than Fribourg+M1
+
+% Other constructions
+% - Rank very good on Michel test set (best)
+% - Piterman worst on Michel test set (Michel 4)
+% - Fribourg second-best on michel test set
+% - Friourg slow on Michel 4 compared to Slice and Rank, but fast compared to Piterman
+% - Extreme differences in execution times on Michel 4 (Rank and Piterman)
+
+\subsection{Gained Insights}
+\label{5_insights}
+
+A general question, to which our results provide an answer, is: given an automaton with 15 states and an alphabet size of 2, how large can we expect the complement to be? Our results show that a reasonable expectation is a couple of hundreds of states, which corresponds to the median complement size of the \goal{} test set automata for most constructions (except Piterman). The worst-case to reasonably expect is some ten-thousands of states, which corresponds to the maximum complement sizes of the tested constructions (note that we do not know how big the complements of the aborted complementation tasks would be). However, such expectaions vary significantly depending on the transition density and acceptance density of the automaton under consideration. For example, a reasonalb expectation for an automaton with a transition density of 3.0 and an acceptance density of 1.0 is less than hundred states. On the other hand, if the automaton has, for example, a transition density of 1.6 and and an acceptance density of 0.3, then a reasonable expectation is a couple of thousands of states.
+
+
+- what to expect from automata of size 15 (like automata in goal test set)
+- which criteria make automata harder to complement
+- evidence that a lower worst-case state complexity does not mean better performance on concrete automata (poor guide to acutal performance)
+- no best construction, a construction can only be the best relative to a certain automaton or set of automata
+- constructions which are good for one type of automata may be bad for  another type and vice versa
+- support for the portfolio approach of selecting an appropriate construction for a specific automaton at hand (CITATION?)
+
 
 - identification of easy, medium and hard automata
 - evidence that the worst-case state complexity does not allow to conclude on the performance of the construciton on concrete cases
@@ -532,12 +606,6 @@ This concludes the presentation of the results of our empirical performance inve
     - Friburg+M1 and Fribourg+M1+M2
     - Rank on Michel test set
 - extreme differences in execution times, complement sizes (especially for Michel test set)
-
-
-\subsection{Gained Insights}
-\label{5_insights}
-
-
 
 
 
