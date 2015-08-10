@@ -623,65 +623,32 @@ In this section, we discuss the limitations of our study. This also affects the 
 
 
 \subsubsection{Test Data}
-The data we use to evaluate the different constructions is limited in several ways. Regarding the \goal{} test set, all automata have 15 states and an alphabet size of 2. This is a very specific type of automata (even though the number of transitions and accepting states of these automata vary considerably). We think that it is not readily possible to generalise the results on automata with 15 states to automata with, for example, 50, 100, or 500 states. The same applies to the alphabet size. This affects the reasonable expectations of the complement sizes of concrete automata, that we identified as one of the insights gained by our study in the last section. Our results actually allow to reliably do such expectations only on automata with similar specifications as the \goal{} test set automata. If, for example, an automaton with 15 states has an alphabet size of 3 instead of 2, then we have no clear hints about what to expect from its complement. The same applies to the identification of criteria that make an automaton hard or easy to complement, which we presented as another insight of the study in the previous section. These results are also exclusively based on the \goal{} test set, and we do not know how if with different automata we would obtain similar results.
+The data we use to evaluate the different constructions is limited in several ways. Regarding the \goal{} test set, all automata have 15 states and an alphabet size of 2. This is a very specific type of automata (even though the number of transitions and accepting states of these automata vary considerably). We think that it is not readily possible to generalise the results on automata with 15 states to automata with, for example, 50, 100, or 500 states. The same applies to the alphabet size. This affects the reasonable expectations of the complement sizes of concrete automata, that we identified as one of the insights gained by our study in the last section. Our results allow such expectations only on automata with similar specifications as the \goal{} test set automata. If, for example, an automaton with 15 states has an alphabet size of 3 instead of 2, then we have no clear hints about what to expect from its complement. The same applies to the criteria that make an automaton hard or easy to complement, which we presented as another insight of the study. These results are also exclusively based on the \goal{} test set, and we do not know whether they can be generalised to other types of automata.
 
-Another limitation of the test data are the characteristics of the automata in the \goal{} test set itself. We have identified that 61.8\% of all automata in the \goal{} test set are universal (see Section~\ref{4_goal_testset}). A number of 30 out of the 110 transition density/acceptance density classes contain 95\% or more universal automata (see matrix in Figure~\ref{testset_analysis} (b)). Universal automata are a special case of automata, and we do not know if and how their high representation affects our results. In the practical application of Büchi complementation, the complementation of universal automata might be rarely the case. For example, in automata-theoretic model checking, we have to complement an automaton representing the property to verify, and it is unlikely that this property automaton is universal. Consequently, the high number of universal automata might affect the significance of our results to practical applications of Büchi complementation.
+Another limitation of the test data are the characteristics of the automata in the \goal{} test set itself. We have identified that 61.8\% of all automata in the \goal{} test set are universal (see Section~\ref{4_goal_testset}). Of the 110 transition density/acceptance density classes, 30 classes even contain 95\% or more universal automata (see matrix in Figure~\ref{testset_analysis} (b)). Universal automata are a special case of automata, and we do not know if and how their high representation affects our results. Furtheremore, In the practical application of Büchi complementation, it might be rarely the case that we have to complement a universal automata. For example, in automata-theoretic model checking, we have to complement the automaton representing the property to verify, and it is unlikely that this automaton is universal. Consequently, the bias of the \goal{} test set towards universal automata might affect the significance of our study to the practical applications of Büchi complementation.
 
-Regarding the Michel test set, we were only able to include the first four Michel automata with up to 6 states (Michel~4). This might not be enough to conclude on the behaviour of the tested constructions on Michel automata in general. For example, to make our conclusion on the superiority of Rank and the inferiority of Piterman for the Michel automata more reliable, we would need the results of more Michel automata.
+Regarding the Michel test set, we were only able to include the first four Michel automata with up to 6 states (Michel~1 to~4). This might not be enough to represent the behaviour of the tested constructions on Michel automata in general. For example, we determined a superiority of Rank and an inferiority of Piterman on the tested Michel automata. However, to conclude that this is likely to be the case for Michel automata in general, we would require results from more Michel automata.
 
-
-
-
-
-
-- goal test set: only know about these specific autoamta with 15 states and alphabret size of 2
-
-
-- goal test set: high number of universal autoamta (special casees). how does it affect the results?
-
-
-- michel test set: first four michel automta might be too few to represent behaviour of all michel automata. 
-- tested automata are not real-world examples
-
+Generally, our test data consists of rather artificial examples, and is not based on real-world complementation tasks. The automata that need to be complemented, for example, in automata-theoretic model checking, are likely to have more than 15 states and more than 2 alphabet symbols. The automata that have been used by Tasiran et al.~\cite{1995_tasiran} for representing model checking properties of the form ``if $X$, then eventually $Y$'' have several hundreds of states, and according to the authors, these are still \textit{small} property automata. As mentioned, we do not know if and how our results from automata with 15 states can be generalised to automata with several hundreds of states.
 
 \subsubsection{Reliance on Implementation}
+Naturally, the results of our empirical investigations rely on implementations of the involved constructions. Regarding the constructions that are pre-implemented in \goal, we do not have any details of their implementation (as \goal{} is not open-source). Concerning the correctness, we know that the constructions are cross-checked by their authors~\cite{2008_goal_ext} (in a similar way as we checked the correctness of our implementation of the Fribourg construction), and we think that it is reasonably to assume that they are correct, in the sense of producing correct complements. However, we do not know if and to what extent the implementations stick to the original specifications of the constructions. That means, for example, does Piterman in \goal{} truly represent Piterman's original constructions as described in~\cite{2006_piterman,2007_piterman}\footnote{We do not question the authenticity of the implementation of this specific construction, nor the authenticity of all the constructions implemented \goal. Rather, we see the problem of faithful representation as a general issue in studies that rely on implemenations of algorithms that were previously only theoretically described.}? Furthermore, the implementations in \goal{} include diverse options, and it is not always clear how these options are specified and implemented. We do not know if and how such variations affect the behaviour, and in the end the performance, of a construction. Therefore, mapping the results of a specific implementation back to a  construction, as described in the literature, has to be done with care.
+
+Another limitation that results from the reliance on implementations is that other measures than the complement size, such as the execution time or memory usage, are not reliably comparable. A construction can be implemented more or less efficiently, which influences metrics such as execution time or memory usage. Consequently, if a construction is faster at a specific task than another, we cannot tell with certainty that it is more efficient in terms of speed than the other construction, because the difference could be caused by the implementation. This, and the fact that the execution time measurements are generally not completely reliable, is the reason that we use the execution times only as an auxiliary metrics, and to give an idea of the involved time requirements.
+
 - implementation: don't know how the other constructions are implemented (correct? sticking to the specification?)
 - implementation: don't know how constructions are implemented, makes comparisoin of execution times unreliable (but measurements of execution times is anyway unreliable)
 - (implementation is slow: with faster implementation could complement all automata without timeouts and memory excesses)
 
 \subsubsection{Test Setup}
+For the Fribourg construction, we first evaluated different versions against each other (internal tests), and then chose the best one on each test set for comparing it with other constructions (external tests). However, for the other constructions, we did not do such an evaluation, but selected the version that is defined by the default options. Consequently, we do not know whether these versions are also the best ones for the respective test sets. A fairer setup would compare only the best version of each construction against each other. If, the other way round, we would compare the least performant version of the Fribourg construction on the two test sets, Fribourg, to the other constructions, then the Fribourg construction would occupy the last place in most rankings. One has to keep in mind such differences when concluding from the results of a specific version to a construction per se.
+
+
 - other constructions: we chose only one version of each construction. don't know how the results with other options look like (e.g. maybe Rank is bettter on the goal test set with other options)
 
 \subsubsection{Statistical Evaluation}
-- statistical evaluation: (on goal test set) conclusiosn are based on non-exhaustive statistical evaluations. e.g. performance on dt/da classes considers only median, and not other indicators
-- statistical evaluation: (in goal test set) consider only aggregated statistics, such as mean, median. do not track individual automata (e.g. for how many, and which automta Fribourg+R2C+C is better than Fribourg, or Fribourg+M1+M2 than Fribourg+M1)
+The statistical evaluations that we did for the results of our investigations (especially of the \goal{} test set) are far from exhaustive. It is likely that a more in-depth analyses would lead to new or different conclusions. For example, for the \goal{} test set, we considered only aggregated statistics, such as the mean or the median. A more detailed evaluation could include considering individual automata. For example, we could determine for which specific automata a construction produces smaller complements than another construction. In this way, the relative strengths and weaknesses of different constructions could be analysed more reliably. This would be insightful, for example, for the relations of Fribourg+M1+M2 and Fribourg+M1, or Fribourg+R2C+C and Fribourg, for which we already identified that there are relative differences based on automata characteristics.
 
-
-
-
-
-\subsubsection{Test Set}
-- diversity of automata
-    - only size 15 (small for practical applications)
-    - only alphabet size of 2
-- many universal automata
-- automata may contain disconneted states
-
-
-
-\subsubsection{Statistical Evaluation}
-- far from exhaustive
-- could for example analyse which automata cause timeouts and memory outs
-
-
-\subsubsection{Implementation}
-- Java implementaiton is slow
-    - Timeouts and memory excesses. With a more effiicent implementation, probably all automata could be completed (even tough there are not so many timeouts)
-- don't know how other complementation constructions are implemented
-
-
-
-
-
+Furthermore, such analyses would allow find out whether the automata that are hard for one construction are the same that are hard for another construction. By considering only aggregated statistics, such as the median, this is in principle not possible. For example, if two constructions have the same median complement size for a given transition density/acceptance density class of the \goal{} test set, then it could still be that a specific automaton results in a large complement with one construction, but a small one with another construction. Altogether, such investigations would enhance our understanding of the behaviour of these constructions, what would in turn support the portfolio approach of selecting suitable constructions for specific automata.
 
 

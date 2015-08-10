@@ -92,7 +92,6 @@
 \newcommand{\om}{{$\omega$}}
 \newcommand{\aom}{{$a^\omega$}}
 \newcommand{\Bp}{{$B^\prime$}}
-\newcommand{\tec}[1]{\textsf{#1}}
 \newcommand{\ob}[1]{$\overline{\text{#1}}$}
 \newcommand{\shade}{\cellcolor{black!5}}  % Shaded table cell
 
@@ -107,24 +106,21 @@
 % Main body
 %==============================================================================%
 
-\title{Empirical Performance Investigation of a Büchi\\Complementation Construction}
-\author{Daniel Weibel}
-\date{\today}
-
 \begin{document}
-\maketitle
+\input{input/titlepage.tex}
 
 % Order of the front matter is: abstract, dedication, acknowledgements,
 % table of contents
 
 \begin{abstract}
-This will be the abstract.
+
+
+
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
 \begin{abstract}
-%First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsche and Joel Allred to bring me to the topic of this thesis in the first place, and for the many enlightening discussions and explanations. A very special thank goes to Ming-Hsien Tsai, the main author of the GOAL tool, from the National Taiwan University. Without his very prompt and patient responses to my many questions regarding implementation details of GOAL, the plugin would not have been possible in its current form. I also would like to thank Michael Rolli and Nico Färber from the Grid Admin Team of the University of Bern for their very friendly and helpful responses to my questions about the Linux cluster where the experiments of this thesis have been executed.
-First of all, I would like to thank my supervisors Prof. Ulrich Ultes-Nitsche and Joel Allred for their support and patience during the during the entire development time of this thesis. A very special thanks goes to Dr. Ming-Hsien Tsai from National Taiwan University. He is one of the main authors of the \goal tool and provided very prompt help regarding implementation details of \goal. Without this information, the \goal-plugin, which I developed as part of the thesis, would not have been possible in its present form. I am especially thankful to thank Assoc. Prof. Katarzyna Wac from the University of Geneva for granting me large amounts of free time from my employment in her research group. Without this extra time, it would have been very difficult to complete the thesis within the deadlines of the university. Last but not least, I thank Michael Rolli and Nico Färber from the Grid Admin Team of the University of Bern for providing very helpful support regarding technical issues about the computer cluster on which I executed the experiments of this thesis.
+First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsche and Joel Allred for their support and patience during the entire time I was working on this thesis. A very special thanks goes to Dr. Ming-Hsien Tsai from National Taiwan University. He is one of the main authors of the \goal{} tool and steadily provided me with all the information I needed to fully integrate the plugin, developed as part of this thesis, in the \goal{} tool. Without his help, the plugin would not have been possible in its present form. I am especially thankful to Assoc. Prof. Katarzyna Wac from the University of Geneva for granting me a lot of freedom from my employment in her research group to work on my thesis. Without this extra time, it would have been very difficult to complete the thesis within the deadlines of the university. I also would like to thank Christian Göttel for sharing information about his own thesis about a very similar subject, from which I adopted several ideas. Last but not least, I would like to thank Michael Rolli and Nico Färber from the Grid Admin Team of the University of Bern for their help regarding technical questions about the computer cluster on which the experiments of this thesis have been executed.
 \end{abstract}
 
 \dominitoc
