@@ -50,6 +50,8 @@
 
 \usepackage{tabto}
 
+\usepackage{setspace}
+
 % Page headers and footers
 \usepackage{fancyhdr}
 \pagestyle{fancy}
@@ -113,14 +115,12 @@
 % table of contents
 
 \begin{abstract}
-
-
-
+Büchi automata are finite state automata on infinite words, so-called \om-automata, that have applications in domains that use an automata-theoretic approach to logic. One such domain is the automata-theoretic approach to model checking. In this approach, both, the system to be verified and the property to verify, are represented as a Büchi automaton. The verification step requires the complementation of the property automaton. However, the complementation of Büchi automata is very complex, which impedes the practical application of this approach. For this reason there is an active quest in research for finding more efficient Büchi complementation constructions, and for gaining a better understanding of Büchi complementation in general. The aim of this thesis is to contribute to a better understanding of the behaviour of Büchi complementation constructions. To this end, we empirically investigate the performance of a specific Büchi complementation construction. This includes the systematic experimentation with different variants of this construction, as well as putting this constructions into relation with other constructions. Our results highlight strengths and weaknesses of different complementation constructions, and show that there are characteristics that make the complementation of an automaton harder or easier. 
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
 \begin{abstract}
-First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsche and Joel Allred for their support and patience during the entire time I was working on this thesis. A very special thanks goes to Dr. Ming-Hsien Tsai from National Taiwan University. He is one of the main authors of the \goal{} tool and steadily provided me with all the information I needed to fully integrate the plugin, developed as part of this thesis, in the \goal{} tool. Without his help, the plugin would not have been possible in its present form. I am especially thankful to Assoc. Prof. Katarzyna Wac from the University of Geneva for granting me a lot of freedom from my employment in her research group to work on my thesis. Without this extra time, it would have been very difficult to complete the thesis within the deadlines of the university. I also would like to thank Christian Göttel for sharing information about his own thesis about a very similar subject, from which I adopted several ideas. Last but not least, I would like to thank Michael Rolli and Nico Färber from the Grid Admin Team of the University of Bern for their help regarding technical questions about the computer cluster on which the experiments of this thesis have been executed.
+First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsche and Joel Allred for their support and patience during the entire time I was working on this thesis. A very special thanks goes to Dr. Ming-Hsien Tsai from the National Taiwan University. He is one of the main authors of the \goal{} tool, and steadily provided me with all the information I needed to fully integrate the plugin, developed as part of this thesis, in \goal. Without his help, the plugin would not have been possible in its present form. I am especially thankful to Assoc. Prof. Katarzyna Wac from the University of Geneva for granting me a lot of freedom in my employment at her research group. Without this flexibility, it would have been very difficult to complete the thesis within the deadlines of the university. I also would like to thank Christian Göttel for sharing information about his own thesis about a very similar topic, from which I adopted several ideas. Last but not least, I would like to thank Michael Rolli and Nico Färber from the Grid Admin Team of the University of Bern for their help regarding technical questions about the computer cluster on which the experiments of this thesis have been executed.
 \end{abstract}
 
 \dominitoc
@@ -158,14 +158,13 @@ First of all, I would like to thank my supervisors Prof. Dr. Ulrich Ultes-Nitsch
 
 \chapter{Conclusions}
 \label{chap_conclusions}
-\newpage
-% \input{chapters/6_conclusions.tex}
+\input{chapters/6_conclusions.tex}
 
 % For the order of the end matter (appendiy before bibliography, or vice versa)
 % there are no strict rules.
 
 \appendix
-\chapter{\goal{} and Plugin Installation}
+\chapter{Plugin Installation}
 \label{app_plugin}
 \input{chapters/app_plugin.tex}
 

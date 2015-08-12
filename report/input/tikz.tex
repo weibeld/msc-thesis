@@ -35,9 +35,10 @@
 % \def\myndist{1cm}    % Node distance for automata
 
 % Distance for automata and trees
-\def\myvdist{0.8cm}   % Level distance of trees
-\def\myhdist{0.35cm}  % Sibling distance of trees
-\def\myndist{0.75cm}  % Node distance for automata
+\def\myvdist{0.8cm}     % Level distance of trees
+\def\myhdist{0.35cm}    % Sibling distance of trees
+\def\myndist{0.75cm}    % Node distance for automata
+\def\myvdistdag{0.95cm} % Vertical distance of levels of run DAG
 
 % Distances for small automata and trees (\scriptsize}
 \def\myvdistsmall{0.65cm}
@@ -118,7 +119,7 @@
   dag/.style={
     mtrx,
     a/.style={my accepting},
-    row sep={\myvdist,between origins},
+    row sep={\myvdistdag,between origins},
     %column sep=0.75cm,
     column sep=0.5cm,
     inner sep=0mm,
@@ -253,6 +254,12 @@
 %==============================================================================%
 \newcommand{\LevelSymbols}{
 \begin{tikzpicture}[tree,every tree node/.style={draw=none},edge from parent/.style={draw=none},l/.style={pos=0.3}]
+\Tree [ \edge node[l]{$a$}; [ \edge node[l]{$a$}; [ \edge node[l]{$a$}; [ \edge node[l]{$a$}; {} ] ] ] ]
+\end{tikzpicture}
+}
+
+\newcommand{\LevelSymbolsRunDAG}{
+\begin{tikzpicture}[tree,every tree node/.style={draw=none},edge from parent/.style={draw=none},l/.style={pos=0.3},level distance=\myvdistdag]
 \Tree [ \edge node[l]{$a$}; [ \edge node[l]{$a$}; [ \edge node[l]{$a$}; [ \edge node[l]{$a$}; {} ] ] ] ]
 \end{tikzpicture}
 }
@@ -463,28 +470,28 @@ shorten/.style={shorten >=2.5mm,shorten <=2.5mm}]
 %==============================================================================%
 \newcommand{\RunDAG}{
 \begin{tikzpicture}[dag]  
-\matrix[every node/.style={my state}]{
+\matrix[every node/.style={my state,rounded corners=0mm}]{
   \node (00) {\q0}; \& \node[a] (01) {\q1}; \& \node (02) {\q2}; \\
   \node (10) {\q0}; \& \node[a] (11) {\q1}; \& \node (12) {\q2}; \\
   \node (20) {\q0}; \& \node[a] (21) {\q1}; \& \node (22) {\q2}; \\
   \node (30) {\q0}; \& \node[a] (31) {\q1}; \& \node (32) {\q2}; \\
   \node (40) {\q0}; \& \node[a] (41) {\q1}; \& \node (42) {\q2}; \\
-  \node[inv,yshift=0.3cm] {$\vdots$}; \& \node[inv,yshift=0.3cm] {$\vdots$}; \& \node[inv,yshift=0.3cm] {$\vdots$}; \\
+  %\node[inv,yshift=0.3cm] {$\vdots$}; \& \node[inv,yshift=0.3cm] {$\vdots$}; \& \node[inv,yshift=0.3cm] {$\vdots$}; \\
 };
 \path[->]
-  (00) edge          (10) edge[longer2] (11) edge (12)
-  (10) edge          (20) edge[longer2] (21) edge (22)
-  (11) edge[longer2] (22)
+  (00) edge          (10) edge[] (11) edge (12)
+  (10) edge          (20) edge[] (21) edge (22)
+  (11) edge[] (22)
   (12) edge          (22)
-  (20) edge          (30) edge[longer2] (31) edge (32)
-  (21) edge[longer2] (32)
+  (20) edge          (30) edge[] (31) edge (32)
+  (21) edge[] (32)
   (22) edge          (32)
-  (30) edge          (40) edge[longer2] (41) edge (42)
-  (31) edge[longer2] (42)
+  (30) edge          (40) edge[] (41) edge (42)
+  (31) edge[] (42)
   (32) edge          (42);  
 %\node[anchor=base,xshift=-1.5cm] at (20.base) {$\mathcal{G}^A_{a^\omega}=$};      
 \end{tikzpicture}
-\LevelSymbols
+\LevelSymbolsRunDAG
 }
 
 %==============================================================================%
