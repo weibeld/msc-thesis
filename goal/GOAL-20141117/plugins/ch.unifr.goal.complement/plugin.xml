@@ -46,20 +46,20 @@
   <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="FribourgComplementAction">
     <parameter id="class"     value="ch.unifr.goal.complement.FribourgComplementAction" />
     <parameter id="container" value="org.svvrl.goal.gui.menu.ComplementMenu" />
-    <parameter id="location"  value="first" />
+    <parameter id="location"  value="last" />
   </extension>
 
   <!-- Add step-by-step version of construction to GUI (menu: Automaton > Complement (Step by Step)) -->
   <extension plugin-id="org.svvrl.goal.gui" point-id="Menu" id="StepByStepFribourgComplementAction">
     <parameter id="class"     value="ch.unifr.goal.complement.StepByStepFribourgComplementAction" />
     <parameter id="container" value="org.svvrl.goal.gui.menu.StepByStepComplementMenu" />
-    <parameter id="location"  value="first" />
+    <parameter id="location"  value="last" />
   </extension>
 
   <!-- Add construction to settings menu -->
   <extension plugin-id="org.svvrl.goal.gui" point-id="OptionsPanel" id="FribourgComplementOptionsPanel">
     <parameter id="class"    value="ch.unifr.goal.complement.FribourgComplementOptionsPanel"/>
-    <parameter id="location" value="/Complementation/Fribourg Construction?first" />
+    <parameter id="location" value="/Complementation/Fribourg Construction?last" />
   </extension>
 
 </plugin>

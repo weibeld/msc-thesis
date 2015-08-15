@@ -117,22 +117,32 @@ IntGoal <- function() {
   text(x=300, y=-1, labels="Execution time (seconds)", xpd=TRUE)
   dev.off()
 
-  # Persp plots with median of produced states
-  mlist <- MatrixGoal(i.g)
-  PerspBatch(mlist, pdf=TRUE, dir=dir, prefix="s.median.", width=6, height=5,
-             mar=c(1, 2.5, 0, 0), zlim=c(0, 6500), z.colors=TRUE, zlab="",
-             xlab="Transition density", ylab="Acceptance density", lin=TRUE,
-             lin.xy=list(x=1, y=0.1), lin.col="gray", theta=150, phi=25,
-             shade=0.5, ltheta=30, lphi=20, custom.zlab=function() {
-             text(-0.73, 0.06, "States (median)", srt=94) })
+  # # Persp plots with median of produced states
+  # mlist <- MatrixGoal(i.g)
+  # PerspBatch(mlist, pdf=TRUE, dir=dir, prefix="s.median.", width=6, height=5,
+  #            mar=c(1, 2.5, 0, 0), zlim=c(0, 6500), z.colors=TRUE, zlab="",
+  #            xlab="Transition density", ylab="Acceptance density", lin=TRUE,
+  #            lin.xy=list(x=1, y=0.1), lin.col="gray", theta=150, phi=25,
+  #            shade=0.5, ltheta=30, lphi=20, custom.zlab=function() {
+  #            text(-0.73, 0.06, "States (median)", srt=94) })
 
-  # Image plot showing difficulty levels for all the dt/da classes
-  file <- paste0(dir, "/difficulty.pdf")
-  m.avg <- MatrixAgg(mlist, mean)  # Average of all the state median matrices
-  pdf(file=file, width=4.1, height=4.1)
-  par(mar=c(0.25, 3, 2.75, 0.25))
-  # less than 500: green; betw. 500 and 1600: yellow; more than 1600: red
-  Image(m.avg, breaks=c(0, 500, 1600, 6000), col=c("green", "yellow", "red"))
+  # # Image plot showing difficulty levels for all the dt/da classes
+  # file <- paste0(dir, "/difficulty.pdf")
+  # m.avg <- MatrixAgg(mlist, mean)  # Average of all the state median matrices
+  # pdf(file=file, width=4.1, height=4.1)
+  # par(mar=c(0.25, 3, 2.75, 0.25))
+  # # less than 500: green; betw. 500 and 1600: yellow; more than 1600: red
+  # Image(m.avg, breaks=c(0, 500, 1600, 6000), col=c("green", "yellow", "red"))
+  # dev.off()
+
+  # Line plot with medians and means
+  file <- paste0(dir, "/s.lineplot.pdf")
+  pdf(file=file, width=6, height=5)
+  par(mar=c(7.5, 6, 1, 1))
+  par(mgp=c(4.5,1,0))
+  s <- Stats(i.g)
+  Lineplot(s[c(2,4,5,6)], pt.names=s[[1]], ymax=2500, lwd=1.5, ylab="Complement size",
+           col=c("blue", "red", "orange", "purple"), lgd.pos="topright",lgd.rev=FALSE)
   dev.off()
 
   # Matrices corresponding to all the persp plots (in separate folder)
@@ -236,31 +246,41 @@ ExtGoal <- function() {
 IntMichel <- function() {
   dir <- .MkDir("internal/michel")
 
-  # # Table with complement sizes
-  # file <- paste0(dir, "/s.table.tex")
-  # df <- MichelTable(i.m)
-  # LatexTable(df, format="d", align="rlrrrrrr", file=file)
+  # Table with complement sizes
+  file <- paste0(dir, "/s.table.tex")
+  df <- MichelTable(i.m)
+  LatexTable(df, format="d", align="rlrrrrrr", file=file)
 
-  # # Table with execution times
-  # file <- paste0(dir, "/t.table.tex")
-  # df <- MichelTable(i.m, dat="cpu_time")
-  # LatexTable(df, align="rlrrrrrr", file=file)
+  # Table with execution times
+  file <- paste0(dir, "/t.table.tex")
+  df <- MichelTable(i.m, dat="cpu_time")
+  LatexTable(df, align="rlrrrrrr", file=file)
 
-  # # Barplot with complement sizes
-  # file <- paste0(dir, "/s.barplot.pdf")
-  # pdf(file=file, width=7, height=5)
-  # par(mar=c(7.5, 6, 1, 0.125))
-  # MichelBarplot(i.m, ylim=c(0, 300000), col="white", lin=TRUE)
-  # text(x=-5.5, y=150000, labels="Complement size", srt=90, xpd=TRUE)
-  # dev.off()
+  # Barplot with complement sizes
+  file <- paste0(dir, "/s.barplot.pdf")
+  pdf(file=file, width=7, height=5)
+  par(mar=c(7.5, 6, 1, 0.125))
+  MichelBarplot(i.m, ylim=c(0, 300000), col="white", lin=TRUE)
+  text(x=-5.5, y=150000, labels="Complement size", srt=90, xpd=TRUE)
+  dev.off()
 
-  # # Barplot with execution times
-  # file <- paste0(dir, "/t.barplot.pdf")
-  # pdf(file=file, width=7, height=5)
-  # par(mar=c(7.5, 6, 1, 0.125))
-  # MichelBarplot(i.m, dat="cpu_time", col="white", lin=TRUE)
-  # text(x=-5.5, y=50000, labels="Running time (sec.)", srt=90, xpd=TRUE)
-  # dev.off()
+  # Barplot with execution times
+  file <- paste0(dir, "/t.barplot.pdf")
+  pdf(file=file, width=7, height=5)
+  par(mar=c(7.5, 6, 1, 0.125))
+  MichelBarplot(i.m, dat="cpu_time", col="white", lin=TRUE)
+  text(x=-5.5, y=50000, labels="Running time (sec.)", srt=90, xpd=TRUE)
+  dev.off()
+
+  # Lineplot with complement sizes
+  file <- paste0(dir, "/s.lineplot.pdf")
+  pdf(file=file, width=6, height=5)
+  par(mar=c(7.5, 6, 1, 1))
+  par(mgp=c(4.5,1,0))
+  m <- MichelTable(i.m)
+  Lineplot(m[2:5], pt.names=m[[1]], ymax=300000, lwd=1.5, ylab="Complement size",
+           col=c("purple", "orange", "blue", "red"), lgd.pos="topright",lgd.rev=TRUE)
+  dev.off()
 
   # Extrapolation table
   secyear <- 31557600  # Seconds per year: 60 * 60 * 24 * 365.25

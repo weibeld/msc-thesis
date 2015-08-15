@@ -4,7 +4,7 @@
 # Test automata available on: http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?
 #                             media=goal:ciaa2010_automata.tar.gz
 #
-# Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - May 2015
+# Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - August 2015
 #------------------------------------------------------------------------------#
 
 SetDir <- function() {
@@ -186,6 +186,57 @@ MichelTable <- function(list, dat="states", fit.fun=TRUE, std.err=TRUE, raw=FALS
     i <- i + 1
   }
   res
+}
+
+Lineplot <- function(list, ymax, pt.names, pt.lab.dst=0.1, pt.lab.rot=45, 
+                     col="black", pch=1, lty="solid", lwd="1.2", help.lin=TRUE,
+                     lgd.pos="topright", lgd.inset=c(0,0), lgd.rev=FALSE, ...) {
+  # Create a line plot with one or more lines
+  # Args: list:       list of named vectors, each one containing pts for a line
+  #       ymax:       upper bound of y-axis
+  #       pt.names:   names of points (x-axis tick labels)
+  #       pt.lab.dst: distance from x-axis tick labels to x-axis
+  #       pt.lab.rot: rotation angle of x-axis tick labels
+  #       col:        colour(s) for lines
+  #       pch:        plotting character(s) for lines
+  #       lty:        line type(s) for lines
+  #       lwd:        line width(s) for lines
+  #       help.lin:   toggle horizontal helper lines
+  #       lgd.pos:    position of legend
+  #       lgd.inset:  inset of legend from plot margin
+  #       lgd.rev:    legend in reverse order
+  #       ...:        arguments to 'plot' (e.g. 'ylab')
+  #----------------------------------------------------------------------------#
+  nlin <- length(list)
+  npt  <- length(pt.names)
+  if (length(col) < nlin) col <- rep(col, nlin)
+  if (length(pch) < nlin) pch <- rep(pch, nlin)
+  if (length(lty) < nlin) lty <- rep(lty, nlin)
+  if (length(lwd) < nlin) lwd <- rep(lwd, nlin)
+  # Draw empty plot with appropriate x and y range
+  plot(NULL, xlim=c(1,length(pt.names)), ylim=c(0,ymax), xaxt="n", yaxt="n", xlab="", ...)
+  # Draw helper lines if desired
+  if (help.lin) abline(h=axTicks(2), col="lightgray", lwd=0.75)
+  # Add each line to the plot
+  for (i in 1:nlin) {
+    lines(list[[i]], type="o", col=col[i], pch=pch[i], lwd=lwd[i], lty=lty[i])
+  }
+  # Add y-axis: with formatted horizontal tick labels
+  axis(2, at=axTicks(2), labels=Int(axTicks(2)), las=1)
+  # Add x-axis: only ticks but no labels
+  axis(1, at=1:npt, labels=FALSE)
+  # Add x-axis tick labels
+  text(x=1:npt, y=-(pt.lab.dst*ymax), labels=pt.names, xpd=TRUE, pos=2, offset=0, srt=pt.lab.rot, xpd=TRUE)
+  # Add legend
+  legend <- names(list)
+  if (lgd.rev) {
+    legend <- rev(names(list))
+    col <- rev(col)
+    pch <- rev(pch)
+    lwd <- rev(lwd)
+    lty <- rev(lty)
+  }
+  legend(lgd.pos, legend=legend, col=col, pch=pch, lwd=lwd, lty=lty, bg="white", xpd=TRUE, inset=lgd.inset)
 }
 
 MichelBarplot <- function(list, dat="states", gap=1, lab.rot=45, lab.dst=0.33,
