@@ -1,17 +1,10 @@
-# F functions for analyising the results of Büchi complementation experiments
-# with GOAL on the test automata from the paper "State of Büchi Complementation"
-# 
-# Test automata available on: http://goal.im.ntu.edu.tw/wiki/lib/exe/fetch.php?
-#                             media=goal:ciaa2010_automata.tar.gz
+# R functions for reading data and creating tables and graphics from the
+# experiment results, as well as some utility functions.
+#
+# These functions can be used interactively or by an R script.
 #
 # Daniel Weibel <daniel.weibel@unifr.ch> Sep. 2014 - August 2015
 #------------------------------------------------------------------------------#
-
-SetDir <- function() {
-  # Change working directory so that we can work with relative paths only
-  #----------------------------------------------------------------------------#
-  setwd("~/Desktop/thesis/results")
-}
 
 ReadSingle <- function(file) {
   # Read a CSV file to a data frame
@@ -188,7 +181,7 @@ MichelTable <- function(list, dat="states", fit.fun=TRUE, std.err=TRUE, raw=FALS
   res
 }
 
-Lineplot <- function(list, ymax, pt.names, pt.lab.dst=0.1, pt.lab.rot=45, 
+Lineplot <- function(list, ymax, pt.names, pt.lab.dst=0.1, pt.lab.rot=45, pt.lab.font=1,
                      col="black", pch=1, lty="solid", lwd="1.2", help.lin=TRUE,
                      lgd.pos="topright", lgd.inset=c(0,0), lgd.rev=FALSE, ...) {
   # Create a line plot with one or more lines
@@ -197,6 +190,7 @@ Lineplot <- function(list, ymax, pt.names, pt.lab.dst=0.1, pt.lab.rot=45,
   #       pt.names:   names of points (x-axis tick labels)
   #       pt.lab.dst: distance from x-axis tick labels to x-axis
   #       pt.lab.rot: rotation angle of x-axis tick labels
+  #       pt.lab.font:font for the x-axis tick labels (plain, bold, etc.)
   #       col:        colour(s) for lines
   #       pch:        plotting character(s) for lines
   #       lty:        line type(s) for lines
@@ -226,7 +220,7 @@ Lineplot <- function(list, ymax, pt.names, pt.lab.dst=0.1, pt.lab.rot=45,
   # Add x-axis: only ticks but no labels
   axis(1, at=1:npt, labels=FALSE)
   # Add x-axis tick labels
-  text(x=1:npt, y=-(pt.lab.dst*ymax), labels=pt.names, xpd=TRUE, pos=2, offset=0, srt=pt.lab.rot, xpd=TRUE)
+  text(x=1:npt, y=-(pt.lab.dst*ymax), labels=pt.names, xpd=TRUE, pos=2, offset=0, srt=pt.lab.rot, xpd=TRUE, font=pt.lab.font)
   # Add legend
   legend <- names(list)
   if (lgd.rev) {

@@ -29,7 +29,7 @@ First of all, we have to check how many timeouts and memory excesses there are i
 
 \begin{table}[ht]
 \centering
-\input{figures/r/internal/goal/outs.tex}
+\input{../results/figures/internal/goal/outs.tex}
 \caption{Number of timeouts and memory excesses in the internal tests on the \goal{} test set.}
 \label{i.g.out_table}
 \end{table}
@@ -43,7 +43,7 @@ Having determined the effective samples, we can turn to the analysis of our main
 
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.575]{figures/r/internal/goal/s.stripchart.pdf}
+\includegraphics[scale=0.575]{../results/figures/internal/goal/s.stripchart.pdf}
 \caption{Complement sizes of the 10,939 effective samples for each tested version of the Fribourg construction on the \goal{} test set.}
 \label{i.g.stripchart}
 \end{figure}
@@ -62,7 +62,7 @@ The stripchart in Figure~\ref{i.g.stripchart} gives a good first impression abou
 
 \begin{table}[ht]
 \centering
-\input{figures/r/internal/goal/s.stats.tex}
+\input{../results/figures/internal/goal/s.stats.tex}
 \caption{Statistics of the complement sizes of the 10,939 effective samples for each tested version of the Fribourg construction on the \goal{} test set.}
 \label{i.g.stats}
 \end{table}
@@ -90,20 +90,19 @@ The per-class median complement sizes result in a similar type of data that we e
 
 Figures~\ref{i.g.persp_1} and~\ref{i.g.persp_2} show the perspective plots with the per-class median complement sizes for the eight tested Fribourg construction version. Note that looking at these perspective plots corresponds to looking at the corresponding matrix from the bottom right corner. We keep this orientation for all the perspective plots in this chapter. Note that this orientation is different from the orientation used for the perspective plots presenting the number of complete, universal, and empty automata of the \goal{} test set in Section~\ref{4_goal_testset}. The colours of the rectangles (called facets) in the perspective plots depend on the ``height'' of the plot at their four corners, and are chosen to draw an analogy with mountains.
 
-\newcommand{\perspwidth}{0.475}
-
+\def\perspwidth{0.475}
 \begin{figure}[ht]
 \centering
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/internal/goal/s.median.Fribourg.pdf}
   \caption{Fribourg}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+R2C.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/internal/goal/s.median.Fribourg+R2C.pdf}
   \caption{Fribourg+R2C}
   \end{subfigure}
   \hfill
@@ -111,13 +110,13 @@ Figures~\ref{i.g.persp_1} and~\ref{i.g.persp_2} show the perspective plots with 
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+R2C+C.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/internal/goal/s.median.Fribourg+R2C+C.pdf}
   \caption{Fribourg+R2C+C}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+R.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/internal/goal/s.median.Fribourg+R.pdf}
   \caption{Fribourg+R}
   \end{subfigure}
   \hfill  
@@ -149,13 +148,13 @@ Fribourg+R in Figure~\ref{i.g.persp_1} (d) has, as expected, extremely low value
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+M1.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/internal/goal/s.median.Fribourg+M1.pdf}
   \caption{Fribourg+M1}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+M1+R2C.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/internal/goal/s.median.Fribourg+M1+R2C.pdf}
   \caption{Fribourg+M1+R2C}
   \end{subfigure}
   \hfill
@@ -163,13 +162,13 @@ Fribourg+R in Figure~\ref{i.g.persp_1} (d) has, as expected, extremely low value
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+M1+R2C+C.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/internal/goal/s.median.Fribourg+M1+R2C+C.pdf}
   \caption{Fribourg+M1+R2C+C}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/internal/goal/s.median.Fribourg+M1+M2.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/internal/goal/s.median.Fribourg+M1+M2.pdf}
   \caption{Fribourg+M1+M2}
   \end{subfigure}
   \hfill
@@ -198,7 +197,7 @@ To this end, we calculated for each transition density/acceptance density class 
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.35\textwidth]{figures/r/internal/goal/difficulty.pdf}
+\includegraphics[width=0.35\textwidth]{../results/figures/internal/goal/difficulty.pdf}
 \caption{Difficulty categories \textit{easy} (green), \textit{medium} (yellow), and \textit{hard} (red) of the 110 transition density/acceptance density classes of the \goal{} test set.}
 \label{i.g.difficulty}
 \end{figure}
@@ -240,7 +239,7 @@ In Table~\ref{i.m.states}, we present the resulting complement sizes for all ver
 
 \begin{table}[htb]
 \centering
-\input{figures/r/internal/michel/s.table.tex}
+\input{../results/figures/internal/michel/s.table.tex}
 \caption{Complement sizes for the Michel automata 1 to 4, having 3 to 6 states.}
 \label{i.m.states}
 \end{table}
@@ -275,7 +274,7 @@ In Table~\ref{i.m.times}, we present the execution times of the different versio
 
 \begin{table}[htb]
 \centering
-\input{figures/r/internal/michel/t.table.tex}
+\input{../results/figures/internal/michel/t.table.tex}
 \caption{Execution times for the Michel automata 1 to 4, having 3 to 6 states.}
 \label{i.m.times}
 \end{table}
@@ -356,7 +355,7 @@ Table~\ref{e.g.outs} shows the number of timeouts and memory excesses for all fo
 
 \begin{table}[ht]
 \centering
-\input{figures/r/external/goal/outs.tex}
+\input{../results/figures/external/goal/outs.tex}
 \caption{Number of timeouts and memory excesses of the external tests on the \goal{} test set.}
 \label{e.g.outs}
 \end{table}
@@ -368,7 +367,7 @@ Figure~\ref{e.g.stripchart.with_rank} shows a stripchart with the complement siz
 
 \begin{figure}[htb]
 \centering
-\includegraphics[scale=0.575]{figures/r/external/goal/s.stripchart.with_rank.pdf}
+\includegraphics[scale=0.575]{../results/figures/external/goal/s.stripchart.with_rank.pdf}
 \caption{Complement sizes of the 7,204 effective samples of the external tests \textit{with Rank} on the \goal{} test set.}
 \label{e.g.stripchart.with_rank}
 \end{figure}
@@ -377,7 +376,7 @@ In Table~\ref{e.g.stats.with_rank}, we present the mean and the five-number summ
 
 \begin{table}[htb]
 \centering
-\input{figures/r/external/goal/s.stats.with_rank.tex}
+\input{../results/figures/external/goal/s.stats.with_rank.tex}
 \caption{Statistics of the complement sizes of the 7,204 effective samples of the external tests \textit{with Rank} on the \goal{} test set.}
 \label{e.g.stats.with_rank}
 \end{table}
@@ -399,7 +398,7 @@ Considering only Piterman, Slice, and Fribourg, there are 10,998 effective sampl
 
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=0.575]{figures/r/external/goal/s.stripchart.pdf}
+\includegraphics[scale=0.575]{../results/figures/external/goal/s.stripchart.pdf}
 \caption{Complement sizes of the 10,998 effective samples of the external tests \textit{without Rank} on the \goal{} test set.}
 \label{e.g.stripchart}
 \end{figure}
@@ -408,32 +407,32 @@ In Table~\ref{e.g.stats}, we present the mean and the five-number summary of the
 
 \begin{table}[ht]
 \centering
-\input{figures/r/external/goal/s.stats.tex}
+\input{../results/figures/external/goal/s.stats.tex}
 \caption{Statistics of the complement sizes of the 10,998 effective samples of the external tests \textit{without Rank} on the \goal{} test set.}
 \label{e.g.stats}
 \end{table}
 
 Next, we analyse the complement sizes for each of the 110 transition density/acceptance density classes of the \goal{} test set. Like for the internal tests, we consider the median complement size for each class. Figure~\ref{e.g.persp} shows the perspective plots for Piterman, Slice, and Fribourg. Note that we provide the corresponding matrices with the exact values in Appendix~\ref{app_matrices} (Figure~\ref{e.g.matrices}). Also note that the perspective plot of Fribourg+M1+R2C in Figure~\ref{e.g.persp} (c) is the same as the one we presented for the internal tests in Figure~\ref{i.g.persp_2} (c), however, with a different $z$-axis scale.
 
-\renewcommand{\perspwidth}{0.3}
+\def\perspwidth{0.3}
 \begin{figure}[ht]
 \centering
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/external/goal/s.median.Piterman+EQ+RO.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/external/goal/s.median.Piterman+EQ+RO.pdf}
   \caption{Piterman+EQ+RO}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/external/goal/s.median.Slice+P+RO+MADJ+EG.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/external/goal/s.median.Slice+P+RO+MADJ+EG.pdf}
   \caption{Slice+P+RO+MADJ+EG}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{\perspwidth\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{figures/r/external/goal/s.median.Fribourg+M1+R2C.pdf}
+  \includegraphics[width=\textwidth]{../results/figures/external/goal/s.median.Fribourg+M1+R2C.pdf}
   \caption{Fribourg+M1+R2C}
   \end{subfigure}
   \hfill
@@ -459,7 +458,7 @@ Table~\ref{e.m.states} shows the complement sizes of the Michel automata~1 to~4 
 
 \begin{figure}[htb]
 \centering
-\input{figures/r/external/michel/s.table.tex}
+\input{../results/figures/external/michel/s.table.tex}
 \caption{Complement sizes for the Michel automata 1 to 4, with 3, 4, 5, and 6 states, respectively.}
 \label{e.m.states}
 \end{figure}
@@ -477,7 +476,7 @@ As for the internal tests, we also present the execution times of the external t
 
 \begin{table}[htb]
 \centering
-\input{figures/r/external/michel/t.table.tex}
+\input{../results/figures/external/michel/t.table.tex}
 \caption{Execution times for the Michel automata 1 to 4. These automata have 3, 4, 5, and 6 states, respectively.}
 \label{e.m.times}
 \end{table}
@@ -494,7 +493,7 @@ This concludes the presentation of the results of our empirical performance inve
 
 % \begin{table}[ht]
 % \centering
-% \input{figures/r/external/michel/t.table.tex}
+% \input{../results/figures/external/michel/t.table.tex}
 % \caption{Execution times for the first four Michel automata.}
 % \label{e.m.times}
 % \end{table}

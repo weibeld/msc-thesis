@@ -1,22 +1,17 @@
-%==============================================================================%
-% Preamble
-%==============================================================================%
-% Options: table: table option for package 'xcolor' for colouring table cells
-\documentclass[a4paper,table]{report}
+\documentclass[a4paper]{report}
 
 %------------------------------------------------------------------------------%
 % Packages
 %------------------------------------------------------------------------------%
 
-% Standard stuff
+% Math and graphics
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
 
-% Automatic cross-links in document, \url command
+% Automatic cross-links in document and \url command
 \usepackage{hyperref}
-% URL style (command \url)
-\renewcommand\UrlFont{\color{red}\sffamily}%\itshape}
+\renewcommand\UrlFont{\color{red}\sffamily}%\itshape}  % Set URL style
 
 % Page setup
 \usepackage{geometry}
@@ -29,10 +24,10 @@
 % Allow literal typing of ä, ö, ü, etc.
 \usepackage[utf8]{inputenc}
 
-% Zero parindent, non-zero parskip
+% Set zero parindent and non-zero parskip
 \usepackage{parskip}
 
-% Allow definition of new table column types with \newcolumntype
+% Definition of new column types with \newcolumntype, and m{...} column type
 \usepackage{array}
 
 % Table of contents for chapters
@@ -48,15 +43,19 @@
 % Adding lengths. e.g. \newlength{\mylen} \setlength{\mylen}{\texwidth+1cm}
 \usepackage{calc}
 
+% Tables wrapping over pages
 \usepackage{longtable}
 
+% Enlarged first letter of chapter (\lettrine{T}{his chapter is}...)
 \usepackage{lettrine}
 
+% Tabstops like in Word (\tabto{4cm})
 \usepackage{tabto}
 
+% Set line spacing
 \usepackage{setspace}
 
-% Page headers and footers
+% Page header and footer
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhead{}                          % Clear default header settings
@@ -64,7 +63,7 @@
 \fancyfoot{}                          % Clear default footer settings
 \fancyfoot[C]{\thepage}               % Page number centered
 
-% Globally customise 'itemize' and 'enumerate'
+% More customisable 'itemize', 'enumerate', and 'description' 
 \usepackage{enumitem}
 \setlist{nosep} % or \setlist{noitemsep} to leave space around whole list
 \setitemize{itemsep=3pt}
@@ -72,20 +71,13 @@
 
 
 %------------------------------------------------------------------------------%
-% Command redefinitions
-%------------------------------------------------------------------------------%
-
-
-
-
-%------------------------------------------------------------------------------%
 % New commands
 %------------------------------------------------------------------------------%
 
-% Include commands with TikZ drawings
+% Include TikZ (containing drawings as commands)
 \input{input/tikz.tex}
 
-% Set standard table spacings
+% Command for resetting table spacings
 \newcommand{\tablestyle}{
   \renewcommand{\arraystretch}{1.15}
   \renewcommand{\tabcolsep}{0.2cm}
@@ -96,16 +88,10 @@
 \newcommand{\goal}{GOAL}
 \newcommand{\om}{{$\omega$}}
 \newcommand{\aom}{{$a^\omega$}}
-\newcommand{\Bp}{{$B^\prime$}}
 \newcommand{\ob}[1]{$\overline{\text{#1}}$}
-\newcommand{\shade}{\cellcolor{black!5}}  % Shaded table cell
 
 % Custom table column: fixed width, horizontally and vertically centered
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
-
-% Width of a subfigure
-\newcommand{\subwidth}{0.49}
-
 
 %==============================================================================%
 % Main body

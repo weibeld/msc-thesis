@@ -1,21 +1,31 @@
+# Code used to produce the definitive graphics and tables for the report and
+# the presentation. The output is saved in ./figures, relative to the current
+# working directory.
+#
+# First execute GetData and then the individual functions producing the desired
+# output objects.
+#
+# Daniel Weibel <daniel.weibel@unifr.ch> May 2015 - August 2015
+#------------------------------------------------------------------------------#
 
 GetData <- function() {
-  SetDir()
+  # Set current directory (adapt if necessary)
+  setwd("~/Desktop/thesis/results")
 
   # Test set analysis
-  cmpl <<- ReadSingle("testset/completeness/completeness.csv")
-  univ <<- ReadSingle("testset/universality/universality.csv")
-  empt <<- ReadSingle("testset/emptiness/emptiness.csv")
+  cmpl <<- ReadSingle("data/testset/completeness/completeness.csv")
+  univ <<- ReadSingle("data/testset/universality/universality.csv")
+  empt <<- ReadSingle("data/testset/emptiness/emptiness.csv")
   
   # Internal: GOAL test set
-  i.g.all <<- ReadSubdirs("internal/goal")[c(1, 8, 7, 2, 5, 4, 3, 6)]
+  i.g.all <<- ReadSubdirs("data/internal/goal")[c(1, 8, 7, 2, 5, 4, 3, 6)]
   i.g <<- Eff(i.g.all)
 
   # Internal: Michel automata
-  i.m <<- ReadSubdirs("internal/michel")[c(4, 6, 3, 1, 2, 5)]
+  i.m <<- ReadSubdirs("data/internal/michel")[c(4, 6, 3, 1, 2, 5)]
 
   # External: GOAL test set with Rank
-  e.g.with_rank.all <<- ReadSubdirs("external/goal")[c(2, 4, 3, 1)]
+  e.g.with_rank.all <<- ReadSubdirs("data/external/goal")[c(2, 4, 3, 1)]
   e.g.with_rank <<- Eff(e.g.with_rank.all)
 
   # External: GOAL test set without Rank
@@ -24,7 +34,7 @@ GetData <- function() {
   e.g <<- Eff(e.g.all)
 
   # External: Michel automata
-  e.m <<- ReadSubdirs("external/michel")[c(2, 4, 3, 1)]
+  e.m <<- ReadSubdirs("data/external/michel")[c(2, 4, 3, 1)]
 }
 
 All <- function() {
@@ -117,32 +127,44 @@ IntGoal <- function() {
   text(x=300, y=-1, labels="Execution time (seconds)", xpd=TRUE)
   dev.off()
 
-  # # Persp plots with median of produced states
-  # mlist <- MatrixGoal(i.g)
-  # PerspBatch(mlist, pdf=TRUE, dir=dir, prefix="s.median.", width=6, height=5,
-  #            mar=c(1, 2.5, 0, 0), zlim=c(0, 6500), z.colors=TRUE, zlab="",
-  #            xlab="Transition density", ylab="Acceptance density", lin=TRUE,
-  #            lin.xy=list(x=1, y=0.1), lin.col="gray", theta=150, phi=25,
-  #            shade=0.5, ltheta=30, lphi=20, custom.zlab=function() {
-  #            text(-0.73, 0.06, "States (median)", srt=94) })
+  # Persp plots with median of produced states
+  mlist <- MatrixGoal(i.g)
+  PerspBatch(mlist, pdf=TRUE, dir=dir, prefix="s.median.", width=6, height=5,
+             mar=c(1, 2.5, 0, 0), zlim=c(0, 6500), z.colors=TRUE, zlab="",
+             xlab="Transition density", ylab="Acceptance density", lin=TRUE,
+             lin.xy=list(x=1, y=0.1), lin.col="gray", theta=150, phi=25,
+             shade=0.5, ltheta=30, lphi=20, custom.zlab=function() {
+             text(-0.73, 0.06, "States (median)", srt=94) })
 
-  # # Image plot showing difficulty levels for all the dt/da classes
-  # file <- paste0(dir, "/difficulty.pdf")
-  # m.avg <- MatrixAgg(mlist, mean)  # Average of all the state median matrices
-  # pdf(file=file, width=4.1, height=4.1)
-  # par(mar=c(0.25, 3, 2.75, 0.25))
-  # # less than 500: green; betw. 500 and 1600: yellow; more than 1600: red
-  # Image(m.avg, breaks=c(0, 500, 1600, 6000), col=c("green", "yellow", "red"))
-  # dev.off()
+  # Image plot showing difficulty levels for all the dt/da classes
+  file <- paste0(dir, "/difficulty.pdf")
+  m.avg <- MatrixAgg(mlist, mean)  # Average of all the state median matrices
+  pdf(file=file, width=4.1, height=4.1)
+  par(mar=c(0.25, 3, 2.75, 0.25))
+  # less than 500: green; betw. 500 and 1600: yellow; more than 1600: red
+  Image(m.avg, breaks=c(0, 500, 1600, 6000), col=c("green", "yellow", "red"))
+  dev.off()
 
-  # Line plot with medians and means
+  # Line plot with median and mean complement sizes
   file <- paste0(dir, "/s.lineplot.pdf")
-  pdf(file=file, width=6, height=5)
-  par(mar=c(7.5, 6, 1, 1))
-  par(mgp=c(4.5,1,0))
+  pdf(file=file, width=7, height=5)
+  par(mar=c(7.5, 6, 1, 1))     # Margins
+  par(mgp=c(4,1,0))         # Axis/axis title distance
   s <- Stats(i.g)
-  Lineplot(s[c(2,4,5,6)], pt.names=s[[1]], ymax=2500, lwd=1.5, ylab="Complement size",
-           col=c("blue", "red", "orange", "purple"), lgd.pos="topright",lgd.rev=FALSE)
+  s <- s[c(1,2,3,4,7,5,6,8),]  # Order of constructions
+  Lineplot(s[c(2,5)], pt.names=s[[1]], ylab="Complement size", ymax=2500, lwd=1.5,
+           col=c("red", "blue"), lgd.pos="topright", lgd.rev=FALSE, pt.lab.font=2)
+  dev.off()
+
+  # Line plot with median and mean execution times
+  file <- paste0(dir, "/t.lineplot.pdf")
+  pdf(file=file, width=7, height=5)
+  par(mar=c(7.6, 4.5, 1, 1))  # Margins
+  par(mgp=c(3,1,0))           # Axis/axis title distance
+  s <- Stats(i.g, "cpu_time")
+  s <- s[c(1,2,3,4,7,5,6,8),]  # Order of constructions
+  Lineplot(s[c(2,5)], pt.names=s[[1]], ylab="Execution time [sec.]", ymax=10, lwd=1.5,
+           col=c("red", "blue"), lgd.pos="top", lgd.rev=FALSE, pt.lab.font=2)
   dev.off()
 
   # Matrices corresponding to all the persp plots (in separate folder)
@@ -235,6 +257,48 @@ ExtGoal <- function() {
              shade=0.5, ltheta=30, lphi=20, custom.zlab=function() {
              text(-0.73, 0.06, "States (median)", srt=94) })
 
+  # Line plot with median and mean complement sizes (without Rank)
+  file <- paste0(dir, "/s.lineplot.pdf")
+  pdf(file=file, width=5, height=5)
+  par(mar=c(7.5, 6, 1, 7))  # Margins
+  par(mgp=c(4,1,0))         # Axis/axis title distance
+  s <- Stats(e.g)
+  Lineplot(s[c(2,5)], pt.names=s[[1]], ylab="Complement size", ymax=1000, lwd=1.5,
+           col=c("red", "blue"), lgd.pos="topright", lgd.rev=FALSE, lgd.inset=c(-0.51,0), pt.lab.font=2)
+  dev.off()
+
+  # Line plot with median and mean complement sizes (with Rank)
+  file <- paste0(dir, "/s.lineplot.with_rank.pdf")
+  pdf(file=file, width=6, height=5)
+  par(mar=c(7.5, 6, 1, 7))  # Margins
+  par(mgp=c(4.25,1,0))         # Axis/axis title distance
+  s <- Stats(e.g.with_rank)
+  s <- s[c(1,2,4,3),]       # Order Piterman - Slice - Fribourg - Rank
+  Lineplot(s[c(2,5)], pt.names=s[[1]], ylab="Complement size", ymax=5500, lwd=1.5,
+           col=c("red", "blue"), lgd.pos="topright", lgd.rev=FALSE, lgd.inset=c(-0.375,0), pt.lab.font=2)
+  dev.off()
+
+  # Line plot with median and mean execution times (without Rank)
+  file <- paste0(dir, "/t.lineplot.pdf")
+  pdf(file=file, width=5, height=5)
+  par(mar=c(7.5, 4.55, 1, 7))  # Margins
+  par(mgp=c(3,1,0))         # Axis/axis title distance
+  s <- Stats(e.g, "cpu_time")
+  Lineplot(s[c(2,5)], pt.names=s[[1]], ylab="Execution time [sec.]", ymax=5, lwd=1.5,
+           col=c("red", "blue"), lgd.pos="topright", lgd.rev=FALSE, lgd.inset=c(-0.47,0))
+  dev.off()
+
+  # Line plot with median and mean execution times (with Rank)
+  file <- paste0(dir, "/t.lineplot.with_rank.pdf")
+  pdf(file=file, width=6, height=5)
+  par(mar=c(7.5, 4.5, 1, 7))  # Margins
+  par(mgp=c(3,1,0))         # Axis/axis title distance
+  s <- Stats(e.g.with_rank, "cpu_time")
+  s <- s[c(1,2,4,3),]       # Order Piterman - Slice - Fribourg - Rank
+  Lineplot(s[c(2,5)], pt.names=s[[1]], ylab="Execution time [sec.]", ymax=16, lwd=1.5,
+           col=c("red", "blue"), lgd.pos="topright", lgd.rev=FALSE, lgd.inset=c(-0.33,0))
+  dev.off()
+
   # Matrices corresponding to the persp plots (without Rank)
   dir <- .MkDir("external/goal/matrices")
   m.lst <- MatrixGoal(e.g)
@@ -274,12 +338,22 @@ IntMichel <- function() {
 
   # Lineplot with complement sizes
   file <- paste0(dir, "/s.lineplot.pdf")
-  pdf(file=file, width=6, height=5)
+  pdf(file=file, width=6.5, height=5)
   par(mar=c(7.5, 6, 1, 1))
-  par(mgp=c(4.5,1,0))
+  par(mgp=c(5,1,0))
   m <- MichelTable(i.m)
   Lineplot(m[2:5], pt.names=m[[1]], ymax=300000, lwd=1.5, ylab="Complement size",
-           col=c("purple", "orange", "blue", "red"), lgd.pos="topright",lgd.rev=TRUE)
+           col=c("purple", "orange", "blue", "red"), lgd.pos="topright",lgd.rev=TRUE, pt.lab.font=2)
+  dev.off()
+
+  # Lineplot with complement execution times
+  file <- paste0(dir, "/t.lineplot.pdf")
+  pdf(file=file, width=6.5, height=5)
+  par(mar=c(7.5, 6, 1, 1))
+  par(mgp=c(5,1,0))
+  m <- MichelTable(i.m, "cpu_time")
+  Lineplot(m[2:5], pt.names=m[[1]], ymax=100000, lwd=1.5, ylab="Execution time [sec.]",
+           col=c("purple", "orange", "blue", "red"), lgd.pos="top",lgd.rev=TRUE, pt.lab.font=2)
   dev.off()
 
   # Extrapolation table
@@ -334,7 +408,29 @@ ExtMichel <- function() {
   par(mar=c(8, 6, 1, 0.125))
   MichelBarplot(e.m, dat="cpu_time", ylim=c(0, 80000), col="white", lin=TRUE)
   text(x=-3.25, y=40000, labels="Running time (sec.)", srt=90, xpd=TRUE)
-  dev.off()            
+  dev.off()
+
+  # Lineplot with complement sizes
+  file <- paste0(dir, "/s.lineplot.pdf")
+  pdf(file=file, width=5, height=5)
+  par(mar=c(7.5, 6, 1, 1))
+  par(mgp=c(5,1,0))
+  m <- MichelTable(e.m)
+  m <- m[c(1,2,4,3),]  # Order Piterman - Slice - Fribourg - Rank
+  Lineplot(m[2:5], pt.names=m[[1]], ymax=200000, lwd=1.5, ylab="Complement size",
+           col=c("purple", "orange", "blue", "red"), lgd.pos="topright",lgd.rev=TRUE, pt.lab.font=2)
+  dev.off()
+
+  # Lineplot with execution times
+  file <- paste0(dir, "/t.lineplot.pdf")
+  pdf(file=file, width=5, height=5)
+  par(mar=c(7.5, 6, 1, 1))
+  par(mgp=c(5,1,0))
+  m <- MichelTable(e.m, "cpu_time")
+  m <- m[c(1,2,4,3),]  # Order Piterman - Slice - Fribourg - Rank
+  Lineplot(m[2:5], pt.names=m[[1]], ymax=80000, lwd=1.5, ylab="Execution time [sec.]",
+           col=c("purple", "orange", "blue", "red"), lgd.pos="topright",lgd.rev=TRUE, pt.lab.font=2)
+  dev.off()        
 }
 
 
@@ -366,8 +462,10 @@ ExtMichel <- function() {
   })
 }
 
-.BaseDir <- function() { "~/Desktop/thesis/report/figures/r" }
+# Base directory for output graphics
+.BaseDir <- function() { "./figures" }
 
+# Create a directory if it does not yet exist
 .MkDir <- function(dir) {
   dir <- paste0(.BaseDir(), "/", dir)
   dir.create(dir, recursive=TRUE, showWarnings=FALSE)

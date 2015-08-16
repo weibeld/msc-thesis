@@ -1,11 +1,11 @@
 % Fixes conflict of the packages tkiz and xcolor about the options usenames and
 % dvipsnames which we want to pass to xcolor.
-%\PassOptionsToPackage{usenames,dvipsnames}{xcolor}
+\PassOptionsToPackage{usenames,dvipsnames,table}{xcolor}
 
 \documentclass[12pt,handout]{beamer}
 
 \usepackage{tikz}
-\usetikzlibrary{positioning,calc,arrows.meta,automata}
+\usetikzlibrary{positioning,calc,arrows.meta,automata,shadows}
 %\usepackage{mathtools}
 %\usepackage{amssymb}
 %\usepackage{xcolor}
@@ -14,17 +14,26 @@
 % Allow literal typing of ä, ö, ü, etc.
 \usepackage[utf8]{inputenc}
 
+% Allows to set background colour of table cell
+\usepackage[table]{xcolor}
+
 % For not adding frames after \appendix to total number of slides
 \usepackage{appendixnumberbeamer}
 
-% Better lists (itemize, enumerate, etc.)
+% Table column type m{...}
 \usepackage{array}
+
+% Smart filename extension recognition (allow dots in file names)
+\usepackage{grffile}
+
+% Tabstops like in Word (\tabto{4cm})
+\usepackage{tabto}
 
 % URL style (related to package 'hyperref')
 \renewcommand\UrlFont{\color{red}}
 
 %------------------------------------------------------------------------------%
-% Standard LaTeX Beamer customisation
+% LaTeX Beamer customisation
 %------------------------------------------------------------------------------%
 \usetheme{Madrid}
 
@@ -89,7 +98,7 @@
 }
 \makeatletter
 
-% Disable header and footer (put frame between \begin{blank} \end{blank})
+% Environment for disabling header and footer
 \makeatletter
     \newenvironment{blank}{
         \setbeamertemplate{headline}{}
@@ -97,7 +106,6 @@
         \setbeamertemplate{footline}{}
     }{}
 \makeatother
-
 
 %------------------------------------------------------------------------------%
 % TikZ customisation
@@ -130,7 +138,134 @@
   }
 }
 
+% Color of definition blocks
 \setbeamercolor{block title}{fg=black,bg=white!75!black}
+
+%------------------------------------------------------------------------------%
+% New commands
+%------------------------------------------------------------------------------%
+% Shorthand commands
+\newcommand{\fat}[1]{\textbf{#1}}
+\newcommand{\ita}[1]{\textit{#1}}
+
+% Directories of figures for result section
+\newcommand{\igo}{../results/figures/internal/goal}
+\newcommand{\ego}{../results/figures/external/goal}
+\newcommand{\imi}{../results/figures/internal/michel}
+\newcommand{\emi}{../results/figures/external/michel}
+
+% Active cell in the IG-IM-EG-EM matrix
+\newcommand{\activecell}[1]{\cellcolor{red}\color{white}{#1}}
+
+% Michel 4
+\newcommand{\Michel}{
+\begin{tikzpicture}[my automaton,semithick]
+\scriptsize
+% Initial node and #-node
+\node[state,initial,accepting] (0)               {$q_0$};
+\node[state,yshift=-0.2cm]                   (x) [below=of 0]  {$q_\#$};
+\draw[->] (0) edge node[left] {\tiny\#} (x);
+\draw[->] (x) edge[my below,loop] node[below] {\tiny $\#,1,2,3,4$} ();
+% Node 1
+\node[state,xshift=1cm]        (1) [right=of 0]  {$q_1$};
+\draw[<->] (0) edge node[above,xshift=2mm,yshift=-0.5mm] {\tiny $1$} (1);
+\draw[->] (1) edge[my right,loop] node[right] {\tiny $\#,1,2,3,4$} ();
+% Node 2
+\node[state,yshift=0.5cm]      (2) [below=of 1]  {$q_2$};
+\draw[<->] (0) edge node[above,xshift=2mm,yshift=-1mm] {\tiny $2$} (2);
+\draw[->] (2) edge[my right,loop] node[right] {\tiny $\#,1,2,3,4$} ();
+% Node 3
+\node[state,yshift=0.5cm]      (3) [below=of 2]  {$q_3$};
+\draw[<->] (0) edge node[above,xshift=2mm,yshift=-1.5mm] {\tiny $3$} (3);
+\draw[->] (3) edge[my right,loop] node[right] {\tiny $\#,1,2,3,4$} ();
+% Node 4
+\node[state,yshift=0.5cm]      (4) [below=of 3]  {$q_4$};
+\draw[<->,shorten >=-0.2mm,shorten <=-0.2mm] (0) edge node[above,xshift=2mm,yshift=-2mm] {\tiny $4$} (4);
+\draw[->] (4) edge[my right,loop] node[right] {\tiny $\#,1,2,3,4$} ();
+\end{tikzpicture}
+}
+
+\newcommand{\myitem}{--\hspace*{\labelsep}}
+
+\newcommand{\igol}{
+\begin{tabular}{l}
+\myitem Fribourg \\
+\myitem Fribourg+R2C \\
+\myitem Fribourg+R2C+C \\
+\myitem Fribourg+M1 \\
+\myitem Fribourg+M1+R2C \\
+\myitem Fribourg+M1+R2C+C \\
+\myitem Fribourg+M1+M2 \\
+\myitem Fribourg+R \\
+\end{tabular}}
+
+\newcommand{\imil}{
+\begin{tabular}{l}
+\myitem Fribourg \\
+\myitem Fribourg+R2C \\
+\myitem Fribourg+M1 \\
+\myitem Fribourg+M1+M2 \\
+\myitem Fribourg+M1+M2+R2C \\
+\myitem Fribourg+R \\
+\end{tabular}}
+
+\newcommand{\egol}{
+\begin{tabular}{l}
+\myitem Fribourg+M1+R2C \\
+\myitem Piterman+EQ+RO \\
+\myitem Rank+TR+RO \\
+\myitem Slice+P+RO+MADJ+EG \\
+\end{tabular}}
+
+\newcommand{\emil}{
+\begin{tabular}{l}
+\myitem Fribourg+M1+M2+R2C \\
+\myitem Piterman+EQ+RO \\
+\myitem Rank+TR+RO \\
+\myitem Slice+P+RO+MADJ+EG \\
+\end{tabular}}
+
+% % Black dash itemize symbol
+% \newcommand{\myitem}{\item[\color{black}{--}]}
+% % Shortcut commands for usage in table
+% \newcommand{\igol}{
+% \begin{itemize}\itemsep0pt
+% \myitem Fribourg
+% \myitem Fribourg+R2C
+% \myitem Fribourg+R2C+C
+% \myitem Fribourg+M1
+% \myitem Fribourg+M1+R2C
+% \myitem Fribourg+M1+R2C+C
+% \myitem Fribourg+M1+M2
+% \myitem Fribourg+R
+% \end{itemize}}
+
+% \newcommand{\imil}{
+% \begin{itemize}\itemsep0pt
+% \myitem Fribourg
+% \myitem Fribourg+R2C
+% \myitem Fribourg+M1
+% \myitem Fribourg+M1+M2
+% \myitem Fribourg+M1+M2+R2C
+% \myitem Fribourg+R
+% \end{itemize}}
+
+% \newcommand{\egol}{
+% \begin{itemize}\itemsep0pt
+% \myitem Fribourg+M1+R2C
+% \myitem Piterman+EQ+RO
+% \myitem Rank+TR+RO
+% \myitem Slice+P+RO+MADJ+EG
+% \end{itemize}}
+
+% \newcommand{\emil}{
+% \begin{itemize}\itemsep0pt
+% \myitem Fribourg+M1+M2+R2C
+% \myitem Piterman+EQ+RO
+% \myitem Rank+TR+RO
+% \myitem Slice+P+RO+MADJ+EG
+% \end{itemize}}
+
 
 %------------------------------------------------------------------------------%
 % Title information
@@ -144,9 +279,6 @@
 \titlegraphic{\includegraphics[width=6cm]{figures/unifr_logo.pdf}}
 
 \begin{document}
-
-\newcommand{\fat}[1]{\textbf{#1}}
-\newcommand{\ita}[1]{\textit{#1}}
 
 %------------------------------------------------------------------------------%
 % Title slide
@@ -168,7 +300,6 @@
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{Basics}
-%\vspace{-0.1cm} % Modify vertical alignment of image
 \begin{block}{Büchi automata}
 {\hfill
 \begin{tikzpicture}[my automaton,semithick]
@@ -195,40 +326,12 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 \ita{$B$ accepts a word if and only if it is not accepted by $A$}
 \end{quote}
 \end{block}
-  
-%item Büchi automata
-
-  % {\hfill
-  % \begin{tikzpicture}[my automaton]
-  % \scriptsize
-  % \node[state,initial]              (0) {$q_0$};
-  % \node[state,accepting,right=of 0] (1) {$q_1$};
-  % \node[state,,right=of 1]          (2) {$q_2$};
-  % \path[->] (0) edge[my above,loop] node[above] {$ab$} ()
-  %           (0) edge                node[above] {$ab$} (1)
-  %           (1) edge[my above,loop] node[above] {$b$}  ()
-  %           (1) edge                node[above] {$a$}  (2)
-  %           (2) edge[my above,loop] node[above] {$ab$} ();
-  % \end{tikzpicture}\hfill}
-
-%   \begin{itemize}
-%   \item Finite state automata running on infinite words ($\omega$-words) $\in \Sigma^\omega$
-%   \item A word is accepted if it has an accepting run
-%   \item A run is accepting if it visits an accepting state infinitely often
-%   \end{itemize}
-% \item Büchi complementation
-%   \begin{itemize}
-%   \item Given a Büchi automaton $A$, construct another Büchi automaton $B$
-%   \item $\dots$ such that $B$ accepts a word if an only if it is nota accepted by $A$
-%   \end{itemize}
-% \end{itemize}
 \end{frame}
 
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{Büchi Complementation Constructions}
-%\vspace{-0.1cm} % Modify vertical alignment of image
 \centering
 \begin{tikzpicture}[c/.style={align=center},semithick]
 \footnotesize
@@ -255,7 +358,6 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{The Fribourg Construction}
-%\vspace{-0.1cm} % Modify vertical alignment of image
 \begin{itemize}
 \item Slice-based complementation construction
 \item Worst-case state complexity: $(1.59n)^n$
@@ -274,7 +376,6 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{GOAL}
-%\vspace{-0.1cm} % Modify vertical alignment of image
 \begin{itemize}
 \item \fat{G}raphical Tool for \fat{O}mega-\fat{A}utomata and \fat{L}ogics
 \item \url{http://goal.im.ntu.edu.tw/wiki/doku.php}
@@ -294,7 +395,6 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{GOAL: Büchi Complementation Constructions}
-%\vspace{-0.1cm} % Modify vertical alignment of image
 \begin{itemize}
 \item Implementations of several Büchi complementation constructions (GOAL version 2014--11--17)
 \end{itemize}
@@ -322,7 +422,6 @@ Slice         & \cite{2008_kaehler} \\
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{Fribourg Construction Plugin for GOAL}
-%\vspace{-0.1cm} % Modify vertical alignment of image
 \begin{itemize}
 \item GOAL is built with the Java Plugin Framework (JPF)\footnote{\scriptsize\url{http://jpf.sourceforge.net/}}
   \begin{itemize}
@@ -388,33 +487,6 @@ Slice         & \cite{2008_kaehler} \\
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
-\newcommand{\Michel}{
-\begin{tikzpicture}[my automaton,semithick]
-\scriptsize
-% Starting node and # node
-\node[state,initial,accepting] (0)               {$q_0$};
-\node[state,yshift=-0.2cm]                   (x) [below=of 0]  {$q_\#$};
-\draw[->] (0) edge node[left] {\tiny\#} (x);
-\draw[->] (x) edge[my below,loop] node[below] {\tiny $\#,1,2,3,4$} ();
-% Node 1
-\node[state,xshift=1cm]        (1) [right=of 0]  {$q_1$};
-\draw[<->] (0) edge node[above,xshift=2mm,yshift=-0.5mm] {\tiny $1$} (1);
-\draw[->] (1) edge[my right,loop] node[right] {\tiny $\#,1,2,3,4$} ();
-% Node 2
-\node[state,yshift=0.5cm]      (2) [below=of 1]  {$q_2$};
-\draw[<->] (0) edge node[above,xshift=2mm,yshift=-1mm] {\tiny $2$} (2);
-\draw[->] (2) edge[my right,loop] node[right] {\tiny $\#,1,2,3,4$} ();
-% Node 3
-\node[state,yshift=0.5cm]      (3) [below=of 2]  {$q_3$};
-\draw[<->] (0) edge node[above,xshift=2mm,yshift=-1.5mm] {\tiny $3$} (3);
-\draw[->] (3) edge[my right,loop] node[right] {\tiny $\#,1,2,3,4$} ();
-% Node 4
-\node[state,yshift=0.5cm]      (4) [below=of 3]  {$q_4$};
-\draw[<->,shorten >=-0.2mm,shorten <=-0.2mm] (0) edge node[above,xshift=2mm,yshift=-2mm] {\tiny $4$} (4);
-\draw[->] (4) edge[my right,loop] node[right] {\tiny $\#,1,2,3,4$} ();
-\end{tikzpicture}
-}
-
 \begin{frame}{Test Data: Michel Test Set}
 \begin{itemize}
 \item Four Michel automata
@@ -443,47 +515,6 @@ Michel 4: & \Michel
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
-% Black dash itemize symbol
-\newcommand{\myitem}{\item[\color{black}{--}]}
-% Shortcut commands for usage in table
-\newcommand{\igoal}{
-\begin{itemize}\itemsep0pt
-\myitem Fribourg
-\myitem Fribourg+R2C
-\myitem Fribourg+R2C+C
-\myitem Fribourg+M1
-\myitem Fribourg+M1+R2C
-\myitem Fribourg+M1+R2C+C
-\myitem Fribourg+M1+M2
-\myitem Fribourg+R
-\end{itemize}}
-
-\newcommand{\imichel}{
-\begin{itemize}\itemsep0pt
-\myitem Fribourg
-\myitem Fribourg+R2C
-\myitem Fribourg+M1
-\myitem Fribourg+M1+M2
-\myitem Fribourg+M1+M2+R2C
-\myitem Fribourg+R
-\end{itemize}}
-
-\newcommand{\egoal}{
-\begin{itemize}\itemsep0pt
-\myitem Fribourg+M1+R2C
-\myitem Piterman+EQ+RO
-\myitem Rank+TR+RO
-\myitem Slice+P+RO+MADJ+EG
-\end{itemize}}
-
-\newcommand{\emichel}{
-\begin{itemize}\itemsep0pt
-\myitem Fribourg+M1+M2+R2C
-\myitem Piterman+EQ+RO
-\myitem Rank+TR+RO
-\myitem Slice+P+RO+MADJ+EG
-\end{itemize}}
-
 \begin{frame}{Test Setup}
 \begin{itemize}
 \item Internal tests
@@ -498,81 +529,247 @@ Michel 4: & \Michel
 \pause
 \centering
 \scriptsize
+{\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{l|c|c}
-& GOAL test set & Michel test set \\
-\hline
-Internal tests & \parbox{4.25cm}{\igoal} & \raisebox{1.125em}{\parbox{4.25cm}{\imichel}} \\
-\hline
-External tests & \parbox{4.25cm}{\egoal} & \parbox{4.25cm}{\emichel}
-\end{tabular}
+& GOAL test set & Michel test set \\ \hline
+Internal tests & \parbox{4.25cm}{\igol} & \parbox{4.25cm}{\imil} \\ \hline
+External tests & \parbox{4.25cm}{\egol} & \parbox{4.25cm}{\emil}
+\end{tabular}}
 \end{frame}
+
+
+\section{Results}
 
 %------------------------------------------------------------------------------%
 % Frame
+%------------------------------------------------------------------------------%
+\begin{frame}{Test Setup}
+\begin{itemize}
+\item Shorthand naming for test scenarios:
+\end{itemize}
+\centering
+{\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|c|c}
+         & GOAL test set & Michel test set \\ \hline
+Internal & \fat{IG}      & \fat{IM}        \\ \hline
+External & \fat{EG}      & \fat{EM}        \\
+\end{tabular}}
+\begin{itemize}
+\item IG and EG
+  \begin{itemize}
+  \item Time limit:   \tabto{2.45cm} 600 seconds CPU time
+  \item Memory limit: \tabto{2.45cm} 1 GB Java heap
+  \item Effective samples:
+    \begin{itemize}
+    \item Automata which have been succesfully complemented by \fat{all} constructions of a test scenario
+    \end{itemize}
+  \end{itemize}
+\item IM and EM: no limits
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% Internal - GOAL
 %------------------------------------------------------------------------------%
 \begin{frame}{Results: Internal Tests on GOAL Test Set}
-\centering
-\scriptsize
-{\renewcommand{\arraystretch}{1.15}
-\input{figures/i.g/table_states.tex}}
+\begin{center}
+{\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|c|c}
+         & GOAL test set & Michel test set \\ \hline
+Internal & \activecell{\fat{IG}}     & \fat{IM}        \\ \hline
+External & \fat{EG}                  & \fat{EM}        \\
+\end{tabular}}
+
+\vspace{0.7cm}
+\igol
+\end{center}
 \end{frame}
 
 %------------------------------------------------------------------------------%
-% Frame
+% Internal - GOAL
 %------------------------------------------------------------------------------%
-\begin{frame}{Results: Internal Tests on GOAL Test Set}
-\centering
-\includegraphics[width=0.9\textwidth]{figures/i.g/strip.pdf}
+\begin{frame}{IG: Complement Sizes (10,939 Eff. Samples)}
+\includegraphics[height=0.875\textheight]{\igo/s.lineplot.pdf}
 \end{frame}
 
 %------------------------------------------------------------------------------%
-% Frame
+% Internal - GOAL
 %------------------------------------------------------------------------------%
 \begin{blank}
 \begin{frame}{}
 \vspace{0.25cm}
 \centering
 \footnotesize
-{\renewcommand{\tabcolsep}{0cm}
+{\renewcommand{\tabcolsep}{0.25cm}
 \renewcommand{\arraystretch}{1}
 \begin{tabular}{cc}
-\includegraphics[width=0.4\textwidth]{figures/i.g/Fribourg.pdf} &
-\includegraphics[width=0.4\textwidth]{figures/i.g/Fribourg+R2C.pdf} \\
+\includegraphics[width=0.4\textwidth]{\igo/s.median.Fribourg.pdf} &
+\includegraphics[width=0.4\textwidth]{\igo/s.median.Fribourg+R2C.pdf} \\
 Fribourg & Fribourg+R2C \\
-\includegraphics[width=0.4\textwidth]{figures/i.g/Fribourg+R2C+C.pdf} &
-\includegraphics[width=0.4\textwidth]{figures/i.g/Fribourg+R.pdf} \\
+\includegraphics[width=0.4\textwidth]{\igo/s.median.Fribourg+R2C+C.pdf} &
+\includegraphics[width=0.4\textwidth]{\igo/s.median.Fribourg+R.pdf} \\
 Fribourg+R2C+C & Fribourg+R
 \end{tabular}}
 \end{frame}
 \end{blank}
 
 %------------------------------------------------------------------------------%
-% Frame
+% Internal - GOAL
 %------------------------------------------------------------------------------%
 \begin{blank}
 \begin{frame}{}
 \vspace{0.25cm}
 \centering
 \footnotesize
-{\renewcommand{\tabcolsep}{0cm}
+{\renewcommand{\tabcolsep}{0.25cm}
 \renewcommand{\arraystretch}{1}
 \begin{tabular}{cc}
-\includegraphics[width=0.4\textwidth]{figures/i.g/Fribourg+M1.pdf} &
-\includegraphics[width=0.4\textwidth]{figures/i.g/Fribourg+M1+R2C.pdf} \\
+\includegraphics[width=0.4\textwidth]{\igo/s.median.Fribourg+M1.pdf} &
+\includegraphics[width=0.4\textwidth]{\igo/s.median.Fribourg+M1+R2C.pdf} \\
 Fribourg+M1 & Fribourg+M1+R2C \\
-\includegraphics[width=0.4\textwidth]{figures/i.g/Fribourg+M1+R2C+C.pdf} &
-\includegraphics[width=0.4\textwidth]{figures/i.g/Fribourg+M1+M2.pdf} \\
+\includegraphics[width=0.4\textwidth]{\igo/s.median.Fribourg+M1+R2C+C.pdf} &
+\includegraphics[width=0.4\textwidth]{\igo/s.median.Fribourg+M1+M2.pdf} \\
 Fribourg+M1+R2C+C & Fribourg+M1+M2
 \end{tabular}}
 \end{frame}
 \end{blank}
 
 %------------------------------------------------------------------------------%
+% Internal - Michel
+%------------------------------------------------------------------------------%
+\begin{frame}{Results: Internal Tests on Michel Test Set}
+\begin{center}
+{\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|c|c}
+         & GOAL test set & Michel test set \\ \hline
+Internal & \fat{IG}     & \activecell{\fat{IM}}        \\ \hline
+External & \fat{EG}     &             \fat{EM}         \\
+\end{tabular}}
+
+\vspace{0.85cm}
+\imil
+\end{center}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% Internal - Michel
+%------------------------------------------------------------------------------%
+\begin{frame}{IM: Complement Sizes}
+\centering
+\includegraphics[height=0.875\textheight]{\imi/s.lineplot.pdf}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% Internal - Michel
+%------------------------------------------------------------------------------%
+\begin{frame}{IM: Execution times}
+\centering
+\includegraphics[height=0.875\textheight]{\imi/t.lineplot.pdf}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% External - GOAL
+%------------------------------------------------------------------------------%
+\begin{frame}{Results: External Tests on GOAL Test Set}
+\begin{center}
+{\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|c|c}
+         & GOAL test set & Michel test set \\ \hline
+Internal & \fat{IG}                  & \fat{IM}        \\ \hline
+External & \activecell{\fat{EG}}     & \fat{EM}        \\
+\end{tabular}}
+
+\vspace{1.4cm}
+\egol
+\end{center}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% External - GOAL
+%------------------------------------------------------------------------------%
+\begin{frame}{EG: Complement Sizes (7,204 Eff. Samples)}
+\centering
+\hspace{0.5cm}
+\includegraphics[height=0.87\textheight]{\ego/s.lineplot.with_rank.pdf}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% External - GOAL
+%------------------------------------------------------------------------------%
+\begin{frame}{EG: Complement Sizes (10,998 Eff. Samples)}
+\centering
+\hspace{0.5cm}
+\includegraphics[height=0.87\textheight]{\ego/s.lineplot.pdf}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% External - GOAL
+%------------------------------------------------------------------------------%
+\begin{blank}
+\begin{frame}{}
+\vspace{0.25cm}
+\centering
+\footnotesize
+{\renewcommand{\tabcolsep}{0.25cm}
+\renewcommand{\arraystretch}{1}
+\begin{tabular}{cc}
+\includegraphics[width=0.4\textwidth]{\ego/s.median.Piterman+EQ+RO.pdf} &
+\includegraphics[width=0.4\textwidth]{\ego/s.median.Slice+P+RO+MADJ+EG.pdf} \\
+Piterman+EQ+RO & Slice+P+RO+MADJ+EG \\
+\includegraphics[width=0.4\textwidth]{\ego/s.median.Fribourg+M1+R2C.pdf} & \\
+Fribourg+M1+R2C & 
+\end{tabular}}
+\end{frame}
+\end{blank}
+
+%------------------------------------------------------------------------------%
+% External - Michel
+%------------------------------------------------------------------------------%
+\begin{frame}{Results: External Tests on Michel Test Set}
+\begin{center}
+{\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|c|c}
+         & GOAL test set & Michel test set \\ \hline
+Internal & \fat{IG} &             \fat{IM}         \\ \hline
+External & \fat{EG} & \activecell{\fat{EM}}        \\
+\end{tabular}}
+
+\vspace{1.4cm}
+\emil
+\end{center}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% External - Michel
+%------------------------------------------------------------------------------%
+\begin{frame}{EM: Complement Sizes}
+\centering
+\includegraphics[height=0.87\textheight]{\emi/s.lineplot.pdf}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% External - Michel
+%------------------------------------------------------------------------------%
+\begin{frame}{EM: Execution times}
+\centering
+\includegraphics[height=0.87\textheight]{\emi/t.lineplot.pdf}
+\end{frame}
+
+%------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
-\begin{frame}{$ $}
+\begin{frame}{The End}
 \centering
-\tikz \node[rectangle,draw,rounded corners=1mm,fill=blue!20,inner sep=8pt] {Thank you very much for listening!};
+\begin{tikzpicture}[every node/.style={rectangle,inner sep=15pt,minimum width=\textwidth,text=white,drop shadow=black}]
+\node[fill=red,rotate=30] {\ita{Thank you very much for listening!}};
+\node[fill=orange,rotate=-15] {\fat{Thank you very much for listening!}};
+% \node[fill=red,rotate=30] {\fat{Thank you very much for listening!}};
+% \node[fill=orange,rotate=15] {\fat{Thank you very much for listening!}};
+% \node[fill=green,rotate=0] {\fat{Thank you very much for listening!}};
+% \node[fill=blue,rotate=-15] {\fat{Thank you very much for listening!}};
+% \node[fill=red,rotate=-30] {\fat{Thank you very much for listening!}};
+\end{tikzpicture}
 \end{frame}
 
 % Following frames are counted separately with the appendixnumberbeamer package
