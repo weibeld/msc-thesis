@@ -2,7 +2,7 @@
 % dvipsnames which we want to pass to xcolor.
 \PassOptionsToPackage{usenames,dvipsnames,table}{xcolor}
 
-\documentclass[12pt,handout]{beamer}
+\documentclass[12pt]{beamer}
 
 \usepackage{tikz}
 \usetikzlibrary{positioning,calc,arrows.meta,automata,shadows}
@@ -43,6 +43,9 @@
 % Turn off navigation header
 %\setbeamertemplate{headline}{}
 
+% Font size for footnotes
+\setbeamerfont{footnote}{size=\scriptsize}
+
 % Serif font for math mode
 \usefonttheme[onlymath]{serif}
 
@@ -68,6 +71,9 @@
 
 % Replace the ugly balls in the outline with normal numbers
 \setbeamertemplate{sections/subsections in toc}[sections numbered]
+
+% Normal numbers in 'enumerate' (instead balls)
+\setbeamertemplate{enumerate items}[default]
 
 % Set itemize items (there is [ball], [circle], [square], [triangle])
 \setbeamertemplate{itemize items}[circle]
@@ -185,8 +191,10 @@
 \end{tikzpicture}
 }
 
+% Dash as itemize symbol
 \newcommand{\myitem}{--\hspace*{\labelsep}}
 
+% Listings of constructions in all test scenarios
 \newcommand{\igol}{
 \begin{tabular}{l}
 \myitem Fribourg \\
@@ -225,48 +233,6 @@
 \myitem Slice+P+RO+MADJ+EG \\
 \end{tabular}}
 
-% % Black dash itemize symbol
-% \newcommand{\myitem}{\item[\color{black}{--}]}
-% % Shortcut commands for usage in table
-% \newcommand{\igol}{
-% \begin{itemize}\itemsep0pt
-% \myitem Fribourg
-% \myitem Fribourg+R2C
-% \myitem Fribourg+R2C+C
-% \myitem Fribourg+M1
-% \myitem Fribourg+M1+R2C
-% \myitem Fribourg+M1+R2C+C
-% \myitem Fribourg+M1+M2
-% \myitem Fribourg+R
-% \end{itemize}}
-
-% \newcommand{\imil}{
-% \begin{itemize}\itemsep0pt
-% \myitem Fribourg
-% \myitem Fribourg+R2C
-% \myitem Fribourg+M1
-% \myitem Fribourg+M1+M2
-% \myitem Fribourg+M1+M2+R2C
-% \myitem Fribourg+R
-% \end{itemize}}
-
-% \newcommand{\egol}{
-% \begin{itemize}\itemsep0pt
-% \myitem Fribourg+M1+R2C
-% \myitem Piterman+EQ+RO
-% \myitem Rank+TR+RO
-% \myitem Slice+P+RO+MADJ+EG
-% \end{itemize}}
-
-% \newcommand{\emil}{
-% \begin{itemize}\itemsep0pt
-% \myitem Fribourg+M1+M2+R2C
-% \myitem Piterman+EQ+RO
-% \myitem Rank+TR+RO
-% \myitem Slice+P+RO+MADJ+EG
-% \end{itemize}}
-
-
 %------------------------------------------------------------------------------%
 % Title information
 %------------------------------------------------------------------------------%
@@ -277,6 +243,13 @@
 \institute{Foundations of Dependable Systems Group\\Department of Informatics\\University of Fribourg\\\texttt{daniel.weibel@unifr.ch}}
 % Centered graphics exclusively on the title page
 \titlegraphic{\includegraphics[width=6cm]{figures/unifr_logo.pdf}}
+
+% Formatting of a slice containing only the table of contents
+\newcommand{\tocstyle}[1]{
+\Large
+\vspace{0.25cm}
+\hspace{0.5cm}
+\parbox[top][0.66\textheight][c]{0.66\textwidth}{#1}}
 
 \begin{document}
 
@@ -292,10 +265,10 @@
 % Outline slide
 %------------------------------------------------------------------------------%
 \begin{frame}{Outline}
-%\vspace{-0.1cm} % Modify vertical alignment of image
-\tableofcontents
+\tocstyle{\tableofcontents}
 \end{frame}
 
+\section{Introduction}
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
@@ -331,7 +304,7 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
-\begin{frame}{Büchi Complementation Constructions}
+\begin{frame}{State Complexity of Büchi Complementation}
 \centering
 \begin{tikzpicture}[c/.style={align=center},semithick]
 \footnotesize
@@ -342,13 +315,80 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 \draw[->] (c.east) to (b.west);
 \end{tikzpicture}
 \begin{itemize}
-\item Different constructions produce different complements $B$ for the same automaton $A$
-\item Main performance measure: number $m$ of states of $B$ in relation to number $n$ of states of $A$
+\item State complexity: $m$ in relation to $n$
   \begin{itemize}
-  \item State complexity
-  \item Also known as state growth, state blow-up, or state explosion
-  \item E.g. if $n=10$ and $m=100$, then $m=n^2$
-  \item Biggest problem of Büchi complementation
+  \item Size of complement in relation to size of input automaton
+  \end{itemize}
+\pause
+\item Also known as \ita{state growth}, \ita{state blow-up}, or \ita{state explosion}
+\pause
+\item Can be \fat{very high}
+\item Inhibits the application of Büchi complemetation in practice
+  \begin{itemize}
+  \item E.g. in automata-theoretic model checking
+  \end{itemize}
+\pause
+\item The lower the state complexity, the higher the performance of the construction
+\item Importance to investigate the state complexity of Büchi complementation constructions (see next slides)
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% Frame
+%------------------------------------------------------------------------------%
+\def\sep{5pt}
+\begin{frame}{Worst-Case State Complexity}
+\begin{itemize} \itemsep\sep
+\item Every construction has a specific worst-case state complexity
+\item Maximum number of states that a construction can produce
+\pause
+\item Examples:
+\end{itemize}
+\centering
+{\footnotesize
+\renewcommand{\arraystretch}{1.4}
+\renewcommand{\tabcolsep}{0.4cm}
+\begin{tabular}{p{3cm}p{2.4cm}p{2.1cm}}
+\hline 
+Complementation construction & Worst-case state complexity & Example value with $n = 15$ \\
+\hline
+\cite{buchi1960decision} & $2^{2^{O\left(n\right)}}$ & $1.4 \times 10^{9,864}$ \\
+\cite{2007_piterman} & $O(n^{2n})$ & $1.9 \times 10^{35}$ \\
+\cite{vardi2007automata} & $O((3n)^n)$ & $6.3 \times 10^{24}$ \\
+\cite{schewe2009buchi} & $O((0.76n)^n)$ & $7.1 \times 10^{15}$ \\
+\hline
+\end{tabular}}
+\vspace{\sep}\vspace{2pt}
+\begin{itemize}
+\pause  
+\item Often used to assess the performance or efficiency of a construction, but$\dots$
+\end{itemize}
+\end{frame}
+
+
+%------------------------------------------------------------------------------%
+% Frame
+%------------------------------------------------------------------------------%
+\begin{frame}{Empirical Way to Investigate Performance}
+\begin{itemize}
+\item Worst-case state complexity reflects only a \fat{small} aspect of the state complexity of a construction
+\pause
+\item From a practical point of view, we are interested in the performance of a construction on \fat{concrete} automata
+  \begin{itemize}
+  \item E.g. how does the construction perform on ``typical'' automata with 15 states?
+  \end{itemize}
+\pause
+\item Such insights can be gained by \fat{empirical} investigations
+\item Empirical performance investigation:
+  \begin{enumerate}
+  \item[\fat{1.}] \fat{Implement construction}
+  \item[\fat{2.}] \fat{Run the implementation on test automata}
+  \item[\fat{3.}] \fat{Analyse generated complements}
+  \end{enumerate}
+\pause
+\item Aim of this thesis:
+  \begin{itemize}
+  \item Empirically investigate the performance of the \fat{Fribourg construction} (see next slide)
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -358,29 +398,52 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{The Fribourg Construction}
-\begin{itemize}
+\vspace{0.5mm}
+\begin{itemize}\itemsep4pt
+\item Described by~\cite{2014_joel_ulrich}
 \item Slice-based complementation construction
-\item Worst-case state complexity: $(1.59n)^n$
-\item Optimisations:
   \begin{itemize}
-  \item R2C: if input automaton is complete, remove states whose rightmost component is 2-coloured
-  \item M1: merge certain adjacent components ($1.195n)^n$)
-  \item M2: keep not more than one 2-coloured component in every state ($0.86n^n$)
+  \item See main complementation approaches: \ita{Ramsey-based}, \ita{determinisation-based}, \ita{rank-based}, and \ita{slice-based}
   \end{itemize}
+\pause
+\item Worst-case state complexity: $O((1.59n)^n)$
+\pause
+\item Optimisations:
+\par
+\hspace{-1cm}\parbox{\textwidth}{
+\begin{description}\itemsep3pt \vspace{2pt}
+\item[\fat{R2C}] If input automaton is complete, remove states whose rightmost component is 2-coloured
+\item[\fat{M1}] Merge certain pairs of adjacent components
+  \begin{itemize}
+  \item Worst-case state complexity: $O((1.195n)^n)$
+  \end{itemize}
+\item[\fat{M2}] Keep only one 2-coloured component in a state
+  \begin{itemize}
+  \item Worst-case state complexity: $O((0.86n)^n)$
+  \end{itemize}
+\end{description}}
 \end{itemize}
 \end{frame}
 
 
-\section{GOAL}
+%------------------------------------------------------------------------------%
+% Section
+%------------------------------------------------------------------------------%
+\section{Implementation}
+\begin{frame}{Roadmap}
+\tocstyle{\tableofcontents[currentsection]}
+\end{frame}
+
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{GOAL}
-\begin{itemize}
+\begin{itemize}\itemsep4pt
 \item \fat{G}raphical Tool for \fat{O}mega-\fat{A}utomata and \fat{L}ogics
 \item \url{http://goal.im.ntu.edu.tw/wiki/doku.php}
-\item Create and manipulate $\omega$-automata
+\item Allows to create and manipulate $\omega$-automata
 \end{itemize}
+\vspace{0.05cm}
 \centering
 \begin{tabular}{cc}
 \footnotesize Graphical user interface & \footnotesize Command line interface \\
@@ -396,10 +459,12 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 %------------------------------------------------------------------------------%
 \begin{frame}{GOAL: Büchi Complementation Constructions}
 \begin{itemize}
-\item Implementations of several Büchi complementation constructions (GOAL version 2014--11--17)
+\item GOAL contains implementations of several complementation constructions (version 2014--11--17)
 \end{itemize}
+\vspace{0.1cm}
 \centering
 \footnotesize
+{\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{ll}
 \hline
 GOAL Name & Reference \\
@@ -415,29 +480,34 @@ Rank          & \cite{schewe2009buchi} \\
 Slice+P       & \cite{vardi2007automata} \\
 Slice         & \cite{2008_kaehler} \\
 \hline
-\end{tabular}
+\end{tabular}}
 \end{frame}
+
 
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{Fribourg Construction Plugin for GOAL}
+\vspace{-0.1cm}
 \begin{itemize}
-\item GOAL is built with the Java Plugin Framework (JPF)\footnote{\scriptsize\url{http://jpf.sourceforge.net/}}
+\item GOAL is built with the Java Plugin Framework (JPF)\footnote{\url{http://jpf.sourceforge.net/}}
   \begin{itemize}
-  \item Extensibility: create \fat{plugins} containing \fat{extensions} for pre-defined \fat{extension points}
+  \item Allows to create \fat{plugins} containing \fat{extensions} for pre-defined \fat{extension points}
   \end{itemize}
+\pause
 \item Our plugin adds the Fribourg construction to GOAL
   \begin{itemize}
   \item $\dots$ in a fully integrated way
   \end{itemize}
 \end{itemize}
 \centering
+\visible<2->{
 \begin{tabular}{cc}
 \footnotesize Graphical user interface & \footnotesize Command line interface \\
 \includegraphics[width=0.46\textwidth]{figures/plugin_gui.png} &
 \includegraphics[width=0.46\textwidth]{figures/plugin_cl.png}
-\end{tabular}
+\end{tabular}}
+\pause
 \begin{itemize}
 \item Download: \url{https://frico.s3.amazonaws.com/goal_plugins/ch.unifr.goal.complement.zip}
 \end{itemize}
@@ -452,12 +522,21 @@ Slice         & \cite{2008_kaehler} \\
 \includegraphics[width=0.9\textwidth]{figures/goal_logo.png}
 \end{frame}
 
+
+%------------------------------------------------------------------------------%
+% Section
+%------------------------------------------------------------------------------%
+\section{Study Setup}
+\begin{frame}{Roadmap}
+\tocstyle{\tableofcontents[currentsection]}
+\end{frame}
+
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{Test Data: GOAL Test Set}
 \begin{itemize}
-\item Created and used for~\cite{2011_tsai}
+\item Created and used by~\cite{2011_tsai}
 \item 11,000 automata
   \begin{itemize}
   \item 15 states
@@ -470,7 +549,7 @@ Slice         & \cite{2008_kaehler} \\
     \begin{itemize}
     \item $\mathcal A=(0.1,\,0.2,\,0.3,\,0.4,\,0.5,\,0.6,\,0.7,\,0.8,\,0.9,\,1.0)$
     \end{itemize}
-  \item 110 classes at 100 automata for each combination of $\mathcal T \times \mathcal A$
+  \item 110 classes at 100 automata for each combination $\mathcal T \times \mathcal A$
   \end{itemize}
 \pause
 \item Analysis
@@ -491,22 +570,22 @@ Slice         & \cite{2008_kaehler} \\
 \begin{itemize}
 \item Four Michel automata
   \begin{itemize}
-  \item Michel 1: 3 states, 2 symbols, 5 transitions
-  \item Michel 2: 4 states, 3 symbols, 8 transitions
-  \item Michel 3: 5 states, 4 symbols, 11 transitions
-  \item Michel 4: 6 states, 5 symbols, 14 transitions
-  \end{itemize}
-
+  \item \fat{Michel 1:} 3 states, 2 symbols, 5 transitions
+  \item \fat{Michel 2:} 4 states, 3 symbols, 8 transitions
+  \item \fat{Michel 3:} 5 states, 4 symbols, 11 transitions
+  \item \fat{Michel 4:} 6 states, 5 symbols, 14 transitions
+  \end{itemize} \par
+\pause
 \centering
 {\renewcommand{\tabcolsep}{0cm}
 \begin{tabular}{m{1.75cm}m{7cm}}
 Michel 4: & \Michel
 \end{tabular}}
-
+\par
 \pause
 \raggedright
 \item Automata used by~\cite{michel1988} to prove $n!$ lower bound
-\item Very high state complexity
+\item Generally provoke very high state complexity
 \pause
 \item Download: \url{https://frico.s3.amazonaws.com/test_sets/michel.zip}
 \end{itemize}
@@ -516,57 +595,101 @@ Michel 4: & \Michel
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{Test Setup}
-\begin{itemize}
-\item Internal tests
-  \begin{itemize}
+\begin{itemize}\itemsep5pt
+\item Internal tests 
+  \begin{itemize}\itemsep3pt
   \item Compare different versions of the Fribourg construction
+  \item Combinations of optimisations R2C, M1, and M2
+  \item Further options:
+    \begin{itemize} \itemsep1pt
+    \item C: make input automaton complete
+    \item R: remove unreachable and dead states from output automaton
+    \end{itemize}
   \end{itemize}
+\pause
 \item External tests
-  \begin{itemize}
+  \begin{itemize}\itemsep3pt
   \item Compare Fribourg construction with other constructions
+  \item Choose best version of Fribourg construction for each test set
+  \item Other constructions:
+    \begin{itemize} \itemsep1pt
+    \item Piterman \tabto{1.5cm} \cite{2006_piterman,2007_piterman}
+    \item Rank     \tabto{1.5cm} \cite{schewe2009buchi}
+    \item Slice    \tabto{1.5cm} \cite{vardi2007automata}
+    \end{itemize}
   \end{itemize}
 \end{itemize}
-\pause
-\centering
-\scriptsize
-{\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{l|c|c}
-& GOAL test set & Michel test set \\ \hline
-Internal tests & \parbox{4.25cm}{\igol} & \parbox{4.25cm}{\imil} \\ \hline
-External tests & \parbox{4.25cm}{\egol} & \parbox{4.25cm}{\emil}
-\end{tabular}}
 \end{frame}
 
-
-\section{Results}
 
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
-\begin{frame}{Test Setup}
+\begin{frame}{Test Scenarios}
+\vspace{0.5mm}
+\newcommand{\Igol}{\parbox[top][3.8cm][c]{4.3cm}{\igol}}
+\newcommand{\Imil}{\parbox[top][3.8cm][c]{4.3cm}{\imil}}
+\newcommand{\Egol}{\parbox[top][2.125cm][c]{4.3cm}{\egol}}
+\newcommand{\Emil}{\parbox[top][2.125cm][c]{4.3cm}{\emil}}
+\scriptsize
+% Reveal table cells step-by-step, replace by phantom if it's not yet time
+% to display. Note: handout:0 -> don't add this overlay to the handout version
+{\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{l|c|c}
+& GOAL test set & Michel test set \\ \hline
+Internal tests &
+\only<1-1|handout:0>{\phantom{\Igol}}\only<2->{\Igol} &
+\only<1-2|handout:0>{\phantom{\Imil}}\only<3->{\Imil} \\
+\hline
+External tests &
+\only<1-3|handout:0>{\phantom{\Egol}}\only<4->{\Egol} &
+\only<1-4|handout:0>{\phantom{\Emil}}\only<5->{\Emil}
+\end{tabular}}
+\end{frame}
+
+
+%------------------------------------------------------------------------------%
+% Frame
+%------------------------------------------------------------------------------%
+\begin{frame}{Computational Resources}
+\vspace{-1mm}
 \begin{itemize}
-\item Shorthand naming for test scenarios:
+\item Shorthand naming for each test scenario:
 \end{itemize}
+\vspace{1pt}
 \centering
-{\scriptsize
-\renewcommand{\arraystretch}{1.25}
+{\footnotesize
+\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{c|c|c}
          & GOAL test set & Michel test set \\ \hline
 Internal & \fat{IG}      & \fat{IM}        \\ \hline
 External & \fat{EG}      & \fat{EM}        \\
 \end{tabular}}
-\begin{itemize}
-\item IG and EG
-  \begin{itemize}
-  \item Time limit:   \tabto{2.45cm} 600 seconds CPU time
-  \item Memory limit: \tabto{2.45cm} 1 GB Java heap
-  \item Effective samples:
+\pause
+\vspace{6pt}
+\begin{itemize}\itemsep3pt
+\item Resource limits per complementation task (only IG and EG)
+  \begin{itemize}\itemsep2pt
+  \item Time:   \tabto{1.6cm} 600 seconds (CPU time)
+  \item Memory: \tabto{1.6cm} 1 GB (Java heap)
+  \pause
+  \item Result analysis based on \fat{effective samples}
     \begin{itemize}
     \item Automata which have been succesfully complemented by \fat{all} constructions of a test scenario
     \end{itemize}
   \end{itemize}
-\item IM and EM: no limits
+\pause
+\item Execution environment: HPC cluster UBELIX (hnodes 1--42, jnodes) at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}
 \end{itemize}
+\end{frame}
+
+
+%------------------------------------------------------------------------------%
+% Section
+%------------------------------------------------------------------------------%
+\section{Results}
+\begin{frame}{Roadmap}
+\tocstyle{\tableofcontents[currentsection]}
 \end{frame}
 
 %------------------------------------------------------------------------------%
@@ -581,7 +704,7 @@ Internal & \activecell{\fat{IG}}     & \fat{IM}        \\ \hline
 External & \fat{EG}                  & \fat{EM}        \\
 \end{tabular}}
 
-\vspace{0.7cm}
+\vspace{0.75cm}
 \igol
 \end{center}
 \end{frame}
@@ -647,7 +770,7 @@ Internal & \fat{IG}     & \activecell{\fat{IM}}        \\ \hline
 External & \fat{EG}     &             \fat{EM}         \\
 \end{tabular}}
 
-\vspace{0.85cm}
+\vspace{0.95cm}
 \imil
 \end{center}
 \end{frame}
@@ -757,7 +880,13 @@ External & \fat{EG} & \activecell{\fat{EM}}        \\
 \end{frame}
 
 %------------------------------------------------------------------------------%
-% Frame
+% Conclusions
+%------------------------------------------------------------------------------%
+\begin{frame}{Conclusions}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% Final slide
 %------------------------------------------------------------------------------%
 \begin{frame}{The End}
 \centering

@@ -1,0 +1,42 @@
+Slide 2
+=======
+
+This is the outline of my presentation. In the first part, I will introduce the study. In the second part, I will present the implementation of a Büchi complementation that was part of this project. This includes a short demonstration of this implementation. In the third part, I will present the setup of the empirical study that I executed. In the last, and biggest part, I will present the results of this study.
+
+Slide 3
+=======
+
+Let's start with some very basic concepts. This thesis is about an operation on a certain type of automa, which are called Büchi automata. Büchi automata are basically finite state automata, like the ordinary finite state automata. The difference is that Büchi automata run on infinite words, so called omega-words. Like for ordinary automata, a word is accepted if it has an accepting run. A run is a sequence of states that are visited in the course of reading the word. In Büchi automata, a run is accepting if it contains infinitely many occurrences of an accepting state.
+
+<overlay>
+
+This thesis is about a specific operation on Büchi automata, and this operation is complementation. Like for ordinary automata, the complement of a Büchi automaton A is another Büchi automaton B that accepts a word if and only if it is not accepted by A.
+
+Slide 4
+=======
+
+The property that makes Büchi complementation an active research topic is its complexity, in particular its state complexity. Generally, a Büchi complementation construction takes as input a Büchi automaton A with n states, and outputs the complement B of A with m states. The state complexity is the number of states of the complement in relation to the number of states of the input automaton. Other names for the state complexity are ...
+
+<overlay>
+
+As "staet explosion already indicates, the state complexity can be very high for Büchi complemenation, which means basically that the complements may become very large. This is actually the biggest problem of Büchi complementation, which inhibits its practical application, e.g. in automata-theoretic model checking.
+
+<overlay>
+
+The state complexity is so important that it defines the performance of a complementation construction. Generally, the lower the state complexity, the higher we say that the performance of this construction is. Consequently, it is important to investigate the state complexity of complementation constructions.
+
+
+Slide 5
+=======
+
+One way to analyse the state complexity of a construction, which is not the way we are using in our study (our approach is presented on the next slide), is to determine its so-called worst-case state complexity. Every construction has a specific worst-case state complexity, and it means basically the maximum number of states that a construction can generate. (For example, if you recall the suset construction for determinising non-deterministic finite state automata, it can produce at most 2^n states, because there are 2^n subsets of states of the input automaton.) The worst-case state complexity can also be seen as the complement size of a theoretical worst-case automaton.
+
+<overlay>
+
+These worst-case state complexities are calculatd for almost all constructions that are proposed. Here are some exampoles. ...
+
+<overlay>
+
+Furthermore, these worst-case state complexities are often used to assess the overall performance of efficiency of a construction. That is, the performance of a construction on a theoretical worst case is generalised to the performance of the construction in general. That means, for example, Schewe's construction would be seen as better than Vardi and Wilke's construction, and so on.
+
+
