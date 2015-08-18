@@ -29,6 +29,10 @@
 % Tabstops like in Word (\tabto{4cm})
 \usepackage{tabto}
 
+% Allows to set opacity with \transparent
+\usepackage{transparent}
+
+
 % URL style (related to package 'hyperref')
 \renewcommand\UrlFont{\color{red}}
 
@@ -154,11 +158,12 @@
 \newcommand{\fat}[1]{\textbf{#1}}
 \newcommand{\ita}[1]{\textit{#1}}
 
-% Directories of figures for result section
-\newcommand{\igo}{../results/figures/internal/goal}
-\newcommand{\ego}{../results/figures/external/goal}
-\newcommand{\imi}{../results/figures/internal/michel}
-\newcommand{\emi}{../results/figures/external/michel}
+% Formatting of a slice containing only the table of contents
+\newcommand{\tocstyle}[1]{
+\Large
+\vspace{0.25cm}
+\hspace{0.5cm}
+\parbox[top][0.66\textheight][c]{0.66\textwidth}{#1}}
 
 % Active cell in the IG-IM-EG-EM matrix
 \newcommand{\activecell}[1]{\cellcolor{red}\color{white}{#1}}
@@ -191,6 +196,12 @@
 \end{tikzpicture}
 }
 
+% Directories of figures for result section
+\newcommand{\igo}{../results/figures/internal/goal}
+\newcommand{\ego}{../results/figures/external/goal}
+\newcommand{\imi}{../results/figures/internal/michel}
+\newcommand{\emi}{../results/figures/external/michel}
+
 % Dash as itemize symbol
 \newcommand{\myitem}{--\hspace*{\labelsep}}
 
@@ -219,18 +230,18 @@
 
 \newcommand{\egol}{
 \begin{tabular}{l}
-\myitem Fribourg+M1+R2C \\
 \myitem Piterman+EQ+RO \\
 \myitem Rank+TR+RO \\
 \myitem Slice+P+RO+MADJ+EG \\
+\myitem Fribourg+M1+R2C \\
 \end{tabular}}
 
 \newcommand{\emil}{
 \begin{tabular}{l}
-\myitem Fribourg+M1+M2+R2C \\
 \myitem Piterman+EQ+RO \\
 \myitem Rank+TR+RO \\
 \myitem Slice+P+RO+MADJ+EG \\
+\myitem Fribourg+M1+M2+R2C \\
 \end{tabular}}
 
 %------------------------------------------------------------------------------%
@@ -243,13 +254,6 @@
 \institute{Foundations of Dependable Systems Group\\Department of Informatics\\University of Fribourg\\\texttt{daniel.weibel@unifr.ch}}
 % Centered graphics exclusively on the title page
 \titlegraphic{\includegraphics[width=6cm]{figures/unifr_logo.pdf}}
-
-% Formatting of a slice containing only the table of contents
-\newcommand{\tocstyle}[1]{
-\Large
-\vspace{0.25cm}
-\hspace{0.5cm}
-\parbox[top][0.66\textheight][c]{0.66\textwidth}{#1}}
 
 \begin{document}
 
@@ -487,6 +491,12 @@ Slice         & \cite{2008_kaehler} \\
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
+% Transparent and full colour version of images of this slide
+\newcommand{\imgshade}[1]{
+\tikz \node[inner sep=0,opacity=0.3]{\includegraphics[width=0.46\textwidth]{#1}};}
+\newcommand{\imgfull}[1]{
+\tikz \node[inner sep=0,opacity=1]{\includegraphics[width=0.46\textwidth]{#1}};}
+
 \begin{frame}{Fribourg Construction Plugin for GOAL}
 \vspace{-0.1cm}
 \begin{itemize}
@@ -501,12 +511,11 @@ Slice         & \cite{2008_kaehler} \\
   \end{itemize}
 \end{itemize}
 \centering
-\visible<2->{
 \begin{tabular}{cc}
 \footnotesize Graphical user interface & \footnotesize Command line interface \\
-\includegraphics[width=0.46\textwidth]{figures/plugin_gui.png} &
-\includegraphics[width=0.46\textwidth]{figures/plugin_cl.png}
-\end{tabular}}
+\only<1>{\imgshade{figures/plugin_gui.png}}\only<2->{\imgfull{figures/plugin_gui.png}} &
+\only<1>{\imgshade{figures/plugin_cl.png}}\only<2->{\imgfull{figures/plugin_cl.png}}
+\end{tabular}
 \pause
 \begin{itemize}
 \item Download: \url{https://frico.s3.amazonaws.com/goal_plugins/ch.unifr.goal.complement.zip}
@@ -534,6 +543,21 @@ Slice         & \cite{2008_kaehler} \\
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
+\begin{frame}{Roadmap}
+\tocstyle{
+\bfseries
+Study setup
+\large
+\begin{itemize}\itemsep5pt \vspace{5pt}
+\item Test data
+\item Test scenarios
+\item Execution
+\end{itemize}}
+\end{frame}
+
+%------------------------------------------------------------------------------%
+% Frame
+%------------------------------------------------------------------------------%
 \begin{frame}{Test Data: GOAL Test Set}
 \begin{itemize}
 \item Created and used by~\cite{2011_tsai}
@@ -541,6 +565,7 @@ Slice         & \cite{2008_kaehler} \\
   \begin{itemize}
   \item 15 states
   \item Alphabet $\Sigma = \{0, 1\}$
+  \pause
   \item 11 transition densities
     \begin{itemize}
     \item $\mathcal T=(1.0,\,1.2,\,1.4,\,1.6,\,1.8,\,2.0,\,2.2,\,2.4,\,2.6,\,2.8,\,3.0)$
@@ -594,7 +619,7 @@ Michel 4: & \Michel
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
-\begin{frame}{Test Setup}
+\begin{frame}{Test Scenarios}
 \begin{itemize}\itemsep5pt
 \item Internal tests 
   \begin{itemize}\itemsep3pt
@@ -647,40 +672,103 @@ External tests &
 \end{tabular}}
 \end{frame}
 
-
 %------------------------------------------------------------------------------%
 % Frame
 %------------------------------------------------------------------------------%
-\begin{frame}{Computational Resources}
-\vspace{-1mm}
-\begin{itemize}
-\item Shorthand naming for each test scenario:
-\end{itemize}
-\vspace{1pt}
+\begin{frame}{Test Scenarios: Shorthand Names}
 \centering
-{\footnotesize
-\renewcommand{\arraystretch}{1.2}
+\renewcommand{\arraystretch}{1.5}
 \begin{tabular}{c|c|c}
          & GOAL test set & Michel test set \\ \hline
 Internal & \fat{IG}      & \fat{IM}        \\ \hline
 External & \fat{EG}      & \fat{EM}        \\
-\end{tabular}}
-\pause
-\vspace{6pt}
-\begin{itemize}\itemsep3pt
-\item Resource limits per complementation task (only IG and EG)
-  \begin{itemize}\itemsep2pt
+\end{tabular}
+\end{frame}
+
+
+%------------------------------------------------------------------------------%
+% Frame
+%------------------------------------------------------------------------------%
+\begin{frame}{Execution: Resource Limits}
+% \begin{itemize}
+% \item Shorthand naming for each test scenario:
+% \end{itemize}
+% \vspace{1pt}
+% \centering
+% {\footnotesize
+% \renewcommand{\arraystretch}{1.2}
+% \begin{tabular}{c|c|c}
+%          & GOAL test set & Michel test set \\ \hline
+% Internal & \fat{IG}      & \fat{IM}        \\ \hline
+% External & \fat{EG}      & \fat{EM}        \\
+% \end{tabular}}
+% \pause
+\begin{itemize}\itemsep5pt
+\item For IG and EG, we limit the resources for each complementation task ($=$ complementation of 1 automaton)
+  \begin{itemize}
   \item Time:   \tabto{1.6cm} 600 seconds (CPU time)
   \item Memory: \tabto{1.6cm} 1 GB (Java heap)
-  \pause
-  \item Result analysis based on \fat{effective samples}
-    \begin{itemize}
-    \item Automata which have been succesfully complemented by \fat{all} constructions of a test scenario
-    \end{itemize}
   \end{itemize}
 \pause
-\item Execution environment: HPC cluster UBELIX (hnodes 1--42, jnodes) at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}
+\item If a complementation task exceeds these limits, it is aborted
+\pause
+\item Reason: prevent excessive resource requirements %(inspired by \cite{2011_tsai})
+\pause
+\item \fat{Effective samples}
+  \begin{itemize}
+  \item Automata which have been succesfully complemented by \fat{all} constructions of a test scenario
+  \end{itemize}
+\item Analysis of results of IG and EG is based on effective samples
+\pause
+\item For IM and EM, we do not set limits
 \end{itemize}
+% \item Limitations per complementation task
+% \begin{itemize}
+% \item IM and EM (Michel test set): none
+% \item IG and EG (GOAL test set)
+%   \begin{itemize}\itemsep2pt
+%   \item Time:   \tabto{1.6cm} 600 seconds (CPU time)
+%   \item Memory: \tabto{1.6cm} 1 GB (Java heap)
+%   \pause
+%   \item Result analysis based on \fat{effective samples}
+%     \begin{itemize}
+%     \item Automata which have been succesfully complemented by \fat{all} constructions of a test scenario
+%     \end{itemize}
+%   \end{itemize}
+
+% \pause
+% \item Execution environment: HPC cluster UBELIX (hnodes 1--42, jnodes) at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}
+% \end{itemize}
+\end{frame}
+
+
+%------------------------------------------------------------------------------%
+% Frame
+%------------------------------------------------------------------------------%
+\begin{frame}{Execution: Environment}
+\vspace{3mm}
+\begin{itemize}\itemsep6pt
+\item Exeuction on UBELIX: high-performance computing (HPC) cluster at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}
+\pause
+\item Through command line interface of GOAL
+  \begin{itemize}\itemsep1pt
+  \item E.g. \texttt{\color{blue}{gc complement -m fribourg 00001.gff}}
+  \item 1 automaton $=$ 1 process
+  \end{itemize}
+\pause
+\item Usage of UBELIX hnodes 1--42 and jnodes:
+  \begin{itemize}\itemsep1pt
+  \item Processor:        \tabto{3.25cm} Intel Xeon E5-2665 2.40GHz
+  \item Architecture:     \tabto{3.25cm} 64 bit
+  \item CPUs:             \tabto{3.25cm} 16
+  \item Memory (RAM):     \tabto{3.25cm} 64 GB (hnodes) or 256 GB (jnodes)
+  \item Operating System: \tabto{3.25cm} Red Hat Enterprise Linux 6.6
+  \end{itemize}
+\end{itemize}
+\only<1-2>{
+\tikz[remember picture,overlay] \node[opacity=0.3,inner sep=0pt] at ($(current page.center)+(5,0)$) {\includegraphics[scale=0.35]{figures/ubelix.png}};}
+\only<3->{
+\tikz[remember picture,overlay] \node[opacity=1,inner sep=0pt] at ($(current page.center)+(5,0)$) {\includegraphics[scale=0.35]{figures/ubelix.png}};}
 \end{frame}
 
 
@@ -883,6 +971,35 @@ External & \fat{EG} & \activecell{\fat{EM}}        \\
 % Conclusions
 %------------------------------------------------------------------------------%
 \begin{frame}{Conclusions}
+\begin{itemize}\itemsep4pt
+\item Performance of Fribourg construction
+  \begin{itemize}\itemsep3pt\vspace{-0.5mm}
+  \item Optimisations R2C and M1 have a very positive impact
+  \item M2 brings no overall improvement for GOAL test set
+    \begin{itemize}\vspace{-0.5mm}
+    \item However, improves the performance on the Michel automata
+    \end{itemize}
+  \item R2C+C makes easy automata easier and hard automata harder
+    \begin{itemize}\vspace{-0.5mm}
+    \item Mean of complement size increases, median decreases
+    \end{itemize}
+  \end{itemize}
+\pause
+\item Büchi complementation in general
+  \begin{itemize}\itemsep3pt\vspace{-0.5mm}
+  \item Worst-case complexities do not reflect actual performance\vspace{-0.5mm}
+  \item Actual performance is multifaceted and hard to predict
+  \item There is no ``best'' construction
+    \begin{itemize}\vspace{-0.5mm}
+    \item All constructions have individual strengths and weaknesses
+    \end{itemize}
+  \end{itemize}
+\pause
+\item Future work
+  \begin{itemize}\vspace{-0.5mm}
+  \item Further statistical analyses of results
+  \end{itemize}
+\end{itemize}
 \end{frame}
 
 %------------------------------------------------------------------------------%
