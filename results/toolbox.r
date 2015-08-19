@@ -388,10 +388,11 @@ MatrixAgg <- function(lst.m, func=mean) {
   matrix(agg.vals, nrow=nr, ncol=nc, byrow=TRUE, dimnames=dimnames(lst.m[[1]]))
 }
 
-Image <- function(m, ...) {
+Image <- function(m, lab.dst=c(1.2,1.2), ...) {
   # Draw an image plot of a dt/da or da/dt matrix
-  # Args: m: a dt/da or da/dt matrix (rows/columns)
-  #       ...: arguments for 'image'
+  # Args: m:       a dt/da or da/dt matrix (rows/columns)
+  #       lab.dst: gap between axes and axis labels (left, top)
+  #       ...:     arguments for 'image'
   #----------------------------------------------------------------------------#
   nr <- nrow(m); nc <- ncol(m)
   m <- t(m)[,nr:1]  # This makes the image having the same layout as matrix 'm'
@@ -408,15 +409,17 @@ Image <- function(m, ...) {
   usr <- par("usr")  # Get extreme values of x-axis [1,2], and y-axis [3,4]
   par(xpd=TRUE)      # Allow drawing outside of plot area
   gap1 <- 0.25       # Gap between plot and "tick marks"
-  gap2 <- 1.2        # Gap between plot and axis labels
-  # Labels on x-axis (top)
+  gap2 <- lab.dst    # Gap between plot and axis labels
+  # Column marks (x-axis top)
   text(x=1:nc, y=usr[4]+gap1, labels=x.val, pos=3, offset=0)
+  # X-axis title
   x.mid <- (usr[2] - usr[1]) / 2 + usr[1]  # Middle of x-axis
-  text(x=x.mid, y=usr[4]+gap2, labels=x.lab)
-  # Labels on y-axis (left)
+  text(x=x.mid, y=usr[4]+gap2[2], labels=x.lab)
+  # Row marks (y-axis left)
   text(x=usr[1]-(gap1 * nc / (nr+0.5)), y=nr:1, labels=y.val, pos=2, offset=0)
+  # Y-axis title
   y.mid <- (usr[4] - usr[3]) / 2 + usr[3]  # Middle of y-axis
-  text(x=usr[1]-gap2-0.15, y=y.mid, labels=y.lab, srt=90)
+  text(x=usr[1]-gap2[1], y=y.mid, labels=y.lab, srt=90)
   # Add grid
   abline(h=seq(usr[3], usr[4]), v=seq(usr[1], usr[2]), xpd=FALSE)
 }

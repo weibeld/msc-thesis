@@ -140,9 +140,15 @@ IntGoal <- function() {
   file <- paste0(dir, "/difficulty.pdf")
   m.avg <- MatrixAgg(mlist, mean)  # Average of all the state median matrices
   pdf(file=file, width=4.1, height=4.1)
-  par(mar=c(0.25, 3, 2.75, 0.25))
+  # For report
+  # par(mar=c(0.25, 3, 2.75, 0.25))
+  # lab.dst=(1.35,1.2)
+  # For presentation
+  par(mar=c(0.25, 3.0, 2.7, 0.25))
+  par(cex=1.2)
+  lab.dst=c(1.7,1.425)
   # less than 500: green; betw. 500 and 1600: yellow; more than 1600: red
-  Image(m.avg, breaks=c(0, 500, 1600, 6000), col=c("green", "yellow", "red"))
+  Image(m.avg, breaks=c(0, 500, 1600, 6000), col=c("green", "yellow", "red"), lab.dst=lab.dst)
   dev.off()
 
   # Line plot with median and mean complement sizes

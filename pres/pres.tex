@@ -327,13 +327,13 @@ The complement of a Büchi automaton $A$ is another Büchi automaton $B$, such t
 \item Also known as \ita{state growth}, \ita{state blow-up}, or \ita{state explosion}
 \pause
 \item Can be \fat{very high}
-\item Inhibits the application of Büchi complemetation in practice
+\item Inhibits the application of Büchi complementation in practice
   \begin{itemize}
   \item E.g. in automata-theoretic model checking
   \end{itemize}
 \pause
-\item The lower the state complexity, the higher the performance of the construction
-\item Importance to investigate the state complexity of Büchi complementation constructions (see next slides)
+\item The lower the state complexity, the higher the performance of a construction
+\item Importance to investigate the state complexity of Büchi complementation constructions
 \end{itemize}
 \end{frame}
 
@@ -377,9 +377,9 @@ Complementation construction & Worst-case state complexity & Example value with 
 \begin{itemize}
 \item Worst-case state complexity reflects only a \fat{small} aspect of the state complexity of a construction
 \pause
-\item From a practical point of view, we are interested in the performance of a construction on \fat{concrete} automata
+\item From a practical point of view, we are interested in the performance of a construction in a \fat{real-world} scenario
   \begin{itemize}
-  \item E.g. how does the construction perform on ``typical'' automata with 15 states?
+  \item E.g. how does a construction perform on automata with 15 states?
   \end{itemize}
 \pause
 \item Such insights can be gained by \fat{empirical} investigations
@@ -462,10 +462,11 @@ Complementation construction & Worst-case state complexity & Example value with 
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{GOAL: Büchi Complementation Constructions}
+\label{goal_constructions}
 \begin{itemize}
-\item GOAL contains implementations of several complementation constructions (version 2014--11--17)
+\item GOAL contains implementations of several complementation constructions (GOAL version 2014--11--17):
 \end{itemize}
-\vspace{0.1cm}
+\vspace{0.125cm}
 \centering
 \footnotesize
 {\renewcommand{\arraystretch}{1.15}
@@ -505,10 +506,11 @@ Slice         & \cite{2008_kaehler} \\
   \item Allows to create \fat{plugins} containing \fat{extensions} for pre-defined \fat{extension points}
   \end{itemize}
 \pause
-\item Our plugin adds the Fribourg construction to GOAL
-  \begin{itemize}
-  \item $\dots$ in a fully integrated way
-  \end{itemize}
+\item We created a plugin that contains an extension with the implementation of the Fribourg construction 
+%\item Our plugin adds the Fribourg construction to GOAL
+  % \begin{itemize}
+  % \item $\dots$ in a fully integrated way
+  % \end{itemize}
 \end{itemize}
 \centering
 \begin{tabular}{cc}
@@ -561,6 +563,7 @@ Study setup
 \begin{frame}{Test Data: GOAL Test Set}
 \begin{itemize}
 \item Created and used by~\cite{2011_tsai}
+\pause
 \item 11,000 automata
   \begin{itemize}
   \item 15 states
@@ -593,6 +596,9 @@ Study setup
 %------------------------------------------------------------------------------%
 \begin{frame}{Test Data: Michel Test Set}
 \begin{itemize}
+\item Automata used by~\cite{michel1988} to prove $n!$ lower bound
+\item Generally provoke very high state complexity
+\pause
 \item Four Michel automata
   \begin{itemize}
   \item \fat{Michel 1:} 3 states, 2 symbols, 5 transitions
@@ -606,12 +612,9 @@ Study setup
 \begin{tabular}{m{1.75cm}m{7cm}}
 Michel 4: & \Michel
 \end{tabular}}
+\pause
 \par
-\pause
-\raggedright
-\item Automata used by~\cite{michel1988} to prove $n!$ lower bound
-\item Generally provoke very high state complexity
-\pause
+\raggedright\vspace{-0.5mm}
 \item Download: \url{https://frico.s3.amazonaws.com/test_sets/michel.zip}
 \end{itemize}
 \end{frame}
@@ -636,7 +639,7 @@ Michel 4: & \Michel
   \begin{itemize}\itemsep3pt
   \item Compare Fribourg construction with other constructions
   \item Choose best version of Fribourg construction for each test set
-  \item Other constructions:
+  \item Other constructions (see Slide~\ref{goal_constructions}):
     \begin{itemize} \itemsep1pt
     \item Piterman \tabto{1.5cm} \cite{2006_piterman,2007_piterman}
     \item Rank     \tabto{1.5cm} \cite{schewe2009buchi}
@@ -690,20 +693,7 @@ External & \fat{EG}      & \fat{EM}        \\
 % Frame
 %------------------------------------------------------------------------------%
 \begin{frame}{Execution: Resource Limits}
-% \begin{itemize}
-% \item Shorthand naming for each test scenario:
-% \end{itemize}
-% \vspace{1pt}
-% \centering
-% {\footnotesize
-% \renewcommand{\arraystretch}{1.2}
-% \begin{tabular}{c|c|c}
-%          & GOAL test set & Michel test set \\ \hline
-% Internal & \fat{IG}      & \fat{IM}        \\ \hline
-% External & \fat{EG}      & \fat{EM}        \\
-% \end{tabular}}
-% \pause
-\begin{itemize}\itemsep5pt
+\begin{itemize}\itemsep6pt
 \item For IG and EG, we limit the resources for each complementation task ($=$ complementation of 1 automaton)
   \begin{itemize}
   \item Time:   \tabto{1.6cm} 600 seconds (CPU time)
@@ -716,29 +706,12 @@ External & \fat{EG}      & \fat{EM}        \\
 \pause
 \item \fat{Effective samples}
   \begin{itemize}
-  \item Automata which have been succesfully complemented by \fat{all} constructions of a test scenario
+  \item Automata which have been successfully complemented by \fat{all} constructions of a test scenario
   \end{itemize}
 \item Analysis of results of IG and EG is based on effective samples
 \pause
-\item For IM and EM, we do not set limits
+\item For IM and EM, there are no limits
 \end{itemize}
-% \item Limitations per complementation task
-% \begin{itemize}
-% \item IM and EM (Michel test set): none
-% \item IG and EG (GOAL test set)
-%   \begin{itemize}\itemsep2pt
-%   \item Time:   \tabto{1.6cm} 600 seconds (CPU time)
-%   \item Memory: \tabto{1.6cm} 1 GB (Java heap)
-%   \pause
-%   \item Result analysis based on \fat{effective samples}
-%     \begin{itemize}
-%     \item Automata which have been succesfully complemented by \fat{all} constructions of a test scenario
-%     \end{itemize}
-%   \end{itemize}
-
-% \pause
-% \item Execution environment: HPC cluster UBELIX (hnodes 1--42, jnodes) at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}
-% \end{itemize}
 \end{frame}
 
 
@@ -747,8 +720,8 @@ External & \fat{EG}      & \fat{EM}        \\
 %------------------------------------------------------------------------------%
 \begin{frame}{Execution: Environment}
 \vspace{3mm}
-\begin{itemize}\itemsep6pt
-\item Exeuction on UBELIX: high-performance computing (HPC) cluster at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}
+\begin{itemize}\itemsep9pt
+\item Execution on UBELIX: high-performance computing (HPC) cluster at the University of Bern\footnote{\url{http://ubelix.unibe.ch}}
 \pause
 \item Through command line interface of GOAL
   \begin{itemize}\itemsep1pt
@@ -845,6 +818,20 @@ Fribourg+M1+R2C+C & Fribourg+M1+M2
 \end{tabular}}
 \end{frame}
 \end{blank}
+
+%------------------------------------------------------------------------------%
+% Internal - GOAL
+%------------------------------------------------------------------------------%
+\begin{frame}{IG: Difficulty Classes (10,939 Eff. Samples)}
+\centering
+\includegraphics[height=0.6\textheight]{\igo/difficulty.pdf}
+
+\vspace{0.5mm}
+\small
+Green $=$ easy, yellow $=$ medium, red $=$ hard
+
+For each class: mean of median complement sizes of each construction, breakpoints at 500 and 1,600 states
+\end{frame}
 
 %------------------------------------------------------------------------------%
 % Internal - Michel
@@ -971,7 +958,7 @@ External & \fat{EG} & \activecell{\fat{EM}}        \\
 % Conclusions
 %------------------------------------------------------------------------------%
 \begin{frame}{Conclusions}
-\begin{itemize}\itemsep4pt
+\begin{itemize}\itemsep5pt
 \item Performance of Fribourg construction
   \begin{itemize}\itemsep3pt\vspace{-0.5mm}
   \item Optimisations R2C and M1 have a very positive impact
