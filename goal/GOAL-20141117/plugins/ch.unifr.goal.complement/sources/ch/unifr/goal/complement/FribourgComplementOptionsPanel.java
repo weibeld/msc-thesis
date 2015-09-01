@@ -1,7 +1,14 @@
 /*============================================================================*
- * Author: Daniel Weibel <daniel.weibel@unifr.ch>
- * Last modified: 5 Oct. 2014
+ * The JPanel appearing in the options dialog for the Fribourg construction
+ * in the GUI, and under "Preferences > Complementation > FribourgConstruction".
+ * This panel contains a checkbox for every option of the Fribourg Construction.
+ * The class returns a FribourgOptions class with the options set accordingly.
+ * On the creation of the panel, the checkboxes are set according to the
+ * preference values in the preference file.
+ *
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch>
  *============================================================================*/
+
 package ch.unifr.goal.complement;
 
 import javax.swing.Box;
@@ -13,16 +20,6 @@ import java.awt.event.ItemListener;
 import org.svvrl.goal.core.Properties;
 import org.svvrl.goal.gui.pref.OptionsPanel;
 
-
-/*----------------------------------------------------------------------------*
- * The JPanel appearing in the options dialog when complementing an automaton,
- * and in the GOAL preferences under Preferences > Complementation >
- * FribourgConstruction.
- * Contains a checkbox for every option of the Fribourg Construction. Returns a
- * FribourgOptions with options set according to the state of the checkboxes.
- * On object creation, the checkboxes are set according to the preference values
- * in the preference file.
- *----------------------------------------------------------------------------*/
 // JPanel > OptionsPanel
 public class FribourgComplementOptionsPanel extends OptionsPanel<FribourgOptions> {
 

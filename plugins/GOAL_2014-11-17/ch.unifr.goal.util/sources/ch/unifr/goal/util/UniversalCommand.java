@@ -1,6 +1,14 @@
 /*============================================================================*
+ * Command "universal" for the command line interface of GOAL. An automaton is
+ * universal if it accepts ∑*, that is, all possible words over the alphabet ∑.
+ * The test is done by complementing the input automaton and testing the
+ * complement for emptiness.
+ *
  * Author: Daniel Weibel <daniel.weibel@unifr.ch>, 20 Dec. 2014
+ *
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch> 
  *============================================================================*/
+
 package ch.unifr.goal.util;
 
 import java.util.List;
@@ -14,13 +22,6 @@ import org.svvrl.goal.core.aut.fsa.FSA;
 import org.svvrl.goal.core.aut.fsa.Emptiness;
 import org.svvrl.goal.core.aut.fsa.Emptiness.Result;
 
-
-/*----------------------------------------------------------------------------*
- * "universal" command line command. An automaton is universal if it accepts ∑*,
- * that is, all possible words over alphabet ∑.
- * Test is done by executing a "complement" command and testing the resulting
- * automaton for emptiness.
- *----------------------------------------------------------------------------*/
 public class UniversalCommand extends CommandExpression {
 
   // "complement" -> ComplementExpression, "unviversal" -> UniversalCommand

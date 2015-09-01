@@ -1,7 +1,10 @@
 /*============================================================================*
- * Author: Daniel Weibel <daniel.weibel@unifr.ch>
- * Last modified: 5 Oct. 2014
+ * Menu item for the step-by-step execution method of the Fribourg construction
+ * in the GUI (under "Automaton > Complement (Step-by-Step)").
+ *
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch>
  *============================================================================*/
+
 package ch.unifr.goal.complement;
 
 import org.svvrl.goal.core.FinishedException;
@@ -14,11 +17,6 @@ import org.svvrl.goal.gui.ControllableTab;
 import org.svvrl.goal.gui.action.EditableAction;
 import org.svvrl.goal.gui.pref.OptionsDialog;
 
-/*----------------------------------------------------------------------------*
- * Interface of the Fribourg construction with the GUI. This class defines
- * the action when clicking on the Fribourg Construction menu item under
- * Automaton > Complement (Step-by-Step) in the GUI.
- *----------------------------------------------------------------------------*/
 /* javax.swing.AbstractAction > WindowAction > EditableAction */
 public class StepByStepFribourgComplementAction extends EditableAction<FSA,Void> {
 

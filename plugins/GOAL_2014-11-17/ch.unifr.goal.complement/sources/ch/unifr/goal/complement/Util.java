@@ -1,7 +1,9 @@
 /*============================================================================*
- * Author: Daniel Weibel <daniel.weibel@unifr.ch>
- * Last modified: 14 Oct. 2014
+ * Various static utility methods.
+ *
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch>
  *============================================================================*/
+
 package ch.unifr.goal.complement;
 
 import java.util.List;
@@ -10,9 +12,6 @@ import org.svvrl.goal.core.Preference;
 import org.svvrl.goal.core.aut.State;
 import org.svvrl.goal.core.aut.StateSet;
 
-/*----------------------------------------------------------------------------*
- * Various static utility methods.
- *----------------------------------------------------------------------------*/
 public class Util {
 
   // Print a state set in the form "q1,q2,q5,q7"

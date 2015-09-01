@@ -1,27 +1,27 @@
 /*============================================================================*
- * Author: Daniel Weibel <daniel.weibel@unifr.ch>
- * Last modified: 5 Oct. 2014
+ * Options for the Fribourg construction. A "FribourgOptions" object contains
+ * the options for a "FribourgConstruction" object as key=value pairs. For
+ * creating a "FribourgConstruction" object, one has to pass a "FribourgOptions"
+ * object to the "FribourgConstruction" constructor.
+ *
+ * This class has a second purpose, which is providing a static interface to the
+ * GOAL preference file. For every option of a construction, there exist two
+ * entries in the preference file:
+ * 1) <option_key>=<PREFERENCE_VALUE>: used to initialise the checkboxes in the
+ *    options dialog in the GUI. Modified by clicking on 'Save as Default'.
+ * 2) <option_key>=<DEFAULT_VALUE>: used when the user clicks on 'Reset' in
+ *    "Preferences... > Complementation > Fribourg Construction" to reset the
+ *    preference values to the default values.
+ * Both, default and preference values, are remembered between runs of GOAL.
+ * 
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch>
  *============================================================================*/
+
 package ch.unifr.goal.complement;
 
 import org.svvrl.goal.core.Properties;
 import org.svvrl.goal.core.Preference;
 
-/*----------------------------------------------------------------------------*
- * A FribourgOptions object contains the options for a FribourgConstruction as
- * key=value pairs. For creating a FribourgConstruction, one first creates a
- * FribourgOptions and passes it to the FribourgConstruction constructor.
- * ----------
- * This class has a second purpose, which is providing a static interface to the
- * GOAL preference file. For every option that exists in a FribourgOptions,
- * there exist two entries in the preference file:
- * 1) <option_key>=<PREFERENCE_VALUE>: used to initialise the checkboxes in the
- *    options dialog in the GUI. Modified by clicking on 'Save as Default'.
- * 2) <option_key>=<DEFAULT_VALUE>: used when the user clicks on 'Reset' in
- *    'Preferences... > Complementation > Fribourg Construction' to reset the
- *    preference values to the default values.
- * Both, default and preference values, are persistent across runs of GOAL.
- *----------------------------------------------------------------------------*/
 // java.util.Properties > org.svvrl.goal.core.Properties > FribourgOptions
 public class FribourgOptions extends Properties {
   

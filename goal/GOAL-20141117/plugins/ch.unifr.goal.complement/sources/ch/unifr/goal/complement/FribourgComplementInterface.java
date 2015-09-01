@@ -1,7 +1,11 @@
 /*============================================================================*
- * Author: Daniel Weibel <daniel.weibel@unifr.ch>
- * Last modified: 16 Oct. 2014
+ * Command line command "fribourg" for the command line interface of GOAL
+ * (gc complement -m fribourg). Works together with the
+ * "ComplementConstructionInterface" extension in plugin.xml.
+ *
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch>
  *============================================================================*/
+
 package ch.unifr.goal.complement;
 
 import org.svvrl.goal.cmd.AbstractComplementConstructionInterface;
@@ -11,11 +15,6 @@ import org.svvrl.goal.cmd.Expression;
 import org.svvrl.goal.core.Properties;
 import org.svvrl.goal.cmd.EvaluationException;
 
-/*----------------------------------------------------------------------------*
- * Links the Fribourg construction to the command line complement command
- * (goal complement -m fribourg). Works together with the ComplementConstruction
- * Interface extension in plugin.xml.
- *----------------------------------------------------------------------------*/
 // AbstractComplementConstructionInterface implements ComplementConstructionInterface
 public class FribourgComplementInterface extends AbstractComplementConstructionInterface {
 

@@ -1,7 +1,11 @@
 /*============================================================================*
- * Author: Daniel Weibel <daniel.weibel@unifr.ch>
- * Last modified: 14 Oct. 2014
+ * A subset-tuple state (STState), i.e. a state of the output automaton of the
+ * Fribourg construction. An STState consists of an ordered list (tuple) of
+ * components (inner class "Component").
+ *
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch>
  *============================================================================*/
+
 package ch.unifr.goal.complement;
 
 import java.util.List;
@@ -10,11 +14,7 @@ import org.svvrl.goal.core.aut.State;
 import org.svvrl.goal.core.aut.StateSet;
 import org.svvrl.goal.core.aut.fsa.FSAState;
 
-/*----------------------------------------------------------------------------*
- * A subset-tuple state (STState), i.e. a state of the output automaton of the
- * Fribourg complementation construction. An STState consists of an ordered list
- * (tuple) of components (inner class Component).
- *----------------------------------------------------------------------------*/
+
 public class STState extends FSAState {
 
   // The components of this state

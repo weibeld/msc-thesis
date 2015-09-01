@@ -1,6 +1,13 @@
 /*============================================================================*
+ * Command "complete" for the command line interface of GOAL. An automaton is
+ * complete if every state has an outgoing transition for every symbol of the
+ * alphabet.
+ *
  * Author: Daniel Weibel <daniel.weibel@unifr.ch>, 19 Dec. 2014
+ *
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch> 
  *============================================================================*/
+
 package ch.unifr.goal.util;
 
 import java.util.List;
@@ -13,10 +20,6 @@ import org.svvrl.goal.cmd.EvaluationException;
 import org.svvrl.goal.cmd.CmdUtil;
 
 
-/*----------------------------------------------------------------------------*
- * "complete" command line command. An automaton is complete if every state has
- * an outgoing transition for every symbol of the alphabet.
- *----------------------------------------------------------------------------*/
 public class CompleteCommand extends CommandExpression {
 
   // Last argument specifying automaton

@@ -1,7 +1,10 @@
 /*============================================================================*
- * Author: Daniel Weibel <daniel.weibel@unifr.ch>
- * Last modified: 14 Oct. 2014
+ * Implementation of the Fribourg construction. This class is used by both, the
+ * command line interface and the GUI of GOAL.
+ * 
+ * Copyright (c) 2014-2015 Daniel Weibel <daniel.weibel@unifr.ch>
  *============================================================================*/
+
 package ch.unifr.goal.complement;
 
 import java.util.List;
@@ -27,11 +30,6 @@ import org.svvrl.goal.core.comp.AbstractComplementConstruction;
 import org.svvrl.goal.core.aut.opt.StateReducer;
 import ch.unifr.goal.complement.STState.Component;
 
-
-/*----------------------------------------------------------------------------*
- * Implementation of the Fribourg construction. This same class is used by both,
- * the command line and the GUI.
- *----------------------------------------------------------------------------*/
 // Object > AbstractAlgorithm > AbstractControllableAlgorithm > AbstractEditableAlgorithm > AbstractComplementConstruction
 // AbsractComplementConstruction implements interface ComplementConstruction
 public class FribourgConstruction extends AbstractComplementConstruction<FSA, FSA> {
