@@ -1,0 +1,17 @@
+The following image icons created by Everaldo Coelho and YellowIcon are
+licensed under LGPL 2.1:
+- close_16x16.png
+- close_24x24.png
+- close_32x32.png
+- close_48x48.png
+- close_128x128.png
+- eyes_16x16.png
+- eyes_24x24.png
+- eyes_32x32.png
+- eyes_48x48.png
+- eyes_128x128.png
+- magnifier_16x16.png
+- magnifier_24x24.png
+- magnifier_32x32.png
+- magnifier_48x48.png
+- magnifier_128x128.png

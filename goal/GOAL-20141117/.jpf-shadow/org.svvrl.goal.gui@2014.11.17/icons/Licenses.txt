@@ -1,0 +1,22 @@
+The following image icons created by flamer are licensed under Creative
+Commons CC0 1.0 Universal Public Domain Dedication:
+- GOAL.png
+- soccer_ball_16x16
+- soccer_ball_24x24
+- soccer_ball_32x32
+- soccer_ball_48x48
+- soccer_ball_128x128
+
+The following icons are licensed under the Creative Commons Attribution-Share
+Alike 3.0 Unported licence:
+- snowflake.png
+- snowflake_128x128.png
+- snowflake_24x14.png
+- snowflake_16x16.png
+
+The following icons are licensed under Public Domain:
+- information.png
+  (http://commons.wikimedia.org/wiki/File:Information_icon.svg)
+- information_128x128.png
+- information_24x24.png
+- information_16x16.png

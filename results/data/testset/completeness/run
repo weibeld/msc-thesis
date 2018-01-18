@@ -1,0 +1,1 @@
+submit -m 4G -c 72:00:00 -q mpi.q -s 10G -p 4 -n ea ~/submit/test_complete ~/data/goal.tar.gz

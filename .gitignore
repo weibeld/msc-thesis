@@ -11,6 +11,3 @@
 *.rbc
 .DS_Store
 *.class
-api
-testset
-goal

@@ -1,0 +1,26 @@
+The following image icons created by the Tango Desktop Project are licensed
+under Public Domain:
+- next_stage.png
+- pause.png
+- play.png
+
+The following files are derivative works of the above image icons.
+- next_stage_128x128.png
+- next_stage_24x24.png
+- next_stage_16x16.png
+- next_step_128x128.png
+- next_step_24x24.png
+- next_step_16x16.png
+- next_step.xcf
+- pause_128x128.png
+- pause_24x24.png
+- pause_16x16.png
+- play_128x128.png
+- play_24x24.png
+- play_16x16.png
+- prev_stage_128x128.png
+- prev_stage_24x24.png
+- prev_stage_16x16.png
+- prev_step_128x128.png
+- prev_step_24x24.png
+- prev_step_16x16.png
